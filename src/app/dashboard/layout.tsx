@@ -2,6 +2,7 @@ import { createClient } from "@/lib/supabase/server"
 import { getCachedNextDeadline } from "@/lib/dashboard-data"
 import { redirect } from "next/navigation"
 import { DashboardSidebar } from "@/components/dashboard/sidebar"
+import { MobileBottomNav } from "@/components/dashboard/mobile-bottom-nav"
 import { DashboardChrome } from "@/components/dashboard/dashboard-chrome"
 import { CompactDashboardProvider } from "@/components/dashboard/compact-dashboard-context"
 import { getCachedDashboardReadiness } from "@/lib/dashboard-readiness-loader"
@@ -74,9 +75,10 @@ export default async function DashboardLayout({
           targetMajor={targetMajor}
           expectedTransferTerm={expectedTerm}
         />
-        <main className="ml-0 flex min-w-0 flex-1 flex-col pt-14 md:ml-64 md:pt-0">
+        <main className="ml-0 flex min-w-0 flex-1 flex-col pt-14 pb-[calc(3.5rem+env(safe-area-inset-bottom))] md:ml-64 md:pt-0 md:pb-0">
           <DashboardChrome initials={initials}>{children}</DashboardChrome>
         </main>
+        <MobileBottomNav />
       </div>
     </CompactDashboardProvider>
   )

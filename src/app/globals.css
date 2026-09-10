@@ -203,6 +203,25 @@
   border-bottom: 0;
 }
 
+@keyframes tp-route-marquee {
+  from {
+    transform: translateX(0);
+  }
+  to {
+    transform: translateX(-50%);
+  }
+}
+
+.tp-route-marquee {
+  animation: tp-route-marquee 36s linear infinite;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .tp-route-marquee {
+    animation: none;
+  }
+}
+
 /* Dashboard — plain paper background */
 .tp-dashboard-bg {
   background-color: var(--background);
@@ -411,4 +430,50 @@
   .shadow-glow-card {
     box-shadow: var(--glow-card);
   }
+}
+
+/* ── Arcade attract-mode landing (scoped) ── */
+.arcade-root {
+  --arcade-mag: #ff2d95;
+  --arcade-cyan: #00f0ff;
+  --arcade-lime: #b8ff3c;
+  font-family: var(--font-inter), ui-sans-serif, system-ui, sans-serif;
+  background: #05020c;
+}
+
+.font-arcade {
+  font-family: var(--font-arcade), var(--font-jetbrains-mono), ui-monospace, monospace;
+  line-height: 1.45;
+}
+
+.arcade-btn {
+  image-rendering: pixelated;
+  transition: transform 0.12s ease, background-color 0.12s ease, color 0.12s ease;
+}
+.arcade-btn:active {
+  transform: translateY(2px);
+}
+
+@keyframes arcade-marquee-scroll {
+  from {
+    transform: translateX(0);
+  }
+  to {
+    transform: translateX(-50%);
+  }
+}
+
+.arcade-marquee {
+  width: max-content;
+  animation: arcade-marquee-scroll 28s linear infinite;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .arcade-marquee {
+    animation: none;
+  }
+}
+
+.campus-root {
+  font-family: var(--font-inter), ui-sans-serif, system-ui, sans-serif;
 }

@@ -135,5 +135,5 @@ export default async function DashboardPage() {
     courseCount: userCourses.length,
   })
 
-  return <DashboardHomeView overviewData={overviewData} />
+  return <DashboardHomeView overviewData={overviewData} userId={user.id} />
 }

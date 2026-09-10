@@ -28,7 +28,7 @@ import type {
   RequirementsWorkspaceData,
 } from "@/types/requirements-workspace"
 
-const PLAN_COURSES_HASH = "/dashboard/plan#semester-roadmap"
+const PLAN_COURSES_HASH = "/dashboard/plan"
 
 const COMMON_PREREQ_KEYS = new Set(["english_comp_1", "english_comp_2", "gov"])
 
@@ -164,12 +164,15 @@ function coursePrereqRowToItem(row: AcademicRow): RequirementWorkspaceItem {
     credits: 0,
     equiv: `${row.required} · You: ${row.have}`,
     status: academicDisplayToRequirementStatus(row.status),
-    ctaLabel: "Details",
+    ctaLabel: "Open Plan",
     href: PLAN_COURSES_HASH,
+    provenanceBasis:
+      "Matched by course name. TransferPath is a planner, not an equivalency service.",
   }
 }
 
 function profileMetricRowToItem(row: AcademicRow): RequirementWorkspaceItem {
+  const isGpa = row.rowKey === "gpa"
   return {
     id: `academic-${row.rowKey}`,
     code: "—",
@@ -177,6 +180,11 @@ function profileMetricRowToItem(row: AcademicRow): RequirementWorkspaceItem {
     credits: 0,
     equiv: `${row.required} · You: ${row.have}`,
     status: academicDisplayToRequirementStatus(row.status),
+    ctaLabel: isGpa ? "Edit in Settings" : "Open Plan",
+    href: isGpa ? "/dashboard/settings" : PLAN_COURSES_HASH,
+    provenanceBasis: isGpa
+      ? "Planner benchmark. We have not confirmed a published transfer minimum for your target school."
+      : "Planner target, not an institutional minimum.",
   }
 }
 
@@ -346,7 +354,8 @@ export function buildRequirementsWorkspaceData(
       eyebrow: "Requirements",
       title: "Requirements",
       titleItalic: "",
-      subtitle: "Track prerequisites, credits, and application materials in one view.",
+      subtitle:
+        "What stands between you and an application — each row says where the claim came from and how to act on it here.",
     },
     categories,
     planningNotes: planningNotes.map((n) => ({

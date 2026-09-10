@@ -2,9 +2,10 @@
 
 import Link from "next/link"
 import { cn } from "@/lib/utils"
-import type { OverviewData } from "@/types/overview"
+import type { OverviewData, TodayNextAction } from "@/types/overview"
 import { Provenance } from "@/components/ui/provenance"
 import { useCompactDashboard } from "@/components/dashboard/compact-dashboard-context"
+import { MarkTaskDoneButton } from "@/components/dashboard/overview/mark-task-done-button"
 import {
   ExternalActionLink,
   ScopeChip,
@@ -14,9 +15,10 @@ import {
 
 interface OverviewMainProps {
   data: OverviewData
+  userId: string
 }
 
-export function OverviewMain({ data }: OverviewMainProps) {
+export function OverviewMain({ data, userId }: OverviewMainProps) {
   const compact = useCompactDashboard()
 
   if (data.pathwayPrompt) {
@@ -58,7 +60,9 @@ export function OverviewMain({ data }: OverviewMainProps) {
 
       <div className={cn("grid gap-6 lg:grid-cols-[1.65fr_1fr] lg:gap-8", compact ? "gap-4" : "gap-6")}>
         <div className="flex flex-col gap-6">
-          {data.nextAction ? <NextActionCard action={data.nextAction} /> : null}
+          {data.nextAction ? (
+            <NextActionCard action={data.nextAction} userId={userId} />
+          ) : null}
 
           {data.comingUp.length > 0 ? (
             <section className="rounded-xl border border-border bg-card p-5 sm:p-6">
@@ -88,7 +92,16 @@ export function OverviewMain({ data }: OverviewMainProps) {
                           <Provenance {...item.provenance} className="mt-2" />
                         ) : null}
                       </div>
-                      <ExternalActionLink href={item.href} label={item.actionLabel} />
+                      <div className="flex shrink-0 flex-col items-end gap-2">
+                        <ExternalActionLink href={item.href} label={item.actionLabel} />
+                        {item.taskKey ? (
+                          <MarkTaskDoneButton
+                            userId={userId}
+                            taskKey={item.taskKey}
+                            variant="text"
+                          />
+                        ) : null}
+                      </div>
                     </div>
                   </li>
                 ))}
@@ -110,7 +123,40 @@ export function OverviewMain({ data }: OverviewMainProps) {
   )
 }
 
-function NextActionCard({ action }: { action: NonNullable<OverviewData["nextAction"]> }) {
+const primaryBtnClass =
+  "inline-flex items-center justify-center rounded-md bg-primary px-5 py-2.5 text-sm font-medium text-primary-foreground transition hover:bg-primary/90"
+
+const secondaryBtnClass =
+  "inline-flex items-center justify-center rounded-md border border-border-strong px-5 py-2.5 text-sm font-medium text-foreground transition hover:bg-muted"
+
+function NextPrimaryAction({ action }: { action: TodayNextAction }) {
+  if (action.primaryExternal || action.primaryHref.startsWith("http")) {
+    return (
+      <a
+        href={action.primaryHref}
+        target="_blank"
+        rel="noopener noreferrer"
+        className={primaryBtnClass}
+      >
+        {action.primaryLabel}
+        <span className="sr-only">(opens in a new tab)</span>
+      </a>
+    )
+  }
+  return (
+    <Link href={action.primaryHref} className={primaryBtnClass}>
+      {action.primaryLabel}
+    </Link>
+  )
+}
+
+function NextActionCard({
+  action,
+  userId,
+}: {
+  action: NonNullable<OverviewData["nextAction"]>
+  userId: string
+}) {
   return (
     <section className="rounded-xl border border-border border-l-4 border-l-accent bg-card p-5 sm:p-6">
       <p className="tp-eyebrow text-accent">Next</p>
@@ -132,16 +178,18 @@ function NextActionCard({ action }: { action: NonNullable<OverviewData["nextActi
       )}
       <Provenance {...action.provenance} className="mt-3" />
       <div className="mt-6 flex flex-wrap gap-3">
-        <Link
-          href={action.primaryHref}
-          className="rounded-md bg-primary px-5 py-2.5 text-sm font-medium text-primary-foreground transition hover:bg-primary/90"
-        >
-          {action.primaryLabel}
-        </Link>
-        {action.secondaryHref && action.secondaryLabel ? (
+        <NextPrimaryAction action={action} />
+        {action.taskKey ? (
+          <MarkTaskDoneButton userId={userId} taskKey={action.taskKey} variant="secondary" />
+        ) : action.secondaryHref && action.secondaryLabel ? (
+          <Link href={action.secondaryHref} className={secondaryBtnClass}>
+            {action.secondaryLabel}
+          </Link>
+        ) : null}
+        {action.taskKey && action.secondaryHref && action.secondaryLabel ? (
           <Link
             href={action.secondaryHref}
-            className="rounded-md border border-border-strong px-5 py-2.5 text-sm font-medium text-foreground transition hover:bg-muted"
+            className="self-center text-sm font-medium text-primary hover:text-accent"
           >
             {action.secondaryLabel}
           </Link>
@@ -189,15 +237,29 @@ function NeedsDateSection({ needsDate }: { needsDate: NonNullable<OverviewData["
       <p className="tp-eyebrow text-muted-foreground">Needs a date</p>
       <p className="mt-3 text-sm leading-relaxed text-foreground">{needsDate.headline}</p>
       <Provenance level="missing" what={needsDate.provenance.what} className="mt-3" />
-      <div className="mt-4 flex flex-wrap gap-3">
+      <div className="mt-5 flex flex-wrap items-center gap-3">
         {needsDate.officialUrl ? (
-          <ExternalActionLink href={needsDate.officialUrl} label="Open official page" />
+          <a
+            href={needsDate.officialUrl}
+            target="_blank"
+            rel="noopener noreferrer"
+            className="inline-flex items-center justify-center rounded-md bg-primary px-5 py-2.5 text-sm font-medium text-primary-foreground transition hover:bg-primary/90"
+          >
+            Open official page
+            <span className="sr-only">(opens in a new tab)</span>
+          </a>
         ) : null}
         <Link
-          href={needsDate.recordHref}
+          href="/sources"
           className="text-sm font-medium text-primary hover:text-accent"
         >
-          Record the date yourself
+          Why this is missing
+        </Link>
+        <Link
+          href={needsDate.recordHref}
+          className="text-sm text-muted-foreground underline-offset-4 hover:text-foreground hover:underline"
+        >
+          How to keep your own note
         </Link>
       </div>
     </section>

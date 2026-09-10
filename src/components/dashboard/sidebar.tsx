@@ -1,9 +1,7 @@
 "use client"
 
-import type { ComponentType } from "react"
 import Link from "next/link"
 import { usePathname, useRouter } from "next/navigation"
-import { useState } from "react"
 import {
   Home,
   Calendar,
@@ -12,7 +10,6 @@ import {
   PenLine,
   Settings,
   LogOut,
-  Menu,
   BookOpen,
 } from "lucide-react"
 import { createClient } from "@/lib/supabase/client"
@@ -27,14 +24,6 @@ import {
   isDashboardNavActive,
 } from "@/lib/dashboard-nav"
 import { shouldShowReadinessScore, type CompletenessLadderState } from "@/lib/completeness-ladder"
-import {
-  Sheet,
-  SheetContent,
-  SheetHeader,
-  SheetTitle,
-  SheetTrigger,
-} from "@/components/ui/sheet"
-import { buttonVariants } from "@/components/ui/button"
 import { Meter } from "@/components/ui/progress"
 
 const planNavIcons = {
@@ -66,7 +55,7 @@ function NavLink({
 }: {
   href: string
   label: string
-  icon: ComponentType<{ className?: string; strokeWidth?: number }>
+  icon: React.ComponentType<{ className?: string; strokeWidth?: number }>
   pathname: string
   onNavigate?: () => void
 }) {
@@ -207,7 +196,6 @@ function PathwayPanel({
 
 export function DashboardSidebar({
   initials,
-  routeLabel,
   nextDeadline,
   hasTargetUniversity,
   pathwayReadinessScore,
@@ -219,7 +207,6 @@ export function DashboardSidebar({
 }: SidebarProps) {
   const pathname = usePathname()
   const router = useRouter()
-  const [mobileOpen, setMobileOpen] = useState(false)
 
   async function handleSignOut() {
     const supabase = createClient()
@@ -235,7 +222,6 @@ export function DashboardSidebar({
           <Link
             href="/dashboard/settings"
             className="font-medium text-sidebar-primary underline-offset-2 hover:underline"
-            onClick={() => setMobileOpen(false)}
           >
             Settings
           </Link>{" "}
@@ -246,9 +232,15 @@ export function DashboardSidebar({
       ) : (
         <>
           <p className="line-clamp-2 text-xs font-medium text-sidebar-primary">{nextDeadline.title}</p>
-          <p className="mt-1 text-lg font-semibold tracking-tight text-sidebar-foreground">
-            {nextDeadline.daysUntil} {nextDeadline.daysUntil === 1 ? "day" : "days"} away
-          </p>
+          {nextDeadline.sourceCheckedAt ? (
+            <p className="mt-1 text-lg font-semibold tracking-tight text-sidebar-foreground">
+              {nextDeadline.daysUntil} {nextDeadline.daysUntil === 1 ? "day" : "days"} away
+            </p>
+          ) : (
+            <p className="mt-1 text-sm font-medium text-sidebar-foreground/85">
+              Date not yet checked
+            </p>
+          )}
           <p className="text-xs text-sidebar-foreground/70">{nextDeadline.dueDate}</p>
           {nextDeadline.officialUrl ? (
             <DeadlineOfficialLink
@@ -270,7 +262,6 @@ export function DashboardSidebar({
           <Link
             key={item.href}
             href={item.href}
-            onClick={() => setMobileOpen(false)}
             className={cn(
               "flex items-center gap-3 rounded-lg px-3 py-2 text-sm transition-colors duration-150",
               isActive
@@ -289,63 +280,13 @@ export function DashboardSidebar({
   return (
     <>
       <header className="fixed left-0 right-0 top-0 z-40 flex h-14 items-center justify-between border-b border-sidebar-border bg-sidebar px-3 md:hidden">
-        <div className="flex items-center gap-2">
-          <Sheet open={mobileOpen} onOpenChange={setMobileOpen}>
-            <SheetTrigger
-              className={cn(
-                buttonVariants({ variant: "ghost", size: "icon-sm" }),
-                "text-sidebar-foreground hover:bg-sidebar-accent"
-              )}
-              aria-label="Open menu"
-            >
-              <Menu className="h-5 w-5" strokeWidth={1.5} />
-            </SheetTrigger>
-            <SheetContent side="left" className="w-[min(100%,320px)] gap-0 p-0 sm:max-w-sm">
-              <SheetHeader className="border-b border-border p-4 text-left">
-                <SheetTitle className="flex items-center gap-2 font-sans font-semibold text-sidebar-foreground">
-                  <BrandOrb className="h-5 w-5" />
-                  {PRODUCT_NAME}
-                </SheetTitle>
-                <p className="font-heading text-xs text-sidebar-foreground/80">{routeLabel ?? "Transfer planner"}</p>
-              </SheetHeader>
-              <div className="flex flex-1 flex-col overflow-y-auto px-2 py-4">
-                <PathwayPanel
-                  targetSchoolName={targetSchoolName}
-                  targetMajor={targetMajor}
-                  currentSchoolName={currentSchoolName}
-                  expectedTransferTerm={expectedTransferTerm}
-                  pathwayReadinessScore={pathwayReadinessScore}
-                  completenessLadderState={completenessLadderState}
-                />
-                <div className="mt-4 px-1">
-                  <NavList pathname={pathname} onNavigate={() => setMobileOpen(false)} />
-                </div>
-                <div className="mt-4 px-1">{deadlineCard}</div>
-              </div>
-              <div className="mt-auto border-t border-border p-2">
-                {accountLinks}
-                <button
-                  type="button"
-                  onClick={() => {
-                    setMobileOpen(false)
-                    void handleSignOut()
-                  }}
-                  className="flex w-full items-center gap-3 rounded-lg px-3 py-2 text-sm text-sidebar-foreground/70 transition-colors duration-150 hover:bg-sidebar-accent hover:text-sidebar-accent-foreground"
-                >
-                  <LogOut className="h-4 w-4 shrink-0" strokeWidth={1.5} />
-                  Sign out
-                </button>
-              </div>
-            </SheetContent>
-          </Sheet>
-          <Link
-            href="/"
-            className="flex items-center gap-2 font-sans text-sm font-semibold tracking-tight text-sidebar-foreground transition-opacity duration-150 hover:opacity-90"
-          >
-            <BrandOrb className="h-5 w-5" />
-            {PRODUCT_NAME}
-          </Link>
-        </div>
+        <Link
+          href="/"
+          className="flex items-center gap-2 font-sans text-sm font-semibold tracking-tight text-sidebar-foreground transition-opacity duration-150 hover:opacity-90"
+        >
+          <BrandOrb className="h-5 w-5" />
+          {PRODUCT_NAME}
+        </Link>
         <div className="flex h-9 w-9 shrink-0 items-center justify-center rounded-full border border-sidebar-border bg-sidebar-accent text-xs font-medium text-sidebar-foreground">
           {initials}
         </div>

@@ -278,13 +278,13 @@ export function PlanClient({
   const journeySubtitle = `Every term on your path, in calendar order. ${calendarTermCount} term${calendarTermCount === 1 ? "" : "s"} scheduled.`
 
   return (
-    <div className="mx-auto max-w-6xl space-y-8 tp-stagger-children">
-      <div className="space-y-4">
+    <div className="mx-auto max-w-6xl space-y-6 tp-stagger-children">
+      <div className="space-y-3">
         <p className="tp-eyebrow text-accent">Plan</p>
-        <h1 className="font-heading text-balance text-3xl font-semibold tracking-tight text-foreground md:text-4xl">
+        <h1 className="font-heading text-balance text-3xl font-semibold tracking-tight text-foreground">
           Your plan
         </h1>
-        <p className="max-w-2xl text-sm leading-relaxed text-muted-foreground md:text-body">
+        <p className="max-w-2xl text-sm leading-relaxed text-muted-foreground">
           {journeySubtitle}
         </p>
         {(!checklistProfile.targetUniversityName || !checklistProfile.expectedTransferTerm) && (
@@ -300,7 +300,7 @@ export function PlanClient({
         )}
       </div>
 
-      <div className="flex flex-wrap items-center justify-between gap-4 border-b border-border pb-6">
+      <div className="flex flex-wrap items-center justify-between gap-3 border-b border-border pb-4">
         <span className="tp-eyebrow text-muted-foreground">Term-by-term plan</span>
         <Button
           type="button"
@@ -322,7 +322,7 @@ export function PlanClient({
         </p>
       ) : null}
 
-      <div className="grid gap-8 lg:grid-cols-[140px_minmax(0,1fr)_220px] lg:gap-10">
+      <div className="grid gap-6 lg:grid-cols-[132px_minmax(0,1fr)_200px] lg:gap-8">
         <div className="hidden lg:block">
           <PlanTermRail
             sections={planTerms.sections}
@@ -331,9 +331,9 @@ export function PlanClient({
           />
         </div>
 
-        <div className="min-w-0 space-y-4">
+        <div className="min-w-0 space-y-3">
           {planTerms.sections.length === 0 ? (
-            <div className="rounded-xl border border-border bg-card p-6 text-sm text-muted-foreground">
+            <div className="rounded-lg border border-dashed border-border bg-muted/30 px-5 py-8 text-sm text-muted-foreground">
               No courses yet.{" "}
               <button
                 type="button"
@@ -505,11 +505,13 @@ function PlanTermSectionCard({
     <section
       id={sectionDomId(section.termLabel)}
       className={cn(
-        "scroll-mt-24 rounded-xl border border-border bg-card shadow-sm",
-        section.temporalState === "current" && "border-accent/40 ring-1 ring-accent/20"
+        "scroll-mt-24 rounded-lg border border-border bg-card",
+        section.temporalState === "current" && "border-accent/50",
+        isUnscheduled && "border-dashed bg-muted/20",
+        isEntry && "border-border/80 bg-transparent"
       )}
     >
-      <div className="flex items-start justify-between gap-4 border-b border-border px-5 py-4">
+      <div className="flex items-start justify-between gap-3 border-b border-border/70 px-4 py-3">
         <div className="min-w-0">
           <div className="flex flex-wrap items-center gap-2">
             {canCollapse ? (
@@ -527,19 +529,19 @@ function PlanTermSectionCard({
                 <span className="sr-only">{isCollapsed ? "Expand" : "Collapse"} term</span>
               </button>
             ) : null}
-            <h2 className="font-heading text-lg font-semibold tracking-tight text-foreground">
+            <h2 className="font-heading text-base font-semibold tracking-tight text-foreground">
               {headerLabel}
               {section.temporalState === "current" ? (
                 <span className="ml-2 text-sm font-normal text-accent">· now</span>
               ) : null}
             </h2>
           </div>
-          <p className="mt-1 text-caption text-muted-foreground">{sectionTrailing(section)}</p>
+          <p className="mt-0.5 text-caption text-muted-foreground">{sectionTrailing(section)}</p>
         </div>
       </div>
 
       {isEntry ? (
-        <div className="space-y-3 px-5 py-4">
+        <div className="space-y-2 px-4 py-3">
           <p className="text-sm text-muted-foreground">
             Transfer target. Not editable — set your entry term in Settings.
           </p>
@@ -549,20 +551,24 @@ function PlanTermSectionCard({
           />
         </div>
       ) : isCollapsed ? (
-        <div className="px-5 py-4">
+        <div className="px-4 py-3">
           <p className="text-sm text-muted-foreground">
             All {section.courses.length} course{section.courses.length === 1 ? "" : "s"} complete.
             Expand to edit.
           </p>
         </div>
       ) : (
-        <div className="space-y-3 px-5 py-4">
+        <div className="space-y-2 px-4 py-3">
           {section.courses.length === 0 ? (
-            <p className="text-sm text-muted-foreground">No courses in this section yet.</p>
+            <p className="text-sm text-muted-foreground">
+              {isUnscheduled
+                ? "Nothing waiting to be scheduled. Add a course without a term and it will land here."
+                : "No courses in this term yet."}
+            </p>
           ) : (
-            <ul className="space-y-3">
+            <ul className="divide-y divide-border/60">
               {section.courses.map((course) => (
-                <li key={course.id}>
+                <li key={course.id} className="py-2.5 first:pt-0 last:pb-0">
                   <PlanCourseEditorRow
                     course={course}
                     savingId={savingId}
@@ -623,9 +629,9 @@ function PlanCourseEditorRow({
   const termName = course.semester_taken?.trim()
 
   return (
-    <div className="rounded-lg border border-border bg-background/60 p-3">
-      <div className="flex flex-col gap-3 sm:flex-row sm:items-start sm:justify-between">
-        <div className="min-w-0 space-y-2">
+    <div>
+      <div className="flex flex-col gap-2.5 sm:flex-row sm:items-start sm:justify-between">
+        <div className="min-w-0 space-y-1.5">
           <p className="text-sm font-medium text-foreground">{course.course_name}</p>
           <div className="flex flex-wrap items-center gap-2">
             <StatusBadge status={displayStatus} labelFrom="sm" />

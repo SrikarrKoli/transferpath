@@ -1,5 +1,5 @@
 import type { Metadata } from "next";
-import { Bricolage_Grotesque, Inter, JetBrains_Mono } from "next/font/google";
+import { Bricolage_Grotesque, Inter, JetBrains_Mono, Press_Start_2P } from "next/font/google";
 import "./globals.css";
 import { buildPageTitle, META_DESCRIPTION, PRODUCT_NAME } from "@/lib/brand";
 
@@ -19,6 +19,13 @@ const fontMono = JetBrains_Mono({
   subsets: ["latin"],
   weight: ["400", "500"],
   variable: "--font-jetbrains-mono",
+  display: "swap",
+});
+
+const fontArcade = Press_Start_2P({
+  subsets: ["latin"],
+  weight: "400",
+  variable: "--font-arcade",
   display: "swap",
 });
 
@@ -49,7 +56,10 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="en" className={`${fontDisplay.variable} ${fontInter.variable} ${fontMono.variable}`}>
+    <html
+      lang="en"
+      className={`${fontDisplay.variable} ${fontInter.variable} ${fontMono.variable} ${fontArcade.variable}`}
+    >
       <body className="min-h-screen bg-background font-sans antialiased">{children}</body>
     </html>
   );

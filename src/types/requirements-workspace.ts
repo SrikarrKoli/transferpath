@@ -10,6 +10,8 @@ export type RequirementWorkspaceItem = {
   ctaLabel?: string
   href?: string
   external?: boolean
+  /** Per-claim evidence line; shown under the row meta when present. */
+  provenanceBasis?: string
 }
 
 export type RequirementWorkspaceCategory = {

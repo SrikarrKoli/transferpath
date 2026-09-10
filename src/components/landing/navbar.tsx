@@ -1,42 +1,38 @@
 "use client"
 
 import Link from "next/link"
-import { buttonVariants } from "@/components/ui/button"
-import { cn } from "@/lib/utils"
-import { CTA_GET_STARTED, PRODUCT_NAME } from "@/lib/brand"
+import { PRODUCT_NAME } from "@/lib/brand"
 
 export function Navbar() {
   return (
-    <nav className="sticky top-0 z-50 w-full border-b border-border bg-background/90 backdrop-blur-sm">
-      <div className="mx-auto flex h-16 max-w-6xl items-center justify-between px-6">
+    <nav className="sticky top-0 z-50 w-full border-b border-border bg-background/95 backdrop-blur-sm">
+      <div className="mx-auto flex h-14 w-full max-w-6xl items-center justify-between px-6">
         <Link href="/" className="font-heading text-lg font-semibold tracking-tight text-foreground">
-          {PRODUCT_NAME}
-          <span className="text-accent">.</span>
+          {PRODUCT_NAME}.
         </Link>
-
-        <div className="hidden items-center gap-8 md:flex">
-          <Link href="#how-it-works" className="text-sm text-muted-foreground transition-colors hover:text-foreground">
-            How it works
+        <div className="hidden items-center gap-7 md:flex">
+          <Link href="#plan" className="text-sm text-muted-foreground hover:text-foreground">
+            The plan
           </Link>
-          <Link href="#schools" className="text-sm text-muted-foreground transition-colors hover:text-foreground">
-            Schools
+          <Link href="#deadlines" className="text-sm text-muted-foreground hover:text-foreground">
+            Deadlines
           </Link>
-          <Link href="#about" className="text-sm text-muted-foreground transition-colors hover:text-foreground">
-            Why {PRODUCT_NAME}
-          </Link>
-        </div>
-
-        <div className="flex items-center gap-4">
-          <Link
-            href="/login"
-            className="hidden text-sm text-muted-foreground transition-colors hover:text-foreground sm:block"
-          >
+          <Link href="/login" className="text-sm text-muted-foreground hover:text-foreground">
             Log in
           </Link>
-          <Link href="/onboarding" className={cn(buttonVariants({ size: "sm" }), "bg-primary text-primary-foreground hover:bg-primary/90")}>
-            {CTA_GET_STARTED}
+          <Link
+            href="/onboarding"
+            className="border border-foreground bg-foreground px-3 py-1.5 text-sm font-medium text-background hover:bg-foreground/90"
+          >
+            Get started
           </Link>
         </div>
+        <Link
+          href="/onboarding"
+          className="border border-foreground bg-foreground px-3 py-1.5 text-sm font-medium text-background md:hidden"
+        >
+          Get started
+        </Link>
       </div>
     </nav>
   )

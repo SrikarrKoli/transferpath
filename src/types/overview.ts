@@ -9,6 +9,8 @@ export type TodayComingUpItem = {
   href: string
   actionLabel: string
   provenance?: ProvenanceProps
+  /** When set, Today can mark this checklist task complete in place. */
+  taskKey?: string
 }
 
 export type TodayNextAction = {
@@ -18,9 +20,13 @@ export type TodayNextAction = {
   dueDetail: string | null
   primaryHref: string
   primaryLabel: string
+  /** True when primaryHref is an absolute http(s) URL. */
+  primaryExternal?: boolean
   secondaryHref?: string
   secondaryLabel?: string
   provenance: ProvenanceProps
+  /** When set, Today shows Mark as done for this checklist task. */
+  taskKey?: string
 }
 
 export type TodayReadinessInput = {

@@ -86,6 +86,19 @@ function dueDetailForDeadline(next: {
   return null
 }
 
+function deadlinePrimaryLabel(next: NonNullable<NextDeadline>): string {
+  const title = next.title.toLowerCase()
+  if (next.category === "financial_aid" || /fafsa|tasfa/.test(title)) {
+    return "Open FAFSA"
+  }
+  if (next.category === "application" || /applytexas|application/.test(title)) {
+    return "Open application page"
+  }
+  if (next.category === "housing") return "Open housing page"
+  if (next.category === "registration") return "Open registration page"
+  return "Open official page"
+}
+
 function buildNextFromDeadline(
   next: NonNullable<NextDeadline>,
   targetSchoolName: string | null
@@ -95,6 +108,8 @@ function buildNextFromDeadline(
       ? "Statewide milestone"
       : `${targetSchoolName?.trim() || "Target school"} admissions`
 
+  const officialUrl = next.officialUrl?.trim() || null
+
   return {
     title: next.title,
     dateLabel: shortDateLabel(next.dueDateIso),
@@ -103,28 +118,33 @@ function buildNextFromDeadline(
       categoryMeta(next.category),
     ],
     dueDetail: dueDetailForDeadline(next),
-    primaryHref: next.officialUrl ?? "/dashboard/requirements",
-    primaryLabel: "Open requirements",
-    secondaryHref: "/dashboard/deadlines",
-    secondaryLabel: "Tasks & deadlines",
+    primaryHref: officialUrl ?? "/dashboard/deadlines",
+    primaryLabel: officialUrl ? deadlinePrimaryLabel(next) : "View in Tasks & deadlines",
+    primaryExternal: Boolean(officialUrl),
+    secondaryHref: officialUrl ? "/dashboard/deadlines" : undefined,
+    secondaryLabel: officialUrl ? "Tasks & deadlines" : undefined,
     provenance: deadlineProvenance(next, sourceName),
   }
 }
 
 function buildNextFromChecklistTask(task: {
+  task_key: string
   text: string
   action?: string
   actionHref?: string
 }): TodayNextAction {
+  const href = task.actionHref ?? "/dashboard/deadlines"
   return {
     title: task.text,
     dateLabel: null,
     scopeChips: ["Your task"],
     dueDetail: null,
-    primaryHref: task.actionHref ?? "/dashboard/deadlines",
+    primaryHref: href,
     primaryLabel: task.action?.replace(/\s*→\s*$/, "").trim() || "Open task",
+    primaryExternal: href.startsWith("http"),
     secondaryHref: "/dashboard/deadlines",
-    secondaryLabel: "Tasks & deadlines",
+    secondaryLabel: "See all tasks",
+    taskKey: task.task_key,
     provenance: {
       level: "estimated",
       basis: "Your task · no institutional date attached",
@@ -143,18 +163,20 @@ function buildComingUpFromDeadline(
       ? "Statewide milestone"
       : `${targetSchoolName?.trim() || "Target school"} admissions`
 
+  const officialUrl = row.officialUrl?.trim() || null
   return {
     dateLabel: shortDateLabel(row.due_date),
     title: row.title,
     meta: categoryMeta(row.category),
     scopeChip: scopeChipLabel(row.timelineScope, targetSchoolName),
-    href: row.officialUrl ?? "/dashboard/requirements",
-    actionLabel: "Open",
+    href: officialUrl ?? "/dashboard/deadlines",
+    actionLabel: officialUrl ? "Open official page" : "View",
     provenance: deadlineProvenance(row, sourceName),
   }
 }
 
 function buildComingUpFromTask(task: {
+  task_key: string
   text: string
   action?: string
   actionHref?: string
@@ -165,6 +187,7 @@ function buildComingUpFromTask(task: {
     meta: "Your task · no institutional date attached",
     href: task.actionHref ?? "/dashboard/deadlines",
     actionLabel: task.action?.replace(/\s*→\s*$/, "").trim() || "Open",
+    taskKey: task.task_key,
   }
 }
 
@@ -174,7 +197,13 @@ function resolveIncompleteTasks(
   derived: ChecklistDerivedInput
 ) {
   const sections = buildTaskDefinitions(checklistProfile)
-  const out: { text: string; action?: string; actionHref?: string; priority: number }[] = []
+  const out: {
+    task_key: string
+    text: string
+    action?: string
+    actionHref?: string
+    priority: number
+  }[] = []
 
   for (const section of sections) {
     for (const task of section.tasks) {
@@ -187,6 +216,7 @@ function resolveIncompleteTasks(
             ? 60
             : 40
       out.push({
+        task_key: task.task_key,
         text: task.text,
         action: task.action,
         actionHref: task.actionHref,

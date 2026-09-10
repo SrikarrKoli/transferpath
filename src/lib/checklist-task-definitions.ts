@@ -148,11 +148,19 @@ export function buildTaskDefinitions(p: ChecklistProfileSummary): ChecklistSecti
     {
       title: "Application Tasks",
       tasks: [
-        { task_key: "create_applytexas", text: "Create ApplyTexas account", status: "not-started" },
+        {
+          task_key: "create_applytexas",
+          text: "Create ApplyTexas account",
+          status: "not-started",
+          action: "Open ApplyTexas →",
+          actionHref: "https://www.goapplytexas.org",
+        },
         {
           task_key: "research_requirements",
           text: `Research ${tgt} ${major} requirements`,
           status: "not-started",
+          action: "Open requirements →",
+          actionHref: "/dashboard/requirements",
         },
         {
           task_key: "write_essay_part1",

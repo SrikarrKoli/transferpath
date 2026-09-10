@@ -65,7 +65,11 @@ export default function LoginPage() {
 function LoginPageContent() {
   const router = useRouter()
   const searchParams = useSearchParams()
-  const [email, setEmail] = useState(() => searchParams.get("email") ?? "")
+  // Prefer the query string until the student edits the field — avoids copying
+  // searchParams into useState on init (a common hydration mismatch).
+  const emailFromQuery = searchParams.get("email") ?? ""
+  const [emailDraft, setEmailDraft] = useState<string | null>(null)
+  const email = emailDraft ?? emailFromQuery
   const [password, setPassword] = useState("")
   const [showPassword, setShowPassword] = useState(false)
   const [loading, setLoading] = useState(false)
@@ -281,7 +285,7 @@ function LoginPageContent() {
                 type="email"
                 autoComplete="email"
                 value={email}
-                onChange={(e) => setEmail(e.target.value)}
+                onChange={(e) => setEmailDraft(e.target.value)}
                 placeholder="you@example.com"
                 required
                 className="h-10 w-full rounded-lg border border-border bg-background px-3 text-sm text-foreground transition-colors placeholder:text-muted-foreground focus:border-primary focus:outline-none focus:ring-2 focus:ring-ring/50"
