@@ -1,5 +1,6 @@
 import { createClient } from "@/lib/supabase/server"
 import { redirect } from "next/navigation"
+import { ImmersiveBuildingShell } from "@/components/campus-ui/immersive-building-shell"
 import { EssayClient } from "@/components/dashboard/essay-client"
 import type { ChecklistProfileSummary } from "@/lib/checklist-task-definitions"
 
@@ -56,10 +57,12 @@ export default async function EssayPage() {
   }
 
   return (
-    <EssayClient
-      userId={user.id}
-      initialEssayMap={essayMap}
-      profile={checklistProfile}
-    />
+    <ImmersiveBuildingShell buildingId="library">
+      <EssayClient
+        userId={user.id}
+        initialEssayMap={essayMap}
+        profile={checklistProfile}
+      />
+    </ImmersiveBuildingShell>
   )
 }

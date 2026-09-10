@@ -1,5 +1,6 @@
 import { createClient } from "@/lib/supabase/server"
 import { redirect } from "next/navigation"
+import { ImmersiveBuildingShell } from "@/components/campus-ui/immersive-building-shell"
 import { DashboardHomeView } from "@/components/dashboard/dashboard-home-view"
 import type { UserCourseRow } from "@/lib/get-course-requirement-status"
 import { getCachedNextDeadline, getCachedRequirementDeadlines } from "@/lib/dashboard-data"
@@ -20,7 +21,7 @@ export default async function DashboardPage() {
       `
     *,
     current_university:current_university_id(name),
-    target_university:target_university_id(name)
+    target_university:target_university_id(name, website, deadline_source_url)
   `
     )
     .eq("id", user.id)
@@ -72,12 +73,6 @@ export default async function DashboardPage() {
     checklistRows.map((r) => [r.task_key, r.is_complete === true])
   )
 
-  const recommendationLettersDone =
-    checklistCompleteByTaskKey.request_rec_letter_1 === true &&
-    checklistCompleteByTaskKey.request_rec_letter_2 === true
-  const officialTranscriptRequested =
-    checklistCompleteByTaskKey.request_transcript === true
-
   const userCourseRows: UserCourseRow[] = userCourses.map((r) => ({
     course_name: r.course_name,
     status: r.status,
@@ -110,15 +105,19 @@ export default async function DashboardPage() {
     (profile?.target_university as { name: string } | null)?.name ?? null
   const transferTerm = profile?.expected_transfer_term ?? null
 
-  const hour = new Date().getHours()
-  const greeting =
-    hour < 12 ? "Good morning" : hour < 17 ? "Good afternoon" : "Good evening"
+  const targetUniversity = profile?.target_university as {
+    name: string
+    website: string | null
+    deadline_source_url: string | null
+  } | null
 
   const overviewData = buildOverviewData({
     displayName,
-    greeting,
     currentSchoolName,
     targetSchoolName,
+    targetUniversityId: targetId,
+    targetWebsite: targetUniversity?.website ?? null,
+    deadlineSourceUrl: targetUniversity?.deadline_source_url ?? null,
     targetMajor: profile?.target_major ?? null,
     transferTerm,
     overallReadinessScore: readiness.score ?? 0,
@@ -133,10 +132,13 @@ export default async function DashboardPage() {
     gpa: profile?.gpa ?? null,
     creditsCompleted: profile?.credits_completed ?? null,
     essayStarted,
-    recommendationLettersDone,
-    officialTranscriptRequested,
     hasTargetUniversity,
+    courseCount: userCourses.length,
   })
 
-  return <DashboardHomeView overviewData={overviewData} />
+  return (
+    <ImmersiveBuildingShell buildingId="union">
+      <DashboardHomeView overviewData={overviewData} userId={user.id} />
+    </ImmersiveBuildingShell>
+  )
 }

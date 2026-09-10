@@ -7,6 +7,7 @@ import { Eye, EyeOff, Loader2, X, Check } from "lucide-react"
 import { PRODUCT_NAME, TAGLINE, TRUST_LINE } from "@/lib/brand"
 import { createClient } from "@/lib/supabase/client"
 import { hasSupabasePublicEnv, supabasePublicEnvIssue } from "@/lib/supabase/env"
+import { safeCampusReturnPath } from "@/lib/campus-immersion"
 
 function MiniDashboardPreview() {
   return (
@@ -139,8 +140,9 @@ function LoginPageContent() {
 
     setShowToast(true)
     router.refresh()
+    const next = safeCampusReturnPath(searchParams.get("next")) ?? "/dashboard"
     setTimeout(() => {
-      window.location.assign("/dashboard")
+      window.location.assign(next)
     }, 800)
   }
 

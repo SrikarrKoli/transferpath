@@ -52,6 +52,8 @@ export async function middleware(request: NextRequest) {
   if (!isPublic && pathname.startsWith("/dashboard") && !user) {
     const url = request.nextUrl.clone()
     url.pathname = "/login"
+    url.search = ""
+    url.searchParams.set("next", pathname)
     return NextResponse.redirect(url)
   }
 

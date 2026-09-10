@@ -3,7 +3,7 @@
 import dynamic from "next/dynamic"
 import Link from "next/link"
 import { useRouter } from "next/navigation"
-import { useState } from "react"
+import { useEffect, useState } from "react"
 import { CTA_GET_STARTED, PRODUCT_NAME } from "@/lib/brand"
 import { CAMPUS_BUILDINGS, type BuildingId } from "./campus-data"
 
@@ -35,6 +35,23 @@ export function CampusShell() {
     if (b) router.push(b.href)
   }
 
+  useEffect(() => {
+    const onKey = (e: KeyboardEvent) => {
+      if (e.key !== "Enter") return
+      if (e.target instanceof HTMLElement) {
+        const tag = e.target.tagName
+        if (tag === "INPUT" || tag === "TEXTAREA" || tag === "BUTTON" || tag === "A" || tag === "SELECT") {
+          return
+        }
+      }
+      if (!selected) return
+      const b = CAMPUS_BUILDINGS.find((x) => x.id === selected)
+      if (b) router.push(b.href)
+    }
+    window.addEventListener("keydown", onKey)
+    return () => window.removeEventListener("keydown", onKey)
+  }, [selected, router])
+
   return (
     <div className="campus-root flex h-[100dvh] overflow-hidden bg-[#a8d8e6] text-[#1a2332]">
       <aside className="relative z-20 hidden w-[18.5rem] shrink-0 flex-col border-r border-[#1a2332]/08 bg-[#f7f2e8] px-6 py-6 lg:flex">
@@ -46,7 +63,7 @@ export function CampusShell() {
           A campus you can actually walk.
         </h1>
         <p className="mt-2 text-sm leading-relaxed text-[#1a2332]/58">
-          Deadlines, courses, and essays — click a building on the map.
+          Deadlines, courses, and essays — click a building, then enter the hall.
         </p>
         <p className="mt-8 text-[11px] font-semibold uppercase tracking-[0.16em] text-[#1a2332]/38">Campus directory</p>
         <ul className="mt-2 -mx-2 min-h-0 flex-1 overflow-auto">
@@ -57,6 +74,7 @@ export function CampusShell() {
                 <button
                   type="button"
                   onClick={() => selectBuilding(b.id)}
+                  onDoubleClick={() => enterBuilding(b.id)}
                   onMouseEnter={() => setHovered(b.id)}
                   onMouseLeave={() => setHovered(null)}
                   className={`flex w-full items-baseline gap-3 rounded-md px-2 py-2 text-left ${
@@ -75,7 +93,9 @@ export function CampusShell() {
             )
           })}
         </ul>
-        <p className="pt-4 text-xs text-[#1a2332]/42">Drag to look around · Scroll to zoom</p>
+        <p className="pt-4 text-xs text-[#1a2332]/42">
+          Click to select · Double-click or Enter to walk in · Drag to look around
+        </p>
       </aside>
 
       <div className="relative min-w-0 flex-1">
@@ -115,6 +135,7 @@ export function CampusShell() {
                   key={b.id}
                   type="button"
                   onClick={() => selectBuilding(b.id)}
+                  onDoubleClick={() => enterBuilding(b.id)}
                   className={`shrink-0 whitespace-nowrap rounded-full px-3 py-1.5 text-xs font-medium ${
                     on ? "bg-[#1a2332] text-[#f7f2e8]" : "bg-[#f7f2e8]/90 text-[#1a2332]/80"
                   }`}
@@ -131,7 +152,7 @@ export function CampusShell() {
             <div className="rounded-full bg-[#1a2332]/90 px-4 py-2 text-sm font-medium text-[#f7f2e8]">
               {live.name}
               <span className="mx-2 opacity-40">·</span>
-              <span className="opacity-80">{live.feature}</span>
+              <span className="opacity-80">Click to select · double-click to enter</span>
             </div>
           </div>
         ) : null}
@@ -151,21 +172,25 @@ export function CampusShell() {
                 <h2 className="mt-1 font-heading text-xl font-semibold tracking-tight sm:text-2xl">{dock.name}</h2>
                 <p className="mt-1 max-w-xl text-[14px] leading-relaxed text-[#1a2332]/68">{dock.blurb}</p>
               </div>
-              <div className="flex shrink-0 gap-2">
-                <button
-                  type="button"
-                  onClick={() => enterBuilding(dock.id)}
-                  className="rounded-full bg-[#b85c38] px-5 py-3 text-sm font-semibold text-[#f7f2e8] hover:bg-[#a34f2f]"
-                >
-                  {dock.cta}
-                </button>
-                <button
-                  type="button"
-                  onClick={() => setSelected(null)}
-                  className="rounded-full px-4 py-3 text-sm font-medium text-[#1a2332]/55 hover:bg-[#1a2332]/06"
-                >
-                  Close
-                </button>
+              <div className="flex shrink-0 flex-col items-stretch gap-1.5 sm:items-end">
+                <div className="flex gap-2">
+                  <Link
+                    href={dock.href}
+                    className="rounded-full bg-[#b85c38] px-5 py-3 text-center text-sm font-semibold text-[#f7f2e8] hover:bg-[#a34f2f]"
+                  >
+                    {dock.cta}
+                  </Link>
+                  <button
+                    type="button"
+                    onClick={() => setSelected(null)}
+                    className="rounded-full px-4 py-3 text-sm font-medium text-[#1a2332]/55 hover:bg-[#1a2332]/06"
+                  >
+                    Close
+                  </button>
+                </div>
+                <p className="text-center text-[11px] text-[#1a2332]/48 sm:text-right">
+                  or double-click the building
+                </p>
               </div>
             </div>
           </div>

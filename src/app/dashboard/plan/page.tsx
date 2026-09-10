@@ -1,0 +1,98 @@
+import { createClient } from "@/lib/supabase/server"
+import { redirect } from "next/navigation"
+import { ImmersiveBuildingShell } from "@/components/campus-ui/immersive-building-shell"
+import { PlanClient, type PlanCourseRow } from "@/components/dashboard/plan-client"
+import type { ChecklistProfileSummary } from "@/lib/checklist-task-definitions"
+import { getCachedNextDeadline } from "@/lib/dashboard-data"
+import { getCachedDashboardReadiness } from "@/lib/dashboard-readiness-loader"
+import { getCompletenessLadderState } from "@/lib/completeness-ladder"
+
+export default async function PlanPage() {
+  const supabase = await createClient()
+  const {
+    data: { user },
+  } = await supabase.auth.getUser()
+  if (!user) redirect("/login")
+
+  const { data: profile, error: profileError } = await supabase
+    .from("user_profiles")
+    .select(
+      `
+    *,
+    current_university:current_university_id(name),
+    target_university:target_university_id(name)
+  `
+    )
+    .eq("id", user.id)
+    .single()
+
+  if (profileError) {
+    console.error("[dashboard/plan] failed to fetch profile:", profileError.message)
+  }
+
+  const targetId = profile?.target_university_id ?? null
+  const expectedTerm = profile?.expected_transfer_term ?? null
+
+  const [
+    { data: rawCourses, error: rawCoursesError },
+    { count: courseCount },
+    nextDeadline,
+    readiness,
+  ] = await Promise.all([
+    supabase
+      .from("user_courses")
+      .select("id, course_name, status, semester_taken, canonical_course_id")
+      .eq("user_id", user.id)
+      .order("course_name", { ascending: true }),
+    supabase
+      .from("user_courses")
+      .select("id", { count: "exact", head: true })
+      .eq("user_id", user.id),
+    getCachedNextDeadline(targetId, expectedTerm),
+    getCachedDashboardReadiness(user.id),
+  ])
+
+  if (rawCoursesError) {
+    console.error("[dashboard/plan] failed to fetch user_courses:", rawCoursesError.message)
+  }
+
+  const coursesRaw = rawCourses ?? []
+
+  const courses: PlanCourseRow[] = coursesRaw.map((r) => ({
+    id: r.id,
+    course_name: r.course_name,
+    status: (r.status as PlanCourseRow["status"]) ?? "planned",
+    semester_taken: r.semester_taken,
+    canonical_course_id: r.canonical_course_id,
+  }))
+
+  const checklistProfile: ChecklistProfileSummary = {
+    currentUniversityName:
+      (profile?.current_university as { name: string } | null)?.name ?? null,
+    targetUniversityName:
+      (profile?.target_university as { name: string } | null)?.name ?? null,
+    targetMajor: profile?.target_major ?? null,
+    fieldOfStudy: profile?.field_of_study ?? null,
+    expectedTransferTerm: profile?.expected_transfer_term ?? null,
+  }
+
+  const completenessLadderState = getCompletenessLadderState({
+    hasTargetSchool: targetId != null,
+    hasExpectedTransferTerm: Boolean(expectedTerm?.trim()),
+    courseCount: courseCount ?? 0,
+    nearestDeadlineDaysUntil: nextDeadline?.daysUntil ?? null,
+  })
+
+  return (
+    <ImmersiveBuildingShell buildingId="classroom">
+      <PlanClient
+        userId={user.id}
+        initialCourses={courses}
+        checklistProfile={checklistProfile}
+        completenessLadderState={completenessLadderState}
+        pathwayReadinessScore={readiness.score}
+        creditsCompleted={profile?.credits_completed ?? null}
+      />
+    </ImmersiveBuildingShell>
+  )
+}

@@ -42,7 +42,7 @@ export const CAMPUS_BUILDINGS: CampusBuilding[] = [
     feature: "Deadlines",
     blurb: "The heart of campus for application windows and priority dates from official sources.",
     href: "/dashboard/deadlines",
-    cta: "Open deadlines",
+    cta: "Enter Clock Tower",
     x: 0,
     z: -0.35,
     proof: {
@@ -62,7 +62,7 @@ export const CAMPUS_BUILDINGS: CampusBuilding[] = [
     feature: "Your situation",
     blurb: "Grand admin hall. Set school, target, major, and GPA to unlock the rest of campus.",
     href: "/onboarding",
-    cta: "Start onboarding",
+    cta: "Enter Counselor Hall",
     x: 4.15,
     z: -0.55,
     proof: {
@@ -82,7 +82,7 @@ export const CAMPUS_BUILDINGS: CampusBuilding[] = [
     feature: "Essays & materials",
     blurb: "Columned reading hall for drafting transfer essays and keeping writing in one place.",
     href: "/dashboard/essay",
-    cta: "Open writing desk",
+    cta: "Enter Library",
     x: -0.15,
     z: 3.25,
     proof: {
@@ -99,7 +99,7 @@ export const CAMPUS_BUILDINGS: CampusBuilding[] = [
     feature: "Semester roadmap",
     blurb: "Academic wings for planning courses term by term against real requirements.",
     href: "/dashboard/plan",
-    cta: "Open semester plan",
+    cta: "Enter Classrooms",
     x: -1.85,
     z: -1.75,
     proof: {
@@ -119,7 +119,7 @@ export const CAMPUS_BUILDINGS: CampusBuilding[] = [
     feature: "Requirements",
     blurb: "Records hall for credits, GPA floors, and what’s still open.",
     href: "/dashboard/requirements",
-    cta: "Open requirements",
+    cta: "Enter Registrar",
     x: 4.55,
     z: 2.55,
     proof: {
@@ -139,7 +139,7 @@ export const CAMPUS_BUILDINGS: CampusBuilding[] = [
     feature: "Personal checklist",
     blurb: "Residence halls for transcripts, rec letters, and personal tasks that don’t live in a syllabus.",
     href: "/dashboard/checklist",
-    cta: "Open checklist",
+    cta: "Enter Dorms",
     x: -4.15,
     z: -2.15,
     proof: {
@@ -159,7 +159,7 @@ export const CAMPUS_BUILDINGS: CampusBuilding[] = [
     feature: "Honest readiness",
     blurb: "Rec complex and courts to train your planning score — not an admission prediction.",
     href: "/dashboard/competitiveness",
-    cta: "Open path readiness",
+    cta: "Enter Rec Center",
     x: 3.15,
     z: 3.85,
     proof: {
@@ -176,7 +176,7 @@ export const CAMPUS_BUILDINGS: CampusBuilding[] = [
     feature: "Today overview",
     blurb: "Cafe patio and union. Today’s hub for progress and next actions.",
     href: "/dashboard",
-    cta: "Open today",
+    cta: "Enter Student Union",
     x: -4.05,
     z: 1.05,
     proof: {
