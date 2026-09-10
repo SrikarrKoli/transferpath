@@ -48,7 +48,7 @@ export function CampusScene({
     const renderer = new THREE.WebGLRenderer({ antialias: true, alpha: true })
     renderer.setPixelRatio(Math.min(window.devicePixelRatio || 1, 2))
     renderer.setSize(w0, h0)
-    renderer.setClearColor(0x6a7f52, 1)
+    renderer.setClearColor(0xf4f1ea, 1)
     renderer.shadowMap.enabled = true
     renderer.shadowMap.type = THREE.PCFSoftShadowMap
     mount.appendChild(renderer.domElement)
@@ -66,10 +66,10 @@ export function CampusScene({
       0.1,
       200
     )
-    const orbit = { theta: Math.PI / 4.2, phi: 0.72, radius: 32 }
-    const look = new THREE.Vector3(0, 0.1, 0)
-    const lookGoal = new THREE.Vector3(0, 0.1, 0)
-    const radiusGoal = { v: 32 }
+    const orbit = { theta: Math.PI / 4.15, phi: 0.68, radius: 36 }
+    const look = new THREE.Vector3(0, 0.2, 0)
+    const lookGoal = new THREE.Vector3(0, 0.2, 0)
+    const radiusGoal = { v: 36 }
 
     scene.add(new THREE.AmbientLight(0xfff4e6, 0.55))
     const sun = new THREE.DirectionalLight(0xffe2bf, 1.95)
@@ -100,7 +100,7 @@ export function CampusScene({
       )
       camera.lookAt(look)
       const a = mount.clientWidth / mount.clientHeight
-      const f = orbit.radius * 0.3
+      const f = orbit.radius * 0.32
       camera.left = -f * a
       camera.right = f * a
       camera.top = f
@@ -111,8 +111,8 @@ export function CampusScene({
     const focusBuilding = (id: BuildingId) => {
       const b = CAMPUS_BUILDINGS.find((x) => x.id === id)
       if (!b) return
-      lookGoal.set(b.x * 0.22, 0.4, b.z * 0.22)
-      radiusGoal.v = id === "quad" ? 32 : 28
+      lookGoal.set(b.x * 0.35, 0.6, b.z * 0.35)
+      radiusGoal.v = id === "quad" ? 34 : 26
     }
 
     const raycaster = new THREE.Raycaster()
@@ -180,7 +180,7 @@ export function CampusScene({
     }
     const onWheel = (e: WheelEvent) => {
       e.preventDefault()
-      radiusGoal.v = THREE.MathUtils.clamp(radiusGoal.v + e.deltaY * 0.03, 18, 36)
+      radiusGoal.v = THREE.MathUtils.clamp(radiusGoal.v + e.deltaY * 0.03, 18, 48)
     }
 
     mount.addEventListener("pointermove", onMove)
