@@ -15,26 +15,26 @@ function MiniDashboardPreview() {
         <div className="h-2 w-2 rounded-full bg-primary" />
         <div className="flex min-w-0 flex-col">
           <span className="text-xs font-medium text-foreground">Your path on {PRODUCT_NAME}</span>
-          <span className="text-[9px] text-muted-foreground">Example preview (not your data)</span>
+          <span className="text-micro text-muted-foreground">Example preview (not your data)</span>
         </div>
       </div>
       <div className="space-y-2">
         <div className="flex items-center gap-2">
-          <span className="w-16 shrink-0 text-[10px] text-muted-foreground">Spring 2026</span>
+          <span className="w-16 shrink-0 text-micro text-muted-foreground">Spring 2026</span>
           <div className="flex h-6 flex-1 items-center rounded border border-chart-2/30 bg-chart-2/20 px-2">
-            <span className="text-[10px] font-medium text-chart-2">4 courses · 13 cr</span>
+            <span className="text-micro font-medium text-chart-2">4 courses · 13 cr</span>
           </div>
         </div>
         <div className="flex items-center gap-2">
-          <span className="w-16 shrink-0 text-[10px] text-muted-foreground">Fall 2026</span>
+          <span className="w-16 shrink-0 text-micro text-muted-foreground">Fall 2026</span>
           <div className="flex h-6 flex-1 items-center rounded border border-chart-3/30 bg-chart-3/20 px-2">
-            <span className="text-[10px] font-medium text-chart-3">5 courses · 15 cr</span>
+            <span className="text-micro font-medium text-chart-3">5 courses · 15 cr</span>
           </div>
         </div>
         <div className="flex items-center gap-2">
-          <span className="w-16 shrink-0 text-[10px] text-muted-foreground">Spring 2027</span>
+          <span className="w-16 shrink-0 text-micro text-muted-foreground">Spring 2027</span>
           <div className="flex h-6 flex-1 items-center rounded border border-primary/30 bg-primary/15 px-2">
-            <span className="text-[10px] font-medium text-primary">Apply · Deadline Aug 15</span>
+            <span className="text-micro font-medium text-primary">Apply · Deadline Aug 15</span>
           </div>
         </div>
       </div>
@@ -48,7 +48,7 @@ function MiniDashboardPreview() {
           <rect width="100" height="6" rx="3" className="fill-muted" />
           <rect width="72" height="6" rx="3" className="fill-primary" />
         </svg>
-        <span className="text-[10px] text-muted-foreground">72% complete</span>
+        <span className="text-micro text-muted-foreground">72% complete</span>
       </div>
     </div>
   )
@@ -65,7 +65,11 @@ export default function LoginPage() {
 function LoginPageContent() {
   const router = useRouter()
   const searchParams = useSearchParams()
-  const [email, setEmail] = useState(() => searchParams.get("email") ?? "")
+  // Prefer the query string until the student edits the field — avoids copying
+  // searchParams into useState on init (a common hydration mismatch).
+  const emailFromQuery = searchParams.get("email") ?? ""
+  const [emailDraft, setEmailDraft] = useState<string | null>(null)
+  const email = emailDraft ?? emailFromQuery
   const [password, setPassword] = useState("")
   const [showPassword, setShowPassword] = useState(false)
   const [loading, setLoading] = useState(false)
@@ -166,7 +170,7 @@ function LoginPageContent() {
           <ul className="space-y-3">
             {[
               "Personalized semester-by-semester roadmap",
-              "Tracks every deadline and requirement",
+              "Keeps your deadlines and requirements in one place",
               "Path readiness you can act on—not hype",
             ].map((item) => (
               <li key={item} className="flex items-start gap-3">
@@ -281,7 +285,7 @@ function LoginPageContent() {
                 type="email"
                 autoComplete="email"
                 value={email}
-                onChange={(e) => setEmail(e.target.value)}
+                onChange={(e) => setEmailDraft(e.target.value)}
                 placeholder="you@example.com"
                 required
                 className="h-10 w-full rounded-lg border border-border bg-background px-3 text-sm text-foreground transition-colors placeholder:text-muted-foreground focus:border-primary focus:outline-none focus:ring-2 focus:ring-ring/50"

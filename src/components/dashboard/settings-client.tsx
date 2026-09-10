@@ -61,8 +61,8 @@ interface SettingsClientProps {
 function SectionHeader({ title, subtitle }: { title: string; subtitle?: string }) {
   return (
     <div className="mb-4">
-      <h3 className="text-[15px] font-medium text-foreground">{title}</h3>
-      {subtitle && <p className="mt-0.5 text-[13px] text-muted-foreground">{subtitle}</p>}
+      <h3 className="text-body font-medium text-foreground">{title}</h3>
+      {subtitle && <p className="mt-0.5 text-caption text-muted-foreground">{subtitle}</p>}
     </div>
   )
 }
@@ -559,13 +559,13 @@ export function SettingsClient({
                 <div className="rounded-xl border border-border bg-muted/60 p-4">
                   <p className="text-sm font-medium text-foreground mb-1">Courses</p>
                   <p className="text-sm text-muted-foreground mb-3">
-                    Courses are managed from onboarding and your timeline.
+                    Courses are managed from onboarding and your plan.
                   </p>
                   <Link
-                    href="/dashboard/timeline"
+                    href="/dashboard/plan"
                     className="text-sm text-primary font-medium hover:underline"
                   >
-                    Open timeline →
+                    Open plan →
                   </Link>
                 </div>
 
@@ -788,13 +788,17 @@ export function SettingsClient({
               <div>
                 <SectionHeader
                   title="Help & feedback"
-                  subtitle={`${PRODUCT_NAME} is a planning tool — always verify dates and requirements on official sources.`}
+                  subtitle={`${PRODUCT_NAME} is a planning tool — see Sources for what we hold and how we hold it.`}
                 />
                 <div className="space-y-4 text-sm text-foreground">
                   <p className="text-muted-foreground">
                     Deadlines, insights, and checklist items in this app are for organization only.
                     They don’t replace your target institution’s admissions office, registrar, or
-                    financial aid communications.
+                    financial aid communications.{" "}
+                    <Link href="/sources" className="text-primary hover:underline">
+                      Sources
+                    </Link>{" "}
+                    lists what deadline data we hold and how we hold it.
                   </p>
                   <div>
                     <p className="font-medium mb-2">Official resources</p>

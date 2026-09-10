@@ -41,7 +41,7 @@ export function OnboardingStep1({ data, updateData, onNext }: Props) {
               <div className="group relative">
                 <Info className="h-4 w-4 text-muted-foreground cursor-help" />
                 <div className="absolute bottom-full left-1/2 -translate-x-1/2 mb-2 w-64 p-2 bg-foreground text-white text-xs rounded-lg opacity-0 group-hover:opacity-100 transition-opacity pointer-events-none z-10">
-                  CAP is UT Austin&apos;s Coordinated Admission Program — guaranteed admission via a partner school.
+                  CAP is UT Austin&apos;s Coordinated Admission Program. If you complete its terms at a partner school, admission is guaranteed for some majors — check whether yours is included.
                 </div>
               </div>
             </div>

@@ -4,6 +4,7 @@ import { useState } from "react"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
+import { Meter } from "@/components/ui/progress"
 import {
   Popover,
   PopoverContent,
@@ -99,12 +100,17 @@ export function OnboardingStep3({ data, updateData, onNext, onBack }: Props) {
     return "var(--primary)"
   }
 
-  const getGpaLabel = (gpa: number) => {
-    if (gpa < 2.5) return "Below average"
-    if (gpa < 3.0) return "Average"
-    if (gpa < 3.5) return "Competitive"
-    return "Highly competitive"
-  }
+  /*
+    These bands used to read "Below average" through "Highly competitive",
+    which judged the student's chances against no stated basis and contradicted
+    the product's own promise not to predict admission. The 3.0 planner
+    benchmark is the only reference point TransferPath actually has, so the
+    label states that relationship and nothing more.
+  */
+  const getGpaLabel = (gpa: number) =>
+    gpa >= 3.0
+      ? "At or above the 3.0 planner benchmark"
+      : "Below the 3.0 planner benchmark"
 
   return (
     <div className="bg-card border border-border rounded-xl p-8">
@@ -206,15 +212,12 @@ export function OnboardingStep3({ data, updateData, onNext, onBack }: Props) {
             />
             {data.gpa && (
               <div className="mt-3">
-                <div className="h-2 bg-secondary rounded-full overflow-hidden">
-                  <div
-                    className="h-full rounded-full transition-all"
-                    style={{
-                      width: `${(gpaValue / 4) * 100}%`,
-                      backgroundColor: getGpaColor(gpaValue),
-                    }}
-                  />
-                </div>
+                <Meter
+                  value={(gpaValue / 4) * 100}
+                  label={`GPA ${gpaValue} out of 4.0 — ${getGpaLabel(gpaValue)}`}
+                  size="lg"
+                  indicatorStyle={{ backgroundColor: getGpaColor(gpaValue) }}
+                />
                 <p className="text-xs mt-1" style={{ color: getGpaColor(gpaValue) }}>
                   {getGpaLabel(gpaValue)}
                 </p>

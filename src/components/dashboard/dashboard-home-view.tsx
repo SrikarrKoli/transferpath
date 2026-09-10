@@ -5,8 +5,9 @@ import type { OverviewData } from "@/types/overview"
 
 interface DashboardHomeViewProps {
   overviewData: OverviewData
+  userId: string
 }
 
-export function DashboardHomeView({ overviewData }: DashboardHomeViewProps) {
-  return <OverviewMain data={overviewData} />
+export function DashboardHomeView({ overviewData, userId }: DashboardHomeViewProps) {
+  return <OverviewMain data={overviewData} userId={userId} />
 }

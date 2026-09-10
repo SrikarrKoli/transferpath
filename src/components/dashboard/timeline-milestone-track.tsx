@@ -130,25 +130,25 @@ export function TimelineMilestoneTrack({
 
             <div className="min-w-0 pb-2">
               <div className="mb-3 flex flex-wrap items-baseline justify-between gap-x-4 gap-y-1">
-                <p className="text-[11px] font-medium uppercase tracking-widest text-muted-foreground">
+                <p className="tp-eyebrow text-muted-foreground">
                   {metaLeft || `STEP ${m.stepIndex} OF ${m.totalSteps}`}
                 </p>
-                <p className="text-[11px] uppercase tracking-widest text-muted-foreground">
+                <p className="tp-eyebrow text-muted-foreground">
                   {m.dateRange}
                 </p>
               </div>
 
-              <h2 className="font-heading text-2xl font-semibold tracking-tight text-foreground md:text-[1.65rem]">
+              <h2 className="font-heading text-2xl font-semibold tracking-tight text-foreground">
                 {m.phaseTitle}
               </h2>
-              <p className="mt-2 max-w-2xl text-sm leading-relaxed text-muted-foreground md:text-[15px]">
+              <p className="mt-2 max-w-2xl text-sm leading-relaxed text-muted-foreground md:text-body">
                 {m.summary}
               </p>
 
               {m.showTargetBadge ? (
                 <div className="mt-5 inline-flex items-center gap-2 rounded-full border border-chart-3/30 bg-chart-3/10 px-3 py-1.5">
                   <span className="size-1.5 rounded-full bg-chart-3" aria-hidden />
-                  <span className="text-[11px] font-medium uppercase tracking-widest text-chart-3">
+                  <span className="tp-eyebrow text-chart-3">
                     Target university
                   </span>
                 </div>
@@ -156,7 +156,7 @@ export function TimelineMilestoneTrack({
 
               {m.recorded.length > 0 ? (
                 <div className="mt-6 rounded-xl border border-border bg-card p-5 shadow-sm tp-interactive-panel">
-                  <p className="text-[11px] font-medium uppercase tracking-widest text-accent">
+                  <p className="tp-eyebrow text-accent">
                     Recorded
                   </p>
                   <ul className="mt-4 space-y-3">
@@ -175,7 +175,7 @@ export function TimelineMilestoneTrack({
                           )}
                         >
                           {c.course_name}
-                          <span className="ml-2 text-[11px] uppercase tracking-wider text-muted-foreground no-underline">
+                          <span className="ml-2 tp-eyebrow text-muted-foreground no-underline">
                             {statusLabel(c.status)}
                           </span>
                         </span>
@@ -205,7 +205,7 @@ export function TimelineMilestoneTrack({
 
               {m.tasks.length > 0 ? (
                 <div className="mt-6 rounded-xl border border-border bg-card p-5 shadow-sm tp-interactive-panel">
-                  <p className="text-[11px] font-medium uppercase tracking-widest text-muted-foreground">
+                  <p className="tp-eyebrow text-muted-foreground">
                     Tasks
                   </p>
                   <ul className="mt-4 space-y-3">
@@ -269,7 +269,7 @@ function CoursePanel({
 
   return (
     <div className="mt-6 rounded-xl border border-border bg-card p-5 shadow-sm tp-interactive-panel">
-      <p className="text-[11px] font-medium uppercase tracking-widest text-accent">
+      <p className="tp-eyebrow text-accent">
         {label}
       </p>
 

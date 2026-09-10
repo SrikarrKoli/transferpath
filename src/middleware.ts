@@ -11,6 +11,7 @@ const publicRoutes = [
   "/auth/callback",
   "/privacy",
   "/terms",
+  "/sources",
 ]
 
 export async function middleware(request: NextRequest) {

@@ -93,8 +93,8 @@ export function buildChecklistWorkspaceData(input: {
 
   return {
     header: {
-      eyebrow: "Checklist",
-      title: "Your transfer checklist",
+      eyebrow: "Tasks & deadlines",
+      title: "Tasks & deadlines",
       fromInstitution: cur,
       toInstitution: tgt,
       program,

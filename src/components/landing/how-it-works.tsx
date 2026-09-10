@@ -1,51 +1,58 @@
 "use client"
 
-const steps = [
-  {
-    n: "1",
-    title: "Tell us your situation",
-    description:
-      "Current school, target university, major, GPA. Takes about two minutes — no essay required to start planning one.",
-  },
-  {
-    n: "2",
-    title: "Get your semester map",
-    description:
-      "Courses laid out term by term against your target's requirements, so the next registration decision is obvious.",
-  },
-  {
-    n: "3",
-    title: "Work the checklist",
-    description:
-      "Deadlines, transcripts, rec letters, essays. Check things off; your readiness picture updates as you go.",
-  },
-] as const
+const deadlines = [
+  { when: "Mar 1", what: "Priority application — UT Austin", state: "Soon" as const },
+  { when: "May 1", what: "Official transcripts due", state: "Open" as const },
+  { when: "Jun 15", what: "Essay draft complete", state: "Open" as const },
+]
 
 export function HowItWorks() {
   return (
-    <section id="how-it-works" className="border-b border-border px-6 py-20">
-      <div className="mx-auto grid max-w-6xl gap-12 lg:grid-cols-[4fr_8fr]">
-        <div>
-          <h2 className="font-heading text-3xl font-semibold tracking-tight text-foreground">
-            How it works
-          </h2>
-          <p className="mt-3 max-w-xs text-muted-foreground">
-            Sign-up to a living plan in three steps. Adjust it any semester.
-          </p>
+    <section id="deadlines" className="py-12">
+      <div className="border-b border-foreground pb-3">
+        <h2 className="font-heading text-2xl font-semibold tracking-tight text-foreground">
+          Deadlines on the same sheet
+        </h2>
+        <p className="mt-2 max-w-2xl text-[0.95rem] leading-relaxed text-muted-foreground">
+          Tell us your school, target, major, and GPA. We map semesters against the real
+          requirements, then keep transcripts, essays, and application windows on one checklist.
+        </p>
+      </div>
+
+      <div className="mt-1">
+        <div className="hidden grid-cols-[5rem_minmax(0,1fr)_4.5rem] gap-x-3 border-b border-border py-2 text-xs text-muted-foreground md:grid">
+          <span>Date</span>
+          <span>Item</span>
+          <span>Status</span>
         </div>
-        <ol className="space-y-0">
-          {steps.map((step) => (
-            <li key={step.n} className="tp-ledger-row grid gap-4 py-6 sm:grid-cols-[3rem_1fr]">
-              <span className="font-mono text-sm text-accent">{step.n}</span>
-              <div>
-                <h3 className="text-lg font-medium text-foreground">{step.title}</h3>
-                <p className="mt-1.5 max-w-lg text-sm leading-relaxed text-muted-foreground">
-                  {step.description}
-                </p>
-              </div>
-            </li>
-          ))}
-        </ol>
+        {deadlines.map((d) => (
+          <div
+            key={d.what}
+            className="grid grid-cols-[5rem_minmax(0,1fr)_auto] items-baseline gap-x-3 border-b border-border py-3 text-sm md:grid-cols-[5rem_minmax(0,1fr)_4.5rem]"
+          >
+            <span className="font-mono text-[13px] tabular-nums tracking-tight text-muted-foreground">
+              {d.when}
+            </span>
+            <span className="min-w-0 truncate font-medium text-foreground">{d.what}</span>
+            <span
+              className={
+                d.state === "Soon"
+                  ? "inline-flex items-center gap-1.5 text-xs font-semibold text-accent"
+                  : "inline-flex items-center gap-1.5 text-xs text-muted-foreground"
+              }
+            >
+              <span
+                className={
+                  d.state === "Soon"
+                    ? "inline-block size-1.5 rounded-[1px] bg-accent"
+                    : "inline-block size-1.5 rounded-[1px] bg-muted-foreground/40"
+                }
+                aria-hidden
+              />
+              {d.state}
+            </span>
+          </div>
+        ))}
       </div>
     </section>
   )

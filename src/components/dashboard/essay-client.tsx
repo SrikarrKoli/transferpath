@@ -199,7 +199,7 @@ export function EssayClient({ userId, initialEssayMap, profile }: EssayClientPro
               )}
             >
               <span className="block">{prompt.label}</span>
-              <span className="mt-0.5 block text-[11px] uppercase tracking-wider text-muted-foreground">
+              <span className="mt-0.5 block tp-eyebrow text-muted-foreground">
                 {wc >= 50 ? `${wc} words` : "Not started"}
               </span>
             </button>
@@ -221,6 +221,7 @@ export function EssayClient({ userId, initialEssayMap, profile }: EssayClientPro
           tagline: "Draft, revise, and save your transfer essay in one place.",
           prompt: displayPrompt,
           wordLimit,
+          wordLimitIsDefault: currentEssay?.word_limit == null,
           autosaveLabel: formatEssayAutosaveLabel(savedAt, saving),
         }}
         value={content}
@@ -243,7 +244,7 @@ export function EssayClient({ userId, initialEssayMap, profile }: EssayClientPro
             <div className="space-y-1.5 sm:col-span-2">
               <label
                 htmlFor="essay-school-prompt"
-                className="text-[11px] uppercase tracking-widest text-muted-foreground"
+                className="tp-eyebrow text-muted-foreground"
               >
                 Your school&apos;s exact prompt (optional)
               </label>
@@ -262,7 +263,7 @@ export function EssayClient({ userId, initialEssayMap, profile }: EssayClientPro
             <div className="space-y-1.5">
               <label
                 htmlFor="essay-word-limit"
-                className="text-[11px] uppercase tracking-widest text-muted-foreground"
+                className="tp-eyebrow text-muted-foreground"
               >
                 Word limit
               </label>
@@ -292,7 +293,7 @@ export function EssayClient({ userId, initialEssayMap, profile }: EssayClientPro
               {subtitle ? <span className="font-normal text-muted-foreground"> — {subtitle}</span> : null}
             </DialogTitle>
           </DialogHeader>
-          <p className="text-[11px] uppercase tracking-widest text-muted-foreground">
+          <p className="tp-eyebrow text-muted-foreground">
             Prompt
           </p>
           <p className="mt-2 text-base leading-relaxed text-muted-foreground">
