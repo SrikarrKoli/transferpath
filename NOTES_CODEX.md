@@ -1,3 +1,17 @@
+# Codex pass — TransferPath immersive interiors, iteration 11
+
+## Iteration 11
+
+- Library manuscript index: active leaf is hairline/ink selection (no navy filled chip).
+- Student Union: stronger rule under the next-action title; denser coming-up strip.
+- Classrooms: Add-a-course sits on a ruled plan foot.
+- Screenshot discipline: only the Chrome window with exactly one TransferPath tab.
+
+## Iteration 11 verification
+
+- `npx tsc --noEmit`: pass (prior to commit).
+- Shots: `*-iter11.png` for essay/union/plan from the one-tab window.
+
 # Codex pass — TransferPath immersive interiors, iteration 10
 
 ## Iteration 10

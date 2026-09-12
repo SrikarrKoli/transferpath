@@ -296,17 +296,19 @@ export function PlanClient({
             blocks={hallBlocks}
             note="Terms are ordered to the entry date. Requirements stay on the Registrar; this page only places courses on a calendar."
           />
-          <button
-            type="button"
-            className="hall-ledger-link mt-8"
-            onClick={() => {
-              setAddTerm("")
-              setAddError("")
-              setAddOpen(true)
-            }}
-          >
-            Add a course
-          </button>
+          <div className="hall-plan-foot">
+            <button
+              type="button"
+              className="hall-ledger-link"
+              onClick={() => {
+                setAddTerm("")
+                setAddError("")
+                setAddOpen(true)
+              }}
+            >
+              Add a course
+            </button>
+          </div>
           {listError ? (
             <p className="mt-4 text-sm text-[color:var(--hall-clay)]" role="alert">
               {listError}
