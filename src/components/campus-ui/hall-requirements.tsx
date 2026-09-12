@@ -72,8 +72,18 @@ export function HallRequirements({ data }: { data: RequirementsWorkspaceData }) 
                   <td>{item.code || "—"}</td>
                   <td>{item.equiv || "—"}</td>
                   <td className={item.status === "missing" ? "hall-urgent" : undefined}>
-                    {standing(item.status)}
-                    {item.credits ? ` · ${item.credits} cr` : ""}
+                    {item.status === "done" ? (
+                      <>
+                        {standing(item.status)}
+                        {item.credits ? ` · ${item.credits} cr` : ""}
+                      </>
+                    ) : (
+                      <Link href="/dashboard/plan" className="hall-ledger-link">
+                        {standing(item.status)}
+                        {item.credits ? ` · ${item.credits} cr` : ""}
+                        {" · Log"}
+                      </Link>
+                    )}
                   </td>
                 </tr>
               ))}

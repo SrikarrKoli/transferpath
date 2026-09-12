@@ -4923,3 +4923,12 @@ nextjs-portal,
     padding-left: 1.35rem;
   }
 }
+
+
+.campus-entered[data-building="library"] .hall-plan-toolbar {
+  position: sticky;
+  top: 0.5rem;
+  z-index: 2;
+  background: color-mix(in oklab, var(--hall-paper) 92%, white);
+  padding-top: 0.35rem;
+}
