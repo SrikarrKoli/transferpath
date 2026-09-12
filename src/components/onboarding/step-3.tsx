@@ -116,9 +116,13 @@ export function OnboardingStep3({ data, updateData, onNext, onBack }: Props) {
     <div className="bg-card border border-border rounded-xl p-8">
       <div className="space-y-6">
         <div>
-          <h1 className="text-2xl font-medium text-foreground mb-2">Your major, field, and grades</h1>
+          <p className="mb-2 text-xs font-semibold uppercase tracking-[0.14em] text-muted-foreground">
+            Transfer setup · Step 3 of 5
+          </p>
+          <h1 className="text-2xl font-medium text-foreground mb-2">Major, field, and academic standing</h1>
           <p className="text-muted-foreground">
-            Major is free text; field of study drives STEM vs core-only planning (you can change it later in Settings).
+            Used to plan transfer coursework and competitiveness. Major is free text; field of study drives STEM vs
+            core-only planning (editable later in Settings).
           </p>
         </div>
 

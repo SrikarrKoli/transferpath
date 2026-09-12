@@ -46,8 +46,14 @@ export function OnboardingStep5({
     <div className="bg-card border border-border rounded-xl p-8">
       <div className="space-y-6">
         <div>
+          <p className="mb-2 text-xs font-semibold uppercase tracking-[0.14em] text-muted-foreground">
+            Transfer setup · Step 5 of 5
+          </p>
           <h1 className="text-2xl font-medium text-foreground mb-2">When do you want to transfer?</h1>
-          <p className="text-muted-foreground">Set your target and we&apos;ll help you stay on track.</p>
+          <p className="text-muted-foreground">
+            Choose your target entry term. Create your account (or confirm you&apos;re signed in) so we can save
+            deadlines and reminders to your campus.
+          </p>
         </div>
 
         <div className="space-y-4">
