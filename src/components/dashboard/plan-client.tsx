@@ -496,7 +496,7 @@ export function PlanClient({
               type="button"
               onClick={() => void handleAddCourse()}
               disabled={addBusy || !addName}
-              className="w-full"
+              className="w-full rounded-none bg-[color:var(--hall-ink)] hover:bg-[color:var(--hall-ink)]/90"
             >
               {addBusy ? (
                 <>
