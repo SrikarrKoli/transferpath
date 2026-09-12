@@ -41,7 +41,6 @@ export function HallDeadlines({
         <div className="hall-index" role="tablist" aria-label="Ledger view">
           {FILTERS.map((item) => {
             const count = data.filterCounts[item.id]
-            const disabled = item.id !== "missing_dates" && count === 0
             return (
               <button
                 key={item.id}
@@ -49,10 +48,12 @@ export function HallDeadlines({
                 role="tab"
                 data-on={filter === item.id ? "true" : "false"}
                 aria-selected={filter === item.id}
-                disabled={disabled}
                 onClick={() => onFilter(item.id)}
               >
                 {item.label}
+                {typeof count === "number" ? (
+                  <span className="ml-1 tabular-nums opacity-50">{count}</span>
+                ) : null}
               </button>
             )
           })}

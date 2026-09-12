@@ -81,6 +81,28 @@ export function EssayWorkspaceUi({
       <div className={className}>
         <p className="hall-prompt">{essay.prompt}</p>
         {settingsSlot ? <div className="mt-4">{settingsSlot}</div> : null}
+        <div className="hall-plan-toolbar mt-5">
+          <p className="hall-caption">
+            Draft for your transfer application. Save often — coach notes update after you pause.
+          </p>
+          <div className="flex flex-wrap gap-x-4 gap-y-2">
+            {onPreview ? (
+              <button type="button" onClick={onPreview} className="hall-ledger-link">
+                {previewLabel}
+              </button>
+            ) : null}
+            {onSave ? (
+              <button
+                type="button"
+                onClick={onSave}
+                disabled={saving}
+                className="hall-ledger-link hall-plan-add"
+              >
+                {saving ? "Saving…" : saveLabel}
+              </button>
+            ) : null}
+          </div>
+        </div>
         <textarea
           value={value}
           onChange={(e) => onChange(e.target.value)}
@@ -94,11 +116,6 @@ export function EssayWorkspaceUi({
             <span className="ml-2 text-[color:var(--hall-stone)]">/ {essay.wordLimit}</span>
           </p>
           <div className="flex gap-4">
-            {onPreview ? (
-              <button type="button" onClick={onPreview} className="hall-ledger-link">
-                {previewLabel}
-              </button>
-            ) : null}
             {onSave ? (
               <button type="button" onClick={onSave} disabled={saving} className="hall-ledger-link">
                 {saving ? "Saving…" : saveLabel}

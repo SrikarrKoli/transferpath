@@ -68,6 +68,17 @@ export function HallToday({ data, userId }: { data: OverviewData; userId: string
               </span>
             </p>
             <p className="hall-hero-title">Nothing due on the register today.</p>
+            <div className="mt-6 flex flex-wrap gap-x-4 gap-y-2">
+              <Link href="/dashboard/checklist" className="hall-ledger-link">
+                Open Dorms tasks
+              </Link>
+              <Link href="/dashboard/plan" className="hall-ledger-link">
+                Review plan
+              </Link>
+              <Link href="/dashboard/deadlines" className="hall-ledger-link">
+                Check deadlines
+              </Link>
+            </div>
           </div>
         )}
 
@@ -94,6 +105,14 @@ export function HallToday({ data, userId }: { data: OverviewData; userId: string
           </p>
         ) : null}
         {data.readiness ? <p className="mt-5">{data.readiness.focusSentence}</p> : null}
+        <div className="mt-6 flex flex-col gap-2 items-start">
+          <Link href="/dashboard/settings?tab=transfer" className="hall-ledger-link">
+            Edit schools & term
+          </Link>
+          <Link href="/dashboard/requirements" className="hall-ledger-link">
+            Open Registrar
+          </Link>
+        </div>
       </aside>
     </div>
   )

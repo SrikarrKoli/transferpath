@@ -1,3 +1,4 @@
+import Link from "next/link"
 import type { RequirementsWorkspaceData } from "@/types/requirements-workspace"
 
 function standing(status: string) {
@@ -29,6 +30,19 @@ export function HallRequirements({ data }: { data: RequirementsWorkspaceData }) 
         <p className="hall-date-meta mt-2">
           {done} of {total} on this path
         </p>
+        <div className="hall-plan-toolbar mt-5">
+          <p className="hall-caption">
+            Log coursework to move Open → Logged. Placement on terms lives in the Classroom.
+          </p>
+          <div className="flex flex-wrap gap-x-4 gap-y-2">
+            <Link href="/dashboard/plan" className="hall-ledger-link hall-plan-add">
+              + Log / place a course
+            </Link>
+            <Link href="/dashboard/deadlines" className="hall-ledger-link">
+              Clock Tower dates
+            </Link>
+          </div>
+        </div>
 
         <div className="hall-matrix-wrap mt-8">
           <div className="hall-matrix-columns" aria-hidden>
@@ -79,6 +93,14 @@ export function HallRequirements({ data }: { data: RequirementsWorkspaceData }) 
           Logged means a course is on your record. Open means the catalog still expects it. Dates
           live in the Clock Tower.
         </p>
+        <div className="mt-3 flex flex-wrap gap-x-4 gap-y-2">
+          <Link href="/dashboard/plan" className="hall-ledger-link">
+            Open Classroom
+          </Link>
+          <Link href="/dashboard/settings?tab=transfer" className="hall-ledger-link">
+            Edit schools
+          </Link>
+        </div>
       </aside>
     </div>
   )

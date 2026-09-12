@@ -103,6 +103,17 @@ export function HallChecklist({
           This room holds the personal work: transcripts, letters, fees, and the application itself.
           Institution dates stay in the Clock Tower.
         </p>
+        <div className="mt-3 flex flex-wrap gap-x-4 gap-y-2">
+          <Link href="/dashboard/deadlines" className="hall-ledger-link">
+            Open Clock Tower
+          </Link>
+          <Link href="/dashboard/requirements" className="hall-ledger-link">
+            Open Registrar
+          </Link>
+          <Link href="/dashboard/essay" className="hall-ledger-link">
+            Open Library
+          </Link>
+        </div>
         {data.header.readinessMessage ? (
           <p className="mt-6">{data.header.readinessMessage}</p>
         ) : null}

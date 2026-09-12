@@ -1,3 +1,4 @@
+import Link from "next/link"
 import type { RequirementsWorkspaceData } from "@/types/requirements-workspace"
 
 export type HallReadinessData = {
@@ -47,6 +48,21 @@ export function HallReadiness({ data }: { data: HallReadinessData }) {
           This number is a reading of what is already on file — courses, dates, and the essay — not
           an admission prediction.
         </p>
+        <p className="mt-6 hall-caption">Raise the reading</p>
+        <div className="mt-2 flex flex-col gap-2 items-start">
+          <Link href="/dashboard/requirements" className="hall-ledger-link">
+            Log requirements · Registrar
+          </Link>
+          <Link href="/dashboard/deadlines" className="hall-ledger-link">
+            File dates · Clock Tower
+          </Link>
+          <Link href="/dashboard/essay" className="hall-ledger-link">
+            Draft essay · Library
+          </Link>
+          <Link href="/dashboard/settings?tab=transfer" className="hall-ledger-link">
+            Confirm schools · Counselor
+          </Link>
+        </div>
       </aside>
     </div>
   )
