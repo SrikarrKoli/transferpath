@@ -23,7 +23,7 @@ export default async function OnboardingPage() {
 
   return (
     <div className="min-h-screen bg-[color:var(--campus-cream)] px-4 py-6 sm:px-8">
-      <ImmersiveBuildingShell buildingId="counselor">
+      <ImmersiveBuildingShell buildingId="counselor" purpose="onboarding">
         <OnboardingClient
           existingSession={user ? { id: user.id, email: user.email ?? "" } : null}
           embedded

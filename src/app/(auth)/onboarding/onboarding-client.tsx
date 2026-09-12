@@ -223,7 +223,12 @@ export function OnboardingClient({ existingSession, embedded = false }: Onboardi
           {embedded ? (
             <div className="hall-steps" aria-label="Onboarding steps">
               {steps.map((step) => (
-                <span key={step.id} data-on={step.id === currentStep ? "true" : "false"}>
+                <span
+                  key={step.id}
+                  data-on={step.id === currentStep ? "true" : "false"}
+                  data-done={step.id < currentStep ? "true" : "false"}
+                >
+                  <span className="hall-step-index">{String(step.id).padStart(2, "0")}</span>
                   {step.label}
                 </span>
               ))}

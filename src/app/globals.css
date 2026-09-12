@@ -1144,6 +1144,26 @@ nextjs-portal,
   box-shadow: inset 0 -1px 0 var(--hall-ink);
 }
 
+.hall-steps [data-done="true"] {
+  opacity: 0.55;
+  text-decoration: line-through;
+  text-decoration-color: color-mix(in srgb, var(--campus-ink) 35%, transparent);
+}
+
+.hall-step-index {
+  font-family: ui-monospace, SFMono-Regular, Menlo, monospace;
+  font-size: 0.7em;
+  font-weight: 600;
+  letter-spacing: 0.04em;
+  margin-right: 0.35rem;
+  opacity: 0.55;
+}
+
+.hall-steps [data-on="true"] .hall-step-index {
+  color: var(--campus-clay, #b85c38);
+  opacity: 1;
+}
+
 .campus-entered .rounded-xl,
 .campus-entered .rounded-2xl,
 .campus-entered .rounded-full {
