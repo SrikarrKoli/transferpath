@@ -1,3 +1,24 @@
+# Finalize checkpoint — TransferPath immersive interiors (2026-09-11 evening CDT)
+
+## Status
+Branch `cursor/campus-concept-c-authored-map-c33f` pushed through `e61fc18` (+ follow-ups).
+PR https://github.com/SrikarrKoli/transferpath/pull/1 — do not merge until asked.
+
+## Hall craft landed toward Fable ≥9
+- Clock Tower: authored empty/missing ledger rows; mono folio tabs
+- Classrooms: single TERM/COURSE/STATUS register + plan foot
+- Library: ink leaf tabs; hairline prompt fields
+- Student Union: Now/Clear ledger mark; Coming up strip; ruled margin
+- Registrar / Dorms: denser ledgers with standing columns
+- Rec Center: readiness instrument only here; quieter route
+- Shared: no SaaS sidebar on halls; readiness `display:none !important` except gym; cream/ink/clay; 0 radius
+
+## Still iterating
+Codex Iter13 queued at 9:50 PM local for remaining ≥9 density. Landing 3D untouched.
+
+## Authorship
+Commits as Srikar K <SrikarrKoli@users.noreply.github.com> for GitHub contribution graph.
+
 # Codex pass — TransferPath immersive interiors, iteration 12d
 
 ## Iteration 12d
