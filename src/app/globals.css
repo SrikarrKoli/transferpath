@@ -1035,8 +1035,30 @@ nextjs-portal,
   display: none;
 }
 
+.hall-matrix-wrap .hall-matrix {
+  table-layout: fixed;
+  width: 100%;
+}
+
 .hall-matrix-wrap .hall-matrix td {
   padding: 1.05rem 0.85rem 1.05rem 0;
+  vertical-align: baseline;
+}
+
+.hall-matrix-wrap .hall-matrix td:nth-child(1) {
+  width: 42%;
+}
+
+.hall-matrix-wrap .hall-matrix td:nth-child(2),
+.hall-matrix-wrap .hall-matrix td:nth-child(3) {
+  width: 18%;
+  color: var(--hall-stone);
+  font-size: 0.9rem;
+}
+
+.hall-matrix-wrap .hall-matrix td:nth-child(4) {
+  width: 22%;
+  text-align: right;
 }
 
 .hall-matrix-wrap .hall-matrix td:first-child {
@@ -1059,6 +1081,14 @@ nextjs-portal,
   padding-top: 1rem;
   padding-bottom: 1rem;
 }
+
+.hall-check-row > .hall-ledger-link,
+.hall-check-row > .hall-urgent,
+.hall-check-row > .hall-date-meta:last-child {
+  justify-self: end;
+  text-align: right;
+}
+
 
 /* Counselor — intake sheet */
 .hall-sheet {
