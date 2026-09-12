@@ -1,3 +1,12 @@
+# Landing craft — paper shell chrome (2026-09-11)
+
+## Pass L1
+- CampusShell directory: ink hairline selection (no navy fill chip)
+- CTAs / dock: 0-radius borders, no soft shadow pills
+- Critic: ~/Documents/Codex/2026-09-11/transferpath-immersive-interiors/outputs/CRITIC-LANDING.md
+- Shot: landing-w2.png from one-tab Chrome window only
+- Next: Codex pass for 3D campus craft toward Fable >9
+
 # Finalize checkpoint — TransferPath immersive interiors (2026-09-11 evening CDT)
 
 ## Status

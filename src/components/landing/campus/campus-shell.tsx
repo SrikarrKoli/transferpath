@@ -77,16 +77,16 @@ export function CampusShell() {
                   onDoubleClick={() => enterBuilding(b.id)}
                   onMouseEnter={() => setHovered(b.id)}
                   onMouseLeave={() => setHovered(null)}
-                  className={`flex w-full items-baseline gap-3 rounded-md px-2 py-2 text-left ${
-                    on ? "bg-[#1a2332] text-[#f7f2e8]" : "hover:bg-[#1a2332]/06"
+                  className={`flex w-full items-baseline gap-3 border-b border-[#1a2332]/12 px-1 py-2.5 text-left ${
+                    on ? "bg-transparent text-[#1a2332] shadow-[inset_0_-2px_0_#1a2332]" : "hover:bg-[#1a2332]/04"
                   }`}
                 >
-                  <span className={`font-mono text-[13px] font-semibold ${on ? "text-[#e8b09a]" : "text-[#b85c38]"}`}>
+                  <span className={`font-mono text-[13px] font-semibold ${on ? "text-[#b85c38]" : "text-[#1a2332]/45"}`}>
                     {String(i + 1).padStart(2, "0")}
                   </span>
                   <span className="min-w-0">
                     <span className="block text-[14px] font-semibold leading-tight">{b.name}</span>
-                    <span className={`block text-[12px] ${on ? "text-[#f7f2e8]/70" : "text-[#1a2332]/52"}`}>{b.feature}</span>
+                    <span className={`block text-[12px] ${on ? "text-[#1a2332]/70" : "text-[#1a2332]/52"}`}>{b.feature}</span>
                   </span>
                 </button>
               </li>
@@ -109,10 +109,10 @@ export function CampusShell() {
         />
 
         <div className="pointer-events-none absolute right-4 top-4 z-30 flex gap-2">
-          <Link href="/login" className="pointer-events-auto rounded-full bg-[#f7f2e8]/92 px-4 py-2 text-sm font-medium shadow-sm hover:bg-white">
+          <Link href="/login" className="pointer-events-auto border border-[#1a2332] bg-[#f7f2e8]/95 px-4 py-2 text-sm font-medium hover:bg-white">
             Log in
           </Link>
-          <Link href="/onboarding" className="pointer-events-auto rounded-full bg-[#b85c38] px-4 py-2 text-sm font-semibold text-[#f7f2e8] hover:bg-[#a34f2f]">
+          <Link href="/onboarding" className="pointer-events-auto border border-[#b85c38] bg-[#b85c38] px-4 py-2 text-sm font-semibold text-[#f7f2e8] hover:bg-[#a34f2f]">
             {CTA_GET_STARTED}
           </Link>
         </div>
@@ -159,11 +159,11 @@ export function CampusShell() {
 
         {dock ? (
           <div className="absolute inset-x-0 bottom-0 z-30 p-3 sm:p-5">
-            <div className="mx-auto flex max-w-3xl flex-col gap-3 rounded-2xl border border-[#1a2332]/08 bg-[#f7f2e8]/94 p-4 shadow-[0_22px_50px_-28px_rgba(26,35,50,0.5)] sm:flex-row sm:items-end sm:gap-6">
+            <div className="mx-auto flex max-w-3xl flex-col gap-3 border border-[#1a2332] bg-[#f7f2e8]/96 p-4 sm:flex-row sm:items-end sm:gap-6">
               <div className="min-w-0 flex-1">
                 <div className="flex flex-wrap items-center gap-2">
                   <p className="text-[11px] font-semibold uppercase tracking-[0.14em] text-[#b85c38]">{dock.feature}</p>
-                  <p className="rounded-full bg-[#1a2332]/06 px-2.5 py-0.5 text-xs font-medium text-[#1a2332]/70">
+                  <p className="border border-[#1a2332]/18 px-2.5 py-0.5 text-xs font-medium text-[#1a2332]/70">
                     {dock.proof.value}
                     <span className="mx-1 opacity-40">·</span>
                     {dock.proof.label}
@@ -176,14 +176,14 @@ export function CampusShell() {
                 <div className="flex gap-2">
                   <Link
                     href={dock.href}
-                    className="rounded-full bg-[#b85c38] px-5 py-3 text-center text-sm font-semibold text-[#f7f2e8] hover:bg-[#a34f2f]"
+                    className="border border-[#b85c38] bg-[#b85c38] px-5 py-3 text-center text-sm font-semibold text-[#f7f2e8] hover:bg-[#a34f2f]"
                   >
                     {dock.cta}
                   </Link>
                   <button
                     type="button"
                     onClick={() => setSelected(null)}
-                    className="rounded-full px-4 py-3 text-sm font-medium text-[#1a2332]/55 hover:bg-[#1a2332]/06"
+                    className="border border-transparent px-4 py-3 text-sm font-medium text-[#1a2332]/55 hover:border-[#1a2332]/20"
                   >
                     Close
                   </button>
