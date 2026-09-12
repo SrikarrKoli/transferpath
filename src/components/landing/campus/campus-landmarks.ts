@@ -299,11 +299,12 @@ export function buildDorms() {
 /** 07 — gymnasium with barrel vault + marked court. */
 export function buildRecCenter() {
   const g = new THREE.Group()
-  const body = hold(0xb8d4c4)
-  const vault = hold(0x3d8a62)
+  // L4: rec reads masonry/ink, not saturated game court
+  const body = hold(0xc9d2c6)
+  const vault = hold(0x4a5d55)
   const glass = flat(0x243448)
   const line = hold(C.trim)
-  const court = flat(0x2f7a58)
+  const court = flat(0x6a7468)
 
   g.add(rbox(2.55, 1.05, 1.72, body, 0, 0.52, 0, 0.006))
   g.add(barrelVault(2.55, 0.88, vault, 1.05, true))

@@ -218,9 +218,7 @@ export function buildCampusWorld(root: THREE.Group, lib: KitLibrary) {
   city.add(bench(lambert(C.creamDeep), 0.85, 1.85, -0.2))
 
   add("castle/flag-wide", 0.08, -0.32, 0.1, 0.42, false)
-  add("castle/flag", 3.55, -0.85, 0.1, 0.62, false)
-  add("castle/flag", 5.05, -0.35, -0.08, 0.55, false)
-  add("castle/flag", 4.55, 2.55, 0.12, 0.7, false)
+  add("castle/flag", 4.55, 2.55, 0.12, 0.65, false)
   add("castle/stairs-stone", 0, 0.55, 0, 0.85)
   add("suburban/planter", -1.15, 2.15, 0, 1)
   add("suburban/planter", 1.15, 2.15, 0, 1)
@@ -230,11 +228,9 @@ export function buildCampusWorld(root: THREE.Group, lib: KitLibrary) {
   add("roads/light-curved", 1.85, -1.55, 0, 1)
   add("roads/light-square", -4.15, -1.15, 0, 1)
 
-  // Union terrace parasols + awnings
-  add("commercial/detail-parasol-a", -3.45, 1.65, 0.2, 1.05)
-  add("commercial/detail-parasol-b", -4.45, 1.75, -0.15, 1.05)
-  add("commercial/detail-parasol-a", -3.85, 2.05, -0.25, 0.95)
-  add("commercial/detail-awning-wide", -4.05, 1.55, Math.PI / 2, 0.9)
+  // L4: one awning + one parasol — less cafe clutter
+  add("commercial/detail-parasol-a", -3.65, 1.75, 0.1, 0.95)
+  add("commercial/detail-awning-wide", -4.05, 1.55, Math.PI / 2, 0.88)
 
   const spoke = (x1: number, z1: number) => {
     const x0 = 0
@@ -403,15 +399,12 @@ export function buildCampusWorld(root: THREE.Group, lib: KitLibrary) {
   garden(0.95, 4.85, 1.15, 0.95)
   garden(-5.35, -0.55, 1.1, 1.2)
 
-  // Waterfront — palms, pier market, boats (no carnival clone)
+  // L4: two palms only — Kenney palms read toy in a row
   ;[
-    [-7.45, 1.25],
-    [-7.75, 2.55],
-    [-7.35, 3.85],
-    [-7.85, 5.05],
-    [-7.25, 5.85],
+    [-7.55, 2.15],
+    [-7.45, 4.85],
   ].forEach(([x, z], i) => {
-    add(i % 2 ? "nature/tree_palm" : "nature/tree_palmShort", x, z, i * 0.28, 0.9, false)
+    add(i % 2 ? "nature/tree_palm" : "nature/tree_palmShort", x, z, i * 0.2, 0.82, false)
   })
   add("nature/rock_largeB", -8.05, 3.25, 0.2, 0.65, false)
   add("castle/rocks-small", -7.55, 6.05, 0.12, 1)
@@ -423,10 +416,9 @@ export function buildCampusWorld(root: THREE.Group, lib: KitLibrary) {
   const deck = rbox(4.05, 0.1, 1.05, pierMat, -8.65, 0.06, 2.55, 0.03)
   city.add(deck)
   add("castle/bridge-straight", -6.55, 2.45, Math.PI / 2, 0.95)
-  city.add(kiosk(lambert(C.cream), lambert(C.terracotta), -8.05, 2.25, 0.15))
-  city.add(kiosk(lambert(C.peach), lambert(C.navySoft), -8.85, 2.45, -0.2))
-  city.add(kiosk(lambert(C.trim), lambert(C.terracottaDeep), -8.15, 2.85, 0.05))
-  city.add(kiosk(lambert(C.paleBlue), lambert(C.navy), -9.15, 2.75, 0.25))
+  // L4: two quiet pier stalls, not a carnival row
+  city.add(kiosk(lambert(C.cream), lambert(C.terracottaDeep), -8.15, 2.35, 0.1))
+  city.add(kiosk(lambert(C.peach), lambert(C.navy), -8.85, 2.65, -0.12))
   city.add(bench(lambert(C.creamDeep), 2.15, -1.55, 0.1))
   city.add(bench(lambert(C.creamDeep), -2.25, 0.35, -0.15))
   city.add(bench(lambert(C.creamDeep), 4.35, 1.85, 0.4))
@@ -442,16 +434,12 @@ export function buildCampusWorld(root: THREE.Group, lib: KitLibrary) {
     g.rotation.y = rot
     return g
   }
-  city.add(boat(-9.35, 1.45, 0.35, 0xf2eee4))
-  city.add(boat(-9.55, 3.55, -0.2, C.terracotta))
-  city.add(boat(-9.15, 5.15, 0.45, C.navySoft))
+  city.add(boat(-9.45, 2.55, 0.15, C.navySoft))
+  city.add(boat(-9.25, 4.65, -0.25, 0xf2eee4))
 
-  add("cars/sedan", 3.05, 0.15, Math.PI / 2, 0.18)
-  add("cars/taxi", 3.55, -2.05, 0.2, 0.17)
-  add("cars/hatchback-sports", -3.85, -1.55, -0.4, 0.17)
-  add("cars/suv", 1.15, -3.15, Math.PI / 2, 0.17)
-  add("cars/sedan", 4.85, -1.85, 0.15, 0.17)
-  add("cars/taxi", -3.15, -3.05, Math.PI / 2, 0.17)
+  // L4: sparse cars — Kenney vehicles read toy when dense
+  add("cars/sedan", 3.05, 0.15, Math.PI / 2, 0.16)
+  add("cars/sedan", -3.55, -2.45, 0.35, 0.15)
 
   const people: THREE.Group[] = []
   const walkers = [
