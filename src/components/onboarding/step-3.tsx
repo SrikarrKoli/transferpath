@@ -131,7 +131,7 @@ export function OnboardingStep3({ data, updateData, onNext, onBack }: Props) {
             <Label>What do you want to study?</Label>
             <Popover open={majorOpen} onOpenChange={setMajorOpen}>
               <PopoverTrigger
-                className="flex h-10 w-full items-center justify-between rounded-lg border border-border bg-background px-3 text-sm transition-colors focus:border-primary focus:outline-none focus:ring-2 focus:ring-ring/50"
+                className="flex h-10 w-full items-center justify-between rounded-none border border-[color:var(--hall-rule)] bg-[color:var(--hall-paper)] px-3 text-sm transition-colors focus:border-[color:var(--hall-ink)] focus:outline-none focus:ring-1 focus:ring-[color:var(--hall-ink)]/20"
               >
                 <span className={data.major ? "text-foreground" : "text-muted-foreground"}>
                   {data.major || "Select your major"}
@@ -179,7 +179,7 @@ export function OnboardingStep3({ data, updateData, onNext, onBack }: Props) {
               {FIELD_OF_STUDY_OPTIONS.map((o) => (
                 <label
                   key={o.value}
-                  className={`flex gap-3 rounded-lg border p-3 cursor-pointer transition-colors ${
+                  className={`flex cursor-pointer gap-3 rounded-none border p-3 transition-colors ${
                     data.fieldOfStudy === o.value
                       ? "border-primary bg-primary/5"
                       : "border-border hover:bg-secondary/30"

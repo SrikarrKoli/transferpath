@@ -51,13 +51,13 @@ export function OnboardingStep1({ data, updateData, onNext }: Props) {
                 </div>
               </div>
             </div>
-            <div className="flex bg-secondary rounded-lg p-1">
+            <div className="flex rounded-none border border-[color:var(--hall-rule)] bg-[color:var(--hall-ink)]/[0.03] p-1">
               <button
                 type="button"
                 onClick={() => updateData({ isCapStudent: true })}
                 className={`flex-1 py-2 px-4 text-sm font-medium rounded-md transition-colors ${
                   data.isCapStudent
-                    ? "bg-popover text-foreground shadow-sm"
+                    ? "bg-[color:var(--hall-paper)] text-foreground"
                     : "text-muted-foreground hover:text-foreground"
                 }`}
               >
@@ -68,7 +68,7 @@ export function OnboardingStep1({ data, updateData, onNext }: Props) {
                 onClick={() => updateData({ isCapStudent: false })}
                 className={`flex-1 py-2 px-4 text-sm font-medium rounded-md transition-colors ${
                   !data.isCapStudent
-                    ? "bg-popover text-foreground shadow-sm"
+                    ? "bg-[color:var(--hall-paper)] text-foreground"
                     : "text-muted-foreground hover:text-foreground"
                 }`}
               >

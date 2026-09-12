@@ -146,7 +146,7 @@ function SchoolSearchInner({
             if (query.length >= 2 && results.length > 0 && !selectedId) setIsOpen(true)
           }}
           placeholder={placeholder}
-          className="w-full h-10 rounded-lg border border-border bg-background pl-9 pr-9 text-sm text-foreground placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-ring/50 focus:border-primary transition-colors"
+          className="h-10 w-full rounded-none border border-[color:var(--hall-rule)] bg-[color:var(--hall-paper)] pl-9 pr-9 text-sm text-foreground transition-colors placeholder:text-muted-foreground focus:border-[color:var(--hall-ink)] focus:outline-none focus:ring-1 focus:ring-[color:var(--hall-ink)]/20"
         />
         {isLoading && (
           <Loader2 className="absolute right-3 top-1/2 -translate-y-1/2 h-4 w-4 animate-spin text-muted-foreground" />
@@ -156,7 +156,7 @@ function SchoolSearchInner({
       {error && <p className="text-xs text-red-600 mt-1">{error}</p>}
 
       {isOpen && results.length > 0 && (
-        <ul className="absolute z-50 mt-1 w-full max-h-[280px] overflow-auto rounded-lg border border-border bg-popover shadow-lg">
+        <ul className="absolute z-50 mt-1 max-h-[280px] w-full overflow-auto rounded-none border border-[color:var(--hall-rule)] bg-[color:var(--hall-paper)] shadow-none">
           {results.map((school, index) => (
             <li key={school.id}>
               <button
@@ -176,7 +176,7 @@ function SchoolSearchInner({
       )}
 
       {isOpen && query.length >= 2 && results.length === 0 && !isLoading && (
-        <div className="absolute z-50 mt-1 w-full rounded-lg border border-border bg-popover shadow-lg px-3 py-4 text-center">
+        <div className="absolute z-50 mt-1 w-full rounded-none border border-[color:var(--hall-rule)] bg-[color:var(--hall-paper)] px-3 py-4 text-center shadow-none">
           <p className="text-sm text-muted-foreground">
             No schools found — yours may not be listed yet
           </p>

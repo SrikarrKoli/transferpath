@@ -122,7 +122,7 @@ export function OnboardingStep5({
             </>
           )}
 
-          <div className="flex items-center justify-between py-3 px-4 bg-secondary/50 rounded-lg">
+          <div className="flex items-center justify-between border border-[color:var(--hall-rule)] bg-[color:var(--hall-ink)]/[0.03] px-4 py-3">
             <span className="text-sm text-foreground">Send me deadline reminders</span>
             <button
               type="button"
@@ -141,7 +141,7 @@ export function OnboardingStep5({
         </div>
 
         {error && (
-          <div className="rounded-lg border border-destructive/25 bg-destructive/10 px-3 py-2.5 text-sm text-destructive">
+          <div className="rounded-none border border-destructive/25 bg-destructive/10 px-3 py-2.5 text-sm text-destructive">
             {error}
           </div>
         )}
