@@ -1,336 +1,298 @@
 import type { DashboardOverallReadinessBreakdown } from "@/lib/dashboard-overall-readiness"
 import type { UserCourseRow } from "@/lib/get-course-requirement-status"
-import { getPrereqKeyStatus } from "@/lib/get-course-requirement-status"
-import { PREREQ_ROW_LABEL, type PrereqKey } from "@/lib/prereq-catalog"
-import { fieldOfStudyOrDefault, prereqKeysForField } from "@/lib/field-of-study"
-import { PLANNER_CREDIT_TARGET } from "@/lib/planner-constants"
-import { formatDueDateDisplay, type NextDeadline, type RequirementDeadlineRow } from "@/lib/next-deadline"
+import { buildPlanTerms, termToDateRange } from "@/lib/build-plan-terms"
 import {
-  buildTimelineMilestones,
-  type TimelineCourseInput,
-} from "@/lib/build-timeline-milestones"
-import type { ChecklistProfileSummary } from "@/lib/checklist-task-definitions"
-import type { TimelineMilestone } from "@/types/timeline-milestone"
+  buildTaskDefinitions,
+  type ChecklistProfileSummary,
+} from "@/lib/checklist-task-definitions"
+import {
+  type ChecklistDerivedInput,
+  isChecklistTaskDerivedInProgress,
+  isChecklistTaskEffectivelyComplete,
+} from "@/lib/checklist-derived-status"
+import {
+  getCompletenessLadderState,
+  hasPathwayComplete,
+  shouldShowReadinessScore,
+} from "@/lib/completeness-ladder"
+import { buildMissingApplicationDeadline } from "@/lib/missing-application-deadline"
+import {
+  type NextDeadline,
+  type RequirementDeadlineRow,
+} from "@/lib/next-deadline"
+import {
+  buildTodayReadinessInputs,
+  todayReadinessFocusSentence,
+} from "@/lib/today-readiness-display"
+import type { ProvenanceProps } from "@/components/ui/provenance"
 import type {
-  MissingRequirement,
   OverviewData,
-  OverviewDeadline,
-  RecommendedAction,
-  RoadmapStep,
+  TodayComingUpItem,
+  TodayNextAction,
+  TodayThisTerm,
 } from "@/types/overview"
 
-function todayLabel(): string {
-  const raw = new Intl.DateTimeFormat("en-US", {
+function dateLine(): string {
+  return new Intl.DateTimeFormat("en-GB", {
     weekday: "long",
-    month: "long",
     day: "numeric",
+    month: "long",
     year: "numeric",
   }).format(new Date())
-  return raw.replace(",", " ·").toUpperCase()
 }
 
-function shortDeadlineDate(iso: string): string {
+function shortDateLabel(iso: string): string {
   const [y, m, d] = iso.split("-").map(Number)
   const dt = new Date(Date.UTC(y, m - 1, d))
-  return new Intl.DateTimeFormat("en-US", {
-    month: "short",
+  return new Intl.DateTimeFormat("en-GB", {
     day: "numeric",
+    month: "short",
+    year: "numeric",
     timeZone: "UTC",
-  })
-    .format(dt)
-    .toUpperCase()
+  }).format(dt)
 }
 
-function greetingSubcopy(
-  score: number,
-  transferTerm: string | null,
-  hasUpcomingDeadline: boolean
+function categoryMeta(category: string): string {
+  return category.replace(/_/g, " ").replace(/\b\w/g, (c) => c.toUpperCase())
+}
+
+function scopeChipLabel(
+  scope: "target" | "statewide",
+  targetSchoolName: string | null
 ): string {
-  if (!transferTerm) {
-    return "Set your target school and transfer term in Settings to unlock your timeline and deadline view."
-  }
-  if (score >= 88) {
-    return "You're in strong shape on your planner timeline. Tackle the critical action below to stay ahead of deadlines."
-  }
-  if (hasUpcomingDeadline) {
-    return "A few focused moves this week will lift your planner readiness and keep your application on track."
-  }
-  return "Review your roadmap and requirements to stay aligned with your transfer goals."
+  if (scope === "statewide") return "Statewide"
+  return targetSchoolName?.trim() || "Your target school"
 }
 
-function subMetricsFromBreakdown(b: DashboardOverallReadinessBreakdown) {
-  const academic = Math.round((b.gpa0To100 + b.credits0To100) / 2)
-  const materials = Math.round((b.checklist0To100 + b.essay0To100) / 2)
-  return [
-    { label: "Academic", value: academic },
-    { label: "Program fit", value: Math.round(b.profile0To100) },
-    { label: "Requirements", value: Math.round(b.prereq0To100) },
-    { label: "Materials", value: materials },
-  ]
+function deadlineProvenance(
+  row: Pick<RequirementDeadlineRow, "officialUrl" | "sourceCheckedAt" | "timelineScope">,
+  sourceName: string
+): ProvenanceProps {
+  return {
+    level: "verified",
+    source: sourceName,
+    checkedAt: row.sourceCheckedAt,
+    href: row.officialUrl,
+  }
 }
 
-function deltaLabel(score: number, breakdown: DashboardOverallReadinessBreakdown): string {
-  const parts: string[] = []
-  if (breakdown.credits0To100 >= 80 && breakdown.gpa0To100 >= 80) {
-    parts.push("Strong academic baseline on your profile")
-  } else if (breakdown.credits0To100 < 50 || breakdown.gpa0To100 < 50) {
-    parts.push("Academic profile still has room to grow")
+function dueDetailForDeadline(next: {
+  daysUntil: number
+  sourceCheckedAt: string | null
+}): string | null {
+  if (next.sourceCheckedAt) {
+    return `${next.daysUntil} day${next.daysUntil === 1 ? "" : "s"} away`
   }
-  parts.push(`Planner readiness at ${score}%`)
-  return parts.join(" · ")
+  return null
 }
 
-function roadmapTermLabel(m: TimelineMilestone): string {
-  const range = m.dateRange?.trim()
-  if (range && range !== "—") return range
-  return m.termLabel
+function deadlinePrimaryLabel(next: NonNullable<NextDeadline>): string {
+  const title = next.title.toLowerCase()
+  if (next.category === "financial_aid" || /fafsa|tasfa/.test(title)) {
+    return "Open FAFSA"
+  }
+  if (next.category === "application" || /applytexas|application/.test(title)) {
+    return "Open application page"
+  }
+  if (next.category === "housing") return "Open housing page"
+  if (next.category === "registration") return "Open registration page"
+  return "Open official page"
 }
 
-/** Same milestone sequence as Semester Timeline → compact Overview track. */
-export function timelineMilestonesToRoadmapSteps(milestones: TimelineMilestone[]): {
-  steps: RoadmapStep[]
-  semesterCount: number
-} {
-  const steps: RoadmapStep[] = milestones.map((m) => ({
-    title: m.phaseTitle,
-    term: roadmapTermLabel(m),
-    state: m.state,
-  }))
-  return { steps, semesterCount: milestones.length }
+function buildNextFromDeadline(
+  next: NonNullable<NextDeadline>,
+  targetSchoolName: string | null
+): TodayNextAction {
+  const sourceName =
+    next.timelineScope === "statewide"
+      ? "Statewide milestone"
+      : `${targetSchoolName?.trim() || "Target school"} admissions`
+
+  const officialUrl = next.officialUrl?.trim() || null
+
+  return {
+    title: next.title,
+    dateLabel: shortDateLabel(next.dueDateIso),
+    scopeChips: [
+      scopeChipLabel(next.timelineScope, targetSchoolName),
+      categoryMeta(next.category),
+    ],
+    dueDetail: dueDetailForDeadline(next),
+    primaryHref: officialUrl ?? "/dashboard/deadlines",
+    primaryLabel: officialUrl ? deadlinePrimaryLabel(next) : "View in Tasks & deadlines",
+    primaryExternal: Boolean(officialUrl),
+    secondaryHref: officialUrl ? "/dashboard/deadlines" : undefined,
+    secondaryLabel: officialUrl ? "Tasks & deadlines" : undefined,
+    provenance: deadlineProvenance(next, sourceName),
+  }
 }
 
-function buildPathwayFromTimeline(input: {
-  timelineCourses: TimelineCourseInput[]
-  checklistProfile: ChecklistProfileSummary
-  gpa: number | null
-  creditsCompleted: number | null
-  checklistCompleteByTaskKey: Record<string, boolean | undefined>
-  deadlineRows: RequirementDeadlineRow[]
-  nextDeadline: NextDeadline
-  essayStarted: boolean
-}): { steps: RoadmapStep[]; semesterCount: number } {
-  const { milestones } = buildTimelineMilestones({
-    courses: input.timelineCourses,
-    profile: input.checklistProfile,
-    gpa: input.gpa,
-    creditsCompleted: input.creditsCompleted,
-    checklistCompleteByTaskKey: input.checklistCompleteByTaskKey,
-    deadlineRows: input.deadlineRows,
-    nextDeadline: input.nextDeadline,
-    essayStarted: input.essayStarted,
-  })
-  return timelineMilestonesToRoadmapSteps(milestones)
+function buildNextFromChecklistTask(task: {
+  task_key: string
+  text: string
+  action?: string
+  actionHref?: string
+}): TodayNextAction {
+  const href = task.actionHref ?? "/dashboard/deadlines"
+  return {
+    title: task.text,
+    dateLabel: null,
+    scopeChips: ["Your task"],
+    dueDetail: null,
+    primaryHref: href,
+    primaryLabel: task.action?.replace(/\s*→\s*$/, "").trim() || "Open task",
+    primaryExternal: href.startsWith("http"),
+    secondaryHref: "/dashboard/deadlines",
+    secondaryLabel: "See all tasks",
+    taskKey: task.task_key,
+    provenance: {
+      level: "estimated",
+      basis: "Your task · no institutional date attached",
+    },
+  }
 }
 
-function buildMissingRequirements(
-  userCourses: UserCourseRow[],
-  fieldOfStudy: string | null,
-  gpa: number | null,
-  creditsCompleted: number | null,
-  essayStarted: boolean,
-  recommendationLettersDone: boolean,
-  officialTranscriptRequested: boolean
-): MissingRequirement[] {
-  const out: MissingRequirement[] = []
-  const keys = prereqKeysForField(fieldOfStudyOrDefault(fieldOfStudy))
+function buildComingUpFromDeadline(
+  row: RequirementDeadlineRow,
+  targetSchoolName: string | null,
+  excludeTitle: string | null
+): TodayComingUpItem | null {
+  if (excludeTitle && row.title === excludeTitle) return null
+  const sourceName =
+    row.timelineScope === "statewide"
+      ? "Statewide milestone"
+      : `${targetSchoolName?.trim() || "Target school"} admissions`
 
-  for (const key of keys) {
-    const st = getPrereqKeyStatus(key, userCourses)
-    if (st === "done") continue
-    out.push({
-      code: key.replace(/_/g, " ").toUpperCase(),
-      title: PREREQ_ROW_LABEL[key as PrereqKey] ?? key,
-      note: st === "in-progress" ? "In progress in your course list" : "Not yet on your timeline",
-    })
+  const officialUrl = row.officialUrl?.trim() || null
+  return {
+    dateLabel: shortDateLabel(row.due_date),
+    title: row.title,
+    meta: categoryMeta(row.category),
+    scopeChip: scopeChipLabel(row.timelineScope, targetSchoolName),
+    href: officialUrl ?? "/dashboard/deadlines",
+    actionLabel: officialUrl ? "Open official page" : "View",
+    provenance: deadlineProvenance(row, sourceName),
   }
-
-  if (gpa == null || gpa < 3.0) {
-    out.push({
-      code: "GPA",
-      title: gpa == null ? "GPA not on profile" : "GPA below 3.0 planner target",
-      note: "Update in Settings if your transcript reflects a higher GPA",
-    })
-  }
-
-  if (creditsCompleted == null || creditsCompleted < PLANNER_CREDIT_TARGET) {
-    out.push({
-      code: "CREDITS",
-      title: `${PLANNER_CREDIT_TARGET} credit hours (planner)`,
-      note:
-        creditsCompleted != null
-          ? `${creditsCompleted} / ${PLANNER_CREDIT_TARGET} logged`
-          : "Add completed credits in Settings",
-    })
-  }
-
-  if (!essayStarted) {
-    out.push({
-      code: "ESSAY",
-      title: "Transfer essay",
-      note: "No draft content saved yet",
-    })
-  }
-
-  if (!recommendationLettersDone) {
-    out.push({
-      code: "RECS",
-      title: "Recommendation letters",
-      note: "Request early via your checklist",
-    })
-  }
-
-  if (!officialTranscriptRequested) {
-    out.push({
-      code: "TRANSCRIPT",
-      title: "Official transcript",
-      note: "Allow time for registrar processing",
-    })
-  }
-
-  return out.slice(0, 5)
 }
 
-function buildRecommendedActions(args: {
-  overallReadinessScore: number
-  creditsCompleted: number | null
-  gpa: number | null
-  essayStarted: boolean
-  recommendationLettersDone: boolean
-  officialTranscriptRequested: boolean
-  hasTargetUniversity: boolean
-  nextDeadline: NextDeadline
-}): RecommendedAction[] {
-  type Rec = RecommendedAction & { priority: number }
-  const score = Math.round(Math.min(100, Math.max(0, args.overallReadinessScore)))
-  const out: Rec[] = []
-
-  if (!args.hasTargetUniversity) {
-    out.push({
-      eyebrow: "Decisive",
-      title: "Choose your target university",
-      body: "Deadlines and requirements stay generic until you set a target school.",
-      cta: "Open settings",
-      href: "/dashboard/settings",
-      priority: 100,
-    })
+function buildComingUpFromTask(task: {
+  task_key: string
+  text: string
+  action?: string
+  actionHref?: string
+}): TodayComingUpItem {
+  return {
+    dateLabel: "No date",
+    title: task.text,
+    meta: "Your task · no institutional date attached",
+    href: task.actionHref ?? "/dashboard/deadlines",
+    actionLabel: task.action?.replace(/\s*→\s*$/, "").trim() || "Open",
+    taskKey: task.task_key,
   }
+}
 
-  if (args.gpa == null) {
-    out.push({
-      eyebrow: "Quick win",
-      title: "Add your GPA",
-      body: "GPA feeds your readiness score and academic sub-metrics.",
-      cta: "Update profile",
-      href: "/dashboard/settings",
-      priority: 94,
-    })
-  }
+function resolveIncompleteTasks(
+  checklistProfile: ChecklistProfileSummary,
+  checklistCompleteByTaskKey: Record<string, boolean | undefined>,
+  derived: ChecklistDerivedInput
+) {
+  const sections = buildTaskDefinitions(checklistProfile)
+  const out: {
+    task_key: string
+    text: string
+    action?: string
+    actionHref?: string
+    priority: number
+  }[] = []
 
-  if (!args.essayStarted) {
-    out.push({
-      eyebrow: "High impact",
-      title: "Start your transfer essay",
-      body: "Capture a first draft in the essay workspace — even bullet points count.",
-      cta: "Open essay workspace",
-      href: "/dashboard/essay",
-      priority: 92,
-    })
-  }
-
-  if (args.creditsCompleted == null) {
-    out.push({
-      eyebrow: "Quick win",
-      title: "Log completed credits",
-      body: `We track progress toward ${PLANNER_CREDIT_TARGET} credits in your planner.`,
-      cta: "Add credits",
-      href: "/dashboard/settings",
-      priority: 88,
-    })
-  } else if (args.creditsCompleted < PLANNER_CREDIT_TARGET) {
-    out.push({
-      eyebrow: "High impact",
-      title: `Plan ${PLANNER_CREDIT_TARGET - args.creditsCompleted} more credits`,
-      body: `You have ${args.creditsCompleted} / ${PLANNER_CREDIT_TARGET} credits on file.`,
-      cta: "Open timeline",
-      href: "/dashboard/timeline",
-      priority: 86,
-    })
-  }
-
-  if (!args.recommendationLettersDone) {
-    out.push({
-      eyebrow: "High impact",
-      title: "Request recommendation letters",
-      body: "Give recommenders several weeks — track progress on your checklist.",
-      cta: "Open checklist",
-      href: "/dashboard/checklist",
-      priority: 80,
-    })
-  }
-
-  if (args.nextDeadline && args.nextDeadline.daysUntil <= 180) {
-    const dl = args.nextDeadline
-    out.push({
-      eyebrow: dl.daysUntil <= 30 ? "Decisive" : "Quick win",
-      title: dl.title.slice(0, 64),
-      body: `${dl.dueDate} · ${dl.daysUntil} day${dl.daysUntil === 1 ? "" : "s"} out`,
-      cta: "Review requirements",
-      href: "/dashboard/requirements",
-      priority: dl.daysUntil <= 30 ? 98 : 70,
-    })
-  }
-
-  if (score < 88) {
-    out.push({
-      eyebrow: "Quick win",
-      title: "Review requirements",
-      body: `Planner readiness is ${score}% — close gaps before deadlines stack up.`,
-      cta: "View requirements",
-      href: "/dashboard/requirements",
-      priority: 58,
-    })
+  for (const section of sections) {
+    for (const task of section.tasks) {
+      const manual = checklistCompleteByTaskKey[task.task_key]
+      if (isChecklistTaskEffectivelyComplete(task.task_key, manual, derived)) continue
+      const priority =
+        section.title === "Application Tasks"
+          ? 80
+          : section.title === "Academic Tasks"
+            ? 60
+            : 40
+      out.push({
+        task_key: task.task_key,
+        text: task.text,
+        action: task.action,
+        actionHref: task.actionHref,
+        priority: isChecklistTaskDerivedInProgress(task.task_key, derived) ? priority + 5 : priority,
+      })
+    }
   }
 
   out.sort((a, b) => b.priority - a.priority)
-  const seen = new Set<string>()
-  const deduped: Rec[] = []
-  for (const r of out) {
-    if (seen.has(r.href)) continue
-    seen.add(r.href)
-    deduped.push(r)
+  return out
+}
+
+function buildThisTerm(input: {
+  timelineCourses: {
+    id: string
+    course_name: string
+    status: "completed" | "in_progress" | "planned"
+    semester_taken: string | null
+  }[]
+  expectedTransferTerm: string | null
+  targetSchoolName: string | null
+}): TodayThisTerm | null {
+  const plan = buildPlanTerms({
+    courses: input.timelineCourses,
+    expectedTransferTerm: input.expectedTransferTerm,
+    targetSchoolName: input.targetSchoolName,
+  })
+
+  const current = plan.sections.find(
+    (s) => s.kind === "calendar" && s.temporalState === "current"
+  )
+  if (!current) return null
+
+  const inProgress = current.courses.filter((c) => c.status === "in_progress")
+  const planned = current.courses.filter((c) => c.status === "planned")
+  const completed = current.courses.filter((c) => c.status === "completed")
+
+  let summary = "No courses in this term"
+  if (inProgress.length > 0) {
+    summary = `${inProgress.length} course${inProgress.length === 1 ? "" : "s"} in progress`
+  } else if (planned.length > 0) {
+    summary = `${planned.length} course${planned.length === 1 ? "" : "s"} planned`
+  } else if (completed.length > 0) {
+    summary = `${completed.length} course${completed.length === 1 ? "" : "s"} completed`
   }
-  return deduped.slice(0, 3).map(({ priority: _p, ...rest }) => rest)
-}
 
-function deadlineTone(category: string): OverviewDeadline["tone"] {
-  const c = category.toLowerCase()
-  if (c.includes("application") || c.includes("priority")) return "accent"
-  if (c.includes("complete") || c.includes("funding")) return "success"
-  return "muted"
-}
+  const preview = inProgress[0] ?? planned[0] ?? completed[0] ?? null
 
-function mapDeadlines(rows: RequirementDeadlineRow[]): OverviewDeadline[] {
-  return rows.slice(0, 6).map((r) => ({
-    date: shortDeadlineDate(r.due_date),
-    title: r.title,
-    tag: r.category.replace(/_/g, " ").toUpperCase().slice(0, 24),
-    tone: deadlineTone(r.category),
-    href: r.officialUrl ?? "/dashboard/requirements",
-  }))
+  return {
+    termLabel: current.termLabel,
+    dateRange: current.dateRange || termToDateRange(current.termLabel),
+    summary,
+    previewTitle: preview?.course_name ?? null,
+    previewMeta: preview ? preview.status.replace(/_/g, " ") : null,
+  }
 }
 
 export function buildOverviewData(input: {
   displayName: string
-  greeting: string
   currentSchoolName: string | null
   targetSchoolName: string | null
+  targetUniversityId: string | null
+  targetWebsite: string | null
+  deadlineSourceUrl: string | null
   targetMajor: string | null
   transferTerm: string | null
   overallReadinessScore: number
   readinessBreakdown: DashboardOverallReadinessBreakdown
   nextDeadline: NextDeadline
   deadlineRows: RequirementDeadlineRow[]
-  timelineCourses: TimelineCourseInput[]
+  timelineCourses: {
+    id: string
+    course_name: string
+    status: "completed" | "in_progress" | "planned"
+    semester_taken: string | null
+  }[]
   checklistProfile: ChecklistProfileSummary
   checklistCompleteByTaskKey: Record<string, boolean | undefined>
   userCourseRows: UserCourseRow[]
@@ -338,125 +300,144 @@ export function buildOverviewData(input: {
   gpa: number | null
   creditsCompleted: number | null
   essayStarted: boolean
-  recommendationLettersDone: boolean
-  officialTranscriptRequested: boolean
   hasTargetUniversity: boolean
+  courseCount: number
 }): OverviewData {
-  const firstName = input.displayName.split(/\s+/)[0] || "there"
   const score = Math.round(Math.min(100, Math.max(0, input.overallReadinessScore)))
-
-  const originLabel = input.currentSchoolName?.trim() || "your current school"
-  const targetSchoolLabel =
-    input.targetSchoolName?.trim() ?? input.targetMajor?.trim() ?? "your target program"
-  const targetMajor = input.targetMajor?.trim() ?? null
-
-  const { steps, semesterCount } = buildPathwayFromTimeline({
-    timelineCourses: input.timelineCourses,
-    checklistProfile: input.checklistProfile,
-    gpa: input.gpa,
-    creditsCompleted: input.creditsCompleted,
-    checklistCompleteByTaskKey: input.checklistCompleteByTaskKey,
-    deadlineRows: input.deadlineRows,
-    nextDeadline: input.nextDeadline,
-    essayStarted: input.essayStarted,
+  const pathway = {
+    fromInstitution: input.currentSchoolName?.trim() || "Current school not set",
+    toInstitution: input.targetSchoolName?.trim() || "Target school not set",
+    program: input.targetMajor?.trim() || input.fieldOfStudy?.trim() || "Program not set",
+    term: input.transferTerm?.trim() || "Term not set",
+  }
+  const pathwayComplete = hasPathwayComplete({
+    hasTargetSchool: input.hasTargetUniversity,
+    hasExpectedTransferTerm: Boolean(input.transferTerm?.trim()),
   })
 
-  const missingRequirements = buildMissingRequirements(
-    input.userCourseRows,
-    input.fieldOfStudy,
-    input.gpa,
-    input.creditsCompleted,
-    input.essayStarted,
-    input.recommendationLettersDone,
-    input.officialTranscriptRequested
+  const completenessLadderState = getCompletenessLadderState({
+    hasTargetSchool: input.hasTargetUniversity,
+    hasExpectedTransferTerm: Boolean(input.transferTerm?.trim()),
+    courseCount: input.courseCount,
+    nearestDeadlineDaysUntil: input.nextDeadline?.daysUntil ?? null,
+  })
+
+  if (!pathwayComplete) {
+    return {
+      completenessLadderState,
+      dateLine: dateLine(),
+      pathway,
+      pathwayPrompt: {
+        title: "Where are you hoping to transfer, and when?",
+        body: "Those two answers decide which deadlines, requirements and terms we can show you. Everything else on TransferPath follows from them, so there is nothing useful we can put on this screen until we have them.",
+        settingsHref: "/dashboard/settings",
+      },
+      nextAction: null,
+      comingUp: [],
+      thisTerm: null,
+      needsDate: null,
+      readiness: null,
+    }
+  }
+
+  const derived: ChecklistDerivedInput = {
+    userCourses: input.userCourseRows,
+    fieldOfStudy: input.fieldOfStudy,
+    creditsCompleted: input.creditsCompleted,
+    gpa: input.gpa,
+    essayHasContent: input.essayStarted,
+  }
+
+  const incompleteTasks = resolveIncompleteTasks(
+    input.checklistProfile,
+    input.checklistCompleteByTaskKey,
+    derived
   )
 
-  const recommendedActions = buildRecommendedActions({
-    overallReadinessScore: score,
-    creditsCompleted: input.creditsCompleted,
-    gpa: input.gpa,
-    essayStarted: input.essayStarted,
-    recommendationLettersDone: input.recommendationLettersDone,
-    officialTranscriptRequested: input.officialTranscriptRequested,
-    hasTargetUniversity: input.hasTargetUniversity,
-    nextDeadline: input.nextDeadline,
+  let nextAction: TodayNextAction | null = null
+  if (input.nextDeadline) {
+    nextAction = buildNextFromDeadline(input.nextDeadline, input.targetSchoolName)
+  } else if (input.courseCount < 1 && incompleteTasks.length === 0) {
+    nextAction = {
+      title: "Add your first course",
+      dateLabel: null,
+      scopeChips: [input.transferTerm?.trim() || "Your plan"],
+      dueDetail: null,
+      primaryHref: "/dashboard/plan",
+      primaryLabel: "Open Plan",
+      provenance: {
+        level: "estimated",
+        basis: "Your plan starts with the courses you have taken and intend to take before your entry term.",
+      },
+    }
+  } else if (incompleteTasks[0]) {
+    nextAction = buildNextFromChecklistTask(incompleteTasks[0])
+  }
+
+  const comingUp: TodayComingUpItem[] = []
+  const nextTitle = input.nextDeadline?.title ?? null
+  for (const row of input.deadlineRows) {
+    if (comingUp.length >= 2) break
+    const item = buildComingUpFromDeadline(row, input.targetSchoolName, nextTitle)
+    if (item) comingUp.push(item)
+  }
+
+  let taskIdx = nextAction && !input.nextDeadline ? 1 : 0
+  while (comingUp.length < 2 && incompleteTasks[taskIdx]) {
+    const task = incompleteTasks[taskIdx]
+    if (!nextAction || task.text !== nextAction.title) {
+      comingUp.push(buildComingUpFromTask(task))
+    }
+    taskIdx++
+  }
+
+  const thisTerm = buildThisTerm({
+    timelineCourses: input.timelineCourses,
+    expectedTransferTerm: input.transferTerm,
+    targetSchoolName: input.targetSchoolName,
   })
 
-  const deadlines = mapDeadlines(input.deadlineRows)
-  const nextDl = input.nextDeadline
+  const needsDate = buildMissingApplicationDeadline({
+    deadlineRows: input.deadlineRows,
+    targetUniversityId: input.targetUniversityId,
+    expectedTransferTerm: input.transferTerm,
+    targetSchoolName: input.targetSchoolName,
+    deadlineSourceUrl: input.deadlineSourceUrl,
+    targetWebsite: input.targetWebsite,
+  })
 
-  let nextActionTitle = "Review your transfer requirements"
-  let nextActionDue = "Set a target school to see personalized deadlines"
-  let primaryHref = "/dashboard/requirements"
-
-  if (missingRequirements[0] && !nextDl) {
-    nextActionTitle = missingRequirements[0].title
-    nextActionDue = missingRequirements[0].note
-    primaryHref = "/dashboard/requirements"
-  }
-
-  if (nextDl) {
-    nextActionTitle = nextDl.title
-    nextActionDue = `Due ${formatDueDateDisplay(nextDl.dueDateIso)} · ${nextDl.daysUntil} day${nextDl.daysUntil === 1 ? "" : "s"} away`
-    primaryHref = nextDl.officialUrl ?? "/dashboard/requirements"
-  }
-
-  const followUp =
-    recommendedActions[1] != null
-      ? `${recommendedActions[1].title} · ${recommendedActions[1].cta}`
-      : missingRequirements[1]
-        ? `${missingRequirements[1].title}`
-        : undefined
+  const readiness = shouldShowReadinessScore(completenessLadderState)
+    ? {
+        score,
+        oneLiner: "How complete your plan is — not a prediction of admission.",
+        inputs: buildTodayReadinessInputs({
+          breakdown: input.readinessBreakdown,
+          userCourses: input.userCourseRows,
+          fieldOfStudy: input.fieldOfStudy,
+          creditsCompleted: input.creditsCompleted,
+          gpa: input.gpa,
+          essayStarted: input.essayStarted,
+          hasTargetUniversity: input.hasTargetUniversity,
+          expectedTransferTerm: input.transferTerm,
+          displayName: input.displayName,
+        }),
+        focusSentence: todayReadinessFocusSentence(
+          input.readinessBreakdown,
+          input.creditsCompleted
+        ),
+        showGpaNullNote: input.gpa == null,
+      }
+    : null
 
   return {
-    user: {
-      firstName,
-      todayLabel: todayLabel(),
-      greetingLine: `${input.greeting}, ${firstName}.`,
-      subcopy: greetingSubcopy(
-        score,
-        input.transferTerm,
-        Boolean(input.nextDeadline || deadlines.length > 0)
-      ),
-    },
-    pathway: {
-      originLabel,
-      targetLabel: targetSchoolLabel,
-      targetMajor,
-      semesterCount,
-      progressPct: score,
-      steps,
-    },
-    readiness: {
-      score,
-      deltaLabel: deltaLabel(score, input.readinessBreakdown),
-      subMetrics: subMetricsFromBreakdown(input.readinessBreakdown),
-    },
-    nextAction: {
-      title: nextActionTitle,
-      dueLabel: nextActionDue,
-      primaryHref,
-      followUpLabel: followUp,
-    },
-    deadlines:
-      deadlines.length > 0
-        ? deadlines
-        : input.nextDeadline
-          ? [
-              {
-                date: shortDeadlineDate(input.nextDeadline.dueDateIso),
-                title: input.nextDeadline.title,
-                tag: "DEADLINE",
-                tone: "accent" as const,
-                href: input.nextDeadline.officialUrl ?? "/dashboard/requirements",
-              },
-            ]
-          : [],
-    deadlinesCycleLabel: input.transferTerm
-      ? `${input.transferTerm} cycle`
-      : undefined,
-    missingRequirements,
-    recommendedActions,
-    recommendedHeadline: "What to work on next",
+    completenessLadderState,
+    dateLine: dateLine(),
+    pathway,
+    pathwayPrompt: null,
+    nextAction,
+    comingUp,
+    thisTerm,
+    needsDate,
+    readiness,
   }
 }

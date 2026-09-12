@@ -35,7 +35,7 @@ export function RequirementsCard({
         creditsCompleted != null && creditsCompleted >= PLANNER_CREDIT_TARGET,
     },
     {
-      text: "Minimum 3.0 GPA",
+      text: "3.0 GPA (planner benchmark)",
       done: gpa != null && gpa >= 3.0,
     },
   ]

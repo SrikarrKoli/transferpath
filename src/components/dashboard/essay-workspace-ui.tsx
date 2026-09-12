@@ -1,7 +1,10 @@
 "use client"
 
 import { useMemo, type ReactNode } from "react"
+import { Meter } from "@/components/ui/progress"
+import { Provenance } from "@/components/ui/provenance"
 import { cn } from "@/lib/utils"
+import { useHall } from "@/components/campus-ui/hall-context"
 
 export interface EssayMeta {
   title: string
@@ -9,6 +12,8 @@ export interface EssayMeta {
   tagline?: string
   prompt: string
   wordLimit: number
+  /** True when the limit is our 650-word default rather than one the student entered. */
+  wordLimitIsDefault?: boolean
   autosaveLabel?: string
   eyebrow?: string
 }
@@ -49,7 +54,7 @@ export function EssayWorkspaceUi({
   coachNotes = [],
   coachTitle = "Three notes on this draft",
   strengthSignals = [],
-  strengthsTitle = "What admissions will see",
+  strengthsTitle = "What this draft currently does",
   reference,
   onPreview,
   onSave,
@@ -69,31 +74,101 @@ export function EssayWorkspaceUi({
   )
   const pct = Math.min(100, Math.round((wordCount / Math.max(1, essay.wordLimit)) * 100))
   const overLimit = wordCount > essay.wordLimit
+  const hall = useHall()
+
+  if (hall) {
+    return (
+      <div className={className}>
+        <p className="hall-prompt">{essay.prompt}</p>
+        {settingsSlot ? <div className="mt-4">{settingsSlot}</div> : null}
+        <div className="hall-plan-toolbar mt-5">
+          <p className="hall-caption">
+            Draft for your transfer application. Save often — coach notes update after you pause.
+          </p>
+          <div className="flex flex-wrap gap-x-4 gap-y-2">
+            {onPreview ? (
+              <button type="button" onClick={onPreview} className="hall-ledger-link">
+                {previewLabel}
+              </button>
+            ) : null}
+            {onSave ? (
+              <button
+                type="button"
+                onClick={onSave}
+                disabled={saving}
+                className="hall-ledger-link hall-plan-add"
+              >
+                {saving ? "Saving…" : saveLabel}
+              </button>
+            ) : null}
+          </div>
+        </div>
+        <textarea
+          value={value}
+          onChange={(e) => onChange(e.target.value)}
+          className="hall-draft"
+          placeholder="Draft here."
+          aria-label="Essay draft"
+        />
+        <div className="mt-5 flex flex-wrap items-end justify-between gap-4">
+          <p>
+            <span className={cn("hall-count", overLimit && "hall-urgent")}>{wordCount}</span>
+            <span className="ml-2 text-[color:var(--hall-stone)]">/ {essay.wordLimit}</span>
+          </p>
+          <div className="flex gap-4">
+            {onSave ? (
+              <button type="button" onClick={onSave} disabled={saving} className="hall-ledger-link">
+                {saving ? "Saving…" : saveLabel}
+              </button>
+            ) : null}
+          </div>
+        </div>
+        {coachNotes.length > 0 || strengthSignals.length > 0 ? (
+          <div className="mt-10 grid gap-10 sm:grid-cols-2">
+            {coachNotes.length > 0 ? (
+              <ul className="hall-margin space-y-2">
+                {coachNotes.map((note) => (
+                  <li key={note}>{note}</li>
+                ))}
+              </ul>
+            ) : null}
+            {strengthSignals.length > 0 ? (
+              <ul className="hall-margin space-y-2">
+                {strengthSignals.map((note) => (
+                  <li key={note}>{note}</li>
+                ))}
+              </ul>
+            ) : null}
+          </div>
+        ) : null}
+      </div>
+    )
+  }
 
   return (
-    <div className={cn("mx-auto max-w-7xl space-y-8 animate-fade-in tp-stagger-children", className)}>
-      <header className="flex flex-col items-start justify-between gap-6 md:flex-row md:items-end">
+    <div className={cn("essay-workspace mx-auto max-w-7xl animate-fade-in tp-stagger-children", className)}>
+      <header className="essay-workspace-header">
         <div>
-          <p className="text-[11px] font-medium uppercase tracking-widest text-accent">
+          <p className="tp-eyebrow text-accent">
             {essay.eyebrow ?? "Essay workspace"}
           </p>
-          <h1 className="mt-3 font-heading text-3xl font-semibold tracking-tight text-foreground md:text-4xl">
+          <h1 className="essay-workspace-title">
             {essay.title}
             {essay.subtitle ? (
               <span className="font-normal text-muted-foreground"> — {essay.subtitle}</span>
             ) : null}
           </h1>
           {essay.tagline ? (
-            <p className="mt-2 max-w-xl text-sm leading-relaxed text-muted-foreground md:text-[15px]">
+            <p className="essay-workspace-deck">
               {essay.tagline}
             </p>
           ) : null}
         </div>
-        <div className="flex flex-wrap items-center gap-3">
+        <div className="essay-workspace-actions">
           <button
             type="button"
             onClick={onPreview}
-            className="inline-flex items-center gap-2 rounded-sm border border-border-strong bg-card px-4 py-2.5 text-sm font-medium transition-colors hover:bg-muted"
+            className="essay-action essay-action-secondary"
           >
             {previewIcon}
             {previewLabel}
@@ -102,7 +177,7 @@ export function EssayWorkspaceUi({
             type="button"
             onClick={onSave}
             disabled={saving}
-            className="inline-flex items-center gap-2 rounded-sm bg-primary px-4 py-2.5 text-sm font-medium text-primary-foreground transition-colors hover:bg-primary/90 disabled:opacity-70"
+            className="essay-action essay-action-primary"
           >
             {saveIcon}
             {saving ? "Saving…" : saveLabel}
@@ -110,34 +185,70 @@ export function EssayWorkspaceUi({
         </div>
       </header>
 
-      <div className="grid gap-6 lg:grid-cols-12">
-        <div className="relative overflow-hidden rounded-2xl border border-border bg-card shadow-xl shadow-primary/5 lg:col-span-8">
-          <div className="absolute left-0 right-0 top-0 h-1 bg-accent" aria-hidden />
-
-          <div className="border-b border-border px-6 pt-8 pb-6 sm:px-10 sm:pt-10">
-            <p className="text-[11px] font-medium uppercase tracking-widest text-muted-foreground">
+      <div className="essay-desk-layout">
+        <div className="essay-paper">
+          <div className="essay-prompt-block">
+            <p className="tp-eyebrow text-muted-foreground">
               Prompt
             </p>
             <p className="mt-2 text-base leading-relaxed text-foreground/85">
               {essay.prompt}
             </p>
-            {settingsSlot ? <div className="mt-5">{settingsSlot}</div> : null}
+            {settingsSlot ? <div className="essay-prompt-settings">{settingsSlot}</div> : null}
           </div>
 
-          <div className="px-6 py-6 sm:px-10 sm:py-8">
-            <textarea
-              value={value}
-              onChange={(e) => onChange(e.target.value)}
-              className="min-h-[440px] w-full resize-y border-0 bg-transparent font-heading text-xl leading-[1.7] text-foreground outline-none placeholder:text-muted-foreground/40 focus:ring-0"
-              placeholder="Start writing your draft here…"
-              aria-label="Essay draft"
-            />
+          <div className="essay-writing-spread">
+            <div className="essay-writing-field">
+              <textarea
+                value={value}
+                onChange={(e) => onChange(e.target.value)}
+                className="essay-textarea"
+                placeholder="Start writing your draft here…"
+                aria-label="Essay draft"
+              />
+            </div>
+
+            <aside className="essay-margin-notes" aria-label="Manuscript marginalia">
+              {coachNotes.length > 0 ? (
+                <CoachPanel
+                  icon={sparklesIcon}
+                  label="Coach marginalia"
+                  title={coachTitle}
+                  items={coachNotes}
+                />
+              ) : null}
+              {strengthSignals.length > 0 ? (
+                <CoachPanel
+                  icon={wandIcon}
+                  label="Strength marks"
+                  title={strengthsTitle}
+                  items={strengthSignals}
+                />
+              ) : null}
+              {reference ? (
+                <div className="essay-reference-note">
+                  <p className="tp-eyebrow text-muted-foreground">
+                    {reference.eyebrow}
+                  </p>
+                  <p className="mt-3 text-base leading-relaxed text-foreground/90">
+                    {reference.body}
+                  </p>
+                  <button
+                    type="button"
+                    onClick={reference.onCtaClick}
+                    className="essay-reference-link"
+                  >
+                    {reference.ctaLabel}
+                  </button>
+                </div>
+              ) : null}
+            </aside>
           </div>
 
-          <div className="flex flex-col gap-4 border-t border-border px-6 py-4 sm:flex-row sm:items-center sm:justify-between sm:px-10">
+          <div className="essay-paper-footer">
             <div className="flex items-center gap-6">
               <div>
-                <p className="text-[11px] uppercase tracking-widest text-muted-foreground">
+                <p className="tp-eyebrow text-muted-foreground">
                   Word count
                 </p>
                 <p
@@ -149,62 +260,31 @@ export function EssayWorkspaceUi({
                   {wordCount}{" "}
                   <span className="text-muted-foreground">/ {essay.wordLimit}</span>
                 </p>
+                {essay.wordLimitIsDefault ? (
+                  <Provenance
+                    level="estimated"
+                    basis="Typical limit — confirm your school's prompt"
+                    className="mt-1"
+                  />
+                ) : null}
               </div>
               <div className="h-8 w-32">
-                <div className="mt-3 h-1 overflow-hidden rounded-full bg-muted">
-                  <div
-                    className={cn(
-                      "h-full rounded-full transition-all duration-300",
-                      overLimit || pct > 95 ? "bg-accent" : "bg-success"
-                    )}
-                    style={{ width: `${pct}%` }}
-                  />
-                </div>
+                <Meter
+                  value={pct}
+                  label={`Word count: ${wordCount} of ${essay.wordLimit}`}
+                  tone={overLimit || pct > 95 ? "accent" : "success"}
+                  className="mt-3"
+                />
               </div>
             </div>
             {essay.autosaveLabel ? (
-              <p className="text-[11px] uppercase tracking-widest text-muted-foreground">
+              <p className="tp-eyebrow text-muted-foreground">
                 {essay.autosaveLabel}
               </p>
             ) : null}
           </div>
         </div>
 
-        <aside className="space-y-4 lg:col-span-4">
-          {coachNotes.length > 0 ? (
-            <CoachPanel
-              icon={sparklesIcon}
-              label="Coach"
-              title={coachTitle}
-              items={coachNotes}
-            />
-          ) : null}
-          {strengthSignals.length > 0 ? (
-            <CoachPanel
-              icon={wandIcon}
-              label="Strength signals"
-              title={strengthsTitle}
-              items={strengthSignals}
-            />
-          ) : null}
-          {reference ? (
-            <div className="rounded-xl border border-border border-l-4 border-l-accent bg-card p-6">
-              <p className="text-[11px] font-medium uppercase tracking-widest text-muted-foreground">
-                {reference.eyebrow}
-              </p>
-              <p className="mt-3 text-base leading-relaxed text-foreground/90">
-                {reference.body}
-              </p>
-              <button
-                type="button"
-                onClick={reference.onCtaClick}
-                className="mt-5 w-full rounded-md border border-border-strong py-2.5 text-sm font-medium text-foreground transition hover:bg-muted"
-              >
-                {reference.ctaLabel}
-              </button>
-            </div>
-          ) : null}
-        </aside>
       </div>
     </div>
   )
@@ -222,10 +302,10 @@ function CoachPanel({
   items: string[]
 }) {
   return (
-    <div className="rounded-2xl border border-border bg-card p-6 tp-interactive-panel">
-      <div className="mb-4 inline-flex items-center gap-2 rounded-full border border-accent/30 bg-accent-soft px-2.5 py-1 text-accent">
+    <div className="essay-coach-note tp-interactive-panel">
+      <div className="essay-note-label">
         {icon}
-        <span className="text-[11px] font-medium uppercase tracking-widest">{label}</span>
+        <span className="tp-eyebrow">{label}</span>
       </div>
       <p className="mb-3 font-heading text-lg leading-snug text-foreground">{title}</p>
       <ul className="space-y-2.5">

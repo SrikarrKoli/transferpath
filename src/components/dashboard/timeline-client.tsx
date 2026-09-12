@@ -316,13 +316,13 @@ export function TimelineClient({
   return (
     <div className="mx-auto max-w-3xl space-y-10 tp-stagger-children">
       <div className="space-y-4">
-        <p className="text-[11px] font-medium uppercase tracking-widest text-accent">
-          Timeline
+        <p className="tp-eyebrow text-accent">
+          Plan
         </p>
         <h1 className="font-heading text-balance text-3xl font-semibold tracking-tight text-foreground md:text-4xl">
-          Semester timeline
+          Your plan
         </h1>
-        <p className="max-w-2xl text-sm leading-relaxed text-muted-foreground md:text-[15px]">
+        <p className="max-w-2xl text-sm leading-relaxed text-muted-foreground md:text-body">
           {journeySubtitle}
         </p>
         {(!checklistProfile.targetUniversityName ||
@@ -343,7 +343,7 @@ export function TimelineClient({
         id="semester-roadmap"
         className="flex scroll-mt-24 flex-wrap items-center justify-between gap-4 border-b border-border pb-6"
       >
-        <span className="text-[11px] font-medium uppercase tracking-widest text-muted-foreground">
+        <span className="tp-eyebrow text-muted-foreground">
           Semester roadmap
         </span>
         <div className="flex items-center gap-3">

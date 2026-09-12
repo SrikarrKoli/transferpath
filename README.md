@@ -12,7 +12,7 @@
 
 | Area | What it does |
 |------|----------------|
-| **Landing** | Marketing home: how it works, schools, sign-up CTA |
+| **Landing** | Interactive 3D campus city (orbit/pan/zoom, click buildings) mapped to product areas |
 | **Onboarding** | 5-step wizard: current school, target school, major, field of study, transfer term |
 | **Overview** | Readiness score, next critical action, roadmap (same phases as Timeline), deadlines, gaps |
 | **Semester Timeline** | Journey map: Foundation & core → Major prerequisites → Essay → Application → Target enrollment; add/edit courses |
@@ -194,6 +194,12 @@ Uses `deadline_reminder_recipients()` and Resend. See migration `20260521200000_
 | `npm run build` | Production build |
 | `npm run start` | Run production build locally |
 | `npm run lint` | ESLint |
+
+---
+
+## 3D campus assets
+
+The landing map is a realtime Three.js city assembled from Kenney CC0 GLB kits (commercial, suburban, roads, industrial, castle, nature, cars, mini characters). Licenses and pack links: [`public/campus/ASSETS.md`](./public/campus/ASSETS.md).
 
 ---
 

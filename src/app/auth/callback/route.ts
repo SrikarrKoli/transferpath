@@ -1,6 +1,7 @@
 import { createServerClient } from "@supabase/ssr"
 import { cookies } from "next/headers"
 import { NextResponse } from "next/server"
+import { safeCampusReturnPath } from "@/lib/campus-immersion"
 import { supabaseAnonKey, supabaseUrl } from "@/lib/supabase/env"
 
 export async function GET(request: Request) {
@@ -30,7 +31,8 @@ export async function GET(request: Request) {
     const { error } = await supabase.auth.exchangeCodeForSession(code)
 
     if (!error) {
-      return NextResponse.redirect(`${origin}/dashboard`)
+      const next = safeCampusReturnPath(searchParams.get("next")) ?? "/dashboard"
+      return NextResponse.redirect(`${origin}${next}`)
     }
   }
 

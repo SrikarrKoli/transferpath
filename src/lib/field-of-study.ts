@@ -23,9 +23,6 @@ export const FIELD_OF_STUDY_VALUES: readonly FieldOfStudy[] = [
 
 const FIELD_SET = new Set<string>(FIELD_OF_STUDY_VALUES)
 
-export const OFFICIAL_PREREQ_DISCLAIMER =
-  "Admission and prerequisite rules vary—always confirm your target university’s official transfer guides."
-
 /** UI: onboarding + settings — one-line helper under each option. */
 export const FIELD_OF_STUDY_OPTIONS: {
   value: FieldOfStudy

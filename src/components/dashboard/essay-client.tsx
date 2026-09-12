@@ -2,7 +2,7 @@
 
 import { useMemo, useState } from "react"
 import { useRouter } from "next/navigation"
-import { Eye, Save, Sparkles, Wand2 } from "lucide-react"
+import { Eye, Save } from "lucide-react"
 import { createClient } from "@/lib/supabase/client"
 import { Input } from "@/components/ui/input"
 import { EssayWorkspaceUi } from "@/components/dashboard/essay-workspace-ui"
@@ -178,121 +178,138 @@ export function EssayClient({ userId, initialEssayMap, profile }: EssayClientPro
   }
 
   const tgt = profile.targetUniversityName?.trim()
+  const from = profile.currentUniversityName?.trim() || "Current school not set"
+  const to = tgt || "Target school not set"
 
   return (
-    <div className="space-y-6">
-      <div className="flex gap-2 overflow-x-auto pb-1">
-        {PROMPT_TYPES.map((prompt) => {
-          const essay = essayMap[prompt.id]
-          const wc = essay ? countWords(essay.content ?? "") : 0
-          const isActive = activeType === prompt.id
-          return (
-            <button
-              key={prompt.id}
-              type="button"
-              onClick={() => handleTypeSwitch(prompt.id)}
-              className={cn(
-                "shrink-0 rounded-full border px-4 py-2 text-left text-sm font-medium transition-colors",
-                isActive
-                  ? "border-accent/40 bg-accent-soft text-foreground"
-                  : "border-border bg-card text-muted-foreground hover:border-border-strong hover:text-foreground"
-              )}
-            >
-              <span className="block">{prompt.label}</span>
-              <span className="mt-0.5 block text-[11px] uppercase tracking-wider text-muted-foreground">
-                {wc >= 50 ? `${wc} words` : "Not started"}
-              </span>
-            </button>
-          )
-        })}
-      </div>
-
-      {saveError ? (
-        <p className="text-sm text-destructive" role="alert">
-          {saveError}
-        </p>
-      ) : null}
-
-      <EssayWorkspaceUi
-        essay={{
-          eyebrow: "Essay workspace",
-          title,
-          subtitle,
-          tagline: "Draft, revise, and save your transfer essay in one place.",
-          prompt: displayPrompt,
-          wordLimit,
-          autosaveLabel: formatEssayAutosaveLabel(savedAt, saving),
-        }}
-        value={content}
-        onChange={(v) => updateField({ content: v, word_count: countWords(v) })}
-        coachNotes={coachNotes}
-        strengthSignals={strengthSignals}
-        reference={{
-          ...reference,
-          onCtaClick: () => router.push("/dashboard/requirements"),
-        }}
-        onPreview={() => setPreviewOpen(true)}
-        onSave={() => void handleSave()}
-        saving={saving}
-        previewIcon={<Eye className="h-4 w-4" strokeWidth={1.5} />}
-        saveIcon={<Save className="h-4 w-4" strokeWidth={1.5} />}
-        sparklesIcon={<Sparkles className="h-3.5 w-3.5" strokeWidth={1.5} />}
-        wandIcon={<Wand2 className="h-3.5 w-3.5" strokeWidth={1.5} />}
-        settingsSlot={
-          <div className="grid gap-3 sm:grid-cols-2">
-            <div className="space-y-1.5 sm:col-span-2">
-              <label
-                htmlFor="essay-school-prompt"
-                className="text-[11px] uppercase tracking-widest text-muted-foreground"
-              >
-                Your school&apos;s exact prompt (optional)
-              </label>
-              <Input
-                id="essay-school-prompt"
-                placeholder={
-                  tgt
-                    ? `Paste ${tgt}'s essay question here…`
-                    : "Paste your school's essay question here…"
-                }
-                value={customTitle}
-                onChange={(e) => updateField({ title: e.target.value || null })}
-                className="h-10 bg-background"
-              />
-            </div>
-            <div className="space-y-1.5">
-              <label
-                htmlFor="essay-word-limit"
-                className="text-[11px] uppercase tracking-widest text-muted-foreground"
-              >
-                Word limit
-              </label>
-              <Input
-                id="essay-word-limit"
-                type="number"
-                min={50}
-                max={5000}
-                placeholder="650"
-                value={wordLimit}
-                onChange={(e) => {
-                  const parsed = parseInt(e.target.value, 10)
-                  updateField({ word_limit: Number.isNaN(parsed) ? 650 : parsed })
-                }}
-                className="h-10 w-full max-w-[140px] bg-background"
-              />
-            </div>
+    <div className="library-workspace">
+      <section className="library-manuscript" aria-label="Transfer essay manuscript desk">
+        <div className="library-route-line">
+          <p className="tp-eyebrow">Writing route</p>
+          <p><span>{from}</span><span aria-hidden> → </span><strong>{to}</strong></p>
+          <p>{profile.targetMajor ?? profile.fieldOfStudy ?? "Program not set"} · {profile.expectedTransferTerm ?? "Term not set"}</p>
+        </div>
+        <nav className="library-prompt-index" aria-label="Essay prompts">
+          <div className="library-index-heading">
+            <p className="library-index-label">Manuscript index</p>
+            <p>Five working drafts · select a leaf</p>
           </div>
-        }
-      />
+          <div className="library-prompt-tabs">
+            {PROMPT_TYPES.map((prompt, index) => {
+              const essay = essayMap[prompt.id]
+              const wc = essay ? countWords(essay.content ?? "") : 0
+              const isActive = activeType === prompt.id
+              return (
+                <button
+                  key={prompt.id}
+                  type="button"
+                  onClick={() => handleTypeSwitch(prompt.id)}
+                  className={cn("library-prompt-tab", isActive ? "is-active" : undefined)}
+                  aria-current={isActive ? "page" : undefined}
+                >
+                  <span className="library-folio-number">{String(index + 1).padStart(2, "0")}</span>
+                  <span>
+                    <span className="block">{prompt.label}</span>
+                    <span className="library-folio-state">
+                      {wc === 0
+                        ? "Not started"
+                        : wc < 50
+                          ? "Draft started"
+                          : `${wc} words`}
+                    </span>
+                  </span>
+                </button>
+              )
+            })}
+          </div>
+        </nav>
+
+        {saveError ? (
+          <p className="library-save-error text-sm text-destructive" role="alert">
+            {saveError}
+          </p>
+        ) : null}
+
+        <EssayWorkspaceUi
+          essay={{
+            eyebrow: "Active manuscript",
+            title,
+            subtitle,
+            tagline: "Draft, revise, and save your transfer essay in one place.",
+            prompt: displayPrompt,
+            wordLimit,
+            wordLimitIsDefault: currentEssay?.word_limit == null,
+            autosaveLabel: formatEssayAutosaveLabel(savedAt, saving),
+          }}
+          value={content}
+          onChange={(v) => updateField({ content: v, word_count: countWords(v) })}
+          coachNotes={coachNotes}
+          strengthSignals={strengthSignals}
+          reference={{
+            ...reference,
+            onCtaClick: () => router.push("/dashboard/requirements"),
+          }}
+          onPreview={() => setPreviewOpen(true)}
+          onSave={() => void handleSave()}
+          saving={saving}
+          previewIcon={<Eye className="h-4 w-4" strokeWidth={1.5} />}
+          saveIcon={<Save className="h-4 w-4" strokeWidth={1.5} />}
+          settingsSlot={
+            <div className="grid gap-3 sm:grid-cols-2">
+              <div className="space-y-1.5 sm:col-span-2">
+                <label
+                  htmlFor="essay-school-prompt"
+                  className="tp-eyebrow text-muted-foreground"
+                >
+                  Your school&apos;s exact prompt (optional)
+                </label>
+                <Input
+                  id="essay-school-prompt"
+                  placeholder={
+                    tgt
+                      ? `Paste ${tgt}'s essay question here…`
+                      : "Paste your school's essay question here…"
+                  }
+                  value={customTitle}
+                  onChange={(e) => updateField({ title: e.target.value || null })}
+                  className="h-10 rounded-none border border-[color:var(--hall-rule)] bg-[color:var(--hall-paper)]"
+                />
+              </div>
+              <div className="space-y-1.5">
+                <label
+                  htmlFor="essay-word-limit"
+                  className="tp-eyebrow text-muted-foreground"
+                >
+                  Word limit
+                </label>
+                <Input
+                  id="essay-word-limit"
+                  type="number"
+                  min={50}
+                  max={5000}
+                  placeholder="650"
+                  value={wordLimit}
+                  onChange={(e) => {
+                    const parsed = parseInt(e.target.value, 10)
+                    updateField({ word_limit: Number.isNaN(parsed) ? 650 : parsed })
+                  }}
+                  className="h-10 w-full max-w-[140px] rounded-none border border-[color:var(--hall-rule)] bg-[color:var(--hall-paper)]"
+                />
+              </div>
+            </div>
+          }
+        />
+      </section>
 
       <Dialog open={previewOpen} onOpenChange={setPreviewOpen}>
-        <DialogContent className="max-h-[85vh] max-w-2xl overflow-y-auto">
+        <DialogContent className="max-h-[85vh] max-w-2xl overflow-y-auto rounded-none border border-[color:var(--hall-rule)] bg-[color:var(--hall-paper)]">
           <DialogHeader>
             <DialogTitle className="font-heading">
               {title}
               {subtitle ? <span className="font-normal text-muted-foreground"> — {subtitle}</span> : null}
             </DialogTitle>
           </DialogHeader>
-          <p className="text-[11px] uppercase tracking-widest text-muted-foreground">
+          <p className="tp-eyebrow text-muted-foreground">
             Prompt
           </p>
           <p className="mt-2 text-base leading-relaxed text-muted-foreground">

@@ -16,11 +16,17 @@ export function OnboardingStep1({ data, updateData, onNext }: Props) {
   const canProceed = data.currentSchoolId !== ""
 
   return (
-    <div className="bg-card border border-border rounded-xl p-8">
+    <div className="border border-[color:var(--hall-rule)] bg-transparent p-6 sm:p-8">
       <div className="space-y-6">
         <div>
-          <h1 className="text-2xl font-medium text-foreground mb-2">Where are you now?</h1>
-          <p className="text-muted-foreground">We&apos;ll use this to match your coursework.</p>
+          <p className="mb-2 text-xs font-semibold uppercase tracking-[0.14em] text-muted-foreground">
+            Transfer setup · Step 1 of 5
+          </p>
+          <h1 className="text-2xl font-medium text-foreground mb-2">Where are you transferring from?</h1>
+          <p className="text-muted-foreground">
+            TransferPath maps your path to a four-year school — deadlines, courses, requirements, and essays.
+            Start with your current college so we can match coursework.
+          </p>
         </div>
 
         <div className="space-y-4">
@@ -41,17 +47,17 @@ export function OnboardingStep1({ data, updateData, onNext }: Props) {
               <div className="group relative">
                 <Info className="h-4 w-4 text-muted-foreground cursor-help" />
                 <div className="absolute bottom-full left-1/2 -translate-x-1/2 mb-2 w-64 p-2 bg-foreground text-white text-xs rounded-lg opacity-0 group-hover:opacity-100 transition-opacity pointer-events-none z-10">
-                  CAP is UT Austin&apos;s Coordinated Admission Program — guaranteed admission via a partner school.
+                  CAP is UT Austin&apos;s Coordinated Admission Program. If you complete its terms at a partner school, admission is guaranteed for some majors — check whether yours is included.
                 </div>
               </div>
             </div>
-            <div className="flex bg-secondary rounded-lg p-1">
+            <div className="flex rounded-none border border-[color:var(--hall-rule)] bg-[color:var(--hall-ink)]/[0.03] p-1">
               <button
                 type="button"
                 onClick={() => updateData({ isCapStudent: true })}
                 className={`flex-1 py-2 px-4 text-sm font-medium rounded-md transition-colors ${
                   data.isCapStudent
-                    ? "bg-popover text-foreground shadow-sm"
+                    ? "bg-[color:var(--hall-paper)] text-foreground"
                     : "text-muted-foreground hover:text-foreground"
                 }`}
               >
@@ -62,7 +68,7 @@ export function OnboardingStep1({ data, updateData, onNext }: Props) {
                 onClick={() => updateData({ isCapStudent: false })}
                 className={`flex-1 py-2 px-4 text-sm font-medium rounded-md transition-colors ${
                   !data.isCapStudent
-                    ? "bg-popover text-foreground shadow-sm"
+                    ? "bg-[color:var(--hall-paper)] text-foreground"
                     : "text-muted-foreground hover:text-foreground"
                 }`}
               >

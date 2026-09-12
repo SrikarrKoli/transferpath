@@ -10,6 +10,8 @@ export type RequirementWorkspaceItem = {
   ctaLabel?: string
   href?: string
   external?: boolean
+  /** Per-claim evidence line; shown under the row meta when present. */
+  provenanceBasis?: string
 }
 
 export type RequirementWorkspaceCategory = {
@@ -23,6 +25,10 @@ export type RequirementsWorkspaceHeader = {
   title: string
   titleItalic: string
   subtitle: string
+  fromInstitution: string
+  toInstitution: string
+  program: string
+  term: string
 }
 
 export type RequirementsPlanningNote = {
@@ -37,6 +43,8 @@ export type RequirementsTimelineRow = {
   dateLabel: string
   label: string
   scope: string
+  /** Per-row planning provenance from `deadlines.description`; null when absent. */
+  description: string | null
   officialUrl: string | null
   passed: boolean
   current: boolean
