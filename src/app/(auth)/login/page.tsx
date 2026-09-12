@@ -340,7 +340,7 @@ function LoginPageContent() {
             <button
               type="submit"
               disabled={loading}
-              className="flex h-10 w-full items-center justify-center gap-2 rounded-none bg-[color:var(--hall-ink)] text-sm font-medium text-primary-foreground transition-colors hover:bg-primary/90 disabled:opacity-70"
+              className="flex h-10 w-full items-center justify-center gap-2 rounded-none bg-[color:var(--hall-ink)] text-sm font-medium text-primary-foreground transition-colors hover:bg-[color:var(--hall-ink)]/90 disabled:opacity-70"
             >
               {loading && <Loader2 className="h-4 w-4 animate-spin" strokeWidth={1.5} />}
               {loading ? "Logging in..." : "Log in"}
@@ -358,7 +358,7 @@ function LoginPageContent() {
 
       {/* Toast */}
       {showToast && (
-        <div className="animate-in slide-in-from-bottom-4 fixed bottom-6 right-6 flex items-center gap-2 rounded-lg bg-chart-2 px-4 py-3 text-sm font-medium text-primary-foreground shadow-lg">
+        <div className="animate-in slide-in-from-bottom-4 fixed bottom-6 right-6 flex items-center gap-2 rounded-none border border-[color:var(--hall-rule)] bg-[color:var(--hall-ink)] px-4 py-3 text-sm font-medium text-[color:var(--hall-paper)] shadow-none">
           <Check className="h-4 w-4" strokeWidth={1.5} />
           Signed in successfully
         </div>
