@@ -31,7 +31,9 @@ export function HallDeadlines({
   const showDeadlines = filter === "upcoming" || filter === "deadlines"
   const showOpenTasks = filter === "tasks"
   const showCompleted = filter === "completed"
-  const showMissing = filter === "missing_dates" || (filter === "upcoming" && data.missingDate)
+  const showMissing =
+    filter === "missing_dates" ||
+    (filter === "upcoming" && (Boolean(data.missingDate) || data.upcomingDeadlines.length === 0))
 
   return (
     <div className="hall-split">
@@ -67,13 +69,33 @@ export function HallDeadlines({
                 <div>
                   <p className="hall-date-title">No official dates on the ledger</p>
                   <p className="hall-date-meta">
-                    Nothing from the target school is dated in the next two years. Open Missing
-                    to see what still needs a source, or file a date when the school publishes one.
+                    Nothing from the target school is dated in the next two years. Review what still
+                    needs a source, keep working tasks on Dorms, or log coursework on the Registrar.
                   </p>
+                  <div className="deadline-empty-actions">
+                    <button
+                      type="button"
+                      className="hall-ledger-link"
+                      onClick={() => onFilter("missing_dates")}
+                    >
+                      Review missing dates
+                    </button>
+                    <Link href="/dashboard/requirements" className="hall-ledger-link">
+                      Open Registrar
+                    </Link>
+                    <Link href="/dashboard/checklist" className="hall-ledger-link">
+                      Open Dorms tasks
+                    </Link>
+                    <button
+                      type="button"
+                      className="hall-ledger-link"
+                      onClick={() => onFilter("tasks")}
+                    >
+                      Your work on this ledger
+                    </button>
+                  </div>
                 </div>
-                <button type="button" className="hall-ledger-link" onClick={() => onFilter("missing_dates")}>
-                  Missing
-                </button>
+                <span className="hall-urgent text-[0.8rem]">Unfiled</span>
               </li>
             ) : (
               data.upcomingDeadlines.map((row) => <DeadlineLine key={row.id} row={row} />)
@@ -133,6 +155,10 @@ export function HallDeadlines({
               <span className="hall-urgent text-[0.8rem]">Unfiled</span>
             </li>
           </ol>
+        ) : showMissing && !data.missingDate ? (
+          <p className="hall-date-meta mt-4">
+            No missing application deadlines for your entry term — or your pathway is not set up yet.
+          </p>
         ) : null}
       </div>
 
@@ -153,9 +179,14 @@ export function HallDeadlines({
           English Composition, Calculus, and field courses are satisfied by logging a course on the
           Registrar, not by a date here.
         </p>
-        <Link href="/dashboard/requirements" className="hall-ledger-link mt-3 inline-block">
-          Open Registrar
-        </Link>
+        <div className="mt-3 flex flex-wrap gap-x-4 gap-y-2">
+          <Link href="/dashboard/requirements" className="hall-ledger-link">
+            Open Registrar
+          </Link>
+          <Link href="/dashboard/checklist" className="hall-ledger-link">
+            Open Dorms
+          </Link>
+        </div>
       </aside>
     </div>
   )
