@@ -268,7 +268,7 @@ export function EssayClient({ userId, initialEssayMap, profile }: EssayClientPro
                   }
                   value={customTitle}
                   onChange={(e) => updateField({ title: e.target.value || null })}
-                  className="h-10 bg-background"
+                  className="h-10 rounded-none border border-[color:var(--hall-rule)] bg-[color:var(--hall-paper)]"
                 />
               </div>
               <div className="space-y-1.5">
@@ -289,7 +289,7 @@ export function EssayClient({ userId, initialEssayMap, profile }: EssayClientPro
                     const parsed = parseInt(e.target.value, 10)
                     updateField({ word_limit: Number.isNaN(parsed) ? 650 : parsed })
                   }}
-                  className="h-10 w-full max-w-[140px] bg-background"
+                  className="h-10 w-full max-w-[140px] rounded-none border border-[color:var(--hall-rule)] bg-[color:var(--hall-paper)]"
                 />
               </div>
             </div>

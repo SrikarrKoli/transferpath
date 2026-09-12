@@ -476,7 +476,7 @@ export function SettingsClient({
                       value={fieldOfStudy}
                       onValueChange={(v) => setFieldOfStudy(v as FieldOfStudy)}
                     >
-                      <SelectTrigger id="field-of-study" className="w-full h-9">
+                      <SelectTrigger id="field-of-study" className="h-9 w-full rounded-none border-[color:var(--hall-rule)] bg-[color:var(--hall-paper)]">
                         <SelectValue placeholder="Select field" />
                       </SelectTrigger>
                       <SelectContent>
@@ -499,7 +499,7 @@ export function SettingsClient({
                       value={transferTermSelectValue}
                       onValueChange={(v) => setExpectedTerm(v)}
                     >
-                      <SelectTrigger id="term-select" className="w-full h-9">
+                      <SelectTrigger id="term-select" className="h-9 w-full rounded-none border-[color:var(--hall-rule)] bg-[color:var(--hall-paper)]">
                         <SelectValue placeholder="Choose upcoming intake" />
                       </SelectTrigger>
                       <SelectContent>
