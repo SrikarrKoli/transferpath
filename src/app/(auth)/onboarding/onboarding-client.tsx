@@ -220,6 +220,15 @@ export function OnboardingClient({ existingSession, embedded = false }: Onboardi
             </div>
           )}
 
+          {embedded ? (
+            <div className="hall-steps" aria-label="Onboarding steps">
+              {steps.map((step) => (
+                <span key={step.id} data-on={step.id === currentStep ? "true" : "false"}>
+                  {step.label}
+                </span>
+              ))}
+            </div>
+          ) : (
           <div className="flex items-center justify-center">
             {steps.map((step, index) => (
               <div key={step.id} className="flex items-center">
@@ -264,6 +273,7 @@ export function OnboardingClient({ existingSession, embedded = false }: Onboardi
               </div>
             ))}
           </div>
+          )}
         </div>
       </header>
 

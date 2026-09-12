@@ -25,6 +25,8 @@ import type {
   TasksDeadlinesFilterId,
   TasksDeadlinesTaskRow,
 } from "@/types/tasks-deadlines"
+import { useHall } from "@/components/campus-ui/hall-context"
+import { HallDeadlines } from "@/components/campus-ui/hall-deadlines"
 
 const FILTER_LABELS: Record<TasksDeadlinesFilterId, string> = {
   upcoming: "Upcoming",
@@ -51,6 +53,7 @@ export function TasksDeadlinesClient({
   hidePageHeader = false,
 }: TasksDeadlinesClientProps) {
   const router = useRouter()
+  const hall = useHall()
   const [filter, setFilter] = useState<TasksDeadlinesFilterId>("upcoming")
   const [completionMap, setCompletionMap] =
     useState(initialCompletionMap)
@@ -127,6 +130,17 @@ export function TasksDeadlinesClient({
       { onConflict: "user_id,task_key" }
     )
     if (!error) router.refresh()
+  }
+
+  if (hall || hidePageHeader) {
+    return (
+      <HallDeadlines
+        data={data}
+        filter={filter}
+        onFilter={setFilter}
+        onToggleTask={(id, done) => void handleToggleTask(id, done)}
+      />
+    )
   }
 
   const h = data.header

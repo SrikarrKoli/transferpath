@@ -1,6 +1,7 @@
 import { createClient } from "@/lib/supabase/server"
 import { redirect } from "next/navigation"
 import { ImmersiveBuildingShell } from "@/components/campus-ui/immersive-building-shell"
+import { hallKicker } from "@/lib/hall-kicker"
 import { PlanClient, type PlanCourseRow } from "@/components/dashboard/plan-client"
 import type { ChecklistProfileSummary } from "@/lib/checklist-task-definitions"
 import { universityJoinName } from "@/lib/university-join"
@@ -57,7 +58,15 @@ export default async function PlanPage() {
   }
 
   return (
-    <ImmersiveBuildingShell buildingId="classroom">
+    <ImmersiveBuildingShell
+      buildingId="classroom"
+      kicker={hallKicker({
+        from: checklistProfile.currentUniversityName,
+        to: checklistProfile.targetUniversityName,
+        program: checklistProfile.targetMajor,
+        term: checklistProfile.expectedTransferTerm,
+      })}
+    >
       <PlanClient
         userId={user.id}
         initialCourses={courses}

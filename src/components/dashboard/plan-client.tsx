@@ -28,6 +28,8 @@ import type { ChecklistProfileSummary } from "@/lib/checklist-task-definitions"
 import type { PlanTermSection } from "@/types/plan-terms"
 import { Provenance } from "@/components/ui/provenance"
 import { cn } from "@/lib/utils"
+import { useHall } from "@/components/campus-ui/hall-context"
+import { HallPlan, type HallPlanBlock } from "@/components/campus-ui/hall-plan"
 
 export type PlanCourseRow = {
   id: string
@@ -266,9 +268,53 @@ export function PlanClient({
   }
 
   const journeySubtitle = `Every term on your path, in calendar order. ${calendarTermCount} term${calendarTermCount === 1 ? "" : "s"} scheduled.`
+  const hall = useHall()
+  const hallBlocks: HallPlanBlock[] = planTerms.sections.map((section) => ({
+    term: section.termLabel,
+    range: section.dateRange,
+    courses:
+      section.kind === "entry_marker"
+        ? [
+            {
+              title: section.targetSchoolName
+                ? `Entry — ${section.targetSchoolName}`
+                : "Entry term",
+              status: "",
+            },
+          ]
+        : section.courses.map((c) => ({
+            title: c.course_name,
+            status: planDisplayStatusLabel(c.status),
+          })),
+  }))
 
   return (
-    <div className="plan-table mx-auto max-w-6xl tp-stagger-children">
+    <div className={hall ? undefined : "plan-table mx-auto max-w-6xl tp-stagger-children"}>
+      {hall ? (
+        <>
+          <HallPlan
+            blocks={hallBlocks}
+            note="Terms are ordered to the entry date. Requirements stay on the Registrar; this page only places courses on a calendar."
+          />
+          <button
+            type="button"
+            className="hall-ledger-link mt-8"
+            onClick={() => {
+              setAddTerm("")
+              setAddError("")
+              setAddOpen(true)
+            }}
+          >
+            Add a course
+          </button>
+          {listError ? (
+            <p className="mt-4 text-sm text-[color:var(--hall-clay)]" role="alert">
+              {listError}
+            </p>
+          ) : null}
+        </>
+      ) : (
+        <>
       <div className="plan-route-line">
         <p className="tp-eyebrow">Academic route</p>
         <p>
@@ -358,6 +404,8 @@ export function PlanClient({
           ))
         )}
       </div>
+        </>
+      )}
 
       <Dialog open={addOpen} onOpenChange={setAddOpen}>
         <DialogContent className="sm:max-w-md">

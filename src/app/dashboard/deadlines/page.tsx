@@ -1,6 +1,7 @@
 import { createClient } from "@/lib/supabase/server"
 import { redirect } from "next/navigation"
 import { ImmersiveBuildingShell } from "@/components/campus-ui/immersive-building-shell"
+import { hallKicker } from "@/lib/hall-kicker"
 import { TasksDeadlinesClient } from "@/components/dashboard/tasks-deadlines-client"
 import { buildTasksDeadlinesData } from "@/lib/build-tasks-deadlines-data"
 import type { ChecklistProfileSummary } from "@/lib/checklist-task-definitions"
@@ -89,7 +90,15 @@ export default async function DeadlinesPage() {
   })
 
   return (
-    <ImmersiveBuildingShell buildingId="quad">
+    <ImmersiveBuildingShell
+      buildingId="quad"
+      kicker={hallKicker({
+        from: checklistProfile.currentUniversityName,
+        to: checklistProfile.targetUniversityName,
+        program: checklistProfile.targetMajor,
+        term: expectedTerm,
+      })}
+    >
       <TasksDeadlinesClient
         userId={user.id}
         initialData={pageData}

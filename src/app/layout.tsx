@@ -1,5 +1,11 @@
 import type { Metadata } from "next";
-import { Bricolage_Grotesque, Inter, JetBrains_Mono, Press_Start_2P } from "next/font/google";
+import {
+  Bricolage_Grotesque,
+  Fraunces,
+  Inter,
+  JetBrains_Mono,
+  Press_Start_2P,
+} from "next/font/google";
 import "./globals.css";
 import { buildPageTitle, META_DESCRIPTION, PRODUCT_NAME } from "@/lib/brand";
 
@@ -26,6 +32,14 @@ const fontArcade = Press_Start_2P({
   subsets: ["latin"],
   weight: "400",
   variable: "--font-arcade",
+  display: "swap",
+});
+
+const fontHall = Fraunces({
+  subsets: ["latin"],
+  weight: ["400", "600"],
+  style: ["normal", "italic"],
+  variable: "--font-fraunces",
   display: "swap",
 });
 
@@ -58,7 +72,7 @@ export default function RootLayout({
   return (
     <html
       lang="en"
-      className={`${fontDisplay.variable} ${fontInter.variable} ${fontMono.variable} ${fontArcade.variable}`}
+      className={`${fontDisplay.variable} ${fontInter.variable} ${fontMono.variable} ${fontArcade.variable} ${fontHall.variable}`}
     >
       <body className="min-h-screen bg-background font-sans antialiased">{children}</body>
     </html>

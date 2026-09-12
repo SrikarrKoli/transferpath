@@ -15,6 +15,7 @@ import {
 import { createClient } from "@/lib/supabase/client"
 import type { NextDeadline } from "@/lib/next-deadline"
 import { DeadlineOfficialLink } from "@/components/dashboard/deadline-official-link"
+import { buildingIdForPath } from "@/lib/campus-immersion"
 import { cn } from "@/lib/utils"
 import { PRODUCT_NAME } from "@/lib/brand"
 import {
@@ -207,6 +208,7 @@ export function DashboardSidebar({
 }: SidebarProps) {
   const pathname = usePathname()
   const router = useRouter()
+  if (buildingIdForPath(pathname)) return null
 
   async function handleSignOut() {
     const supabase = createClient()

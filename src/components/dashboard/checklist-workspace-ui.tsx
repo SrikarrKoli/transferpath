@@ -2,6 +2,8 @@
 
 import * as React from "react"
 import { cn } from "@/lib/utils"
+import { useHall } from "@/components/campus-ui/hall-context"
+import { HallChecklist } from "@/components/campus-ui/hall-checklist"
 import type { ChecklistWorkspaceData, ChecklistWorkspaceTask } from "@/types/checklist-workspace"
 
 type Filter = "all" | "urgent" | "completed" | string
@@ -137,6 +139,13 @@ function ChecklistWorkspaceBody({
   }
 
   const h = data.header
+  const hall = useHall()
+
+  if (hall) {
+    return (
+      <HallChecklist data={data} tasks={tasks} onToggle={toggle} />
+    )
+  }
 
   return (
     <div className="checklist-register tp-stagger-children">
@@ -183,6 +192,7 @@ function ChecklistWorkspaceBody({
               key={c.id}
               type="button"
               onClick={() => setFilter(c.id)}
+              data-on={active ? "true" : "false"}
               className={cn(
                 "checklist-filter",
                 active

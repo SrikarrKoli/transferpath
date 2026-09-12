@@ -4,6 +4,7 @@ import { useMemo, type ReactNode } from "react"
 import { Meter } from "@/components/ui/progress"
 import { Provenance } from "@/components/ui/provenance"
 import { cn } from "@/lib/utils"
+import { useHall } from "@/components/campus-ui/hall-context"
 
 export interface EssayMeta {
   title: string
@@ -73,6 +74,59 @@ export function EssayWorkspaceUi({
   )
   const pct = Math.min(100, Math.round((wordCount / Math.max(1, essay.wordLimit)) * 100))
   const overLimit = wordCount > essay.wordLimit
+  const hall = useHall()
+
+  if (hall) {
+    return (
+      <div className={className}>
+        <p className="hall-prompt">{essay.prompt}</p>
+        {settingsSlot ? <div className="mt-4">{settingsSlot}</div> : null}
+        <textarea
+          value={value}
+          onChange={(e) => onChange(e.target.value)}
+          className="hall-draft"
+          placeholder="Draft here."
+          aria-label="Essay draft"
+        />
+        <div className="mt-5 flex flex-wrap items-end justify-between gap-4">
+          <p>
+            <span className={cn("hall-count", overLimit && "hall-urgent")}>{wordCount}</span>
+            <span className="ml-2 text-[color:var(--hall-stone)]">/ {essay.wordLimit}</span>
+          </p>
+          <div className="flex gap-4">
+            {onPreview ? (
+              <button type="button" onClick={onPreview} className="hall-ledger-link">
+                {previewLabel}
+              </button>
+            ) : null}
+            {onSave ? (
+              <button type="button" onClick={onSave} disabled={saving} className="hall-ledger-link">
+                {saving ? "Saving…" : saveLabel}
+              </button>
+            ) : null}
+          </div>
+        </div>
+        {coachNotes.length > 0 || strengthSignals.length > 0 ? (
+          <div className="mt-10 grid gap-10 sm:grid-cols-2">
+            {coachNotes.length > 0 ? (
+              <ul className="hall-margin space-y-2">
+                {coachNotes.map((note) => (
+                  <li key={note}>{note}</li>
+                ))}
+              </ul>
+            ) : null}
+            {strengthSignals.length > 0 ? (
+              <ul className="hall-margin space-y-2">
+                {strengthSignals.map((note) => (
+                  <li key={note}>{note}</li>
+                ))}
+              </ul>
+            ) : null}
+          </div>
+        ) : null}
+      </div>
+    )
+  }
 
   return (
     <div className={cn("essay-workspace mx-auto max-w-7xl animate-fade-in tp-stagger-children", className)}>

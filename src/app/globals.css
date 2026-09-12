@@ -81,6 +81,11 @@
   --campus-terracotta: #b85c38;
   --campus-plaza: #e6d3b4;
   --campus-hedge: #2f5a32;
+  --hall-paper: #f4f0e6;
+  --hall-ink: #1a2332;
+  --hall-clay: #b85c38;
+  --hall-stone: #8a8478;
+  --hall-rule: color-mix(in oklab, #1a2332 16%, transparent);
 }
 
 .dark {
@@ -156,6 +161,7 @@
 
   --font-sans: var(--font-inter), "Inter", ui-sans-serif, system-ui, sans-serif;
   --font-heading: var(--font-display), "Bricolage Grotesque", ui-sans-serif, system-ui, sans-serif;
+  --font-hall: var(--font-fraunces), "Fraunces", ui-serif, Georgia, serif;
   --font-mono: var(--font-jetbrains-mono), "JetBrains Mono", ui-monospace, monospace;
 
   --color-background: var(--background);
@@ -492,176 +498,488 @@
   font-family: var(--font-inter), ui-sans-serif, system-ui, sans-serif;
 }
 
-/* Entered-building interior — opt-in hall chrome around dashboard pages */
+nextjs-portal,
+[data-next-badge-root] {
+  display: none !important;
+}
+
+/* Paper hall dossiers — interiors continuous with the campus world */
+.hall-app {
+  background: var(--hall-paper);
+  color: var(--hall-ink);
+}
+
 .campus-entered {
-  overflow: hidden;
-  border-radius: 1.1rem;
-  border: 1px solid color-mix(in oklab, var(--campus-navy) 8%, transparent);
-  background: var(--campus-cream);
-  box-shadow: 0 22px 50px -28px color-mix(in oklab, var(--campus-navy) 35%, transparent);
+  --background: var(--hall-paper);
+  --card: var(--hall-paper);
+  --foreground: var(--hall-ink);
+  --primary: var(--hall-ink);
+  --accent: var(--hall-clay);
+  --muted-foreground: color-mix(in oklab, var(--hall-ink) 52%, var(--hall-stone));
+  --border: var(--hall-rule);
+  color: var(--hall-ink);
+  background: transparent;
+  min-height: calc(100svh - 3.5rem);
+  display: flex;
+  flex-direction: column;
+  border: none;
+  border-radius: 0;
+  box-shadow: none;
+  overflow: visible;
 }
 
-.campus-building-hero {
-  padding: 1.25rem 1.35rem 1.15rem;
-  background:
-    linear-gradient(180deg, color-mix(in oklab, var(--campus-sky) 28%, var(--campus-cream)) 0%, var(--campus-cream) 100%);
-  border-bottom: 1px solid color-mix(in oklab, var(--campus-navy) 8%, transparent);
+.hall-masthead {
+  padding-bottom: 0.7rem;
+  margin-bottom: 1.6rem;
+  box-shadow: 0 1px 0 var(--hall-ink);
 }
 
-.campus-building-interior {
-  padding: 1.25rem 1.1rem 1.5rem;
-  background:
-    linear-gradient(
-      180deg,
-      color-mix(in oklab, var(--campus-navy) 6%, var(--campus-cream)) 0,
-      color-mix(in oklab, var(--campus-navy) 6%, var(--campus-cream)) 10px,
-      color-mix(in oklab, var(--campus-cream) 78%, white) 10px,
-      color-mix(in oklab, var(--campus-cream) 78%, white) 100%
-    );
-  box-shadow: inset 0 1px 0 color-mix(in oklab, var(--campus-navy) 6%, transparent);
+.hall-masthead-meta {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 1rem;
+  margin-bottom: 0.85rem;
 }
 
-@media (min-width: 640px) {
-  .campus-building-hero {
-    padding: 1.5rem 1.75rem 1.35rem;
+.hall-back {
+  font-size: 0.8125rem;
+  letter-spacing: 0.01em;
+  color: var(--hall-ink);
+  text-decoration: none;
+}
+
+.hall-back:hover {
+  color: var(--hall-clay);
+}
+
+.hall-name {
+  margin: 0;
+  font-family: var(--font-hall), "Fraunces", ui-serif, Georgia, serif;
+  font-size: clamp(2.05rem, 4.2vw, 3.05rem);
+  font-weight: 400;
+  font-style: italic;
+  line-height: 0.98;
+  letter-spacing: -0.02em;
+  word-spacing: 0.08em;
+  color: var(--hall-ink);
+}
+
+.hall-mid,
+.hall-hero-date,
+.hall-score,
+.hall-count,
+.hall-date-big,
+.hall-term-name,
+.hall-field-value {
+  font-family: var(--font-inter), ui-sans-serif, system-ui, sans-serif;
+  font-weight: 500;
+  letter-spacing: -0.04em;
+  font-variant-numeric: tabular-nums;
+  color: var(--hall-ink);
+}
+
+.hall-mid {
+  font-size: clamp(2.2rem, 4.6vw, 3.4rem);
+  line-height: 0.92;
+}
+
+.hall-body {
+  flex: 1;
+}
+
+.hall-folio {
+  margin-top: auto;
+  padding-top: 1.1rem;
+  border-top: 1px solid var(--hall-ink);
+  font-size: 0.7rem;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: var(--hall-stone);
+}
+
+.hall-split {
+  display: grid;
+  gap: 2.5rem;
+}
+
+@media (min-width: 960px) {
+  .hall-split {
+    grid-template-columns: minmax(0, 1.75fr) minmax(11rem, 0.62fr);
+    gap: 3.25rem;
   }
-  .campus-building-interior {
-    padding: 1.5rem 1.75rem 1.85rem;
+}
+
+.hall-index {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.2rem 1.15rem;
+  margin-bottom: 0.75rem;
+  font-size: 0.75rem;
+  color: var(--hall-stone);
+}
+
+.hall-index button {
+  background: none;
+  border: none;
+  padding: 0;
+  color: inherit;
+  cursor: pointer;
+}
+
+.hall-index button[data-on="true"] {
+  color: var(--hall-ink);
+}
+
+.hall-index button:disabled {
+  opacity: 0.35;
+  cursor: default;
+}
+
+.hall-ledger-link {
+  font-size: 0.8125rem;
+  color: var(--hall-ink);
+  text-decoration: underline;
+  text-underline-offset: 0.18em;
+}
+
+.hall-source {
+  font-size: 0.75rem;
+  color: var(--hall-stone);
+  text-decoration: none;
+}
+
+.campus-entered textarea {
+  resize: none;
+}
+
+.hall-margin {
+  font-size: 0.8125rem;
+  line-height: 1.55;
+  color: color-mix(in oklab, var(--hall-ink) 58%, transparent);
+}
+
+.hall-caption {
+  font-size: 0.7rem;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--hall-stone);
+}
+
+.hall-urgent {
+  color: var(--hall-clay);
+}
+
+/* Clock Tower — date ledger */
+.hall-dates {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+}
+
+.hall-date-row {
+  display: grid;
+  grid-template-columns: 8.2rem minmax(0, 1fr) auto;
+  gap: 0.6rem 1.4rem;
+  padding: 1.45rem 0;
+  border-bottom: 1px solid var(--hall-rule);
+  align-items: start;
+}
+
+.hall-date-big {
+  font-size: clamp(1.85rem, 3.2vw, 2.55rem);
+  line-height: 0.88;
+}
+
+.hall-date-year {
+  display: block;
+  margin-top: 0.35rem;
+  font-size: 0.85rem;
+  letter-spacing: 0;
+  color: var(--hall-stone);
+}
+
+.hall-date-count {
+  display: block;
+  margin-top: 0.45rem;
+  font-size: 0.78rem;
+  color: var(--hall-clay);
+}
+
+.hall-date-title {
+  margin: 0;
+  font-size: 1.35rem;
+  font-weight: 500;
+  letter-spacing: -0.02em;
+  line-height: 1.2;
+}
+
+.hall-date-meta {
+  margin-top: 0.3rem;
+  font-size: 0.8125rem;
+  color: var(--hall-stone);
+}
+
+/* Union — one next action */
+.hall-hero-date {
+  font-size: clamp(3.2rem, 8vw, 5.4rem);
+  line-height: 0.82;
+}
+
+.hall-hero-title {
+  margin: 0.85rem 0 0;
+  max-width: 14ch;
+  font-size: clamp(1.7rem, 3.4vw, 2.45rem);
+  font-weight: 500;
+  letter-spacing: -0.035em;
+  line-height: 1.08;
+}
+
+.hall-strip {
+  margin-top: 2.75rem;
+  border-top: 1px solid var(--hall-rule);
+}
+
+.hall-strip-row {
+  display: flex;
+  justify-content: space-between;
+  gap: 1.5rem;
+  padding: 0.95rem 0;
+  border-bottom: 1px solid var(--hall-rule);
+  font-size: 0.95rem;
+}
+
+.hall-strip-row span:first-child {
+  color: var(--hall-stone);
+  min-width: 5.5rem;
+}
+
+/* Library — desk */
+.hall-prompt {
+  max-width: 40rem;
+  font-size: 1.05rem;
+  line-height: 1.55;
+  color: color-mix(in oklab, var(--hall-ink) 78%, transparent);
+}
+
+.hall-draft {
+  min-height: 26rem;
+  width: 100%;
+  margin-top: 1.75rem;
+  padding: 1.4rem 0 1.6rem;
+  border: 0;
+  border-top: 1px solid var(--hall-ink);
+  background: transparent;
+  font-size: 1.12rem;
+  line-height: 1.75;
+  color: var(--hall-ink);
+  outline: none;
+}
+
+.hall-count {
+  font-size: clamp(2rem, 3.6vw, 2.8rem);
+  line-height: 0.9;
+}
+
+/* Classrooms — term posters */
+.hall-terms {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 2.4rem;
+  min-height: 24rem;
+}
+
+@media (min-width: 800px) {
+  .hall-terms {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: 0 2.4rem;
   }
 }
 
-.campus-entered[data-building="quad"] .campus-building-hero {
-  background: linear-gradient(
-    180deg,
-    color-mix(in oklab, var(--campus-terracotta) 16%, var(--campus-cream)) 0%,
-    var(--campus-cream) 100%
-  );
-}
-.campus-entered[data-building="union"] .campus-building-hero {
-  background: linear-gradient(
-    180deg,
-    color-mix(in oklab, var(--campus-terracotta) 22%, var(--campus-cream)) 0%,
-    var(--campus-cream) 100%
-  );
-}
-.campus-entered[data-building="library"] .campus-building-hero {
-  background: linear-gradient(
-    180deg,
-    color-mix(in oklab, #5a8f78 18%, var(--campus-cream)) 0%,
-    var(--campus-cream) 100%
-  );
-}
-.campus-entered[data-building="classroom"] .campus-building-hero {
-  background: linear-gradient(
-    180deg,
-    color-mix(in oklab, var(--campus-plaza) 55%, var(--campus-cream)) 0%,
-    var(--campus-cream) 100%
-  );
-}
-.campus-entered[data-building="registrar"] .campus-building-hero {
-  background: linear-gradient(
-    180deg,
-    color-mix(in oklab, #c5d4e4 55%, var(--campus-cream)) 0%,
-    var(--campus-cream) 100%
-  );
-}
-.campus-entered[data-building="gym"] .campus-building-hero {
-  background: linear-gradient(
-    180deg,
-    color-mix(in oklab, #6b9e7a 20%, var(--campus-cream)) 0%,
-    var(--campus-cream) 100%
-  );
-}
-.campus-entered[data-building="dorm"] .campus-building-hero {
-  background: linear-gradient(
-    180deg,
-    color-mix(in oklab, #b86b52 16%, var(--campus-cream)) 0%,
-    var(--campus-cream) 100%
-  );
-}
-.campus-entered[data-building="counselor"] .campus-building-hero {
-  background: linear-gradient(
-    180deg,
-    color-mix(in oklab, #d47858 18%, var(--campus-cream)) 0%,
-    var(--campus-cream) 100%
-  );
+.hall-term-name {
+  margin: 0 0 1.1rem;
+  padding-bottom: 0.65rem;
+  border-bottom: 1px solid var(--hall-ink);
+  font-size: clamp(1.7rem, 2.8vw, 2.35rem);
+  line-height: 0.95;
 }
 
-.campus-entered[data-building="union"] .campus-building-interior {
-  background:
-    linear-gradient(
-      180deg,
-      color-mix(in oklab, var(--campus-terracotta) 14%, var(--campus-cream)) 0,
-      color-mix(in oklab, var(--campus-terracotta) 14%, var(--campus-cream)) 10px,
-      color-mix(in oklab, var(--campus-cream) 70%, #fff6ee) 10px,
-      color-mix(in oklab, var(--campus-cream) 70%, #fff6ee) 100%
-    );
+.hall-course {
+  padding: 1rem 0 1.05rem;
+  border-bottom: 1px solid var(--hall-rule);
 }
 
-.campus-entered[data-building="library"] .campus-building-interior {
-  background:
-    linear-gradient(
-      180deg,
-      color-mix(in oklab, #3d7a5c 12%, var(--campus-cream)) 0,
-      color-mix(in oklab, #3d7a5c 12%, var(--campus-cream)) 10px,
-      color-mix(in oklab, #5a8f78 8%, white) 10px,
-      color-mix(in oklab, var(--campus-cream) 82%, white) 100%
-    );
+.hall-course-code {
+  font-size: 0.75rem;
+  letter-spacing: 0.04em;
+  color: var(--hall-stone);
 }
 
-.campus-entered[data-building="classroom"] .campus-building-interior {
-  background:
-    linear-gradient(
-      180deg,
-      color-mix(in oklab, var(--campus-navy) 10%, var(--campus-cream)) 0,
-      color-mix(in oklab, var(--campus-navy) 10%, var(--campus-cream)) 10px,
-      color-mix(in oklab, var(--campus-plaza) 28%, white) 10px,
-      color-mix(in oklab, var(--campus-cream) 80%, white) 100%
-    );
+.hall-course-title {
+  margin-top: 0.2rem;
+  font-size: 1.12rem;
+  letter-spacing: -0.015em;
 }
 
-.campus-entered[data-building="registrar"] .campus-building-interior {
-  background:
-    linear-gradient(
-      180deg,
-      color-mix(in oklab, #6e8fad 22%, var(--campus-cream)) 0,
-      color-mix(in oklab, #6e8fad 22%, var(--campus-cream)) 10px,
-      color-mix(in oklab, #c5d4e4 35%, white) 10px,
-      color-mix(in oklab, var(--campus-cream) 80%, white) 100%
-    );
+/* Registrar — matrix */
+.hall-matrix {
+  width: 100%;
+  border-collapse: collapse;
 }
 
-.campus-entered[data-building="gym"] .campus-building-interior {
-  background:
-    linear-gradient(
-      180deg,
-      color-mix(in oklab, #3d8a62 16%, var(--campus-cream)) 0,
-      color-mix(in oklab, #3d8a62 16%, var(--campus-cream)) 10px,
-      color-mix(in oklab, #6b9e7a 10%, white) 10px,
-      color-mix(in oklab, var(--campus-cream) 80%, white) 100%
-    );
+.hall-matrix th {
+  text-align: left;
+  font-size: 0.68rem;
+  font-weight: 500;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--hall-stone);
+  padding: 0 1rem 0.7rem 0;
+  border-bottom: 1px solid var(--hall-ink);
 }
 
-.campus-entered[data-building="dorm"] .campus-building-interior {
-  background:
-    linear-gradient(
-      180deg,
-      color-mix(in oklab, #b86b52 14%, var(--campus-cream)) 0,
-      color-mix(in oklab, #b86b52 14%, var(--campus-cream)) 10px,
-      color-mix(in oklab, #b86b52 6%, white) 10px,
-      color-mix(in oklab, var(--campus-cream) 80%, white) 100%
-    );
+.hall-matrix td {
+  padding: 1.3rem 1rem 1.3rem 0;
+  border-bottom: 1px solid var(--hall-rule);
+  vertical-align: baseline;
+  font-size: 1.02rem;
 }
 
-.campus-entered[data-building="quad"] .campus-building-interior {
-  background:
-    linear-gradient(
-      180deg,
-      color-mix(in oklab, var(--campus-terracotta) 12%, var(--campus-cream)) 0,
-      color-mix(in oklab, var(--campus-terracotta) 12%, var(--campus-cream)) 10px,
-      color-mix(in oklab, var(--campus-cream) 78%, white) 10px,
-      color-mix(in oklab, var(--campus-cream) 78%, white) 100%
-    );
+.hall-matrix td:first-child {
+  font-size: 1.18rem;
+  font-weight: 500;
+  letter-spacing: -0.02em;
+}
+
+/* Rec — readiness sheet */
+.hall-score {
+  font-size: clamp(5.2rem, 14vw, 8.5rem);
+  line-height: 0.78;
+}
+
+.hall-measures {
+  margin-top: 2.4rem;
+}
+
+.hall-measure {
+  display: grid;
+  grid-template-columns: 9rem minmax(0, 1fr);
+  gap: 1rem;
+  padding: 1.05rem 0;
+  border-bottom: 1px solid var(--hall-rule);
+  font-size: 1.15rem;
+}
+
+.hall-measure dt {
+  margin: 0;
+  font-size: 0.8rem;
+  letter-spacing: 0.02em;
+  color: var(--hall-stone);
+}
+
+.hall-measure dd {
+  margin: 0;
+}
+
+/* Dorms — checklist */
+.hall-checks {
+  list-style: none;
+  margin: 1.4rem 0 0;
+  padding: 0;
+}
+
+.hall-check-row {
+  display: grid;
+  grid-template-columns: 1.15rem minmax(0, 1fr) auto;
+  gap: 1rem;
+  align-items: center;
+  padding: 1.15rem 0;
+  border-bottom: 1px solid var(--hall-rule);
+}
+
+.hall-box {
+  display: grid;
+  width: 0.9rem;
+  height: 0.9rem;
+  place-items: center;
+  border: 1px solid var(--hall-ink);
+  background: transparent;
+  padding: 0;
+  cursor: pointer;
+}
+
+.hall-box[aria-pressed="true"]::after {
+  content: "";
+  width: 0.45rem;
+  height: 0.45rem;
+  background: var(--hall-ink);
+}
+
+/* Counselor — intake sheet */
+.hall-sheet {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 0;
+}
+
+@media (min-width: 720px) {
+  .hall-sheet {
+    grid-template-columns: 1fr 1fr;
+    column-gap: 3.25rem;
+  }
+}
+
+.hall-field {
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-end;
+  min-height: 7.4rem;
+  padding: 1.15rem 0 0.75rem;
+  border-bottom: 1px solid var(--hall-ink);
+}
+
+.hall-field-wide {
+  grid-column: 1 / -1;
+}
+
+.hall-field-name {
+  margin-bottom: 0.45rem;
+  font-size: 0.68rem;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--hall-stone);
+}
+
+.hall-field-value {
+  font-size: clamp(1.45rem, 2.6vw, 2.05rem);
+  line-height: 1.12;
+}
+
+.hall-steps {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.35rem 1.2rem;
+  margin-bottom: 1.5rem;
+  font-size: 0.8125rem;
+  color: var(--hall-stone);
+}
+
+.hall-steps [data-on="true"] {
+  color: var(--hall-ink);
+  box-shadow: inset 0 -1px 0 var(--hall-ink);
+}
+
+.campus-entered .rounded-xl,
+.campus-entered .rounded-2xl,
+.campus-entered .rounded-full {
+  border-radius: 0;
+  box-shadow: none;
+}
+
+.campus-entered .shadow-xl,
+.campus-entered .shadow-glow-card,
+.campus-entered .shadow-glow-primary {
+  box-shadow: none;
 }
 
 .campus-enter {
@@ -682,12 +1000,12 @@
 }
 
 .campus-entered {
-  overflow: clip;
-  border-radius: 3px;
-  border: 1px solid rgb(26 35 50 / 22%);
-  background: #f4f0e6;
-  box-shadow: 0 18px 38px -30px rgb(26 35 50 / 48%), 5px 5px 0 rgb(26 35 50 / 6%);
-  color: #1a2332;
+  overflow: visible;
+  border: none;
+  border-radius: 0;
+  background: transparent;
+  box-shadow: none;
+  color: var(--hall-ink);
 }
 
 .campus-building-hero,

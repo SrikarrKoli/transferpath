@@ -219,10 +219,13 @@ function LoginPageContent() {
               setFormError("")
               try {
                 const supabase = createClient()
+                const next = safeCampusReturnPath(searchParams.get("next"))
+                const callback = new URL("/auth/callback", window.location.origin)
+                if (next) callback.searchParams.set("next", next)
                 const { error: oauthError } = await supabase.auth.signInWithOAuth({
                   provider: "google",
                   options: {
-                    redirectTo: `${window.location.origin}/auth/callback`,
+                    redirectTo: callback.toString(),
                   },
                 })
                 if (oauthError) setFormError(oauthError.message)

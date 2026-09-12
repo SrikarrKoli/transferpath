@@ -2,48 +2,35 @@ import Link from "next/link"
 import type { BuildingId } from "@/components/landing/campus/campus-data"
 import { campusBuilding } from "@/lib/campus-immersion"
 import { CampusMiniMap } from "@/components/campus-ui/campus-minimap"
+import { HallProvider } from "@/components/campus-ui/hall-context"
 
 export function ImmersiveBuildingShell({
   buildingId,
+  kicker: _kicker,
   children,
 }: {
   buildingId: BuildingId
+  /** Kept for callers; path lives on the artifact, not the masthead. */
+  kicker?: string
   children: React.ReactNode
 }) {
   const building = campusBuilding(buildingId)
 
   return (
-    <div className="campus-entered campus-enter" data-building={buildingId}>
-      <header className="campus-building-hero">
-        <div className="campus-hall-rail">
-          <span>Campus directory / interior</span>
-          <span>Current hall · {building.name}</span>
-        </div>
-        <div className="campus-hall-heading">
-          <div className="min-w-0 campus-hall-title-block">
-            <Link
-              href="/"
-              className="campus-exit-link"
-            >
-              <span aria-hidden>←</span>
-              Back to campus
+    <HallProvider buildingId={buildingId}>
+      <article className="campus-entered campus-enter" data-building={buildingId}>
+        <header className="hall-masthead">
+          <div className="hall-masthead-meta">
+            <Link href="/" className="hall-back">
+              ← Campus
             </Link>
-            <p className="campus-room-label">Hall record / {building.short}</p>
-            <h1 className="campus-hall-name">
-              {building.name}
-            </h1>
-            <p className="campus-hall-blurb">
-              {building.blurb}
-            </p>
-          </div>
-          <div className="campus-location-mark">
-            <p className="campus-arrival-label">Now entering</p>
             <CampusMiniMap here={buildingId} />
-            <p>You are here · {building.name}</p>
           </div>
-        </div>
-      </header>
-      <div className="campus-building-interior">{children}</div>
-    </div>
+          <h1 className="hall-name">{building.name}</h1>
+        </header>
+        <div className="hall-body">{children}</div>
+        <footer className="hall-folio">{building.name}</footer>
+      </article>
+    </HallProvider>
   )
 }

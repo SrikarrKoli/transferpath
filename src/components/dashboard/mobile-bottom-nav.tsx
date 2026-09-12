@@ -23,6 +23,7 @@ import {
   DASHBOARD_TOOL_NAV,
   isDashboardNavActive,
 } from "@/lib/dashboard-nav"
+import { buildingIdForPath } from "@/lib/campus-immersion"
 import { cn } from "@/lib/utils"
 import {
   Sheet,
@@ -64,6 +65,7 @@ export function MobileBottomNav() {
   const pathname = usePathname()
   const router = useRouter()
   const [moreOpen, setMoreOpen] = useState(false)
+  if (buildingIdForPath(pathname)) return null
 
   async function handleSignOut() {
     const supabase = createClient()

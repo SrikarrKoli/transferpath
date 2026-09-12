@@ -12,6 +12,8 @@ import {
   TodayReadinessPanel,
   TodaySourcesLink,
 } from "@/components/dashboard/overview/today-readiness-panel"
+import { useHall } from "@/components/campus-ui/hall-context"
+import { HallToday } from "@/components/campus-ui/hall-today"
 
 interface OverviewMainProps {
   data: OverviewData
@@ -20,6 +22,10 @@ interface OverviewMainProps {
 
 export function OverviewMain({ data, userId }: OverviewMainProps) {
   const compact = useCompactDashboard()
+  const hall = useHall()
+  if (hall) {
+    return <HallToday data={data} userId={userId} />
+  }
 
   if (data.pathwayPrompt) {
     return (

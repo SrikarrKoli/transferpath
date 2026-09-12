@@ -5,6 +5,9 @@ import { Meter } from "@/components/ui/progress"
 import { Provenance } from "@/components/ui/provenance"
 import { DeadlineOfficialLink } from "@/components/dashboard/deadline-official-link"
 import { cn } from "@/lib/utils"
+import { useHall } from "@/components/campus-ui/hall-context"
+import { HallRequirements } from "@/components/campus-ui/hall-requirements"
+import { HallReadiness, readinessFromRequirements } from "@/components/campus-ui/hall-readiness"
 import type {
   RequirementWorkspaceItem,
   RequirementsPlanningNote,
@@ -194,6 +197,14 @@ export function RequirementsWorkspaceUi({
   const done = all.filter((i) => i.status === "done").length
   const pct = Math.round((done / total) * 100)
   const h = data.header
+  const hall = useHall()
+
+  if (hall === "gym") {
+    return <HallReadiness data={readinessFromRequirements(data)} />
+  }
+  if (hall) {
+    return <HallRequirements data={data} />
+  }
 
   return (
     <div className="requirements-register tp-stagger-children">

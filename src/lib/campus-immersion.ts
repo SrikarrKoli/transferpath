@@ -20,3 +20,15 @@ export function campusBuilding(id: BuildingId) {
   if (!row) throw new Error(`Unknown campus building: ${id}`)
   return row
 }
+
+/** Safe post-login return path so entering a hall survives the auth gate. */
+export function safeCampusReturnPath(raw: string | null | undefined): string | null {
+  if (!raw) return null
+  const path = raw.trim()
+  if (!path.startsWith("/")) return null
+  if (path.startsWith("//") || path.includes("://")) return null
+  const bare = path.split("?")[0]?.split("#")[0] ?? ""
+  if (bare === "/onboarding" || bare.startsWith("/onboarding/")) return bare
+  if (bare === "/dashboard" || bare.startsWith("/dashboard/")) return bare
+  return null
+}
