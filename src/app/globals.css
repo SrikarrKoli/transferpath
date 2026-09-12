@@ -3825,6 +3825,19 @@ nextjs-portal,
   display: none !important;
 }
 
+.readiness-sheet-lead {
+  margin-top: 0.35rem;
+  max-width: 28rem;
+  font-size: 0.9rem;
+  line-height: 1.45;
+  color: color-mix(in oklab, var(--hall-ink) 62%, transparent);
+}
+
+.readiness-raise {
+  margin-top: 1rem;
+  margin-bottom: 1rem;
+}
+
 .campus-entered[data-building="gym"] .readiness-score-sheet {
   display: block !important;
 }
