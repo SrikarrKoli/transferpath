@@ -58,6 +58,7 @@ export function HallToday({ data, userId }: { data: OverviewData; userId: string
 
         {data.comingUp.length > 0 ? (
           <div className="hall-strip">
+            <p className="hall-caption mb-2">Coming up</p>
             {data.comingUp.map((item) => (
               <div key={`${item.dateLabel}-${item.title}`} className="hall-strip-row">
                 <span>{item.dateLabel}</span>

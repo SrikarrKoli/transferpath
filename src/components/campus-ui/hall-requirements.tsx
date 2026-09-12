@@ -19,43 +19,67 @@ export function HallRequirements({ data }: { data: RequirementsWorkspaceData }) 
         ? `${missing} still open`
         : `${active} in progress`
 
+  const currentLabel = data.header.fromInstitution?.split(" ")[0] ?? "Current"
+  const targetLabel = data.header.toInstitution?.split(" ").slice(-1)[0] ?? "Target"
+
   return (
-    <div>
-      <p className="hall-mid">
-        {headline}
-      </p>
-      <p className="hall-date-meta mt-2">
-        {done} of {total} on this path
-      </p>
+    <div className="hall-split">
+      <div>
+        <p className="hall-mid">{headline}</p>
+        <p className="hall-date-meta mt-2">
+          {done} of {total} on this path
+        </p>
 
-      <table className="hall-matrix mt-10">
-        <thead>
-          <tr>
-            <th>Course</th>
-            <th>At ACC</th>
-            <th>At UT</th>
-            <th>Standing</th>
-          </tr>
-        </thead>
-        <tbody>
-          {items.map((item) => (
-            <tr key={item.id}>
-              <td>{item.title}</td>
-              <td>{item.code}</td>
-              <td>{item.equiv || "—"}</td>
-              <td className={item.status === "missing" ? "hall-urgent" : undefined}>
-                {standing(item.status)}
-                {item.credits ? ` · ${item.credits} cr` : ""}
-              </td>
-            </tr>
-          ))}
-        </tbody>
-      </table>
+        <div className="hall-matrix-wrap mt-8">
+          <div className="hall-matrix-columns" aria-hidden>
+            <span>Requirement</span>
+            <span>{currentLabel}</span>
+            <span>{targetLabel}</span>
+            <span>Standing</span>
+          </div>
+          <table className="hall-matrix">
+            <thead className="sr-only">
+              <tr>
+                <th>Requirement</th>
+                <th>{currentLabel}</th>
+                <th>{targetLabel}</th>
+                <th>Standing</th>
+              </tr>
+            </thead>
+            <tbody>
+              {items.map((item, index) => (
+                <tr key={item.id}>
+                  <td>
+                    <span className="hall-row-num" aria-hidden>
+                      {String(index + 1).padStart(2, "0")}
+                    </span>
+                    {item.title}
+                  </td>
+                  <td>{item.code || "—"}</td>
+                  <td>{item.equiv || "—"}</td>
+                  <td className={item.status === "missing" ? "hall-urgent" : undefined}>
+                    {standing(item.status)}
+                    {item.credits ? ` · ${item.credits} cr` : ""}
+                  </td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        </div>
+      </div>
 
-      <p className="hall-margin mt-10 max-w-sm">
-        Logged means a course is on your record. Open means the catalog still expects it. Dates
-        live in the Clock Tower.
-      </p>
+      <aside className="hall-margin">
+        <p>
+          {data.header.fromInstitution} → {data.header.toInstitution}
+        </p>
+        <p className="mt-1">
+          {data.header.program} · {data.header.term}
+        </p>
+        <p className="mt-6">
+          Logged means a course is on your record. Open means the catalog still expects it. Dates
+          live in the Clock Tower.
+        </p>
+      </aside>
     </div>
   )
 }

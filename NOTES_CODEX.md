@@ -1,3 +1,12 @@
+# Codex pass — TransferPath immersive interiors, iteration 12
+
+## Iteration 12
+
+- Dorms: personal-task ledger with TASK/STANDING columns, open vs Done bands, route margin, links on rows.
+- Registrar: denser matrix with numbered requirements, school-aware column heads, route margin.
+- Student Union: Coming up caption on the strip.
+- Still iterating toward Fable ≥9 on every hall; landing 3D untouched.
+
 # Codex pass — TransferPath immersive interiors, iteration 11
 
 ## Iteration 11

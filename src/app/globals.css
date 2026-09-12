@@ -997,6 +997,59 @@ nextjs-portal,
   background: var(--hall-ink);
 }
 
+
+/* Dorms — denser personal-task ledger */
+.hall-dorm-columns,
+.hall-matrix-columns {
+  display: grid;
+  gap: 1rem;
+  padding: 0.55rem 0;
+  margin-top: 1.75rem;
+  border-bottom: 1px solid var(--hall-ink);
+  color: var(--hall-stone);
+  font-family: var(--font-jetbrains-mono), ui-monospace, monospace;
+  font-size: 0.6rem;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+}
+
+.hall-dorm-columns {
+  grid-template-columns: 1.15rem minmax(0, 1fr) 7rem;
+}
+
+.hall-matrix-columns {
+  grid-template-columns: minmax(12rem, 1.4fr) minmax(5rem, 0.7fr) minmax(5rem, 0.7fr) 7.5rem;
+}
+
+.hall-matrix-wrap .hall-matrix thead {
+  display: none;
+}
+
+.hall-matrix-wrap .hall-matrix td {
+  padding: 1.05rem 0.85rem 1.05rem 0;
+}
+
+.hall-matrix-wrap .hall-matrix td:first-child {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.55rem 0.75rem;
+  align-items: baseline;
+}
+
+.hall-row-num {
+  color: var(--hall-stone);
+  font-family: var(--font-jetbrains-mono), ui-monospace, monospace;
+  font-size: 0.62rem;
+  letter-spacing: 0.08em;
+}
+
+.hall-check-row {
+  min-height: 3.4rem;
+  align-items: start;
+  padding-top: 1rem;
+  padding-bottom: 1rem;
+}
+
 /* Counselor — intake sheet */
 .hall-sheet {
   display: grid;
