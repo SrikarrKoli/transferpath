@@ -2,7 +2,6 @@
 
 import NextLink from "next/link"
 import { Meter } from "@/components/ui/progress"
-import { StatusBadge, type PlanStatus } from "@/components/ui/status"
 import { Provenance } from "@/components/ui/provenance"
 import { DeadlineOfficialLink } from "@/components/dashboard/deadline-official-link"
 import { cn } from "@/lib/utils"
@@ -23,7 +22,7 @@ export type RequirementsWorkspaceUiProps = {
 }
 
 const ROW_CTA_CLASS =
-  "rounded-md border border-border-strong px-3 py-1.5 text-caption font-medium transition-colors hover:bg-muted"
+  "requirements-row-action"
 
 function FallbackLink({
   href,
@@ -41,10 +40,10 @@ function FallbackLink({
   )
 }
 
-function requirementStatusToPlan(status: RequirementWorkspaceItem["status"]): PlanStatus {
-  if (status === "done") return "done"
-  if (status === "active") return "in_progress"
-  return "not_started"
+function requirementStatusLabel(status: RequirementWorkspaceItem["status"]): string {
+  if (status === "done") return "Filed"
+  if (status === "active") return "In review"
+  return "Open"
 }
 
 function RequirementRow({
@@ -71,7 +70,7 @@ function RequirementRow({
         {item.ctaLabel ?? "View"}
       </RowLink>
     ) : item.ctaLabel ? (
-      <span className="rounded-md border border-border px-3 py-1.5 text-caption font-medium text-muted-foreground">
+      <span className="requirements-row-action text-muted-foreground">
         {item.ctaLabel}
       </span>
     ) : null
@@ -82,26 +81,21 @@ function RequirementRow({
 
   return (
     <div
-      className={cn(
-        "flex items-start justify-between gap-4 px-4 py-3.5 sm:px-5",
-        !last && "border-b border-border/70"
-      )}
+      className={cn("requirements-register-row", !last && "has-rule")}
     >
-      <div className="flex min-w-0 items-start gap-3">
-        <div className="mt-0.5 shrink-0">
-          <StatusBadge status={requirementStatusToPlan(item.status)} labelFrom="sm" />
-        </div>
-        <div className="min-w-0">
-          <p className="text-sm font-medium text-foreground">{item.title}</p>
-          {subline ? (
-            <p className="mt-0.5 text-caption leading-snug text-muted-foreground">{subline}</p>
-          ) : null}
-          {item.provenanceBasis ? (
-            <Provenance level="estimated" basis={item.provenanceBasis} className="mt-1.5" />
-          ) : null}
-        </div>
+      <span className={cn("requirements-status", `is-${item.status}`)}>
+        {requirementStatusLabel(item.status)}
+      </span>
+      <div className="min-w-0">
+        <p className="text-sm font-medium text-foreground">{item.title}</p>
+        {subline ? (
+          <p className="mt-0.5 text-caption leading-snug text-muted-foreground">{subline}</p>
+        ) : null}
+        {item.provenanceBasis ? (
+          <Provenance level="estimated" basis={item.provenanceBasis} className="mt-1.5" />
+        ) : null}
       </div>
-      {cta ? <div className="shrink-0 pt-0.5">{cta}</div> : null}
+      {cta ? <div className="requirements-register-action">{cta}</div> : <span aria-hidden>—</span>}
     </div>
   )
 }
@@ -116,9 +110,9 @@ function WorkspaceSectionHeader({
   intro?: string
 }) {
   return (
-    <div className="mb-3 space-y-1">
+    <div className="requirements-section-heading">
       <div className="flex items-baseline justify-between gap-4">
-        <h2 className="font-heading text-lg text-foreground">{title}</h2>
+        <h2>{title}</h2>
         <p className="shrink-0 tp-eyebrow text-muted-foreground">{meta}</p>
       </div>
       {intro ? <p className="max-w-2xl text-sm text-muted-foreground">{intro}</p> : null}
@@ -143,11 +137,9 @@ function PlanningNoteRow({
 }) {
   return (
     <div
-      className={cn(
-        "flex items-start justify-between gap-4 px-4 py-3.5 sm:px-5",
-        !last && "border-b border-border/70"
-      )}
+      className={cn("requirements-register-row is-note", !last && "has-rule")}
     >
+      <span className="requirements-status">Memo</span>
       <div className="min-w-0">
         <p className="text-sm font-medium text-foreground">{note.title}</p>
         <p className="mt-1 text-sm leading-relaxed text-muted-foreground">{note.body}</p>
@@ -164,11 +156,7 @@ function PlanningNoteRow({
 function DeadlineRow({ row, last }: { row: RequirementsTimelineRow; last: boolean }) {
   return (
     <div
-      className={cn(
-        "relative flex items-start justify-between gap-4 px-4 py-3.5 sm:px-5",
-        !last && "border-b border-border/70",
-        row.current && "bg-accent/5"
-      )}
+      className={cn("requirements-register-row is-deadline", !last && "has-rule", row.current && "is-current")}
     >
       {row.current ? (
         <span
@@ -176,6 +164,7 @@ function DeadlineRow({ row, last }: { row: RequirementsTimelineRow; last: boolea
           aria-hidden
         />
       ) : null}
+      <span className="requirements-status">{row.current ? "Next" : "Date"}</span>
       <div className="min-w-0">
         <p className="text-sm font-medium text-foreground">{row.label}</p>
         <p className="mt-0.5 text-caption leading-snug text-muted-foreground">
@@ -207,15 +196,20 @@ export function RequirementsWorkspaceUi({
   const h = data.header
 
   return (
-    <div className="mx-auto max-w-6xl space-y-8 tp-stagger-children">
-      <header className="space-y-3">
+    <div className="requirements-register tp-stagger-children">
+      <div className="requirements-route-line">
+        <p className="tp-eyebrow">Filed pathway</p>
+        <p><span>{h.fromInstitution}</span><span aria-hidden> → </span><strong>{h.toInstitution}</strong></p>
+        <p>{h.program} · {h.term}</p>
+      </div>
+      <header className="requirements-register-header">
         <p className="tp-eyebrow text-accent">{h.eyebrow ?? "Requirements"}</p>
-        <h1 className="font-heading text-3xl font-semibold tracking-tight text-foreground">
+        <h1>
           {h.title}
           {h.titleItalic ? <> {h.titleItalic}</> : null}
         </h1>
         <p className="max-w-2xl text-sm text-muted-foreground">{h.subtitle}</p>
-        <div className="flex max-w-md flex-col gap-2 pt-1">
+        <div className="requirements-register-progress">
           <div className="flex items-baseline justify-between gap-3 text-sm">
             <span className="text-muted-foreground">
               {done} of {total} complete
@@ -231,19 +225,16 @@ export function RequirementsWorkspaceUi({
         </div>
       </header>
 
-      <div className="space-y-8">
+      <div className="requirements-register-body">
         {data.categories.map((cat) => {
           const catDone = cat.items.filter((i) => i.status === "done").length
           return (
-            <section key={cat.id}>
+            <section key={cat.id} className="requirements-register-section">
               <WorkspaceSectionHeader
                 title={cat.name}
                 meta={`${catDone} of ${cat.items.length} complete`}
               />
-              <div
-                className="overflow-hidden rounded-lg border border-border bg-card"
-                data-req-category={cat.id}
-              >
+              <div data-req-category={cat.id}>
                 {cat.items.map((item, i) => (
                   <div key={item.id} data-req-status={item.status}>
                     <RequirementRow
@@ -259,13 +250,13 @@ export function RequirementsWorkspaceUi({
         })}
       </div>
 
-      <section>
+      <section className="requirements-register-section">
         <WorkspaceSectionHeader
           title="Planning notes"
           meta={`${data.planningNotes.length} ${data.planningNotes.length === 1 ? "note" : "notes"}`}
           intro={data.planningNotesIntro}
         />
-        <div className="overflow-hidden rounded-lg border border-border bg-card">
+        <div>
           {data.planningNotes.length === 0 ? (
             <p className="px-4 py-3.5 text-sm text-muted-foreground sm:px-5">
               No planning notes for this view.
@@ -282,13 +273,13 @@ export function RequirementsWorkspaceUi({
         </div>
       </section>
 
-      <section>
+      <section className="requirements-register-section">
         <WorkspaceSectionHeader
           title="Related deadlines"
           meta={`${data.timelineRows.length} ${data.timelineRows.length === 1 ? "date" : "dates"}`}
           intro="Dates that sit next to these requirements. Manage tasks and missing dates on Tasks & deadlines."
         />
-        <div className="overflow-hidden rounded-lg border border-border bg-card">
+        <div>
           {data.timelineRows.length === 0 ? (
             <p className="px-4 py-3.5 text-sm text-muted-foreground sm:px-5">
               No upcoming deadlines in the next 24 months for this view.
@@ -303,7 +294,7 @@ export function RequirementsWorkspaceUi({
             ))
           )}
         </div>
-        <p className="mt-3 text-sm">
+        <p className="requirements-register-footer-link">
           <NextLink
             href="/dashboard/deadlines"
             className="font-medium text-primary hover:text-accent"

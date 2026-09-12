@@ -221,10 +221,10 @@ export function buildTasksDeadlinesData(input: {
   deadlineSourceUrl: string | null
   derived: ChecklistDerivedInput
 }): TasksDeadlinesData {
-  const cur = input.profile.currentUniversityName?.trim() || "your community college"
-  const tgt = input.profile.targetUniversityName?.trim() || "your target university"
-  const program = input.profile.targetMajor?.trim() || "your program"
-  const term = input.profile.expectedTransferTerm?.trim() || "your entry term"
+  const cur = input.profile.currentUniversityName?.trim() || "Current school not set"
+  const tgt = input.profile.targetUniversityName?.trim() || "Target school not set"
+  const program = input.profile.targetMajor?.trim() || input.profile.fieldOfStudy?.trim() || "Program not set"
+  const term = input.profile.expectedTransferTerm?.trim() || "Term not set"
 
   const today = serverTodayYmdUtc()
   const upcomingDeadlines = input.deadlineRows.map((row) =>

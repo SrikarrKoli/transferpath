@@ -76,9 +76,9 @@
 
   /* Campus world palette — landing 3D + entered-building interiors */
   --campus-sky: #a8d8e6;
-  --campus-cream: #f7f2e8;
+  --campus-cream: #f4f0e6;
   --campus-navy: #1a2332;
-  --campus-terracotta: #c45c3a;
+  --campus-terracotta: #b85c38;
   --campus-plaza: #e6d3b4;
   --campus-hedge: #2f5a32;
 }
@@ -673,5 +673,3035 @@
   .campus-enter {
     animation: none;
     opacity: 1;
+  }
+}
+
+/* ── Entered campus halls: restrained paper-dossier system ── */
+.tp-dashboard-bg {
+  background-color: #ede7da;
+}
+
+.campus-entered {
+  overflow: clip;
+  border-radius: 3px;
+  border: 1px solid rgb(26 35 50 / 22%);
+  background: #f4f0e6;
+  box-shadow: 0 18px 38px -30px rgb(26 35 50 / 48%), 5px 5px 0 rgb(26 35 50 / 6%);
+  color: #1a2332;
+}
+
+.campus-building-hero,
+.campus-entered[data-building] .campus-building-hero {
+  padding: 0;
+  border-bottom: 0;
+  background: #f4f0e6;
+}
+
+.campus-hall-rail {
+  display: flex;
+  min-height: 2.1rem;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+  padding: 0.45rem 1rem;
+  background: #1a2332;
+  color: #f4f0e6;
+  font-family: var(--font-jetbrains-mono), ui-monospace, monospace;
+  font-size: 0.625rem;
+  line-height: 1.4;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+}
+
+.campus-hall-heading {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto;
+  gap: 2rem;
+  align-items: end;
+  padding: 1.5rem 1.25rem 1.65rem;
+}
+
+.campus-hall-title-block {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr);
+}
+
+.campus-exit-link {
+  width: fit-content;
+  color: #b85c38;
+  font-family: var(--font-inter), ui-sans-serif, system-ui, sans-serif;
+  font-size: 0.75rem;
+  font-weight: 600;
+  letter-spacing: 0.02em;
+  transition: color 150ms ease;
+}
+
+.campus-exit-link:hover {
+  color: #1a2332;
+}
+
+.campus-room-label {
+  margin-top: 1.45rem;
+  color: rgb(26 35 50 / 57%);
+  font-family: var(--font-jetbrains-mono), ui-monospace, monospace;
+  font-size: 0.65rem;
+  line-height: 1.4;
+  letter-spacing: 0.15em;
+  text-transform: uppercase;
+}
+
+.campus-hall-name {
+  margin-top: 0.2rem;
+  max-width: 12ch;
+  color: #1a2332;
+  font-family: Georgia, "Times New Roman", serif;
+  font-size: clamp(2.65rem, 6vw, 5.35rem);
+  font-weight: 400;
+  line-height: 0.94;
+  letter-spacing: -0.052em;
+}
+
+.campus-hall-blurb {
+  max-width: 42rem;
+  margin-top: 1rem;
+  color: rgb(26 35 50 / 64%);
+  font-size: 0.875rem;
+  line-height: 1.65;
+}
+
+.campus-location-mark {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  gap: 0.45rem;
+  padding-left: 1.25rem;
+  border-left: 1px solid rgb(26 35 50 / 14%);
+}
+
+.campus-location-mark > p {
+  color: rgb(26 35 50 / 54%);
+  font-family: var(--font-jetbrains-mono), ui-monospace, monospace;
+  font-size: 0.625rem;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+
+.campus-building-interior,
+.campus-entered[data-building] .campus-building-interior {
+  padding: 1.15rem;
+  border-top: 3px double rgb(26 35 50 / 22%);
+  background: #eee8dc;
+  box-shadow: none;
+}
+
+.campus-building-interior > * {
+  padding: clamp(1rem, 2.8vw, 2rem);
+  border: 1px solid rgb(26 35 50 / 13%);
+  background: #faf7ef;
+  box-shadow: 0 7px 18px -20px rgb(26 35 50 / 52%);
+}
+
+.campus-building-interior h1,
+.campus-building-interior h2,
+.campus-building-interior h3 {
+  font-family: var(--font-inter), ui-sans-serif, system-ui, sans-serif;
+  letter-spacing: -0.025em;
+}
+
+.campus-building-interior .rounded-xl,
+.campus-building-interior .rounded-2xl,
+.campus-building-interior .rounded-lg {
+  border-radius: 2px;
+}
+
+.campus-building-interior button.rounded-full {
+  border-radius: 2px;
+}
+
+.campus-building-interior .border-l-4 {
+  border-left-width: 1px;
+}
+
+.campus-building-interior .shadow-xl,
+.campus-building-interior .shadow-glow-card {
+  box-shadow: none;
+}
+
+/* Clock Tower: one dominant working ledger, with supporting folios. */
+.dossier-route-line {
+  display: grid;
+  grid-template-columns: 10rem minmax(0, 1fr) auto;
+  gap: 1rem;
+  align-items: baseline;
+  padding-bottom: 0.9rem;
+  border-bottom: 1px solid rgb(26 35 50 / 22%);
+  color: rgb(26 35 50 / 60%);
+  font-size: 0.78rem;
+}
+
+.dossier-route-line > p:nth-child(2) {
+  color: #1a2332;
+  font-size: 0.92rem;
+}
+
+.dossier-route-line strong {
+  font-weight: 650;
+}
+
+.dossier-filters {
+  display: flex;
+  gap: 1.4rem;
+  overflow-x: auto;
+  border-bottom: 1px solid rgb(26 35 50 / 18%);
+}
+
+.dossier-filter {
+  position: relative;
+  flex: 0 0 auto;
+  padding: 0 0 0.7rem;
+  border: 0;
+  background: transparent;
+  color: rgb(26 35 50 / 54%);
+  font-size: 0.78rem;
+  font-weight: 600;
+}
+
+.dossier-filter::after {
+  position: absolute;
+  right: 0;
+  bottom: -1px;
+  left: 0;
+  height: 2px;
+  background: transparent;
+  content: "";
+}
+
+.dossier-filter:hover,
+.dossier-filter.is-active {
+  color: #1a2332;
+}
+
+.dossier-filter.is-active::after {
+  background: #b85c38;
+}
+
+.dossier-filter.is-disabled {
+  cursor: not-allowed;
+  opacity: 0.38;
+}
+
+.deadline-ledger-layout {
+  display: grid;
+  grid-template-columns: minmax(0, 2.15fr) minmax(14rem, 0.72fr);
+  gap: clamp(1.5rem, 3vw, 3rem);
+  align-items: start;
+}
+
+.deadline-ledger-main,
+.deadline-ledger-aside {
+  display: grid;
+  gap: 1.5rem;
+}
+
+.deadline-ledger-aside {
+  position: sticky;
+  top: 5rem;
+}
+
+.dossier-section {
+  border-top: 1px solid rgb(26 35 50 / 28%);
+  border-bottom: 1px solid rgb(26 35 50 / 18%);
+  background: rgb(255 253 248 / 54%);
+}
+
+.dossier-section-dominant {
+  border-top: 4px solid #1a2332;
+  background: #fffdf8;
+  box-shadow: 7px 8px 0 rgb(26 35 50 / 6%);
+}
+
+.dossier-section-heading {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: end;
+  justify-content: space-between;
+  gap: 0.75rem;
+  padding: 1rem 1.15rem;
+  border-bottom: 1px solid rgb(26 35 50 / 18%);
+}
+
+.dossier-section-heading h2 {
+  color: #1a2332;
+  font-size: 0.96rem;
+  font-weight: 700;
+  letter-spacing: -0.01em;
+}
+
+.dossier-section > ul > li + li {
+  border-top: 1px solid rgb(26 35 50 / 13%);
+}
+
+.dossier-empty {
+  padding: 1.5rem 1.15rem;
+  color: rgb(26 35 50 / 54%);
+  font-size: 0.875rem;
+}
+
+.deadline-ledger-row {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+  padding: 1.15rem;
+}
+
+.deadline-ledger-row.is-primary {
+  min-height: 11.5rem;
+  padding-block: 1.75rem;
+  background: #f4f0e6;
+}
+
+.deadline-ledger-entry {
+  display: grid;
+  grid-template-columns: 8.5rem minmax(0, 1fr);
+  gap: 1.25rem;
+  min-width: 0;
+  flex: 1;
+  align-items: start;
+}
+
+.deadline-date-cell {
+  padding-right: 1rem;
+  border-right: 1px solid rgb(26 35 50 / 16%);
+}
+
+.deadline-date-cell time {
+  display: block;
+  color: #1a2332;
+  font-family: Georgia, "Times New Roman", serif;
+  font-size: 1.42rem;
+  line-height: 1.05;
+  letter-spacing: -0.035em;
+}
+
+.is-primary .deadline-date-cell time {
+  font-size: clamp(2rem, 4vw, 3.15rem);
+}
+
+.deadline-date-cell p {
+  margin-top: 0.5rem;
+  color: #b85c38;
+  font-family: var(--font-jetbrains-mono), ui-monospace, monospace;
+  font-size: 0.64rem;
+  line-height: 1.4;
+  text-transform: uppercase;
+}
+
+.deadline-ledger-meta,
+.task-folio-meta {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.35rem 0.85rem;
+  color: rgb(26 35 50 / 50%);
+  font-family: var(--font-jetbrains-mono), ui-monospace, monospace;
+  font-size: 0.61rem;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+
+.deadline-ledger-title {
+  max-width: 34rem;
+  margin-top: 0.5rem;
+  color: #1a2332;
+  font-size: 0.96rem;
+  font-weight: 650;
+  line-height: 1.4;
+}
+
+.is-primary .deadline-ledger-title {
+  font-size: clamp(1.1rem, 2vw, 1.45rem);
+}
+
+.task-folio-row {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 1rem;
+  padding: 1rem 1.15rem;
+}
+
+.task-check {
+  display: grid;
+  width: 1.15rem;
+  height: 1.15rem;
+  flex: 0 0 auto;
+  place-items: center;
+  margin-top: 0.125rem;
+  border-width: 1.5px;
+  border-style: solid;
+  border-radius: 1px;
+  transition: border-color 150ms ease, background-color 150ms ease;
+}
+
+.task-folio-row.is-complete {
+  opacity: 0.7;
+}
+
+.dossier-note {
+  padding: 1.1rem;
+  border: 1px solid rgb(26 35 50 / 15%);
+  background: transparent;
+}
+
+.dossier-missing.has-missing {
+  border-color: rgb(184 92 56 / 40%);
+  background: rgb(184 92 56 / 5%);
+}
+
+@media (min-width: 640px) {
+  .campus-hall-heading {
+    padding: 1.8rem 2rem 2rem;
+  }
+
+  .campus-building-interior,
+  .campus-entered[data-building] .campus-building-interior {
+    padding: 1.5rem;
+  }
+}
+
+@media (max-width: 900px) {
+  .deadline-ledger-layout {
+    grid-template-columns: minmax(0, 1fr);
+  }
+
+  .deadline-ledger-aside {
+    position: static;
+  }
+}
+
+@media (max-width: 639px) {
+  .campus-hall-rail span:last-child,
+  .campus-location-mark {
+    display: none;
+  }
+
+  .campus-hall-heading {
+    grid-template-columns: minmax(0, 1fr);
+    gap: 0;
+  }
+
+  .campus-hall-name {
+    font-size: 2.8rem;
+  }
+
+  .campus-building-interior,
+  .campus-entered[data-building] .campus-building-interior {
+    padding: 0.65rem;
+  }
+
+  .campus-building-interior > * {
+    padding: 1rem 0.8rem;
+  }
+
+  .dossier-route-line {
+    grid-template-columns: minmax(0, 1fr);
+    gap: 0.3rem;
+  }
+
+  .deadline-ledger-entry {
+    grid-template-columns: minmax(0, 1fr);
+  }
+
+  .deadline-date-cell {
+    padding: 0 0 0.7rem;
+    border-right: 0;
+    border-bottom: 1px solid rgb(26 35 50 / 15%);
+  }
+}
+
+/* ── Interior dossier, iteration 2: artifact-led working surfaces ── */
+
+/* Clock Tower — an asymmetric archival folio with a sewn margin. */
+.campus-building-interior > .deadline-dossier {
+  position: relative;
+  padding: clamp(1.25rem, 3vw, 2.6rem) clamp(1rem, 3vw, 2.75rem) 3rem;
+  border: 1px solid rgb(26 35 50 / 18%);
+  background: #fffdf8;
+  box-shadow: 8px 9px 0 rgb(26 35 50 / 7%);
+}
+
+.deadline-dossier::before {
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  left: clamp(1.05rem, 2.6vw, 2.15rem);
+  width: 1px;
+  background: rgb(184 92 56 / 42%);
+  box-shadow: 4px 0 0 rgb(184 92 56 / 9%);
+  content: "";
+  pointer-events: none;
+}
+
+.deadline-dossier > * {
+  margin-left: clamp(1.6rem, 3.5vw, 3.35rem);
+}
+
+.deadline-dossier .dossier-route-line {
+  margin-bottom: 2.25rem;
+  padding-bottom: 1rem;
+  border-bottom-style: double;
+  border-bottom-width: 3px;
+}
+
+.dossier-folio-heading {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto;
+  gap: 2rem;
+  align-items: end;
+  margin-bottom: 0.8rem;
+}
+
+.dossier-folio-heading span,
+.dossier-folio-heading p {
+  color: rgb(26 35 50 / 48%);
+  font-family: var(--font-jetbrains-mono), ui-monospace, monospace;
+  font-size: 0.64rem;
+  letter-spacing: 0.11em;
+  text-transform: uppercase;
+}
+
+.dossier-folio-heading strong {
+  display: block;
+  margin-top: 0.25rem;
+  color: #1a2332;
+  font-family: Georgia, "Times New Roman", serif;
+  font-size: clamp(2rem, 4.8vw, 4.4rem);
+  font-weight: 400;
+  line-height: 0.96;
+  letter-spacing: -0.045em;
+}
+
+.deadline-dossier .dossier-filters {
+  gap: 0;
+  margin-bottom: 2.65rem;
+  border-top: 1px solid rgb(26 35 50 / 22%);
+  border-bottom: 1px solid rgb(26 35 50 / 22%);
+}
+
+.deadline-dossier .dossier-filter {
+  min-width: 7.2rem;
+  padding: 0.72rem 1rem 0.68rem;
+  border-right: 1px solid rgb(26 35 50 / 13%);
+  text-align: left;
+}
+
+.deadline-dossier .dossier-filter::after {
+  right: 1rem;
+  left: 1rem;
+}
+
+.deadline-dossier .deadline-ledger-layout {
+  grid-template-columns: minmax(0, 2.55fr) minmax(13rem, 0.65fr);
+  gap: clamp(2rem, 5vw, 4.75rem);
+}
+
+.deadline-dossier .dossier-section {
+  border: 0;
+  border-top: 1px solid rgb(26 35 50 / 38%);
+  background: transparent;
+}
+
+.deadline-dossier .dossier-section-dominant {
+  border-top: 5px solid #1a2332;
+  background: transparent;
+  box-shadow: none;
+}
+
+.deadline-dossier .dossier-section-heading {
+  padding: 1rem 0 0.8rem;
+  border-bottom: 1px solid rgb(26 35 50 / 22%);
+}
+
+.deadline-dossier .dossier-section-heading h2 {
+  font-family: Georgia, "Times New Roman", serif;
+  font-size: 1.2rem;
+  font-weight: 400;
+}
+
+.deadline-dossier .deadline-ledger-row {
+  display: grid;
+  grid-template-columns: 2rem minmax(0, 1fr) auto;
+  padding: 1.35rem 0;
+}
+
+.deadline-dossier .deadline-ledger-row.is-primary {
+  min-height: 14rem;
+  padding-block: 2.15rem;
+  background: transparent;
+}
+
+.deadline-row-number {
+  align-self: start;
+  color: rgb(26 35 50 / 34%);
+  font-family: var(--font-jetbrains-mono), ui-monospace, monospace;
+  font-size: 0.65rem;
+  letter-spacing: 0.08em;
+}
+
+.deadline-dossier .deadline-ledger-entry {
+  grid-template-columns: minmax(7.5rem, 0.72fr) minmax(0, 1.6fr);
+  gap: clamp(1.25rem, 3vw, 2.8rem);
+}
+
+.deadline-dossier .deadline-date-cell {
+  border-right: 0;
+}
+
+.deadline-dossier .deadline-ledger-title {
+  max-width: 29rem;
+}
+
+.deadline-dossier .deadline-ledger-aside {
+  gap: 2.25rem;
+  padding-top: 2.6rem;
+}
+
+.deadline-dossier .deadline-ledger-aside .dossier-section-heading,
+.deadline-dossier .deadline-ledger-aside .task-folio-row,
+.deadline-dossier .dossier-note {
+  padding-right: 0;
+  padding-left: 0;
+}
+
+.deadline-dossier .dossier-note {
+  border-width: 1px 0 0;
+}
+
+/* Library — one manuscript sheet, with editorial notes living in its margin. */
+.campus-building-interior > .library-workspace {
+  padding: 0;
+  border: 0;
+  background: transparent;
+  box-shadow: none;
+}
+
+.library-workspace {
+  display: grid;
+  grid-template-columns: minmax(8.75rem, 0.18fr) minmax(0, 1fr);
+  gap: 1.25rem;
+  align-items: start;
+}
+
+.library-prompt-index {
+  position: sticky;
+  top: 1.5rem;
+  padding-top: 1.2rem;
+  border-top: 4px solid #1a2332;
+}
+
+.library-index-label {
+  margin-bottom: 0.9rem;
+  color: rgb(26 35 50 / 54%);
+  font-family: var(--font-jetbrains-mono), ui-monospace, monospace;
+  font-size: 0.65rem;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+}
+
+.library-prompt-tabs {
+  display: grid;
+}
+
+.library-prompt-tab {
+  position: relative;
+  padding: 0.85rem 0.4rem 0.85rem 0;
+  border: 0;
+  border-top: 1px solid rgb(26 35 50 / 15%);
+  background: transparent;
+  color: rgb(26 35 50 / 62%);
+  font-size: 0.82rem;
+  font-weight: 600;
+  text-align: left;
+  transition: color 150ms ease, padding-left 150ms ease;
+}
+
+.library-prompt-tab:last-child {
+  border-bottom: 1px solid rgb(26 35 50 / 15%);
+}
+
+.library-prompt-tab:hover,
+.library-prompt-tab.is-active {
+  padding-left: 0.7rem;
+  color: #1a2332;
+}
+
+.library-prompt-tab.is-active::before {
+  position: absolute;
+  top: 0.7rem;
+  bottom: 0.7rem;
+  left: 0;
+  width: 3px;
+  background: #b85c38;
+  content: "";
+}
+
+.library-workspace > [role="alert"] {
+  grid-column: 2;
+}
+
+.library-workspace > .essay-workspace {
+  grid-column: 2;
+}
+
+.essay-workspace {
+  min-width: 0;
+}
+
+.essay-workspace-header {
+  display: flex;
+  align-items: end;
+  justify-content: space-between;
+  gap: 2rem;
+  padding: 1.55rem clamp(1.25rem, 3vw, 2.6rem) 1.45rem;
+  border: 1px solid rgb(26 35 50 / 18%);
+  border-bottom: 0;
+  background: #fffdf8;
+}
+
+.essay-workspace-title {
+  margin-top: 0.45rem;
+  color: #1a2332;
+  font-family: Georgia, "Times New Roman", serif;
+  font-size: clamp(2rem, 4vw, 3.75rem);
+  font-weight: 400;
+  line-height: 1;
+  letter-spacing: -0.045em;
+}
+
+.essay-workspace-deck {
+  max-width: 34rem;
+  margin-top: 0.7rem;
+  color: rgb(26 35 50 / 58%);
+  font-size: 0.875rem;
+}
+
+.essay-workspace-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.55rem;
+}
+
+.essay-action {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.45rem;
+  min-height: 2.5rem;
+  padding: 0.55rem 0.9rem;
+  border: 1px solid #1a2332;
+  font-size: 0.8rem;
+  font-weight: 650;
+  transition: background-color 150ms ease, color 150ms ease;
+}
+
+.essay-action-secondary {
+  background: transparent;
+  color: #1a2332;
+}
+
+.essay-action-primary {
+  background: #1a2332;
+  color: #f4f0e6;
+}
+
+.essay-action:hover {
+  background: #b85c38;
+  border-color: #b85c38;
+  color: white;
+}
+
+.essay-desk-layout {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) minmax(14rem, 0.28fr);
+  border: 1px solid rgb(26 35 50 / 18%);
+  background: #fffdf8;
+  box-shadow: 9px 10px 0 rgb(26 35 50 / 7%);
+}
+
+.essay-paper {
+  min-width: 0;
+  border-right: 1px solid rgb(26 35 50 / 20%);
+}
+
+.essay-prompt-block {
+  padding: 1.5rem clamp(1.25rem, 4vw, 3.8rem);
+  border-bottom: 1px solid rgb(26 35 50 / 18%);
+  background: rgb(244 240 230 / 52%);
+}
+
+.essay-prompt-settings {
+  margin-top: 1.25rem;
+  padding-top: 1rem;
+  border-top: 1px dashed rgb(26 35 50 / 22%);
+}
+
+.essay-writing-field {
+  position: relative;
+  padding: 2.35rem clamp(1.25rem, 4vw, 3.8rem) 1.25rem;
+  background:
+    linear-gradient(90deg, transparent 0, transparent 2rem, rgb(184 92 56 / 22%) 2rem, rgb(184 92 56 / 22%) calc(2rem + 1px), transparent calc(2rem + 1px)),
+    repeating-linear-gradient(180deg, transparent 0, transparent 2.15rem, rgb(26 35 50 / 7%) 2.15rem, rgb(26 35 50 / 7%) calc(2.15rem + 1px));
+}
+
+.essay-textarea {
+  display: block;
+  width: 100%;
+  min-height: 31rem;
+  resize: vertical;
+  border: 0;
+  background: transparent;
+  color: #1a2332;
+  font-family: Georgia, "Times New Roman", serif;
+  font-size: 1.18rem;
+  line-height: 1.82;
+  outline: none;
+}
+
+.essay-textarea::placeholder {
+  color: rgb(26 35 50 / 32%);
+}
+
+.essay-paper-footer {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+  min-height: 5.2rem;
+  padding: 1rem clamp(1.25rem, 4vw, 3.8rem);
+  border-top: 3px double rgb(26 35 50 / 20%);
+}
+
+.essay-margin-notes {
+  display: grid;
+  align-content: start;
+  gap: 2.2rem;
+  padding: 2rem 1.4rem;
+  background: #f4f0e6;
+}
+
+.essay-coach-note,
+.essay-reference-note {
+  padding-top: 0.9rem;
+  border-top: 2px solid #1a2332;
+  background: transparent;
+}
+
+.essay-note-label {
+  display: flex;
+  align-items: center;
+  gap: 0.4rem;
+  margin-bottom: 0.85rem;
+  color: #b85c38;
+}
+
+.essay-reference-link {
+  width: 100%;
+  margin-top: 1rem;
+  padding: 0.65rem 0;
+  border: 0;
+  border-top: 1px solid rgb(26 35 50 / 28%);
+  border-bottom: 1px solid rgb(26 35 50 / 28%);
+  color: #1a2332;
+  font-size: 0.8rem;
+  font-weight: 650;
+  text-align: left;
+}
+
+/* Classrooms — a plan table: term spine, drawing sheet, and calculation margin. */
+.campus-building-interior > .plan-table {
+  padding: 0;
+  border: 1px solid rgb(26 35 50 / 18%);
+  background: #fffdf8;
+  box-shadow: 8px 9px 0 rgb(26 35 50 / 7%);
+}
+
+.plan-table-heading {
+  display: grid;
+  grid-template-columns: 7rem minmax(0, 1fr);
+  column-gap: 1.5rem;
+  padding: 1.65rem clamp(1.2rem, 3vw, 2.6rem) 1.45rem;
+  border-bottom: 1px solid rgb(26 35 50 / 20%);
+}
+
+.plan-table-heading > :first-child {
+  grid-row: 1 / span 3;
+  padding-top: 0.3rem;
+}
+
+.plan-table-heading h1 {
+  font-family: Georgia, "Times New Roman", serif;
+  font-size: clamp(2.1rem, 4vw, 3.8rem);
+  font-weight: 400;
+  line-height: 0.98;
+}
+
+.plan-table-toolbar {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+  padding: 0.8rem clamp(1.2rem, 3vw, 2.6rem);
+  border-bottom: 3px double rgb(26 35 50 / 22%);
+  background: #f4f0e6;
+}
+
+.plan-table > [role="alert"] {
+  margin: 0;
+  padding: 0.75rem clamp(1.2rem, 3vw, 2.6rem);
+  border-bottom: 1px solid rgb(184 92 56 / 24%);
+  background: rgb(184 92 56 / 6%);
+}
+
+.plan-table-grid {
+  display: grid;
+  grid-template-columns: 9.5rem minmax(0, 1fr) 14rem;
+  min-width: 0;
+}
+
+.plan-term-spine {
+  padding: 2rem 1rem 2rem 1.4rem;
+  border-right: 1px solid rgb(26 35 50 / 20%);
+  background: #1a2332;
+}
+
+.plan-term-spine .tp-eyebrow {
+  color: rgb(244 240 230 / 52%);
+}
+
+.plan-term-index > ul {
+  margin-top: 1rem;
+  border-top: 1px solid rgb(244 240 230 / 20%);
+}
+
+.plan-term-index-button {
+  width: 100%;
+  padding: 0.75rem 0;
+  border: 0;
+  border-bottom: 1px solid rgb(244 240 230 / 14%);
+  background: transparent;
+  color: rgb(244 240 230 / 64%);
+  font-size: 0.78rem;
+  text-align: left;
+  transition: color 150ms ease, padding-left 150ms ease;
+}
+
+.plan-term-index-button:hover,
+.plan-term-index-button.is-active {
+  padding-left: 0.5rem;
+  color: #f4f0e6;
+}
+
+.plan-term-index-button.is-active {
+  box-shadow: inset 3px 0 0 #b85c38;
+}
+
+.plan-drawing-sheet {
+  padding: 1rem 1.5rem 2.5rem;
+  background:
+    linear-gradient(90deg, transparent 0, transparent 2.25rem, rgb(184 92 56 / 18%) 2.25rem, rgb(184 92 56 / 18%) calc(2.25rem + 1px), transparent calc(2.25rem + 1px)),
+    repeating-linear-gradient(180deg, transparent 0, transparent 2.6rem, rgb(26 35 50 / 5%) 2.6rem, rgb(26 35 50 / 5%) calc(2.6rem + 1px));
+}
+
+.plan-term-section {
+  position: relative;
+  margin-top: 1.15rem;
+  border: 0;
+  border-top: 1px solid rgb(26 35 50 / 30%);
+  background: rgb(255 253 248 / 88%);
+}
+
+.plan-term-section.is-calendar::before {
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  left: 0;
+  width: 3px;
+  background: rgb(26 35 50 / 16%);
+  content: "";
+}
+
+.plan-term-section.border-accent\/50::before {
+  background: #b85c38;
+}
+
+.plan-term-heading {
+  min-height: 4.25rem;
+  padding: 0.9rem 1rem 0.7rem 1.35rem;
+  border-bottom: 1px solid rgb(26 35 50 / 16%);
+}
+
+.plan-term-heading h2 {
+  font-family: Georgia, "Times New Roman", serif;
+  font-size: 1.15rem;
+  font-weight: 400;
+}
+
+.plan-term-body {
+  display: grid;
+  gap: 0.85rem;
+  padding: 0.9rem 1rem 1rem 1.35rem;
+}
+
+.plan-course-line {
+  padding: 0.85rem 0;
+}
+
+.plan-course-editor select {
+  border-radius: 0;
+  border-width: 0 0 1px;
+  background: transparent;
+}
+
+.plan-margin-summary {
+  display: grid;
+  gap: 2rem;
+  padding: 2rem 1.25rem;
+  border-left: 1px solid rgb(26 35 50 / 20%);
+  background: #f4f0e6;
+}
+
+.plan-summary-block {
+  padding-top: 0.9rem;
+  border-top: 3px solid #1a2332;
+}
+
+@media (max-width: 1023px) {
+  .library-workspace {
+    grid-template-columns: minmax(0, 1fr);
+  }
+
+  .library-prompt-index {
+    position: static;
+    padding-top: 0;
+    border-top: 0;
+  }
+
+  .library-workspace > [role="alert"],
+  .library-workspace > .essay-workspace {
+    grid-column: 1;
+  }
+
+  .library-prompt-tabs {
+    display: flex;
+    overflow-x: auto;
+    border-top: 1px solid rgb(26 35 50 / 18%);
+    border-bottom: 1px solid rgb(26 35 50 / 18%);
+  }
+
+  .library-prompt-tab,
+  .library-prompt-tab:last-child {
+    flex: 0 0 auto;
+    min-width: 8rem;
+    padding: 0.7rem 0.8rem;
+    border: 0;
+    border-right: 1px solid rgb(26 35 50 / 14%);
+  }
+
+  .library-prompt-tab:hover,
+  .library-prompt-tab.is-active {
+    padding-left: 0.8rem;
+  }
+
+  .library-prompt-tab.is-active::before {
+    top: auto;
+    right: 0.8rem;
+    bottom: 0;
+    left: 0.8rem;
+    width: auto;
+    height: 3px;
+  }
+
+  .library-index-label {
+    margin-bottom: 0.55rem;
+  }
+
+  .essay-desk-layout {
+    grid-template-columns: minmax(0, 1fr);
+  }
+
+  .essay-paper {
+    border-right: 0;
+  }
+
+  .essay-margin-notes {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    border-top: 1px solid rgb(26 35 50 / 20%);
+  }
+
+  .plan-table-grid {
+    grid-template-columns: minmax(0, 1fr) 14rem;
+  }
+}
+
+@media (max-width: 760px) {
+  .deadline-dossier > * {
+    margin-left: 1.25rem;
+  }
+
+  .deadline-dossier .deadline-ledger-row {
+    grid-template-columns: 1.55rem minmax(0, 1fr);
+  }
+
+  .deadline-dossier .deadline-ledger-row > :last-child {
+    grid-column: 2;
+  }
+
+  .deadline-dossier .deadline-ledger-entry {
+    grid-template-columns: minmax(0, 1fr);
+  }
+
+  .dossier-folio-heading {
+    grid-template-columns: minmax(0, 1fr);
+    gap: 0.65rem;
+  }
+
+  .essay-workspace-header {
+    align-items: flex-start;
+    flex-direction: column;
+  }
+
+  .essay-margin-notes {
+    grid-template-columns: minmax(0, 1fr);
+  }
+
+  .plan-table-heading {
+    grid-template-columns: minmax(0, 1fr);
+  }
+
+  .plan-table-heading > :first-child {
+    grid-row: auto;
+  }
+
+  .plan-table-grid {
+    grid-template-columns: minmax(0, 1fr);
+  }
+
+  .plan-margin-summary {
+    border-top: 1px solid rgb(26 35 50 / 20%);
+    border-left: 0;
+  }
+}
+
+
+/* Iteration 6 — a single ruled working artifact in every campus hall. */
+.campus-entered[data-building="union"],
+.campus-entered[data-building="registrar"],
+.campus-entered[data-building="gym"],
+.campus-entered[data-building="dorm"] {
+  --background: #f4f0e6;
+  --surface: #f4f0e6;
+  --foreground: #1a2332;
+  --card: #f4f0e6;
+  --card-foreground: #1a2332;
+  --primary: #1a2332;
+  --primary-foreground: #f4f0e6;
+  --accent: #b85c38;
+  --accent-foreground: #f4f0e6;
+  --muted: #f4f0e6;
+  --muted-foreground: rgb(26 35 50 / 62%);
+  --border: rgb(26 35 50 / 28%);
+  --border-strong: #1a2332;
+  border-color: #1a2332;
+  background: #f4f0e6;
+}
+
+.campus-entered[data-building="union"] .campus-building-hero,
+.campus-entered[data-building="registrar"] .campus-building-hero,
+.campus-entered[data-building="gym"] .campus-building-hero,
+.campus-entered[data-building="dorm"] .campus-building-hero,
+.campus-entered[data-building="union"] .campus-building-interior,
+.campus-entered[data-building="registrar"] .campus-building-interior,
+.campus-entered[data-building="gym"] .campus-building-interior,
+.campus-entered[data-building="dorm"] .campus-building-interior,
+.campus-entered[data-building="union"] .campus-building-interior > *,
+.campus-entered[data-building="registrar"] .campus-building-interior > *,
+.campus-entered[data-building="gym"] .campus-building-interior > *,
+.campus-entered[data-building="dorm"] .campus-building-interior > * {
+  border-radius: 0;
+  background: #f4f0e6;
+  box-shadow: none;
+}
+
+.campus-entered[data-building="union"] .campus-building-interior *,
+.campus-entered[data-building="registrar"] .campus-building-interior *,
+.campus-entered[data-building="gym"] .campus-building-interior *,
+.campus-entered[data-building="dorm"] .campus-building-interior * {
+  border-radius: 0 !important;
+  box-shadow: none !important;
+}
+
+.campus-entered[data-building="union"] .campus-building-hero,
+.campus-entered[data-building="registrar"] .campus-building-hero,
+.campus-entered[data-building="gym"] .campus-building-hero,
+.campus-entered[data-building="dorm"] .campus-building-hero {
+  border-bottom: 1px solid #1a2332;
+}
+
+.campus-entered[data-building="union"] .campus-building-interior,
+.campus-entered[data-building="registrar"] .campus-building-interior,
+.campus-entered[data-building="gym"] .campus-building-interior,
+.campus-entered[data-building="dorm"] .campus-building-interior {
+  padding: 0;
+  border-top: 0;
+}
+
+.library-route-line,
+.plan-route-line,
+.union-route-line,
+.readiness-route-line,
+.requirements-route-line {
+  display: grid;
+  grid-template-columns: minmax(8rem, 0.28fr) minmax(0, 1fr) auto;
+  gap: 1rem;
+  align-items: baseline;
+  padding: 0.8rem clamp(1rem, 3vw, 2.5rem);
+  border-bottom: 1px solid #1a2332;
+  color: rgb(26 35 50 / 62%);
+  font-size: 0.78rem;
+}
+
+.library-route-line > p:nth-child(2),
+.plan-route-line > p:nth-child(2),
+.union-route-line > p:nth-child(2),
+.readiness-route-line > p:nth-child(2),
+.requirements-route-line > p:nth-child(2) {
+  color: #1a2332;
+  font-size: 0.9rem;
+}
+
+/* Library: repair the inherited grid constraint and keep every leaf legible. */
+.campus-entered[data-building="library"] .library-workspace {
+  display: block;
+  width: 100%;
+  max-width: none;
+}
+
+.library-manuscript .library-prompt-tab > span:last-child {
+  min-width: 0;
+  overflow-wrap: anywhere;
+}
+
+.library-manuscript .library-prompt-tab > span:last-child > span:first-child {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.library-manuscript .essay-workspace,
+.library-manuscript .essay-desk-layout,
+.library-manuscript .essay-paper {
+  min-width: 0;
+}
+
+/* Classroom: register masthead and edge-to-edge ruled term rows. */
+.plan-route-line {
+  border-top: 1px solid #1a2332;
+}
+
+.campus-entered[data-building="classroom"] .plan-table-heading {
+  grid-template-columns: minmax(9rem, 0.28fr) minmax(0, 1fr);
+  min-height: 9rem;
+  padding: clamp(1.4rem, 3vw, 2.5rem);
+}
+
+.campus-entered[data-building="classroom"] .plan-table-heading h1 {
+  font-family: var(--font-inter), ui-sans-serif, system-ui, sans-serif;
+  font-size: clamp(2rem, 4.5vw, 4.25rem);
+  font-weight: 650;
+  letter-spacing: -0.055em;
+}
+
+.campus-entered[data-building="classroom"] .plan-course-editor {
+  min-width: 0;
+}
+
+/* Student Union: one daily sheet with the action, queue, term and score ruled into it. */
+.campus-building-interior > .union-day-sheet,
+.union-day-sheet {
+  width: 100%;
+  max-width: none;
+  padding: 0;
+  border: 0;
+}
+
+.union-sheet-heading {
+  display: flex;
+  min-height: 10rem;
+  align-items: end;
+  justify-content: space-between;
+  gap: 2rem;
+  padding: clamp(1.5rem, 4vw, 3.25rem) clamp(1rem, 3vw, 2.5rem) 1.4rem;
+  border-top: 1px solid #1a2332;
+  border-bottom: 1px solid #1a2332;
+}
+
+.union-sheet-heading h1,
+.union-pathway-prompt h1 {
+  margin-top: 0.35rem;
+  font-size: clamp(2.2rem, 5vw, 4.5rem);
+  font-weight: 650;
+  line-height: 0.96;
+  letter-spacing: -0.055em;
+}
+
+.union-date-line {
+  color: rgb(26 35 50 / 58%);
+  font-family: var(--font-jetbrains-mono), ui-monospace, monospace;
+  font-size: 0.65rem;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+}
+
+.union-sheet-columns {
+  display: grid;
+  grid-template-columns: minmax(0, 1.7fr) minmax(16rem, 0.55fr);
+}
+
+.union-sheet-main,
+.union-sheet-margin {
+  display: block;
+  min-width: 0;
+}
+
+.union-sheet-margin {
+  border-left: 1px solid #1a2332;
+}
+
+.union-next-action,
+.union-sheet-section,
+.union-sheet-margin > div,
+.union-pathway-prompt,
+.union-day-sheet > div:not(.union-sheet-columns) {
+  margin: 0;
+  padding: 1.4rem clamp(1rem, 3vw, 2.5rem);
+  border: 0;
+  border-bottom: 1px solid rgb(26 35 50 / 42%);
+  background: #f4f0e6;
+}
+
+.union-next-action {
+  min-height: 17rem;
+  border-left: 5px solid #b85c38;
+  padding-block: clamp(2rem, 4vw, 3.75rem);
+}
+
+.union-next-action h1 {
+  max-width: 24ch;
+  font-size: clamp(1.8rem, 3.4vw, 3.25rem);
+}
+
+.union-sheet-section + .union-sheet-section {
+  border-top: 0;
+}
+
+.union-sheet-section ul {
+  margin-top: 1rem;
+  border-top: 1px solid rgb(26 35 50 / 28%);
+}
+
+.union-sheet-margin > div {
+  padding-inline: 1.25rem;
+}
+
+.union-sheet-margin > div ul {
+  margin-top: 1rem;
+  border-top: 1px solid #1a2332;
+}
+
+.union-sheet-margin > div li {
+  padding-block: 0.7rem;
+  border-bottom: 1px solid rgb(26 35 50 / 24%);
+}
+
+.union-primary-action,
+.union-day-sheet a[class*="bg-primary"] {
+  display: inline-flex;
+  padding: 0.65rem 0.9rem;
+  background: #1a2332;
+  color: #f4f0e6;
+  font-size: 0.8rem;
+  font-weight: 650;
+}
+
+/* Registrar: one dossier table, including memos and adjacent dates. */
+.campus-building-interior > .requirements-register,
+.requirements-register {
+  width: 100%;
+  max-width: none;
+  padding: 0;
+  border: 0;
+}
+
+.requirements-register-header {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) minmax(15rem, 0.32fr);
+  min-height: 11rem;
+  gap: 1.5rem;
+  align-items: end;
+  padding: clamp(1.5rem, 4vw, 3.25rem) clamp(1rem, 3vw, 2.5rem) 1.4rem;
+  border-top: 1px solid #1a2332;
+  border-bottom: 1px solid #1a2332;
+}
+
+.requirements-register-header h1 {
+  grid-column: 1;
+  max-width: 18ch;
+  font-size: clamp(2.1rem, 4.6vw, 4.4rem);
+  font-weight: 650;
+  line-height: 0.97;
+  letter-spacing: -0.055em;
+}
+
+.requirements-register-header > p:nth-of-type(2) {
+  grid-column: 1;
+}
+
+.requirements-register-progress {
+  grid-column: 2;
+  grid-row: 1 / span 3;
+  align-self: stretch;
+  padding: 1rem 0 0 1.5rem;
+  border-left: 1px solid #1a2332;
+}
+
+.requirements-register-section {
+  border-bottom: 1px solid #1a2332;
+}
+
+.requirements-section-heading {
+  margin: 0;
+  padding: 1rem clamp(1rem, 3vw, 2.5rem);
+  border-bottom: 1px solid #1a2332;
+}
+
+.requirements-section-heading h2 {
+  font-size: 1rem;
+  font-weight: 750;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+}
+
+.requirements-register-row {
+  position: relative;
+  display: grid;
+  grid-template-columns: 7rem minmax(0, 1fr) minmax(6rem, auto);
+  gap: clamp(1rem, 2.5vw, 2.5rem);
+  min-height: 4.75rem;
+  align-items: start;
+  padding: 1rem clamp(1rem, 3vw, 2.5rem);
+}
+
+.requirements-register-row.has-rule {
+  border-bottom: 1px solid rgb(26 35 50 / 32%);
+}
+
+.requirements-status {
+  color: #b85c38;
+  font-family: var(--font-jetbrains-mono), ui-monospace, monospace;
+  font-size: 0.62rem;
+  font-weight: 650;
+  letter-spacing: 0.09em;
+  text-transform: uppercase;
+}
+
+.requirements-status.is-done {
+  color: #1a2332;
+}
+
+.requirements-row-action {
+  display: inline-block;
+  min-width: 6rem;
+  padding: 0.45rem 0;
+  border-top: 1px solid #1a2332;
+  border-bottom: 1px solid #1a2332;
+  font-size: 0.72rem;
+  font-weight: 650;
+  text-align: center;
+}
+
+.requirements-register-footer-link {
+  margin: 0;
+  padding: 1rem clamp(1rem, 3vw, 2.5rem);
+  border-top: 1px solid rgb(26 35 50 / 32%);
+  font-size: 0.8rem;
+}
+
+/* Dorms: one checklist ledger; filters, totals and categories are register bands. */
+.campus-building-interior > .checklist-register,
+.checklist-register {
+  width: 100%;
+  max-width: none;
+  padding: 0;
+  border: 0;
+}
+
+.checklist-register-header {
+  min-height: 10rem;
+  padding: clamp(1.5rem, 4vw, 3.25rem) clamp(1rem, 3vw, 2.5rem) 1.4rem;
+  border-top: 1px solid #1a2332;
+  border-bottom: 1px solid #1a2332;
+}
+
+.checklist-register-header h1 {
+  max-width: 18ch;
+  margin: 0.35rem 0 1rem;
+  font-size: clamp(2.1rem, 4.6vw, 4.4rem);
+  font-weight: 650;
+  line-height: 0.97;
+  letter-spacing: -0.055em;
+}
+
+.checklist-register-summary {
+  display: grid;
+  grid-template-columns: minmax(10rem, 0.35fr) minmax(0, 1fr) auto;
+  gap: 2rem;
+  align-items: center;
+  padding: 1.25rem clamp(1rem, 3vw, 2.5rem);
+  border-bottom: 1px solid #1a2332;
+}
+
+.checklist-score {
+  font-size: clamp(2.5rem, 5vw, 4.5rem);
+  font-weight: 700;
+  line-height: 0.9;
+}
+
+.checklist-score-denominator,
+.checklist-register-summary > p {
+  color: rgb(26 35 50 / 58%);
+  font-family: var(--font-jetbrains-mono), ui-monospace, monospace;
+  font-size: 0.66rem;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+
+.checklist-summary-columns {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(7rem, 1fr));
+  gap: 0;
+  border-left: 1px solid rgb(26 35 50 / 32%);
+}
+
+.checklist-summary-columns p {
+  display: flex;
+  justify-content: space-between;
+  gap: 1rem;
+  padding: 0.7rem 1rem;
+  border-right: 1px solid rgb(26 35 50 / 32%);
+  font-size: 0.75rem;
+}
+
+.checklist-register-filters {
+  display: flex;
+  overflow-x: auto;
+  padding-inline: clamp(1rem, 3vw, 2.5rem);
+  border-bottom: 1px solid #1a2332;
+}
+
+.checklist-filter {
+  flex: 0 0 auto;
+  padding: 0.8rem 1rem;
+  border: 0;
+  border-right: 1px solid rgb(26 35 50 / 28%);
+  background: transparent;
+  color: rgb(26 35 50 / 62%);
+  font-size: 0.78rem;
+}
+
+.checklist-filter:first-child {
+  border-left: 1px solid rgb(26 35 50 / 28%);
+}
+
+.checklist-filter.is-active {
+  background: #1a2332;
+  color: #f4f0e6;
+}
+
+.checklist-register-section {
+  border-bottom: 1px solid #1a2332;
+}
+
+.checklist-section-heading {
+  display: flex;
+  width: 100%;
+  min-height: 4.5rem;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+  padding: 0.9rem clamp(1rem, 3vw, 2.5rem);
+  border: 0;
+  border-bottom: 1px solid #1a2332;
+  background: #f4f0e6;
+  text-align: left;
+}
+
+.checklist-section-heading h2 {
+  font-size: 1rem;
+  font-weight: 750;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+}
+
+.checklist-section-heading p {
+  color: rgb(26 35 50 / 58%);
+  font-family: var(--font-jetbrains-mono), ui-monospace, monospace;
+  font-size: 0.62rem;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+
+.checklist-register-row {
+  position: relative;
+  display: flex;
+  min-height: 4.5rem;
+  align-items: center;
+  gap: 1rem;
+  padding: 1rem clamp(1rem, 3vw, 2.5rem);
+  border-bottom: 1px solid rgb(26 35 50 / 32%);
+}
+
+.checklist-box {
+  display: grid;
+  width: 1.15rem;
+  height: 1.15rem;
+  flex: 0 0 auto;
+  place-items: center;
+  border: 1px solid #1a2332;
+  background: transparent;
+}
+
+.checklist-box.is-done {
+  border-color: #b85c38;
+  background: #b85c38;
+  color: #f4f0e6;
+}
+
+.checklist-urgent-rule {
+  position: absolute;
+  inset-block: 0;
+  left: 0;
+  width: 4px;
+  background: #b85c38;
+}
+
+.checklist-urgent-label {
+  color: #b85c38;
+  font-family: var(--font-jetbrains-mono), ui-monospace, monospace;
+  font-size: 0.6rem;
+  font-weight: 650;
+  letter-spacing: 0.09em;
+  text-transform: uppercase;
+}
+
+/* Recreation Center: a single weighted readiness instrument. */
+.campus-building-interior > .readiness-score-sheet,
+.readiness-score-sheet {
+  width: 100%;
+  max-width: none;
+  padding: 0;
+  border: 0;
+}
+
+.readiness-sheet-heading {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto;
+  gap: 2rem;
+  align-items: end;
+  min-height: 12rem;
+  padding: clamp(1.5rem, 4vw, 3.25rem) clamp(1rem, 3vw, 2.5rem) 1.5rem;
+  border-bottom: 1px solid #1a2332;
+}
+
+.readiness-sheet-heading h1 {
+  max-width: 17ch;
+  margin: 0.35rem 0 0.8rem;
+  font-size: clamp(2.1rem, 4.8vw, 4.6rem);
+  font-weight: 650;
+  line-height: 0.96;
+  letter-spacing: -0.058em;
+}
+
+.readiness-sheet-heading > div:first-child > p:last-child {
+  max-width: 40rem;
+  color: rgb(26 35 50 / 62%);
+  font-size: 0.84rem;
+}
+
+.readiness-total {
+  display: flex;
+  align-items: baseline;
+  padding-left: 2rem;
+  border-left: 1px solid #1a2332;
+}
+
+.readiness-total strong {
+  font-size: clamp(4rem, 10vw, 8.5rem);
+  font-weight: 700;
+  line-height: 0.75;
+  letter-spacing: -0.08em;
+}
+
+.readiness-total span {
+  color: #b85c38;
+  font-family: var(--font-jetbrains-mono), ui-monospace, monospace;
+  font-size: 0.75rem;
+}
+
+.readiness-scale {
+  height: 1rem;
+  border-bottom: 1px solid #1a2332;
+  background: #f4f0e6;
+}
+
+.readiness-scale span {
+  display: block;
+  height: 100%;
+  border-right: 1px solid #1a2332;
+  background: #b85c38;
+}
+
+.readiness-column-headings {
+  display: grid;
+  grid-template-columns: minmax(12rem, 1fr) 6rem 7rem 8rem;
+  gap: 1rem;
+  padding: 0.55rem clamp(1rem, 3vw, 2.5rem) 0.55rem calc(clamp(1rem, 3vw, 2.5rem) + 3rem);
+  border-bottom: 1px solid rgb(26 35 50 / 42%);
+  color: rgb(26 35 50 / 58%);
+  font-family: var(--font-jetbrains-mono), ui-monospace, monospace;
+  font-size: 0.6rem;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+}
+
+.readiness-register li {
+  display: grid;
+  grid-template-columns: 2rem minmax(12rem, 1fr) 6rem 7rem 8rem;
+  gap: 1rem;
+  align-items: baseline;
+  min-height: 5rem;
+  padding: 1.15rem clamp(1rem, 3vw, 2.5rem);
+  border-bottom: 1px solid rgb(26 35 50 / 42%);
+}
+
+.readiness-row-number,
+.readiness-register li > span {
+  color: rgb(26 35 50 / 58%);
+  font-family: var(--font-jetbrains-mono), ui-monospace, monospace;
+  font-size: 0.66rem;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+
+.readiness-register .readiness-row-value {
+  color: #b85c38;
+  font-size: 1rem;
+  font-weight: 700;
+}
+
+.readiness-register a {
+  padding-block: 0.35rem;
+  border-top: 1px solid #1a2332;
+  border-bottom: 1px solid #1a2332;
+  font-size: 0.7rem;
+  font-weight: 650;
+  text-align: center;
+}
+
+.readiness-sheet-note {
+  display: grid;
+  grid-template-columns: 8rem minmax(0, 1fr);
+  gap: 1.5rem;
+  padding: 1.25rem clamp(1rem, 3vw, 2.5rem);
+}
+
+.readiness-sheet-note span {
+  color: #b85c38;
+  font-family: var(--font-jetbrains-mono), ui-monospace, monospace;
+  font-size: 0.62rem;
+  letter-spacing: 0.09em;
+  text-transform: uppercase;
+}
+
+.readiness-sheet-note p {
+  max-width: 46rem;
+  color: rgb(26 35 50 / 62%);
+  font-size: 0.8rem;
+}
+
+@media (max-width: 900px) {
+  .union-sheet-columns {
+    grid-template-columns: minmax(0, 1fr);
+  }
+
+  .union-sheet-margin {
+    border-top: 1px solid #1a2332;
+    border-left: 0;
+  }
+
+  .library-route-line,
+  .plan-route-line,
+  .union-route-line,
+  .readiness-route-line,
+  .requirements-route-line,
+  .requirements-register-header,
+  .checklist-register-summary,
+  .readiness-sheet-heading {
+    grid-template-columns: minmax(0, 1fr);
+  }
+
+  .requirements-register-progress {
+    grid-column: 1;
+    grid-row: auto;
+    padding-left: 0;
+    border-top: 1px solid rgb(26 35 50 / 32%);
+    border-left: 0;
+  }
+
+  .readiness-total {
+    padding: 1.5rem 0 0;
+    border-top: 1px solid #1a2332;
+    border-left: 0;
+  }
+}
+
+@media (max-width: 700px) {
+  .union-sheet-heading {
+    align-items: flex-start;
+    flex-direction: column;
+  }
+
+  .requirements-register-row {
+    grid-template-columns: 5rem minmax(0, 1fr);
+  }
+
+  .requirements-register-action,
+  .requirements-register-row > :last-child {
+    grid-column: 2;
+  }
+
+  .checklist-summary-columns {
+    grid-template-columns: minmax(0, 1fr);
+  }
+
+  .readiness-column-headings {
+    display: none;
+  }
+
+  .readiness-register li {
+    grid-template-columns: 1.5rem minmax(0, 1fr) auto;
+  }
+
+  .readiness-register li > span:nth-of-type(2) {
+    grid-column: 2;
+  }
+
+  .readiness-register li > a {
+    grid-column: 2 / -1;
+    width: fit-content;
+    min-width: 7rem;
+  }
+}
+
+/* Library + Classrooms, iteration 5 — one working artifact per hall. */
+.campus-entered[data-building="library"],
+.campus-entered[data-building="classroom"] {
+  --background: #f4f0e6;
+  --surface: #f4f0e6;
+  --foreground: #1a2332;
+  --card: #f4f0e6;
+  --card-foreground: #1a2332;
+  --primary: #1a2332;
+  --primary-foreground: #f4f0e6;
+  --accent: #b85c38;
+  --accent-foreground: #f4f0e6;
+  --destructive: #b85c38;
+  --muted: #f4f0e6;
+  --muted-foreground: rgb(26 35 50 / 62%);
+  --border: rgb(26 35 50 / 28%);
+  --border-strong: #1a2332;
+  border-color: #1a2332;
+  background: #f4f0e6;
+}
+
+.campus-entered[data-building="library"] .campus-building-hero,
+.campus-entered[data-building="library"] .campus-building-interior,
+.campus-entered[data-building="library"] .campus-building-interior > *,
+.campus-entered[data-building="classroom"] .campus-building-hero,
+.campus-entered[data-building="classroom"] .campus-building-interior,
+.campus-entered[data-building="classroom"] .campus-building-interior > * {
+  border-radius: 0;
+  background-color: #f4f0e6;
+  box-shadow: none;
+}
+
+.campus-entered[data-building="library"] .campus-building-interior *,
+.campus-entered[data-building="library"] .campus-building-hero *,
+.campus-entered[data-building="classroom"] .campus-building-interior *,
+.campus-entered[data-building="classroom"] .campus-building-hero * {
+  border-radius: 0 !important;
+  box-shadow: none !important;
+}
+
+.campus-entered[data-building="library"] .campus-building-hero,
+.campus-entered[data-building="classroom"] .campus-building-hero {
+  border-bottom: 1px solid #1a2332;
+}
+
+.campus-entered[data-building="library"] .campus-building-interior,
+.campus-entered[data-building="classroom"] .campus-building-interior {
+  padding: 0;
+  border-top: 0;
+  background: #f4f0e6;
+}
+
+.campus-entered[data-building="library"] .library-workspace,
+.campus-entered[data-building="classroom"] .plan-table {
+  width: 100%;
+  max-width: none;
+  border: 0;
+  background: #f4f0e6;
+}
+
+/* Library: the index is the bound edge of the same manuscript. */
+.library-manuscript {
+  border-top: 1px solid #1a2332;
+}
+
+.library-manuscript .library-prompt-index {
+  position: static;
+  display: grid;
+  grid-template-columns: minmax(10rem, 0.22fr) minmax(0, 1fr);
+  padding: 0;
+  border: 0;
+  border-bottom: 1px solid #1a2332;
+}
+
+.library-index-heading {
+  padding: 0.9rem clamp(1rem, 2vw, 1.5rem);
+  border-right: 1px solid rgb(26 35 50 / 38%);
+}
+
+.library-index-heading .library-index-label {
+  margin: 0;
+  color: #1a2332;
+}
+
+.library-index-heading > p:last-child {
+  margin-top: 0.35rem;
+  color: rgb(26 35 50 / 58%);
+  font-size: 0.7rem;
+}
+
+.library-manuscript .library-prompt-tabs {
+  display: grid;
+  grid-template-columns: repeat(5, minmax(0, 1fr));
+  min-width: 0;
+}
+
+.library-manuscript .library-prompt-tab,
+.library-manuscript .library-prompt-tab:last-child {
+  display: grid;
+  grid-template-columns: auto minmax(0, 1fr);
+  gap: 0.6rem;
+  align-items: start;
+  min-width: 0;
+  padding: 0.9rem 0.75rem;
+  border: 0;
+  border-right: 1px solid rgb(26 35 50 / 28%);
+  background: #f4f0e6;
+  color: rgb(26 35 50 / 66%);
+}
+
+.library-manuscript .library-prompt-tab:last-child {
+  border-right: 0;
+}
+
+.library-manuscript .library-prompt-tab:hover,
+.library-manuscript .library-prompt-tab.is-active {
+  padding-left: 0.75rem;
+  background: #1a2332;
+  color: #f4f0e6;
+}
+
+.library-manuscript .library-prompt-tab.is-active::before {
+  display: none;
+}
+
+.library-folio-number,
+.library-folio-state {
+  font-family: var(--font-jetbrains-mono), ui-monospace, monospace;
+  font-size: 0.58rem;
+  line-height: 1.45;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+
+.library-folio-number {
+  color: #b85c38;
+}
+
+.library-folio-state {
+  display: block;
+  margin-top: 0.2rem;
+  color: currentColor;
+  opacity: 0.62;
+}
+
+.library-save-error {
+  margin: 0;
+  padding: 0.75rem clamp(1rem, 3vw, 2.5rem);
+  border-bottom: 1px solid #b85c38;
+}
+
+.library-manuscript > .essay-workspace {
+  max-width: none;
+}
+
+.library-manuscript .essay-workspace-header {
+  padding: clamp(1.5rem, 4vw, 3rem) clamp(1rem, 3vw, 2.75rem) 1.4rem;
+  border: 0;
+  border-bottom: 1px solid #1a2332;
+  background: #f4f0e6;
+}
+
+.library-manuscript .essay-workspace-title {
+  max-width: 15ch;
+}
+
+.library-manuscript .essay-action:hover {
+  color: #f4f0e6;
+}
+
+.library-manuscript .essay-desk-layout {
+  grid-template-columns: minmax(0, 1fr) minmax(12.5rem, 0.22fr);
+  border: 0;
+  background: #f4f0e6;
+}
+
+.library-manuscript .essay-paper {
+  border-right-color: #1a2332;
+}
+
+.library-manuscript .essay-prompt-block,
+.library-manuscript .essay-paper-footer,
+.library-manuscript .essay-margin-notes {
+  background: #f4f0e6;
+}
+
+.library-manuscript .essay-writing-field {
+  min-height: 39rem;
+  background:
+    linear-gradient(90deg, transparent 0, transparent 2.4rem, rgb(184 92 56 / 38%) 2.4rem, rgb(184 92 56 / 38%) calc(2.4rem + 1px), transparent calc(2.4rem + 1px)),
+    repeating-linear-gradient(180deg, transparent 0, transparent 2.15rem, rgb(26 35 50 / 11%) 2.15rem, rgb(26 35 50 / 11%) calc(2.15rem + 1px));
+}
+
+.library-manuscript .essay-textarea {
+  min-height: 35rem;
+}
+
+.library-manuscript .essay-margin-notes {
+  gap: 2.75rem;
+  padding-top: 2.4rem;
+}
+
+/* Classrooms: indexes, calculations, terms and courses share one ruled plan table. */
+.campus-entered[data-building="classroom"] .plan-table-heading {
+  border-bottom-color: #1a2332;
+  background: #f4f0e6;
+}
+
+.campus-entered[data-building="classroom"] .plan-table-toolbar {
+  border-bottom: 1px solid #1a2332;
+  background: #f4f0e6;
+}
+
+.plan-register-bands {
+  border-bottom: 1px solid #1a2332;
+}
+
+.plan-register-bands .plan-term-spine {
+  padding: 0;
+  border: 0;
+  border-bottom: 1px solid #1a2332;
+  background: #1a2332;
+}
+
+.plan-register-bands .plan-term-index {
+  display: grid;
+  grid-template-columns: minmax(8rem, 0.18fr) minmax(0, 1fr);
+  align-items: stretch;
+}
+
+.plan-register-bands .plan-term-index > .tp-eyebrow {
+  display: flex;
+  align-items: center;
+  padding: 0.75rem clamp(1rem, 2vw, 1.5rem);
+  border-right: 1px solid rgb(244 240 230 / 28%);
+  color: #f4f0e6;
+}
+
+.plan-register-bands .plan-term-index > ul {
+  display: flex;
+  margin: 0;
+  overflow-x: auto;
+  border: 0;
+}
+
+.plan-register-bands .plan-term-index li {
+  flex: 1 0 7.5rem;
+}
+
+.plan-register-bands .plan-term-index-button {
+  height: 100%;
+  min-height: 3.7rem;
+  padding: 0.7rem 0.8rem;
+  border: 0;
+  border-right: 1px solid rgb(244 240 230 / 20%);
+}
+
+.plan-register-bands .plan-term-index-button:hover,
+.plan-register-bands .plan-term-index-button.is-active {
+  padding-left: 0.8rem;
+  background: #f4f0e6;
+  color: #1a2332;
+}
+
+.plan-register-bands .plan-term-index-button.is-active {
+  box-shadow: inset 0 -3px 0 #b85c38 !important;
+}
+
+.plan-register-bands .plan-margin-summary {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 0;
+  padding: 0;
+  border: 0;
+  background: #f4f0e6;
+}
+
+.plan-register-bands .plan-summary-block {
+  min-width: 0;
+  padding: 1rem clamp(1rem, 2.5vw, 2rem);
+  border: 0;
+  border-right: 1px solid rgb(26 35 50 / 38%);
+}
+
+.plan-register-bands .plan-summary-block:last-child {
+  border-right: 0;
+}
+
+.plan-register-bands .plan-summary-block ul {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.35rem 1.5rem;
+}
+
+.plan-register-bands .plan-summary-block li {
+  min-width: 9rem;
+  flex: 1 1 11rem;
+}
+
+.campus-entered[data-building="classroom"] .plan-drawing-sheet {
+  padding: 0;
+  background: #f4f0e6;
+}
+
+.campus-entered[data-building="classroom"] .plan-term-section {
+  display: grid;
+  grid-template-columns: minmax(10rem, 0.24fr) minmax(0, 1fr);
+  margin: 0;
+  border: 0;
+  border-bottom: 1px solid rgb(26 35 50 / 48%);
+  background: #f4f0e6;
+}
+
+.campus-entered[data-building="classroom"] .plan-term-section.is-calendar::before {
+  top: 0;
+  bottom: 0;
+  left: 0;
+  width: 4px;
+}
+
+.campus-entered[data-building="classroom"] .plan-term-heading {
+  min-height: 7rem;
+  padding: 1.15rem clamp(1rem, 2vw, 1.5rem);
+  border-right: 1px solid #1a2332;
+  border-bottom: 0;
+}
+
+.campus-entered[data-building="classroom"] .plan-term-heading h2 {
+  font-size: clamp(1.15rem, 2vw, 1.5rem);
+}
+
+.campus-entered[data-building="classroom"] .plan-term-body {
+  align-content: start;
+  min-width: 0;
+  padding: 0 clamp(1rem, 2.5vw, 2rem) 1rem;
+  background:
+    repeating-linear-gradient(180deg, transparent 0, transparent 3.5rem, rgb(26 35 50 / 8%) 3.5rem, rgb(26 35 50 / 8%) calc(3.5rem + 1px));
+}
+
+.campus-entered[data-building="classroom"] .plan-course-line {
+  min-height: 4.75rem;
+  padding: 1rem 0;
+}
+
+.plan-status-notation {
+  color: #b85c38;
+  font-family: var(--font-jetbrains-mono), ui-monospace, monospace;
+  font-size: 0.62rem;
+  font-weight: 650;
+  letter-spacing: 0.09em;
+  text-transform: uppercase;
+}
+
+.plan-empty-row {
+  min-height: 8rem;
+  padding: 2rem clamp(1rem, 3vw, 2.5rem);
+  border-bottom: 1px solid #1a2332;
+}
+
+@media (max-width: 900px) {
+  .library-manuscript .library-prompt-index,
+  .plan-register-bands .plan-term-index {
+    grid-template-columns: minmax(0, 1fr);
+  }
+
+  .library-index-heading,
+  .plan-register-bands .plan-term-index > .tp-eyebrow {
+    border-right: 0;
+    border-bottom: 1px solid currentColor;
+  }
+
+  .library-manuscript .library-prompt-tabs {
+    display: flex;
+    overflow-x: auto;
+  }
+
+  .library-manuscript .library-prompt-tab,
+  .library-manuscript .library-prompt-tab:last-child {
+    flex: 0 0 9rem;
+    border-right: 1px solid rgb(26 35 50 / 28%);
+  }
+
+  .library-manuscript .essay-desk-layout {
+    grid-template-columns: minmax(0, 1fr);
+  }
+
+  .library-manuscript .essay-paper {
+    border-right: 0;
+  }
+
+  .library-manuscript .essay-margin-notes {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    border-top: 1px solid #1a2332;
+  }
+}
+
+@media (max-width: 760px) {
+  .plan-register-bands .plan-margin-summary {
+    grid-template-columns: minmax(0, 1fr);
+  }
+
+  .plan-register-bands .plan-summary-block {
+    border-right: 0;
+    border-bottom: 1px solid rgb(26 35 50 / 38%);
+  }
+
+  .campus-entered[data-building="classroom"] .plan-term-section {
+    grid-template-columns: minmax(0, 1fr);
+  }
+
+  .campus-entered[data-building="classroom"] .plan-term-heading {
+    min-height: 0;
+    border-right: 0;
+    border-bottom: 1px solid rgb(26 35 50 / 38%);
+  }
+
+  .library-manuscript .essay-margin-notes {
+    grid-template-columns: minmax(0, 1fr);
+  }
+}
+
+@media (max-width: 639px) {
+  .campus-building-interior > .deadline-dossier {
+    padding-right: 0.75rem;
+    padding-left: 0.55rem;
+  }
+
+  .essay-workspace-header,
+  .essay-prompt-block,
+  .essay-paper-footer {
+    padding-right: 1rem;
+    padding-left: 1rem;
+  }
+
+  .campus-entered[data-building="quad"] .campus-location-mark {
+    justify-content: normal;
+  }
+
+  .essay-writing-field {
+    padding-right: 1rem;
+    padding-left: 2.75rem;
+  }
+
+  .essay-textarea {
+    min-height: 25rem;
+    font-size: 1.05rem;
+  }
+
+  .plan-drawing-sheet {
+    padding-right: 0.65rem;
+    padding-left: 0.65rem;
+  }
+
+  .plan-term-heading,
+  .plan-term-body {
+    padding-right: 0.7rem;
+    padding-left: 0.9rem;
+  }
+}
+
+/* Clock Tower, iteration 4b — one civic register instead of stacked folios. */
+.campus-entered {
+  border-radius: 0;
+  box-shadow: none;
+}
+
+.campus-hall-rail {
+  border-bottom: 1px solid #1a2332;
+}
+
+.campus-exit-link {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding-bottom: 0.3rem;
+  border-bottom: 1px solid #b85c38;
+}
+
+.campus-arrival-label {
+  align-self: stretch;
+  padding-bottom: 0.4rem;
+  border-bottom: 1px solid rgb(26 35 50 / 22%);
+  color: #b85c38 !important;
+  text-align: right;
+}
+
+.campus-entered[data-building="quad"] {
+  --background: #f4f0e6;
+  --surface: #f4f0e6;
+  --foreground: #1a2332;
+  --card: #f4f0e6;
+  --card-foreground: #1a2332;
+  --primary: #1a2332;
+  --primary-foreground: #f4f0e6;
+  --accent: #b85c38;
+  --accent-foreground: #f4f0e6;
+  --muted: #f4f0e6;
+  --muted-foreground: rgb(26 35 50 / 62%);
+  --border: rgb(26 35 50 / 22%);
+  --border-strong: rgb(26 35 50 / 42%);
+  border-color: #1a2332;
+  background: #f4f0e6;
+}
+
+.campus-entered[data-building="quad"] .campus-building-hero,
+.campus-entered[data-building="quad"] .campus-building-interior,
+.campus-entered[data-building="quad"] .campus-building-interior > * {
+  border-radius: 0;
+  background: #f4f0e6;
+  box-shadow: none;
+}
+
+.campus-entered[data-building="quad"] .campus-building-interior *,
+.campus-entered[data-building="quad"] .campus-building-hero * {
+  border-radius: 0 !important;
+  box-shadow: none !important;
+}
+
+.campus-entered[data-building="quad"] .campus-building-hero {
+  border-bottom: 1px solid #1a2332;
+}
+
+.campus-entered[data-building="quad"] .campus-hall-heading {
+  align-items: stretch;
+  padding-block: clamp(1.5rem, 4vw, 3.5rem);
+}
+
+.campus-entered[data-building="quad"] .campus-location-mark {
+  justify-content: space-between;
+  border-left-color: #1a2332;
+}
+
+.campus-entered[data-building="quad"] .campus-building-interior {
+  padding: 0;
+  border-top: 0;
+}
+
+.campus-entered[data-building="quad"] .deadline-dossier {
+  width: 100%;
+  max-width: none;
+  padding: 0;
+  border: 0;
+  color: #1a2332;
+}
+
+.campus-entered[data-building="quad"] .deadline-dossier::before {
+  display: none;
+}
+
+.campus-entered[data-building="quad"] .deadline-dossier > * {
+  margin-left: 0;
+}
+
+.campus-entered[data-building="quad"] .dossier-route-line {
+  margin: 0;
+  padding: 0.8rem clamp(1rem, 3vw, 2.5rem);
+  border-bottom: 1px solid #1a2332;
+}
+
+.campus-entered[data-building="quad"] .dossier-folio-heading {
+  min-height: 9rem;
+  margin: 0;
+  padding: clamp(1.5rem, 4vw, 3.25rem) clamp(1rem, 3vw, 2.5rem) 1.35rem;
+  border-bottom: 1px solid #1a2332;
+}
+
+.campus-entered[data-building="quad"] .dossier-folio-heading strong {
+  max-width: 15ch;
+  font-family: var(--font-inter), ui-sans-serif, system-ui, sans-serif;
+  font-size: clamp(2rem, 4.5vw, 4.25rem);
+  font-weight: 650;
+  line-height: 0.98;
+  letter-spacing: -0.055em;
+}
+
+.campus-entered[data-building="quad"] .dossier-filters {
+  margin: 0;
+  padding-inline: clamp(1rem, 3vw, 2.5rem);
+  border-top: 0;
+  border-bottom-color: #1a2332;
+}
+
+.campus-entered[data-building="quad"] .dossier-filter {
+  min-width: 0;
+  padding: 0.85rem 1.2rem;
+  border-right-color: rgb(26 35 50 / 28%);
+  border-radius: 0;
+}
+
+.campus-entered[data-building="quad"] .dossier-filter:first-child {
+  border-left: 1px solid rgb(26 35 50 / 28%);
+}
+
+.campus-entered[data-building="quad"] .dossier-filter.is-active {
+  background: #1a2332;
+  color: #f4f0e6;
+}
+
+.campus-entered[data-building="quad"] .dossier-filter.is-active::after {
+  display: none;
+}
+
+.campus-entered[data-building="quad"] .deadline-ledger-layout,
+.campus-entered[data-building="quad"] .deadline-ledger-main,
+.campus-entered[data-building="quad"] .deadline-ledger-aside {
+  display: block;
+}
+
+.campus-entered[data-building="quad"] .deadline-ledger-aside {
+  position: static;
+  padding: 0;
+}
+
+.campus-entered[data-building="quad"] .dossier-section,
+.campus-entered[data-building="quad"] .dossier-section-dominant {
+  border: 0;
+  background: #f4f0e6;
+}
+
+.campus-entered[data-building="quad"] .dossier-section-heading,
+.campus-entered[data-building="quad"] .deadline-ledger-aside .dossier-section-heading {
+  min-height: 4.5rem;
+  padding: 1rem clamp(1rem, 3vw, 2.5rem);
+  border-top: 1px solid #1a2332;
+  border-bottom: 1px solid #1a2332;
+}
+
+.campus-entered[data-building="quad"] .dossier-section:first-child .dossier-section-heading {
+  border-top: 0;
+}
+
+.campus-entered[data-building="quad"] .dossier-section-heading h2 {
+  font-family: var(--font-inter), ui-sans-serif, system-ui, sans-serif;
+  font-size: 1rem;
+  font-weight: 750;
+  letter-spacing: 0.01em;
+  text-transform: uppercase;
+}
+
+.campus-entered[data-building="quad"] .deadline-ledger-columns {
+  display: grid;
+  grid-template-columns: 2.5rem minmax(8rem, 0.72fr) minmax(14rem, 1.6fr) 4.5rem;
+  gap: clamp(1rem, 2.5vw, 2.5rem);
+  padding: 0.55rem clamp(1rem, 3vw, 2.5rem);
+  border-bottom: 1px solid rgb(26 35 50 / 42%);
+  color: rgb(26 35 50 / 58%);
+  font-family: var(--font-jetbrains-mono), ui-monospace, monospace;
+  font-size: 0.6rem;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+}
+
+.campus-entered[data-building="quad"] .dossier-section > ul > li + li {
+  border-top: 0;
+}
+
+.campus-entered[data-building="quad"] .deadline-ledger-row,
+.campus-entered[data-building="quad"] .deadline-ledger-row.is-primary {
+  display: grid;
+  grid-template-columns: 2.5rem minmax(0, 1fr) 4.5rem;
+  gap: clamp(1rem, 2.5vw, 2.5rem);
+  min-height: 0;
+  padding: 1.3rem clamp(1rem, 3vw, 2.5rem);
+  border-bottom: 1px solid rgb(26 35 50 / 42%);
+  background: #f4f0e6;
+}
+
+.campus-entered[data-building="quad"] .deadline-ledger-entry {
+  grid-template-columns: minmax(8rem, 0.72fr) minmax(14rem, 1.6fr);
+  gap: clamp(1rem, 2.5vw, 2.5rem);
+}
+
+.campus-entered[data-building="quad"] .deadline-date-cell {
+  padding: 0;
+  border: 0;
+}
+
+.campus-entered[data-building="quad"] .deadline-date-cell time,
+.campus-entered[data-building="quad"] .is-primary .deadline-date-cell time {
+  font-family: var(--font-inter), ui-sans-serif, system-ui, sans-serif;
+  font-size: clamp(1.05rem, 2vw, 1.45rem);
+  font-weight: 700;
+  letter-spacing: -0.03em;
+}
+
+.campus-entered[data-building="quad"] .deadline-ledger-title,
+.campus-entered[data-building="quad"] .is-primary .deadline-ledger-title {
+  max-width: 46rem;
+  font-size: 1rem;
+}
+
+.campus-entered[data-building="quad"] .task-folio-row,
+.campus-entered[data-building="quad"] .deadline-ledger-aside .task-folio-row {
+  min-height: 4.5rem;
+  padding: 1.1rem clamp(1rem, 3vw, 2.5rem);
+  border-bottom: 1px solid rgb(26 35 50 / 42%);
+}
+
+.campus-entered[data-building="quad"] .task-check,
+.campus-entered[data-building="quad"] .task-folio-row span {
+  border-radius: 0;
+}
+
+.campus-entered[data-building="quad"] .dossier-empty {
+  padding: 1.5rem clamp(1rem, 3vw, 2.5rem);
+  border-bottom: 1px solid rgb(26 35 50 / 42%);
+}
+
+.campus-entered[data-building="quad"] .dossier-note,
+.campus-entered[data-building="quad"] .deadline-ledger-aside .dossier-note {
+  margin: 0;
+  padding: 1.25rem clamp(1rem, 3vw, 2.5rem);
+  border: 0;
+  border-bottom: 1px solid rgb(26 35 50 / 42%);
+  background: #f4f0e6;
+}
+
+.campus-entered[data-building="quad"] .dossier-reference-row {
+  display: grid;
+  grid-template-columns: minmax(8rem, 0.35fr) minmax(0, 1.65fr) auto;
+  gap: 1.5rem;
+  align-items: baseline;
+}
+
+.campus-entered[data-building="quad"] .dossier-reference-row > * {
+  margin-top: 0;
+}
+
+.campus-entered[data-building="quad"] a:focus-visible,
+.campus-entered[data-building="quad"] button:focus-visible {
+  outline: 2px solid #b85c38;
+  outline-offset: 2px;
+}
+
+@media (max-width: 760px) {
+  .campus-entered[data-building="quad"] .deadline-ledger-columns {
+    display: none;
+  }
+
+  .campus-entered[data-building="quad"] .deadline-ledger-row,
+  .campus-entered[data-building="quad"] .deadline-ledger-row.is-primary {
+    grid-template-columns: 1.5rem minmax(0, 1fr);
+  }
+
+  .campus-entered[data-building="quad"] .deadline-ledger-row > :last-child {
+    grid-column: 2;
+  }
+
+  .campus-entered[data-building="quad"] .deadline-ledger-entry,
+  .campus-entered[data-building="quad"] .dossier-reference-row {
+    grid-template-columns: minmax(0, 1fr);
+  }
+
+  .campus-entered[data-building="quad"] .dossier-reference-row {
+    gap: 0.75rem;
+  }
+}
+
+/* Iteration 7 — hard route isolation and denser single-artifact registers. */
+.readiness-score-sheet {
+  display: none;
+}
+
+.campus-entered[data-building="gym"] .readiness-score-sheet {
+  display: block;
+}
+
+.union-route-line {
+  border-top: 1px solid #1a2332;
+}
+
+.plan-register-column-headings {
+  display: grid;
+  grid-template-columns: 11rem minmax(12rem, 1fr) 10rem 10rem 3rem;
+  gap: 1rem;
+  padding: 0.6rem clamp(1rem, 2.5vw, 2rem);
+  border-bottom: 1px solid #1a2332;
+  color: rgb(26 35 50 / 58%);
+  font-family: var(--font-jetbrains-mono), ui-monospace, monospace;
+  font-size: 0.6rem;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+}
+
+.campus-entered[data-building="classroom"] .plan-term-section {
+  grid-template-columns: 11rem minmax(0, 1fr);
+}
+
+.campus-entered[data-building="classroom"] .plan-term-heading {
+  padding-inline: clamp(1rem, 2.5vw, 2rem);
+}
+
+.campus-entered[data-building="classroom"] .plan-term-body {
+  gap: 0;
+  padding: 0;
+  background: #f4f0e6;
+}
+
+.campus-entered[data-building="classroom"] .plan-term-body > p,
+.campus-entered[data-building="classroom"] .plan-term-body > button {
+  margin: 0;
+  padding: 1rem clamp(1rem, 2.5vw, 2rem);
+}
+
+.campus-entered[data-building="classroom"] .plan-term-body > button {
+  width: 100%;
+  border-top: 1px solid rgb(26 35 50 / 28%);
+  text-align: left;
+}
+
+.campus-entered[data-building="classroom"] .plan-course-line {
+  min-height: 4.5rem;
+  padding: 0;
+  border-bottom: 1px solid rgb(26 35 50 / 28%);
+}
+
+.campus-entered[data-building="classroom"] .plan-course-editor {
+  display: grid;
+  grid-template-columns: minmax(12rem, 1fr) 10rem 10rem 3rem;
+  gap: 1rem;
+  min-height: 4.5rem;
+  align-items: center;
+  padding: 0.65rem clamp(1rem, 2.5vw, 2rem);
+}
+
+.plan-course-identity {
+  min-width: 0;
+}
+
+.plan-course-identity > span {
+  display: block;
+  margin-top: 0.2rem;
+}
+
+.plan-course-status {
+  display: grid;
+  gap: 0.25rem;
+}
+
+.campus-entered[data-building="classroom"] .plan-course-editor select {
+  width: 100%;
+  min-width: 0;
+  height: 2.25rem;
+  border: 0;
+  border-bottom: 1px solid #1a2332;
+  background: transparent;
+  color: #1a2332;
+  font-size: 0.75rem;
+}
+
+.plan-course-review {
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+}
+
+.library-manuscript .essay-writing-field {
+  min-height: 44rem;
+  background-color: #f4f0e6;
+  background-attachment: local;
+}
+
+.library-manuscript .essay-textarea {
+  min-height: 40rem;
+}
+
+.library-manuscript .library-prompt-tab:last-child {
+  padding-right: 1rem;
+}
+
+@media (max-width: 900px) {
+  .plan-register-column-headings {
+    display: none;
+  }
+
+  .campus-entered[data-building="classroom"] .plan-course-editor {
+    grid-template-columns: minmax(0, 1fr) minmax(8rem, 0.65fr) minmax(8rem, 0.65fr) 3rem;
+  }
+}
+
+@media (max-width: 760px) {
+  .campus-entered[data-building="classroom"] .plan-term-section {
+    grid-template-columns: minmax(0, 1fr);
+  }
+
+  .campus-entered[data-building="classroom"] .plan-course-editor {
+    grid-template-columns: minmax(0, 1fr) 3rem;
+  }
+
+  .campus-entered[data-building="classroom"] .plan-course-status,
+  .campus-entered[data-building="classroom"] .plan-course-editor > select {
+    grid-column: 1;
+  }
+
+  .campus-entered[data-building="classroom"] .plan-course-review {
+    grid-column: 2;
+    grid-row: 1 / span 3;
+  }
+}
+
+/* Iteration 8 final cascade — artifact bands are intentionally viewport-dense. */
+@media (min-width: 901px) {
+  .campus-hall-rail {
+    min-height: 1.7rem;
+    padding-block: 0.25rem;
+  }
+
+  .campus-hall-heading,
+  .campus-entered[data-building="quad"] .campus-hall-heading {
+    align-items: center;
+    gap: 1.25rem;
+    padding: 0.75rem 1.25rem 0.85rem;
+  }
+
+  .campus-room-label {
+    margin-top: 0.5rem;
+  }
+
+  .campus-hall-name {
+    max-width: 18ch;
+    margin-top: 0.05rem;
+    font-size: clamp(2rem, 3.2vw, 3.2rem);
+    line-height: 0.96;
+  }
+
+  .campus-hall-blurb {
+    max-width: 48rem;
+    margin-top: 0.4rem;
+    font-size: 0.8rem;
+    line-height: 1.4;
+  }
+
+  .campus-location-mark {
+    display: grid;
+    grid-template-columns: auto auto;
+    grid-template-rows: auto auto;
+    gap: 0.25rem 0.75rem;
+    align-items: center;
+    min-width: 14rem;
+    padding-left: 1rem;
+  }
+
+  .campus-arrival-label {
+    grid-column: 1;
+    align-self: end;
+    padding-bottom: 0.25rem;
+    text-align: left;
+  }
+
+  .campus-location-mark .campus-mini-map {
+    grid-column: 2;
+    grid-row: 1 / span 2;
+    width: 5rem;
+    height: 4rem;
+  }
+
+  .campus-location-mark > p:last-child {
+    grid-column: 1;
+    align-self: start;
+    max-width: 10rem;
+  }
+
+  .library-route-line,
+  .plan-route-line,
+  .union-route-line,
+  .readiness-route-line,
+  .requirements-route-line,
+  .campus-entered[data-building="quad"] .dossier-route-line {
+    padding-block: 0.5rem;
+  }
+
+  .campus-entered[data-building="quad"] .dossier-folio-heading {
+    min-height: 5.75rem;
+    padding-block: 0.85rem;
+  }
+
+  .campus-entered[data-building="quad"] .dossier-folio-heading strong {
+    font-size: clamp(2rem, 3.5vw, 3.25rem);
+  }
+
+  .campus-entered[data-building="quad"] .dossier-filter {
+    padding-block: 0.6rem;
+  }
+
+  .campus-entered[data-building="quad"] .dossier-section-heading,
+  .campus-entered[data-building="quad"] .deadline-ledger-aside .dossier-section-heading {
+    min-height: 3.5rem;
+    padding-block: 0.7rem;
+  }
+
+  .campus-entered[data-building="quad"] .deadline-ledger-columns {
+    padding-block: 0.4rem;
+  }
+
+  .campus-entered[data-building="quad"] .deadline-ledger-row,
+  .campus-entered[data-building="quad"] .deadline-ledger-row.is-primary {
+    padding-block: 1rem;
+  }
+
+  .library-manuscript .library-index-heading,
+  .library-manuscript .library-prompt-tab,
+  .library-manuscript .library-prompt-tab:last-child {
+    padding-block: 0.6rem;
+  }
+
+  .library-manuscript .essay-workspace-header {
+    padding: 0.8rem clamp(1rem, 3vw, 2.5rem);
+  }
+
+  .library-manuscript .essay-workspace-title {
+    margin-top: 0.2rem;
+    font-size: clamp(1.85rem, 2.8vw, 2.8rem);
+  }
+
+  .library-manuscript .essay-workspace-deck {
+    margin-top: 0.35rem;
+  }
+
+  .library-manuscript .essay-action {
+    min-height: 2.2rem;
+    padding-block: 0.4rem;
+  }
+
+  .library-manuscript .essay-prompt-block {
+    padding: 0.75rem clamp(1.25rem, 4vw, 3.8rem) 0.85rem;
+  }
+
+  .library-manuscript .essay-prompt-block > p.mt-2 {
+    margin-top: 0.35rem;
+    font-size: 0.9rem;
+    line-height: 1.45;
+  }
+
+  .library-manuscript .essay-prompt-settings {
+    margin-top: 0.55rem;
+    padding-top: 0.55rem;
+  }
+
+  .library-manuscript .essay-prompt-settings > div {
+    gap: 0.45rem;
+  }
+
+  .library-manuscript .essay-prompt-settings .h-10 {
+    height: 2rem;
+  }
+
+  .library-manuscript .essay-writing-field {
+    min-height: 36rem;
+    padding-top: 1.25rem;
+  }
+
+  .library-manuscript .essay-textarea {
+    min-height: 33rem;
+  }
+
+  .campus-entered[data-building="classroom"] .plan-table-heading {
+    min-height: 5.5rem;
+    padding: 0.75rem clamp(1rem, 3vw, 2.5rem) 0.8rem;
+  }
+
+  .campus-entered[data-building="classroom"] .plan-table-heading h1 {
+    font-size: clamp(1.9rem, 3vw, 3rem);
+    line-height: 0.98;
+  }
+
+  .campus-entered[data-building="classroom"] .plan-table-toolbar {
+    padding-block: 0.55rem;
+  }
+
+  .plan-register-column-headings {
+    padding-block: 0.42rem;
+  }
+
+  .campus-entered[data-building="classroom"] .plan-term-heading {
+    min-height: 4.5rem;
+    padding-block: 0.8rem;
+  }
+
+  .campus-entered[data-building="classroom"] .plan-course-line,
+  .campus-entered[data-building="classroom"] .plan-course-editor {
+    min-height: 4rem;
+  }
+
+  .campus-entered[data-building="classroom"] .plan-course-editor {
+    padding-block: 0.5rem;
+  }
+
+  .union-sheet-heading {
+    min-height: 6rem;
+    padding: 0.85rem clamp(1rem, 3vw, 2.5rem);
+  }
+
+  .union-sheet-heading h1 {
+    font-size: clamp(2rem, 3.4vw, 3.25rem);
+  }
+
+  .union-next-action {
+    min-height: 11.5rem;
+    padding-block: 1.25rem;
+  }
+
+  .union-next-action h1 {
+    font-size: clamp(1.7rem, 2.7vw, 2.65rem);
+  }
+
+  .union-next-action .mt-3 {
+    margin-top: 0.55rem;
+  }
+
+  .union-next-action .mt-6 {
+    margin-top: 1rem;
+  }
+
+  .union-sheet-margin > div {
+    padding: 1rem 1.1rem;
+  }
+
+  .union-sheet-margin > div .mt-4 {
+    margin-top: 0.65rem;
+  }
+
+  .union-sheet-margin > div ul.mt-5 {
+    margin-top: 0.8rem;
+    padding-top: 0.8rem;
+  }
+
+  .union-sheet-margin > div ul.space-y-3 > :not(:last-child) {
+    margin-bottom: 0.45rem;
+  }
+
+  .requirements-register-header {
+    min-height: 7.5rem;
+    padding: 1rem clamp(1rem, 3vw, 2.5rem);
+  }
+
+  .requirements-register-header h1 {
+    font-size: clamp(2rem, 3.5vw, 3.4rem);
+  }
+
+  .readiness-sheet-heading {
+    min-height: 8rem;
+    padding: 1rem clamp(1rem, 3vw, 2.5rem);
+  }
+
+  .readiness-sheet-heading h1 {
+    font-size: clamp(2rem, 3.6vw, 3.5rem);
+  }
+
+  .readiness-total strong {
+    font-size: clamp(4rem, 7vw, 6.5rem);
+  }
+
+  .checklist-register-header {
+    min-height: 6.5rem;
+    padding: 0.9rem clamp(1rem, 3vw, 2.5rem);
+  }
+
+  .checklist-register-header h1 {
+    margin-block: 0.2rem 0.55rem;
+    font-size: clamp(2rem, 3.5vw, 3.4rem);
+  }
+
+  .checklist-register-summary {
+    gap: 1.25rem;
+    padding-block: 0.65rem;
+  }
+
+  .checklist-score {
+    font-size: clamp(2.35rem, 3.5vw, 3.5rem);
+  }
+
+  .checklist-summary-columns p {
+    padding-block: 0.45rem;
+  }
+
+  .checklist-filter {
+    padding-block: 0.6rem;
+  }
+
+  .checklist-section-heading {
+    min-height: 3.5rem;
+    padding-block: 0.65rem;
+  }
+
+  .checklist-register-row {
+    min-height: 4rem;
+    padding-block: 0.75rem;
   }
 }

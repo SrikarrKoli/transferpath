@@ -11,9 +11,9 @@ interface PlanTermRailProps {
 
 export function PlanTermRail({ sections, activeLabel, onSelect }: PlanTermRailProps) {
   return (
-    <nav aria-label="Plan terms" className="space-y-1">
-      <p className="tp-eyebrow mb-3 text-muted-foreground">Terms</p>
-      <ul className="space-y-1">
+    <nav aria-label="Plan terms" className="plan-term-index">
+      <p className="tp-eyebrow text-muted-foreground">Term spine</p>
+      <ul>
         {sections.map((section) => {
           const isActive = activeLabel === section.termLabel
           const isCurrent = section.temporalState === "current"
@@ -25,10 +25,10 @@ export function PlanTermRail({ sections, activeLabel, onSelect }: PlanTermRailPr
                 type="button"
                 onClick={() => onSelect(section.termLabel)}
                 className={cn(
-                  "w-full rounded-md px-2 py-1.5 text-left text-sm transition-colors",
+                  "plan-term-index-button",
                   isActive
-                    ? "bg-accent/10 font-medium text-accent"
-                    : "text-muted-foreground hover:bg-muted hover:text-foreground"
+                    ? "is-active"
+                    : undefined
                 )}
               >
                 <span className="line-clamp-2">{section.termLabel}</span>

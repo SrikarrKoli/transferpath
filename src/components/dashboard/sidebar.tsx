@@ -89,7 +89,7 @@ function NavList({
   return (
     <div className="space-y-4">
       <div>
-        <p className="px-3 pb-2 tp-eyebrow text-sidebar-foreground/40">Your plan</p>
+        <p className="px-3 pb-2 tp-eyebrow text-sidebar-foreground/40">Campus route</p>
         <ul className="space-y-1">
           {DASHBOARD_PLAN_NAV.map((item) => (
             <NavLink
@@ -104,7 +104,7 @@ function NavList({
         </ul>
       </div>
       <div>
-        <p className="px-3 pb-2 tp-eyebrow text-sidebar-foreground/40">Tools</p>
+        <p className="px-3 pb-2 tp-eyebrow text-sidebar-foreground/40">Work rooms</p>
         <ul className="space-y-1">
           {DASHBOARD_TOOL_NAV.map((item) => (
             <NavLink

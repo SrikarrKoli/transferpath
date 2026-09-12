@@ -7,6 +7,7 @@ import { DashboardChrome } from "@/components/dashboard/dashboard-chrome"
 import { CompactDashboardProvider } from "@/components/dashboard/compact-dashboard-context"
 import { getCachedDashboardReadiness } from "@/lib/dashboard-readiness-loader"
 import { getCompletenessLadderState } from "@/lib/completeness-ladder"
+import { universityJoinName } from "@/lib/university-join"
 
 export default async function DashboardLayout({
   children,
@@ -39,8 +40,8 @@ export default async function DashboardLayout({
 
   const displayName = profile?.full_name ?? user.email?.split("@")[0] ?? "there"
   const initials = displayName.slice(0, 2).toUpperCase()
-  const currentSchoolName = (profile?.current_university as { name: string } | null)?.name ?? null
-  const targetSchoolName = (profile?.target_university as { name: string } | null)?.name ?? null
+  const currentSchoolName = universityJoinName(profile?.current_university)
+  const targetSchoolName = universityJoinName(profile?.target_university)
   const routeLabel = [currentSchoolName, targetSchoolName].filter(Boolean).join(" → ") || null
 
   const targetId = profile?.target_university_id ?? null

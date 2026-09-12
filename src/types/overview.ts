@@ -54,6 +54,12 @@ export type TodayNeedsDate = {
 export interface OverviewData {
   completenessLadderState: CompletenessLadderState
   dateLine: string
+  pathway: {
+    fromInstitution: string
+    toInstitution: string
+    program: string
+    term: string
+  }
   pathwayPrompt: {
     title: string
     body: string

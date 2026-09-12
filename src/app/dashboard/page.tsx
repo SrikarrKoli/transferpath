@@ -7,6 +7,7 @@ import { getCachedNextDeadline, getCachedRequirementDeadlines } from "@/lib/dash
 import { getCachedDashboardReadiness } from "@/lib/dashboard-readiness-loader"
 import { buildOverviewData } from "@/lib/build-overview-data"
 import type { ChecklistProfileSummary } from "@/lib/checklist-task-definitions"
+import { universityJoinMeta, universityJoinName } from "@/lib/university-join"
 
 export default async function DashboardPage() {
   const supabase = await createClient()
@@ -21,7 +22,7 @@ export default async function DashboardPage() {
       `
     *,
     current_university:current_university_id(name),
-    target_university:target_university_id(name, website, deadline_source_url)
+    target_university:target_university_id(name, website)
   `
     )
     .eq("id", user.id)
@@ -86,10 +87,8 @@ export default async function DashboardPage() {
   }))
 
   const checklistProfile: ChecklistProfileSummary = {
-    currentUniversityName:
-      (profile?.current_university as { name: string } | null)?.name ?? null,
-    targetUniversityName:
-      (profile?.target_university as { name: string } | null)?.name ?? null,
+    currentUniversityName: universityJoinName(profile?.current_university),
+    targetUniversityName: universityJoinName(profile?.target_university),
     targetMajor: profile?.target_major ?? null,
     fieldOfStudy: profile?.field_of_study ?? null,
     expectedTransferTerm: profile?.expected_transfer_term ?? null,
@@ -99,17 +98,11 @@ export default async function DashboardPage() {
     essayRows?.some((e) => (e.content ?? "").trim().length > 0) ?? false
 
   const displayName = profile?.full_name ?? user.email?.split("@")[0] ?? "there"
-  const currentSchoolName =
-    (profile?.current_university as { name: string } | null)?.name ?? null
-  const targetSchoolName =
-    (profile?.target_university as { name: string } | null)?.name ?? null
+  const currentSchoolName = universityJoinName(profile?.current_university)
+  const targetSchoolName = universityJoinName(profile?.target_university)
   const transferTerm = profile?.expected_transfer_term ?? null
 
-  const targetUniversity = profile?.target_university as {
-    name: string
-    website: string | null
-    deadline_source_url: string | null
-  } | null
+  const targetUniversity = universityJoinMeta(profile?.target_university)
 
   const overviewData = buildOverviewData({
     displayName,
@@ -117,7 +110,7 @@ export default async function DashboardPage() {
     targetSchoolName,
     targetUniversityId: targetId,
     targetWebsite: targetUniversity?.website ?? null,
-    deadlineSourceUrl: targetUniversity?.deadline_source_url ?? null,
+    deadlineSourceUrl: null,
     targetMajor: profile?.target_major ?? null,
     transferTerm,
     overallReadinessScore: readiness.score ?? 0,

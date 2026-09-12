@@ -6,42 +6,7 @@ import { buildTasksDeadlinesData } from "@/lib/build-tasks-deadlines-data"
 import type { ChecklistProfileSummary } from "@/lib/checklist-task-definitions"
 import type { UserCourseRow } from "@/lib/get-course-requirement-status"
 import { getCachedRequirementDeadlines } from "@/lib/dashboard-data"
-
-function universityJoinName(raw: unknown): string | null {
-  if (raw == null) return null
-  if (Array.isArray(raw)) {
-    const first = raw[0] as { name?: string } | undefined
-    return first?.name ?? null
-  }
-  if (typeof raw === "object" && raw !== null && "name" in raw) {
-    return String((raw as { name: string }).name)
-  }
-  return null
-}
-
-function targetUniversityMeta(raw: unknown): {
-  name: string | null
-  website: string | null
-  deadlineSourceUrl: string | null
-} {
-  if (raw == null) {
-    return { name: null, website: null, deadlineSourceUrl: null }
-  }
-  const row = Array.isArray(raw) ? raw[0] : raw
-  if (!row || typeof row !== "object") {
-    return { name: null, website: null, deadlineSourceUrl: null }
-  }
-  const o = row as {
-    name?: string
-    website?: string | null
-    deadline_source_url?: string | null
-  }
-  return {
-    name: o.name ?? null,
-    website: o.website ?? null,
-    deadlineSourceUrl: o.deadline_source_url ?? null,
-  }
-}
+import { universityJoinMeta, universityJoinName } from "@/lib/university-join"
 
 export default async function DeadlinesPage() {
   const supabase = await createClient()
@@ -63,7 +28,7 @@ export default async function DeadlinesPage() {
       gpa,
       credits_completed,
       current_university:current_university_id(name),
-      target_university:target_university_id(name, website, deadline_source_url)
+      target_university:target_university_id(name, website)
     `
         )
         .eq("id", user.id)
@@ -76,7 +41,7 @@ export default async function DeadlinesPage() {
         .eq("user_id", user.id),
     ])
 
-  const targetMeta = targetUniversityMeta(profile?.target_university)
+  const targetMeta = universityJoinMeta(profile?.target_university)
   const targetId = profile?.target_university_id ?? null
   const expectedTerm = profile?.expected_transfer_term ?? null
 
@@ -113,7 +78,7 @@ export default async function DeadlinesPage() {
     targetUniversityId: targetId,
     targetSchoolName: targetMeta.name,
     targetWebsite: targetMeta.website,
-    deadlineSourceUrl: targetMeta.deadlineSourceUrl,
+    deadlineSourceUrl: null,
     derived: {
       userCourses: userCourseRows,
       fieldOfStudy: checklistProfile.fieldOfStudy,

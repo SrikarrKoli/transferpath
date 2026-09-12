@@ -6,6 +6,7 @@ import { Bell } from "lucide-react"
 import { getDashboardNavLabel } from "@/lib/dashboard-nav"
 import { PRODUCT_NAME } from "@/lib/brand"
 import { settingsPath } from "@/lib/settings-tab"
+import { buildingIdForPath } from "@/lib/campus-immersion"
 
 interface DashboardChromeProps {
   initials: string
@@ -15,13 +16,14 @@ interface DashboardChromeProps {
 export function DashboardChrome({ initials, children }: DashboardChromeProps) {
   const pathname = usePathname()
   const sectionLabel = getDashboardNavLabel(pathname)
+  const isImmersiveHall = buildingIdForPath(pathname) !== null
 
   return (
     <div className="flex min-w-0 flex-1 flex-col">
-      <header className="sticky top-0 z-30 hidden border-b border-border bg-background/85 backdrop-blur-md md:flex">
+      <header className={`${isImmersiveHall ? "md:hidden" : "md:flex"} sticky top-0 z-30 hidden border-b border-border bg-background/85 backdrop-blur-md`}>
         <div className="flex h-14 w-full items-center justify-between gap-6 px-4 lg:px-10">
           <div className="flex min-w-0 items-center gap-2 text-sm">
-            <span className="text-sm text-muted-foreground">{PRODUCT_NAME}</span>
+            <span className="text-sm text-muted-foreground">{PRODUCT_NAME} campus</span>
             <span className="text-muted-foreground/50" aria-hidden>
               /
             </span>
@@ -47,8 +49,13 @@ export function DashboardChrome({ initials, children }: DashboardChromeProps) {
         </div>
       </header>
 
-      <div className="flex-1 px-4 py-6 sm:px-6 md:px-6 lg:px-10 lg:py-8">
-        <div className="mx-auto w-full max-w-6xl">{children}</div>
+      <div className={isImmersiveHall ? "flex-1" : "flex-1 px-4 py-6 sm:px-6 md:px-6 lg:px-10 lg:py-8"}>
+        <div
+          key={pathname}
+          className={isImmersiveHall ? "w-full" : "mx-auto w-full max-w-6xl"}
+        >
+          {children}
+        </div>
       </div>
     </div>
   )

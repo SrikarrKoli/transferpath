@@ -16,10 +16,8 @@ import {
 } from "@/lib/checklist-derived-status"
 import { cn } from "@/lib/utils"
 import { Provenance } from "@/components/ui/provenance"
-import { StatusBadge } from "@/components/ui/status"
 import {
   ExternalActionLink,
-  ScopeChip,
 } from "@/components/dashboard/overview/today-readiness-panel"
 import type {
   TasksDeadlinesData,
@@ -141,15 +139,17 @@ export function TasksDeadlinesClient({
     filter === "missing_dates" || (filter === "upcoming" && data.missingDate)
 
   return (
-    <div className="mx-auto max-w-6xl space-y-8 tp-stagger-children">
+    <div className="deadline-dossier tp-stagger-children">
       {hidePageHeader ? (
-        <p className="text-sm text-muted-foreground">
-          {h.fromInstitution}{" "}
-          <span className="text-muted-foreground/40">→</span>{" "}
-          <span className="font-medium text-foreground">
-            {h.toInstitution} · {h.program} · {h.term}
-          </span>
-        </p>
+        <div className="dossier-route-line">
+          <p className="tp-eyebrow">Transfer route</p>
+          <p>
+            <span>{h.fromInstitution}</span>
+            <span aria-hidden> → </span>
+            <strong>{h.toInstitution}</strong>
+          </p>
+          <p>{h.program} · {h.term}</p>
+        </div>
       ) : (
         <header className="space-y-3">
           <p className="tp-eyebrow text-accent">Tasks & deadlines</p>
@@ -170,7 +170,15 @@ export function TasksDeadlinesClient({
         </header>
       )}
 
-      <div className="flex flex-wrap items-center gap-2">
+      <div className="dossier-folio-heading" aria-hidden>
+        <div>
+          <span>Clock Tower / official record</span>
+          <strong>Transfer deadline ledger</strong>
+        </div>
+        <p>Live register · {h.term}</p>
+      </div>
+
+      <div className="dossier-filters" aria-label="Filter ledger">
         {(Object.keys(FILTER_LABELS) as TasksDeadlinesFilterId[]).map((id) => {
           const count = data.filterCounts[id]
           const active = filter === id
@@ -184,19 +192,19 @@ export function TasksDeadlinesClient({
               disabled={disabled}
               onClick={() => setFilter(id)}
               className={cn(
-                "inline-flex items-center gap-1.5 rounded-full border px-4 py-1.5 text-sm transition-all",
+                "dossier-filter",
                 active
-                  ? "border-primary bg-primary text-primary-foreground shadow-sm"
+                  ? "is-active"
                   : disabled
-                    ? "cursor-not-allowed border-border bg-muted/40 text-muted-foreground/60"
-                    : "border-border bg-card text-muted-foreground hover:border-border-strong hover:text-foreground"
+                    ? "is-disabled"
+                    : undefined
               )}
             >
               {FILTER_LABELS[id]}
               <span
                 className={cn(
                   "ml-0.5 tabular-nums text-xs",
-                  active ? "text-primary-foreground/90" : undefined
+                  active ? "text-current" : undefined
                 )}
               >
                 {count}
@@ -206,25 +214,34 @@ export function TasksDeadlinesClient({
         })}
       </div>
 
-      <div className="grid gap-6 lg:grid-cols-[1.55fr_1fr] lg:gap-8">
-        <div className="space-y-6">
+      <div className="deadline-ledger-layout">
+        <div className="deadline-ledger-main">
           {showDeadlines ? (
             <Section
-              title="Deadlines"
-              subtitle="Institution-owned · no checkbox"
+              title="Deadline ledger"
+              subtitle="Official dates · recorded in calendar order"
               trailing={`${data.upcomingDeadlines.length} row${data.upcomingDeadlines.length === 1 ? "" : "s"}`}
               empty="No upcoming deadlines in the next two years."
+              dominant
             >
+              {data.upcomingDeadlines.length > 0 ? (
+                <li className="deadline-ledger-columns" aria-hidden>
+                  <span>No.</span>
+                  <span>Date</span>
+                  <span>Deadline / source</span>
+                  <span>Record</span>
+                </li>
+              ) : null}
               {data.upcomingDeadlines.map((row, i) => (
-                <DeadlineRow key={row.id} row={row} first={i === 0} />
+                <DeadlineRow key={row.id} row={row} index={i + 1} />
               ))}
             </Section>
           ) : null}
 
           {showOpenTasks ? (
             <Section
-              title="Tasks"
-              subtitle="Yours · checkbox-led"
+              title="Action ledger"
+              subtitle="Student-owned actions · mark completion here"
               trailing={`${data.openTasks.length} open`}
               empty="No open application or preparation tasks."
             >
@@ -247,7 +264,7 @@ export function TasksDeadlinesClient({
           ) : null}
         </div>
 
-        <aside className="space-y-6 lg:sticky lg:top-6 lg:self-start">
+        <div className="deadline-ledger-aside">
           {showCompleted ? (
             <Section
               title="Completed"
@@ -270,8 +287,8 @@ export function TasksDeadlinesClient({
             </Section>
           ) : null}
 
-          <section className="rounded-xl border border-border bg-card p-5 sm:p-6">
-            <p className="tp-eyebrow text-muted-foreground">Not on this page</p>
+          <section className="dossier-note dossier-reference-row">
+            <p className="tp-eyebrow text-muted-foreground">Related record</p>
             <p className="mt-3 text-sm leading-relaxed text-muted-foreground">
               Academic prerequisites — English Composition, Calculus, and field-specific courses —
               are requirements, not errands. They live on Requirements and are satisfied by logging
@@ -285,7 +302,7 @@ export function TasksDeadlinesClient({
               <ArrowUpRight className="h-4 w-4" aria-hidden />
             </Link>
           </section>
-        </aside>
+        </div>
       </div>
     </div>
   )
@@ -296,21 +313,23 @@ function Section({
   subtitle,
   trailing,
   empty,
+  dominant = false,
   children,
 }: {
   title: string
   subtitle?: string
   trailing?: string
   empty?: string
+  dominant?: boolean
   children: React.ReactNode
 }) {
   const hasChildren = React.Children.count(children) > 0
 
   return (
-    <section className="overflow-hidden rounded-xl border border-border bg-card">
-      <div className="flex flex-wrap items-end justify-between gap-2 border-b border-border px-5 py-4 sm:px-6">
+    <section className={cn("dossier-section", dominant && "dossier-section-dominant")}>
+      <div className="dossier-section-heading">
         <div>
-          <h2 className="font-heading text-lg text-foreground">{title}</h2>
+          <h2>{title}</h2>
           {subtitle ? (
             <p className="mt-0.5 text-caption text-muted-foreground">{subtitle}</p>
           ) : null}
@@ -322,9 +341,9 @@ function Section({
         ) : null}
       </div>
       {hasChildren ? (
-        <ul className="divide-y divide-border">{children}</ul>
+        <ul>{children}</ul>
       ) : empty ? (
-        <p className="px-5 py-6 text-sm text-muted-foreground sm:px-6">{empty}</p>
+        <p className="dossier-empty">{empty}</p>
       ) : null}
     </section>
   )
@@ -332,31 +351,27 @@ function Section({
 
 function DeadlineRow({
   row,
-  first,
+  index,
 }: {
   row: TasksDeadlinesDeadlineRow
-  first: boolean
+  index: number
 }) {
   return (
-    <li
-      className={cn(
-        "flex flex-wrap items-start justify-between gap-4 px-5 py-4 sm:px-6",
-        !first && undefined
-      )}
-    >
-      <div className="flex min-w-0 flex-1 gap-4">
-        <div className="w-24 shrink-0">
-          <p className="text-sm tabular-nums text-muted-foreground">{row.dateLabel}</p>
+    <li className="deadline-ledger-row">
+      <span className="deadline-row-number" aria-hidden>{String(index).padStart(2, "0")}</span>
+      <div className="deadline-ledger-entry">
+        <div className="deadline-date-cell">
+          <time dateTime={row.dueDateIso}>{row.dateLabel}</time>
           {row.countdownLabel ? (
-            <p className="mt-0.5 text-caption text-accent">{row.countdownLabel}</p>
+            <p>{row.countdownLabel}</p>
           ) : null}
         </div>
         <div className="min-w-0 flex-1">
-          <div className="flex flex-wrap items-center gap-2">
-            <ScopeChip label={row.scopeChip} />
-            <span className="text-caption text-muted-foreground">{row.categoryMeta}</span>
+          <div className="deadline-ledger-meta">
+            <span>{row.scopeChip}</span>
+            <span>{row.categoryMeta}</span>
           </div>
-          <p className="mt-1 font-medium text-foreground">{row.title}</p>
+          <p className="deadline-ledger-title">{row.title}</p>
           <Provenance {...row.provenance} className="mt-2" />
         </div>
       </div>
@@ -386,8 +401,8 @@ function TaskRow({
   return (
     <li
       className={cn(
-        "flex flex-wrap items-start justify-between gap-4 px-5 py-4 sm:px-6",
-        !first && undefined
+        "task-folio-row",
+        first && "is-first"
       )}
     >
       <div className="flex min-w-0 flex-1 items-start gap-3">
@@ -397,7 +412,7 @@ function TaskRow({
           aria-label={row.done ? "Mark incomplete" : "Mark complete"}
           onClick={() => onToggle(!row.done)}
           className={cn(
-            "mt-0.5 grid size-5 shrink-0 place-items-center rounded-full border-2 transition-all",
+            "task-check",
             row.done
               ? "border-accent bg-accent text-accent-foreground"
               : "border-muted-foreground/30 bg-transparent hover:border-accent hover:bg-accent/10"
@@ -406,8 +421,8 @@ function TaskRow({
           {row.done ? <Check className="size-3" strokeWidth={3} aria-hidden /> : null}
         </button>
         <div className="min-w-0 flex-1">
-          <div className="flex flex-wrap items-center gap-2">
-            <StatusBadge status={row.status} labelFrom="sm" />
+          <div className="task-folio-meta">
+            <span>{row.status === "in_progress" ? "In progress" : "Open"}</span>
             {row.meta ? (
               <span className="text-caption text-muted-foreground">{row.meta}</span>
             ) : null}
@@ -442,8 +457,8 @@ function CompletedTaskRow({
   return (
     <li
       className={cn(
-        "flex items-start justify-between gap-4 px-5 py-4 sm:px-6",
-        !first && undefined
+        "task-folio-row is-complete",
+        first && "is-first"
       )}
     >
       <div className="flex min-w-0 flex-1 items-start gap-3">
@@ -481,10 +496,7 @@ function MissingDatesSection({
 }) {
   return (
     <section
-      className={cn(
-        "rounded-xl border bg-card p-5 sm:p-6",
-        missingDate ? "border-accent/40 bg-accent/5" : "border-border"
-      )}
+      className={cn("dossier-note dossier-missing", missingDate && "has-missing")}
     >
       <div className="flex flex-wrap items-end justify-between gap-2">
         <p className="tp-eyebrow text-muted-foreground">Missing dates</p>

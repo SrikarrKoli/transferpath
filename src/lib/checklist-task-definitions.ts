@@ -137,8 +137,8 @@ function buildAcademicTasks(p: ChecklistProfileSummary): ChecklistTaskDef[] {
 
 /** All checklist task definitions for a profile (labels use profile schools/major). */
 export function buildTaskDefinitions(p: ChecklistProfileSummary): ChecklistSectionDef[] {
-  const cur = p.currentUniversityName?.trim() || "your community college"
-  const tgt = p.targetUniversityName?.trim() || "your target university"
+  const cur = p.currentUniversityName?.trim() || "your current school"
+  const tgt = p.targetUniversityName?.trim() || "your target school"
   const major = p.targetMajor?.trim() || "your intended major"
   const term = p.expectedTransferTerm?.trim()
   const termPhrase = term ?? "your planned entry term"
@@ -272,8 +272,8 @@ export function buildTaskDefinitions(p: ChecklistProfileSummary): ChecklistSecti
 }
 
 export function buildChecklistHeaderSubtitle(p: ChecklistProfileSummary): string {
-  const cur = p.currentUniversityName?.trim() || "your community college"
-  const tgt = p.targetUniversityName?.trim() || "your target university"
+  const cur = p.currentUniversityName?.trim() || "your current school"
+  const tgt = p.targetUniversityName?.trim() || "your target school"
   const parts = [`${cur} → ${tgt}`]
   const major = p.targetMajor?.trim()
   if (major) parts.push(major)

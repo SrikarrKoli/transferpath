@@ -23,9 +23,9 @@ export function OverviewMain({ data, userId }: OverviewMainProps) {
 
   if (data.pathwayPrompt) {
     return (
-      <div className={cn("mx-auto max-w-3xl tp-stagger-children", compact ? "space-y-6" : "space-y-8")}>
-        <p className="text-sm text-muted-foreground">{data.dateLine}</p>
-        <section className="rounded-xl border border-border border-l-4 border-l-accent bg-card p-6 sm:p-8">
+      <div className="union-day-sheet tp-stagger-children">
+        <p className="union-date-line">{data.dateLine}</p>
+        <section className="union-pathway-prompt">
           <p className="tp-eyebrow text-muted-foreground">Set up your pathway</p>
           <h1 className="mt-3 font-heading text-2xl leading-tight text-foreground md:text-3xl">
             {data.pathwayPrompt.title}
@@ -38,7 +38,7 @@ export function OverviewMain({ data, userId }: OverviewMainProps) {
             <ScopeChip label="Entry term" />
             <Link
               href={data.pathwayPrompt.settingsHref}
-              className="ml-1 rounded-md bg-primary px-5 py-2.5 text-sm font-medium text-primary-foreground transition hover:bg-primary/90"
+              className="union-primary-action"
             >
               Save and continue
             </Link>
@@ -50,22 +50,32 @@ export function OverviewMain({ data, userId }: OverviewMainProps) {
   }
 
   return (
-    <div
-      className={cn(
-        "mx-auto max-w-6xl tp-stagger-children",
-        compact ? "space-y-6" : "space-y-8"
-      )}
-    >
-      <p className="text-sm text-muted-foreground">{data.dateLine}</p>
+    <div className={cn("union-day-sheet tp-stagger-children", compact && "is-compact")}>
+      <div className="union-route-line">
+        <p className="tp-eyebrow">Daily route</p>
+        <p>
+          <span>{data.pathway.fromInstitution}</span>
+          <span aria-hidden> → </span>
+          <strong>{data.pathway.toInstitution}</strong>
+        </p>
+        <p>{data.pathway.program} · {data.pathway.term}</p>
+      </div>
+      <header className="union-sheet-heading">
+        <div>
+          <p className="tp-eyebrow text-accent">Student Union / daily issue</p>
+          <h1>Today&apos;s route sheet</h1>
+        </div>
+        <p className="union-date-line">{data.dateLine}</p>
+      </header>
 
-      <div className={cn("grid gap-6 lg:grid-cols-[1.65fr_1fr] lg:gap-8", compact ? "gap-4" : "gap-6")}>
-        <div className="flex flex-col gap-6">
+      <div className="union-sheet-columns">
+        <div className="union-sheet-main">
           {data.nextAction ? (
             <NextActionCard action={data.nextAction} userId={userId} />
           ) : null}
 
           {data.comingUp.length > 0 ? (
-            <section className="rounded-xl border border-border bg-card p-5 sm:p-6">
+            <section className="union-sheet-section">
               <div className="mb-4 flex flex-wrap items-end justify-between gap-3">
                 <h2 className="font-heading text-lg text-foreground">Also coming up</h2>
                 <Link
@@ -114,7 +124,7 @@ export function OverviewMain({ data, userId }: OverviewMainProps) {
           {data.needsDate ? <NeedsDateSection needsDate={data.needsDate} /> : null}
         </div>
 
-        <aside className="flex flex-col gap-4 lg:sticky lg:top-6 lg:self-start">
+        <aside className="union-sheet-margin">
           {data.readiness ? <TodayReadinessPanel readiness={data.readiness} /> : null}
           <TodaySourcesLink />
         </aside>
@@ -158,7 +168,7 @@ function NextActionCard({
   userId: string
 }) {
   return (
-    <section className="rounded-xl border border-border border-l-4 border-l-accent bg-card p-5 sm:p-6">
+    <section className="union-next-action">
       <p className="tp-eyebrow text-accent">Next</p>
       <h1 className="mt-3 font-heading text-2xl leading-tight text-foreground md:text-3xl">
         {action.title}
@@ -201,7 +211,7 @@ function NextActionCard({
 
 function ThisTermSection({ term }: { term: NonNullable<OverviewData["thisTerm"]> }) {
   return (
-    <section className="rounded-xl border border-border bg-card p-5 sm:p-6">
+    <section className="union-sheet-section">
       <div className="mb-4 flex flex-wrap items-center justify-between gap-3">
         <h2 className="font-heading text-lg text-foreground">This term</h2>
         <Link href="/dashboard/plan" className="text-sm font-medium text-primary hover:text-accent">
@@ -233,7 +243,7 @@ function ThisTermSection({ term }: { term: NonNullable<OverviewData["thisTerm"]>
 
 function NeedsDateSection({ needsDate }: { needsDate: NonNullable<OverviewData["needsDate"]> }) {
   return (
-    <section className="rounded-xl border border-border bg-card p-5 sm:p-6">
+    <section className="union-sheet-section">
       <p className="tp-eyebrow text-muted-foreground">Needs a date</p>
       <p className="mt-3 text-sm leading-relaxed text-foreground">{needsDate.headline}</p>
       <Provenance level="missing" what={needsDate.provenance.what} className="mt-3" />

@@ -13,7 +13,7 @@ Source of truth for building ↔ route mapping: `src/components/landing/campus/c
 | Library | `library` | Essays | `/dashboard/essay` |
 | Classroom Building | `classroom` | Semester plan | `/dashboard/plan` |
 | Registrar | `registrar` | Requirements | `/dashboard/requirements` |
-| Dorms | `dorm` | Personal checklist | `/dashboard/checklist` |
+| Dorms | `dorm` | Personal checklist | `/dashboard/checklist` → deadlines (current redirect) |
 | Rec Center | `gym` | Readiness / competitiveness | `/dashboard/competitiveness` |
 | Student Union | `union` | Today overview | `/dashboard` |
 
@@ -35,8 +35,8 @@ Dashboard sidebar, auth gate, and mobile nav stay. The shell is the hall interio
 
 1. **Foundation** — tokens, shell, mini-map, enter/exit motion, per-hall hero tints. No data-loader changes.
 2. **Lighthouse** — Clock Tower / Tasks & Deadlines.
-3. **Next halls (this PR)** — Union / Today, Library / Essays, Classrooms / Plan, Registrar / Requirements, Rec / Path readiness, Dorms / Checklist, Counselor / Onboarding.
-4. **Landing enter** — Click selects a hall; **Enter {name}** on the dock (or double-click / keyboard Enter) routes to that hall’s immersive page. Logged-out dashboard enters resume via `/login?next=`.
+3. **Next halls (this PR)** — Union / Today, Library / Essays, Classrooms / Plan, Registrar / Requirements, Rec / Path readiness, Dorms / Checklist.
+4. **Still later** — Counselor / onboarding keeps its own auth chrome for now. Rec reuses the requirements client inside the Rec shell (no new loader).
 5. **Optional later** — sidebar labels that use building names; a shared exit control in `DashboardChrome`.
 
 ## What NOT to break

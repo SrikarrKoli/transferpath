@@ -25,6 +25,10 @@ export type RequirementsWorkspaceHeader = {
   title: string
   titleItalic: string
   subtitle: string
+  fromInstitution: string
+  toInstitution: string
+  program: string
+  term: string
 }
 
 export type RequirementsPlanningNote = {

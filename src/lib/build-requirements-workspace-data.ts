@@ -229,10 +229,8 @@ export function buildRequirementsWorkspaceData(
   const profile = input.profile
   const gpa = profile?.gpa ?? null
   const credits = profile?.credits_completed ?? null
-  const targetName = profile?.target_university?.name ?? "your target school"
   const currentName = profile?.current_university?.name ?? "your college"
   const major = profile?.target_major ?? "your major"
-  const term = profile?.expected_transfer_term ?? null
   const fieldBucket = profile?.field_of_study ?? null
 
   const checklist = input.checklistCompleteByTaskKey
@@ -356,6 +354,10 @@ export function buildRequirementsWorkspaceData(
       titleItalic: "",
       subtitle:
         "What stands between you and an application — each row says where the claim came from and how to act on it here.",
+      fromInstitution: input.profile?.current_university?.name?.trim() || "Current school not set",
+      toInstitution: input.profile?.target_university?.name?.trim() || "Target school not set",
+      program: input.profile?.target_major?.trim() || input.profile?.field_of_study?.trim() || "Program not set",
+      term: input.profile?.expected_transfer_term?.trim() || "Term not set",
     },
     categories,
     planningNotes: planningNotes.map((n) => ({

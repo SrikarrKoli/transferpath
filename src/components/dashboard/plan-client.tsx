@@ -21,18 +21,13 @@ import {
 import { CANONICAL_COURSE_CATEGORIES } from "@/data/canonical-course-catalog"
 import { buildPlanTerms, PLAN_UNSCHEDULED_LABEL } from "@/lib/build-plan-terms"
 import {
-  courseStatusToPlanDisplayStatus,
   planDisplayStatusLabel,
 } from "@/lib/plan-course-display-status"
 import { buildPlanTermSelectOptions } from "@/lib/plan-term-select-options"
 import type { ChecklistProfileSummary } from "@/lib/checklist-task-definitions"
-import type { CompletenessLadderState } from "@/lib/completeness-ladder"
 import type { PlanTermSection } from "@/types/plan-terms"
-import { StatusBadge } from "@/components/ui/status"
 import { Provenance } from "@/components/ui/provenance"
 import { cn } from "@/lib/utils"
-import { PlanTermRail } from "@/components/dashboard/plan-term-rail"
-import { PlanReadinessAside } from "@/components/dashboard/plan-readiness-aside"
 
 export type PlanCourseRow = {
   id: string
@@ -68,25 +63,26 @@ interface PlanClientProps {
   userId: string
   initialCourses: PlanCourseRow[]
   checklistProfile: ChecklistProfileSummary
-  completenessLadderState: CompletenessLadderState
-  pathwayReadinessScore: number
-  creditsCompleted: number | null
 }
 
 export function PlanClient({
   userId,
   initialCourses,
   checklistProfile,
-  completenessLadderState,
-  pathwayReadinessScore,
-  creditsCompleted,
 }: PlanClientProps) {
   const [rows, setRows] = useState<PlanCourseRow[]>(initialCourses)
   const [savingId, setSavingId] = useState<string | null>(null)
   const [deletingId, setDeletingId] = useState<string | null>(null)
   const [listError, setListError] = useState("")
-  const [activeRailLabel, setActiveRailLabel] = useState<string | null>(null)
-  const [expandedTerms, setExpandedTerms] = useState<Set<string>>(() => new Set())
+  const [expandedTerms, setExpandedTerms] = useState<Set<string>>(() => {
+    const firstPopulatedTerm = buildPlanTerms({
+      courses: initialCourses,
+      expectedTransferTerm: checklistProfile.expectedTransferTerm ?? null,
+      targetSchoolName: checklistProfile.targetUniversityName ?? null,
+    }).sections.find((section) => section.kind === "calendar" && section.courses.length > 0)
+
+    return new Set(firstPopulatedTerm ? [firstPopulatedTerm.termLabel] : [])
+  })
 
   const [addOpen, setAddOpen] = useState(false)
   const [addName, setAddName] = useState("")
@@ -120,12 +116,6 @@ export function PlanClient({
       else next.add(termLabel)
       return next
     })
-  }, [])
-
-  const scrollToTerm = useCallback((termLabel: string) => {
-    setActiveRailLabel(termLabel)
-    const el = document.getElementById(sectionDomId(termLabel))
-    el?.scrollIntoView({ behavior: "smooth", block: "start" })
   }, [])
 
   const patchCourse = useCallback(
@@ -278,11 +268,20 @@ export function PlanClient({
   const journeySubtitle = `Every term on your path, in calendar order. ${calendarTermCount} term${calendarTermCount === 1 ? "" : "s"} scheduled.`
 
   return (
-    <div className="mx-auto max-w-6xl space-y-6 tp-stagger-children">
-      <div className="space-y-3">
-        <p className="tp-eyebrow text-accent">Plan</p>
+    <div className="plan-table mx-auto max-w-6xl tp-stagger-children">
+      <div className="plan-route-line">
+        <p className="tp-eyebrow">Academic route</p>
+        <p>
+          <span>{checklistProfile.currentUniversityName ?? "Current school not set"}</span>
+          <span aria-hidden> → </span>
+          <strong>{checklistProfile.targetUniversityName ?? "Target school not set"}</strong>
+        </p>
+        <p>{checklistProfile.targetMajor ?? checklistProfile.fieldOfStudy ?? "Program not set"} · {checklistProfile.expectedTransferTerm ?? "Term not set"}</p>
+      </div>
+      <div className="plan-table-heading">
+        <p className="tp-eyebrow text-accent">Classroom / official working copy</p>
         <h1 className="font-heading text-balance text-3xl font-semibold tracking-tight text-foreground">
-          Your plan
+          Term plan register
         </h1>
         <p className="max-w-2xl text-sm leading-relaxed text-muted-foreground">
           {journeySubtitle}
@@ -300,7 +299,7 @@ export function PlanClient({
         )}
       </div>
 
-      <div className="flex flex-wrap items-center justify-between gap-3 border-b border-border pb-4">
+      <div className="plan-table-toolbar">
         <span className="tp-eyebrow text-muted-foreground">Term-by-term plan</span>
         <Button
           type="button"
@@ -322,53 +321,42 @@ export function PlanClient({
         </p>
       ) : null}
 
-      <div className="grid gap-6 lg:grid-cols-[132px_minmax(0,1fr)_200px] lg:gap-8">
-        <div className="hidden lg:block">
-          <PlanTermRail
-            sections={planTerms.sections}
-            activeLabel={activeRailLabel}
-            onSelect={scrollToTerm}
-          />
-        </div>
+      <div className="plan-register-column-headings" aria-hidden>
+        <span>Term</span>
+        <span>Course</span>
+        <span>Status</span>
+        <span>Schedule</span>
+        <span>Action</span>
+      </div>
 
-        <div className="min-w-0 space-y-3">
-          {planTerms.sections.length === 0 ? (
-            <div className="rounded-lg border border-dashed border-border bg-muted/30 px-5 py-8 text-sm text-muted-foreground">
-              No courses yet.{" "}
-              <button
-                type="button"
-                className="font-medium text-primary underline-offset-4 hover:underline"
-                onClick={() => setAddOpen(true)}
-              >
-                Add your first course
-              </button>
-            </div>
-          ) : (
-            planTerms.sections.map((section) => (
-              <PlanTermSectionCard
-                key={`${section.kind}-${section.termLabel}`}
-                section={section}
-                expanded={expandedTerms.has(section.termLabel)}
-                onToggleExpand={() => toggleExpanded(section.termLabel)}
-                savingId={savingId}
-                deletingId={deletingId}
-                termOptions={termOptions}
-                onPatchCourse={patchCourse}
-                onDeleteCourse={deleteCourse}
-                onAddToTerm={() => openAddForTerm(section.termLabel)}
-              />
-            ))
-          )}
-        </div>
-
-        <div className="lg:sticky lg:top-6 lg:self-start">
-          <PlanReadinessAside
-            sections={planTerms.sections}
-            completenessLadderState={completenessLadderState}
-            pathwayReadinessScore={pathwayReadinessScore}
-            creditsCompleted={creditsCompleted}
-          />
-        </div>
+      <div className="plan-drawing-sheet min-w-0">
+        {planTerms.sections.length === 0 ? (
+          <div className="plan-empty-row text-sm text-muted-foreground">
+            No courses yet.{" "}
+            <button
+              type="button"
+              className="font-medium text-primary underline-offset-4 hover:underline"
+              onClick={() => setAddOpen(true)}
+            >
+              Add your first course
+            </button>
+          </div>
+        ) : (
+          planTerms.sections.map((section) => (
+            <PlanTermSectionCard
+              key={`${section.kind}-${section.termLabel}`}
+              section={section}
+              expanded={expandedTerms.has(section.termLabel)}
+              onToggleExpand={() => toggleExpanded(section.termLabel)}
+              savingId={savingId}
+              deletingId={deletingId}
+              termOptions={termOptions}
+              onPatchCourse={patchCourse}
+              onDeleteCourse={deleteCourse}
+              onAddToTerm={() => openAddForTerm(section.termLabel)}
+            />
+          ))
+        )}
       </div>
 
       <Dialog open={addOpen} onOpenChange={setAddOpen}>
@@ -505,13 +493,14 @@ function PlanTermSectionCard({
     <section
       id={sectionDomId(section.termLabel)}
       className={cn(
-        "scroll-mt-24 rounded-lg border border-border bg-card",
+        "plan-term-section scroll-mt-24",
+        section.kind === "calendar" && "is-calendar",
         section.temporalState === "current" && "border-accent/50",
         isUnscheduled && "border-dashed bg-muted/20",
         isEntry && "border-border/80 bg-transparent"
       )}
     >
-      <div className="flex items-start justify-between gap-3 border-b border-border/70 px-4 py-3">
+      <div className="plan-term-heading">
         <div className="min-w-0">
           <div className="flex flex-wrap items-center gap-2">
             {canCollapse ? (
@@ -541,7 +530,7 @@ function PlanTermSectionCard({
       </div>
 
       {isEntry ? (
-        <div className="space-y-2 px-4 py-3">
+        <div className="plan-term-body">
           <p className="text-sm text-muted-foreground">
             Transfer target. Not editable — set your entry term in Settings.
           </p>
@@ -551,14 +540,14 @@ function PlanTermSectionCard({
           />
         </div>
       ) : isCollapsed ? (
-        <div className="px-4 py-3">
+        <div className="plan-term-body">
           <p className="text-sm text-muted-foreground">
             All {section.courses.length} course{section.courses.length === 1 ? "" : "s"} complete.
             Expand to edit.
           </p>
         </div>
       ) : (
-        <div className="space-y-2 px-4 py-3">
+        <div className="plan-term-body">
           {section.courses.length === 0 ? (
             <p className="text-sm text-muted-foreground">
               {isUnscheduled
@@ -568,13 +557,12 @@ function PlanTermSectionCard({
           ) : (
             <ul className="divide-y divide-border/60">
               {section.courses.map((course) => (
-                <li key={course.id} className="py-2.5 first:pt-0 last:pb-0">
+                <li key={course.id} className="plan-course-line">
                   <PlanCourseEditorRow
                     course={course}
                     savingId={savingId}
                     deletingId={deletingId}
                     termOptions={termOptions}
-                    hasCalendarTerm={!isUnscheduled}
                     onPatch={onPatchCourse}
                     onDelete={onDeleteCourse}
                   />
@@ -604,7 +592,6 @@ function PlanCourseEditorRow({
   savingId,
   deletingId,
   termOptions,
-  hasCalendarTerm,
   onPatch,
   onDelete,
 }: {
@@ -617,75 +604,65 @@ function PlanCourseEditorRow({
   savingId: string | null
   deletingId: string | null
   termOptions: { value: string; label: string }[]
-  hasCalendarTerm: boolean
   onPatch: (
     rowId: string,
     updates: { semester_taken?: string | null; status?: string }
   ) => void
   onDelete: (rowId: string) => Promise<void>
 }) {
-  const displayStatus = courseStatusToPlanDisplayStatus(course.status, { hasCalendarTerm })
   const statusMeta = planDisplayStatusLabel(course.status)
   const termName = course.semester_taken?.trim()
 
   return (
-    <div>
-      <div className="flex flex-col gap-2.5 sm:flex-row sm:items-start sm:justify-between">
-        <div className="min-w-0 space-y-1.5">
-          <p className="text-sm font-medium text-foreground">{course.course_name}</p>
-          <div className="flex flex-wrap items-center gap-2">
-            <StatusBadge status={displayStatus} labelFrom="sm" />
-            {course.status === "planned" && termName ? (
-              <span className="text-caption text-muted-foreground">
-                Planned · {termName}
-              </span>
-            ) : (
-              <span className="text-caption text-muted-foreground">{statusMeta}</span>
-            )}
-          </div>
-        </div>
-        <div className="flex flex-wrap items-center gap-2">
-          {(savingId === course.id || deletingId === course.id) && (
-            <Loader2 className="h-3.5 w-3.5 animate-spin text-muted-foreground" />
-          )}
-          <select
-            value={course.semester_taken?.trim() || ""}
-            onChange={(e) => {
-              const v = e.target.value
-              void onPatch(course.id, {
-                semester_taken: v === "" ? null : v.slice(0, 64),
-              })
-            }}
-            className="h-9 min-w-[140px] rounded-lg border border-border bg-background px-2 text-sm"
-            aria-label={`Term for ${course.course_name}`}
-          >
-            {termOptions.map((o) => (
-              <option key={o.value || "un"} value={o.value}>
-                {o.label}
-              </option>
-            ))}
-          </select>
-          <select
-            value={course.status}
-            onChange={(e) => void onPatch(course.id, { status: e.target.value })}
-            className="h-9 min-w-[130px] rounded-lg border border-border bg-background px-2 text-sm"
-            aria-label={`Status for ${course.course_name}`}
-          >
-            <option value="planned">Planned</option>
-            <option value="in_progress">In progress</option>
-            <option value="completed">Completed</option>
-          </select>
-          <Button
-            type="button"
-            variant="ghost"
-            size="icon"
-            className="h-9 w-9 text-muted-foreground hover:text-destructive"
-            aria-label={`Remove ${course.course_name}`}
-            onClick={() => void onDelete(course.id)}
-          >
-            <Trash2 className="h-4 w-4" />
-          </Button>
-        </div>
+    <div className="plan-course-editor">
+      <div className="plan-course-identity">
+        <p className="text-sm font-medium text-foreground">{course.course_name}</p>
+        {course.status === "planned" && termName ? (
+          <span className="text-caption text-muted-foreground">Filed for {termName}</span>
+        ) : null}
+      </div>
+      <div className="plan-course-status">
+        <span className="plan-status-notation">{statusMeta}</span>
+        <select
+          value={course.status}
+          onChange={(e) => void onPatch(course.id, { status: e.target.value })}
+          aria-label={`Status for ${course.course_name}`}
+        >
+          <option value="planned">Planned</option>
+          <option value="in_progress">In progress</option>
+          <option value="completed">Completed</option>
+        </select>
+      </div>
+      <select
+        value={course.semester_taken?.trim() || ""}
+        onChange={(e) => {
+          const v = e.target.value
+          void onPatch(course.id, {
+            semester_taken: v === "" ? null : v.slice(0, 64),
+          })
+        }}
+        aria-label={`Term for ${course.course_name}`}
+      >
+        {termOptions.map((o) => (
+          <option key={o.value || "un"} value={o.value}>
+            {o.label}
+          </option>
+        ))}
+      </select>
+      <div className="plan-course-review">
+        {(savingId === course.id || deletingId === course.id) && (
+          <Loader2 className="h-3.5 w-3.5 animate-spin text-muted-foreground" />
+        )}
+        <Button
+          type="button"
+          variant="ghost"
+          size="icon"
+          className="h-9 w-9 text-muted-foreground hover:text-destructive"
+          aria-label={`Remove ${course.course_name}`}
+          onClick={() => void onDelete(course.id)}
+        >
+          <Trash2 className="h-4 w-4" />
+        </Button>
       </div>
     </div>
   )

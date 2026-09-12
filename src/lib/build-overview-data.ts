@@ -304,6 +304,12 @@ export function buildOverviewData(input: {
   courseCount: number
 }): OverviewData {
   const score = Math.round(Math.min(100, Math.max(0, input.overallReadinessScore)))
+  const pathway = {
+    fromInstitution: input.currentSchoolName?.trim() || "Current school not set",
+    toInstitution: input.targetSchoolName?.trim() || "Target school not set",
+    program: input.targetMajor?.trim() || input.fieldOfStudy?.trim() || "Program not set",
+    term: input.transferTerm?.trim() || "Term not set",
+  }
   const pathwayComplete = hasPathwayComplete({
     hasTargetSchool: input.hasTargetUniversity,
     hasExpectedTransferTerm: Boolean(input.transferTerm?.trim()),
@@ -320,6 +326,7 @@ export function buildOverviewData(input: {
     return {
       completenessLadderState,
       dateLine: dateLine(),
+      pathway,
       pathwayPrompt: {
         title: "Where are you hoping to transfer, and when?",
         body: "Those two answers decide which deadlines, requirements and terms we can show you. Everything else on TransferPath follows from them, so there is nothing useful we can put on this screen until we have them.",
@@ -425,6 +432,7 @@ export function buildOverviewData(input: {
   return {
     completenessLadderState,
     dateLine: dateLine(),
+    pathway,
     pathwayPrompt: null,
     nextAction,
     comingUp,

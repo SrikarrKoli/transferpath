@@ -9,8 +9,8 @@ const ROUTE_LABELS: Record<string, string> = {
   "/dashboard/settings": "Settings",
   // Legacy routes — redirects exist; labels kept for any stale links during transition.
   "/dashboard/timeline": "Plan",
-  "/dashboard/checklist": "Tasks & deadlines",
-  "/dashboard/competitiveness": "Requirements",
+  "/dashboard/checklist": "Checklist",
+  "/dashboard/competitiveness": "Path readiness",
 }
 
 export function getDashboardNavLabel(pathname: string): string {

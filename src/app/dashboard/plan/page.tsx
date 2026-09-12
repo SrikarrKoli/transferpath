@@ -3,9 +3,7 @@ import { redirect } from "next/navigation"
 import { ImmersiveBuildingShell } from "@/components/campus-ui/immersive-building-shell"
 import { PlanClient, type PlanCourseRow } from "@/components/dashboard/plan-client"
 import type { ChecklistProfileSummary } from "@/lib/checklist-task-definitions"
-import { getCachedNextDeadline } from "@/lib/dashboard-data"
-import { getCachedDashboardReadiness } from "@/lib/dashboard-readiness-loader"
-import { getCompletenessLadderState } from "@/lib/completeness-ladder"
+import { universityJoinName } from "@/lib/university-join"
 
 export default async function PlanPage() {
   const supabase = await createClient()
@@ -30,27 +28,11 @@ export default async function PlanPage() {
     console.error("[dashboard/plan] failed to fetch profile:", profileError.message)
   }
 
-  const targetId = profile?.target_university_id ?? null
-  const expectedTerm = profile?.expected_transfer_term ?? null
-
-  const [
-    { data: rawCourses, error: rawCoursesError },
-    { count: courseCount },
-    nextDeadline,
-    readiness,
-  ] = await Promise.all([
-    supabase
-      .from("user_courses")
-      .select("id, course_name, status, semester_taken, canonical_course_id")
-      .eq("user_id", user.id)
-      .order("course_name", { ascending: true }),
-    supabase
-      .from("user_courses")
-      .select("id", { count: "exact", head: true })
-      .eq("user_id", user.id),
-    getCachedNextDeadline(targetId, expectedTerm),
-    getCachedDashboardReadiness(user.id),
-  ])
+  const { data: rawCourses, error: rawCoursesError } = await supabase
+    .from("user_courses")
+    .select("id, course_name, status, semester_taken, canonical_course_id")
+    .eq("user_id", user.id)
+    .order("course_name", { ascending: true })
 
   if (rawCoursesError) {
     console.error("[dashboard/plan] failed to fetch user_courses:", rawCoursesError.message)
@@ -67,21 +49,12 @@ export default async function PlanPage() {
   }))
 
   const checklistProfile: ChecklistProfileSummary = {
-    currentUniversityName:
-      (profile?.current_university as { name: string } | null)?.name ?? null,
-    targetUniversityName:
-      (profile?.target_university as { name: string } | null)?.name ?? null,
+    currentUniversityName: universityJoinName(profile?.current_university),
+    targetUniversityName: universityJoinName(profile?.target_university),
     targetMajor: profile?.target_major ?? null,
     fieldOfStudy: profile?.field_of_study ?? null,
     expectedTransferTerm: profile?.expected_transfer_term ?? null,
   }
-
-  const completenessLadderState = getCompletenessLadderState({
-    hasTargetSchool: targetId != null,
-    hasExpectedTransferTerm: Boolean(expectedTerm?.trim()),
-    courseCount: courseCount ?? 0,
-    nearestDeadlineDaysUntil: nextDeadline?.daysUntil ?? null,
-  })
 
   return (
     <ImmersiveBuildingShell buildingId="classroom">
@@ -89,9 +62,6 @@ export default async function PlanPage() {
         userId={user.id}
         initialCourses={courses}
         checklistProfile={checklistProfile}
-        completenessLadderState={completenessLadderState}
-        pathwayReadinessScore={readiness.score}
-        creditsCompleted={profile?.credits_completed ?? null}
       />
     </ImmersiveBuildingShell>
   )

@@ -39,9 +39,9 @@ export function PlanReadinessAside({
     creditsCompleted != null ? `${creditsCompleted} of ${PLANNER_CREDIT_TARGET}` : "Not on file"
 
   return (
-    <aside className="space-y-4">
+    <aside className="plan-margin-summary">
       {showReadiness ? (
-        <div className="rounded-xl border border-border bg-card p-5 shadow-sm">
+        <div className="plan-summary-block">
           <p className="tp-eyebrow text-muted-foreground">Planner readiness</p>
           <div className="mt-4 flex items-center gap-3">
             <Meter
@@ -60,7 +60,7 @@ export function PlanReadinessAside({
         </div>
       ) : null}
 
-      <div className="rounded-xl border border-border bg-card p-5 shadow-sm">
+      <div className="plan-summary-block">
         <p className="tp-eyebrow text-muted-foreground">Courses by term</p>
         {calendarSections.length === 0 ? (
           <p className="mt-3 text-sm text-muted-foreground">No terms scheduled yet.</p>

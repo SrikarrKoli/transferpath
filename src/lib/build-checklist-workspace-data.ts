@@ -74,10 +74,10 @@ export function buildChecklistWorkspaceData(input: {
   completionMap: Record<string, { is_complete: boolean; completed_at: string | null } | undefined>
   lastUpdatedIso: string | null
 }): ChecklistWorkspaceData {
-  const cur = input.profile.currentUniversityName?.trim() || "your community college"
-  const tgt = input.profile.targetUniversityName?.trim() || "your target university"
-  const program = input.profile.targetMajor?.trim() || "your program"
-  const term = input.profile.expectedTransferTerm?.trim() || "your entry term"
+  const cur = input.profile.currentUniversityName?.trim() || "Current school not set"
+  const tgt = input.profile.targetUniversityName?.trim() || "Target school not set"
+  const program = input.profile.targetMajor?.trim() || input.profile.fieldOfStudy?.trim() || "Program not set"
+  const term = input.profile.expectedTransferTerm?.trim() || "Term not set"
 
   const categories = input.sections.map((section) => {
     const meta = SECTION_TO_CATEGORY[section.title] ?? {
@@ -93,8 +93,8 @@ export function buildChecklistWorkspaceData(input: {
 
   return {
     header: {
-      eyebrow: "Tasks & deadlines",
-      title: "Tasks & deadlines",
+      eyebrow: "Checklist",
+      title: "Transfer checklist ledger",
       fromInstitution: cur,
       toInstitution: tgt,
       program,
