@@ -605,8 +605,8 @@ nextjs-portal,
 
 @media (min-width: 960px) {
   .hall-split {
-    grid-template-columns: minmax(0, 1.75fr) minmax(11rem, 0.62fr);
-    gap: 3.25rem;
+    grid-template-columns: minmax(0, 1.8fr) minmax(12rem, 0.55fr);
+    gap: 2.75rem;
   }
 }
 
@@ -4825,4 +4825,20 @@ nextjs-portal,
 
 .campus-entered[data-building="gym"] .readiness-column-headings {
   font-size: 0.58rem;
+}
+
+
+/* Iter13 pre denser split + margin */
+.hall-margin {
+  padding-top: 0.35rem;
+  border-top: 1px solid var(--hall-rule);
+}
+
+@media (min-width: 960px) {
+  .hall-margin {
+    padding-top: 0;
+    border-top: 0;
+    border-left: 1px solid var(--hall-rule);
+    padding-left: 1.35rem;
+  }
 }
