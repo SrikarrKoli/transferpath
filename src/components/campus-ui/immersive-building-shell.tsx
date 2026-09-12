@@ -13,11 +13,17 @@ export function ImmersiveBuildingShell({
   buildingId: BuildingId
   /** Kept for callers; path lives on the artifact, not the masthead. */
   kicker?: string
-  /** When "onboarding", show transfer-setup framing under the hall name. */
-  purpose?: "onboarding"
+  /** Extra framing under the hall name for onboarding / settings. */
+  purpose?: "onboarding" | "settings"
   children: React.ReactNode
 }) {
   const building = campusBuilding(buildingId)
+  const purposeCopy =
+    purpose === "onboarding"
+      ? "Start here to set up your transfer path — current school, target universities, courses, and timeline. Built for transfer students planning a move to a four-year."
+      : purpose === "settings"
+        ? "Change the schools, major, term, and reminders that drive your transfer campus. Saves update your halls immediately."
+        : null
 
   return (
     <HallProvider buildingId={buildingId}>
@@ -30,15 +36,19 @@ export function ImmersiveBuildingShell({
             <CampusMiniMap here={buildingId} />
           </div>
           <h1 className="hall-name">{building.name}</h1>
-          {purpose === "onboarding" ? (
+          <p className="hall-feature mt-1 text-sm font-medium tracking-wide text-[color:var(--campus-ink)]/55">
+            {building.feature}
+          </p>
+          {purposeCopy ? (
             <p className="mt-2 max-w-xl text-sm leading-relaxed text-[color:var(--campus-ink)]/65">
-              Start here to set up your transfer path — current school, target universities, courses,
-              and timeline. Built for transfer students planning a move to a four-year.
+              {purposeCopy}
             </p>
           ) : null}
         </header>
         <div className="hall-body">{children}</div>
-        <footer className="hall-folio">{building.name}</footer>
+        <footer className="hall-folio">
+          {building.name} · {building.feature}
+        </footer>
       </article>
     </HallProvider>
   )

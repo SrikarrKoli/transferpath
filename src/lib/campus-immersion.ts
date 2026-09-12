@@ -12,6 +12,7 @@ export function buildingIdForPath(pathname: string): BuildingId | null {
   }
   if (pathname.startsWith("/dashboard/requirements")) return "registrar"
   if (pathname.startsWith("/dashboard/competitiveness")) return "gym"
+  if (pathname.startsWith("/dashboard/settings")) return "counselor"
   return null
 }
 

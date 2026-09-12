@@ -1,12 +1,12 @@
 /** Dashboard route labels for chrome / breadcrumbs (no demo copy). */
 
 const ROUTE_LABELS: Record<string, string> = {
-  "/dashboard": "Today",
-  "/dashboard/plan": "Plan",
-  "/dashboard/deadlines": "Tasks & deadlines",
-  "/dashboard/requirements": "Requirements",
-  "/dashboard/essay": "Essays",
-  "/dashboard/settings": "Settings",
+  "/dashboard": "Student Union · Today",
+  "/dashboard/plan": "Classroom · Plan",
+  "/dashboard/deadlines": "Clock Tower · Deadlines",
+  "/dashboard/requirements": "Registrar · Requirements",
+  "/dashboard/essay": "Library · Essays",
+  "/dashboard/settings": "Counselor · Settings",
   // Legacy routes — redirects exist; labels kept for any stale links during transition.
   "/dashboard/timeline": "Plan",
   "/dashboard/checklist": "Checklist",
@@ -23,13 +23,13 @@ export function getDashboardNavLabel(pathname: string): string {
 
 /** Primary plan destinations — order matches Phase 2 / Phase 5 sidebar. */
 export const DASHBOARD_PLAN_NAV = [
-  { href: "/dashboard", label: "Today" },
-  { href: "/dashboard/requirements", label: "Requirements" },
-  { href: "/dashboard/plan", label: "Plan" },
-  { href: "/dashboard/deadlines", label: "Tasks & deadlines" },
+  { href: "/dashboard", label: "Student Union · Today" },
+  { href: "/dashboard/requirements", label: "Registrar · Requirements" },
+  { href: "/dashboard/plan", label: "Classroom · Plan" },
+  { href: "/dashboard/deadlines", label: "Clock Tower · Deadlines" },
 ] as const
 
-export const DASHBOARD_TOOL_NAV = [{ href: "/dashboard/essay", label: "Essays" }] as const
+export const DASHBOARD_TOOL_NAV = [{ href: "/dashboard/essay", label: "Library · Essays" }] as const
 
 export const DASHBOARD_ACCOUNT_NAV = [
   { href: "/sources", label: "Sources" },

@@ -23,7 +23,7 @@ import {
 import type { FieldOfStudy } from "@/lib/field-of-study"
 import { FIELD_OF_STUDY_OPTIONS, fieldOfStudyOrDefault } from "@/lib/field-of-study"
 import { PRODUCT_NAME } from "@/lib/brand"
-import { type SettingsTab } from "@/lib/settings-tab"
+import { settingsPath, type SettingsTab } from "@/lib/settings-tab"
 
 /** If set, Help tab shows a mailto link; otherwise we show a short configuration note. */
 const SUPPORT_EMAIL = process.env.NEXT_PUBLIC_SUPPORT_EMAIL?.trim()
@@ -308,15 +308,17 @@ export function SettingsClient({
       : null
 
   return (
-    <div className="min-h-screen bg-background">
-      <div className="px-8 pt-8 pb-6">
-        <h1 className="text-3xl font-semibold tracking-tight text-foreground">Settings</h1>
+    <div className="bg-transparent">
+      <div className="pb-4">
+        <p className="text-xs font-semibold uppercase tracking-[0.14em] text-muted-foreground">
+          Edit your transfer info
+        </p>
         <p className="mt-1 text-sm text-muted-foreground">
-          Manage your profile and transfer planning
+          Profile, schools, major, term, and reminders — same fields as onboarding, editable anytime.
         </p>
       </div>
 
-      <div className="px-8 pb-12 flex flex-col gap-6 lg:flex-row lg:gap-8">
+      <div className="flex flex-col gap-6 pb-8 lg:flex-row lg:gap-8">
         <nav className="w-full lg:w-[180px] lg:shrink-0">
           <ul className="flex flex-row flex-wrap gap-1 lg:flex-col lg:flex-nowrap">
             {tabs.map((tab) => {
@@ -328,6 +330,7 @@ export function SettingsClient({
                     onClick={() => {
                       setActiveTab(tab.id)
                       setMessage(null)
+                      router.replace(settingsPath(tab.id), { scroll: false })
                     }}
                     className={`w-full flex items-center gap-2.5 px-3 py-2 rounded-lg text-sm transition-colors text-left ${
                       isActive
