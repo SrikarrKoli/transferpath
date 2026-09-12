@@ -16,7 +16,7 @@ export function OnboardingStep1({ data, updateData, onNext }: Props) {
   const canProceed = data.currentSchoolId !== ""
 
   return (
-    <div className="bg-card border border-border rounded-xl p-8">
+    <div className="border border-[color:var(--hall-rule)] bg-transparent p-6 sm:p-8">
       <div className="space-y-6">
         <div>
           <p className="mb-2 text-xs font-semibold uppercase tracking-[0.14em] text-muted-foreground">

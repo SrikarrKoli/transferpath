@@ -13,7 +13,7 @@ function MiniDashboardPreview() {
   return (
     <div className="mx-auto w-full max-w-[320px] border border-[color:var(--hall-rule)] bg-[color:var(--hall-paper)] p-4 shadow-none">
       <div className="mb-3 flex items-center gap-2">
-        <div className="h-2 w-2 rounded-full bg-primary" />
+        <div className="h-2 w-2 rounded-none bg-[color:var(--hall-clay)]" />
         <div className="flex min-w-0 flex-col">
           <span className="text-xs font-medium text-foreground">Your path on {PRODUCT_NAME}</span>
           <span className="text-micro text-muted-foreground">Example preview (not your data)</span>
@@ -176,7 +176,7 @@ function LoginPageContent() {
               "Path readiness you can act on—not hype",
             ].map((item) => (
               <li key={item} className="flex items-start gap-3">
-                <span className="mt-0.5 flex h-4 w-4 shrink-0 items-center justify-center rounded-full bg-chart-2/90">
+                <span className="mt-0.5 flex h-4 w-4 shrink-0 items-center justify-center rounded-none bg-[color:var(--hall-clay)]">
                   <Check className="h-2.5 w-2.5 text-background" strokeWidth={3} />
                 </span>
                 <span className="text-sm text-foreground/90">{item}</span>
@@ -258,7 +258,7 @@ function LoginPageContent() {
           </div>
 
           {configIssue && (
-            <div className="rounded-lg border border-amber-500/30 bg-amber-500/10 px-3 py-2.5 text-sm text-amber-950 dark:text-amber-100">
+            <div className="rounded-none border border-amber-500/30 bg-amber-500/10 px-3 py-2.5 text-sm text-amber-950 dark:text-amber-100">
               <p className="font-medium">Configuration issue</p>
               <p className="mt-1 text-xs leading-relaxed opacity-90">{configIssue}</p>
               <p className="mt-2 text-xs opacity-80">
@@ -273,7 +273,7 @@ function LoginPageContent() {
 
           {/* Error Banner */}
           {error && (
-            <div className="flex items-start gap-3 rounded-lg border border-destructive/25 bg-destructive/10 px-3 py-2.5 text-sm text-destructive">
+            <div className="flex items-start gap-3 rounded-none border border-destructive/25 bg-destructive/10 px-3 py-2.5 text-sm text-destructive">
               <span className="flex-1">{error}</span>
               <button
                 onClick={() => setFormError("")}
@@ -298,7 +298,7 @@ function LoginPageContent() {
                 onChange={(e) => setEmailDraft(e.target.value)}
                 placeholder="you@example.com"
                 required
-                className="h-10 w-full rounded-lg border border-border bg-background px-3 text-sm text-foreground transition-colors placeholder:text-muted-foreground focus:border-primary focus:outline-none focus:ring-2 focus:ring-ring/50"
+                className="h-10 w-full rounded-none border border-[color:var(--hall-rule)] bg-[color:var(--hall-paper)] px-3 text-sm text-foreground transition-colors placeholder:text-muted-foreground focus:border-[color:var(--hall-ink)] focus:outline-none focus:ring-1 focus:ring-[color:var(--hall-ink)]/20"
               />
             </div>
 
@@ -320,7 +320,7 @@ function LoginPageContent() {
                   onChange={(e) => setPassword(e.target.value)}
                   placeholder="••••••••"
                   required
-                  className="h-10 w-full rounded-lg border border-border bg-background px-3 pr-10 text-sm text-foreground transition-colors placeholder:text-muted-foreground focus:border-primary focus:outline-none focus:ring-2 focus:ring-ring/50"
+                  className="h-10 w-full rounded-none border border-[color:var(--hall-rule)] bg-[color:var(--hall-paper)] px-3 pr-10 text-sm text-foreground transition-colors placeholder:text-muted-foreground focus:border-[color:var(--hall-ink)] focus:outline-none focus:ring-1 focus:ring-[color:var(--hall-ink)]/20"
                 />
                 <button
                   type="button"

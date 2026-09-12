@@ -102,7 +102,7 @@ export function OnboardingStep4({ data, updateData, onNext, onBack }: Props) {
   }
 
   return (
-    <div className="bg-card border border-border rounded-xl p-8">
+    <div className="border border-[color:var(--hall-rule)] bg-transparent p-6 sm:p-8">
       <div className="space-y-6">
         <div>
           <p className="mb-2 text-xs font-semibold uppercase tracking-[0.14em] text-muted-foreground">
@@ -117,7 +117,7 @@ export function OnboardingStep4({ data, updateData, onNext, onBack }: Props) {
         <div className="space-y-4">
           <Popover open={comboOpen} onOpenChange={setComboOpen}>
             <PopoverTrigger
-              className="flex h-10 w-full items-center justify-between rounded-lg border border-border bg-card px-3 text-sm transition-colors focus:outline-none focus:ring-2 focus:ring-ring/50 focus:border-primary"
+              className="flex h-10 w-full items-center justify-between rounded-none border border-[color:var(--hall-rule)] bg-[color:var(--hall-paper)] px-3 text-sm transition-colors focus:border-[color:var(--hall-ink)] focus:outline-none focus:ring-1 focus:ring-[color:var(--hall-ink)]/20"
             >
               <span className="text-muted-foreground">Search courses...</span>
               <ChevronsUpDown className="h-4 w-4 shrink-0 opacity-50" />
