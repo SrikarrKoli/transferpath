@@ -790,13 +790,35 @@ nextjs-portal,
 
 /* Classrooms — one continuous plan register */
 .hall-plan-register {
-  min-height: 24rem;
+  min-height: 12rem;
+}
+
+.hall-plan-toolbar {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 1rem;
+  margin-bottom: 0.85rem;
+  padding-bottom: 0.75rem;
+  border-bottom: 1px solid var(--hall-rule);
+}
+
+.hall-plan-toolbar .hall-plan-add {
+  flex-shrink: 0;
+  font-weight: 600;
 }
 
 .hall-plan-foot {
   margin-top: 1.25rem;
   padding-top: 0.85rem;
   border-top: 1px solid var(--hall-rule);
+}
+
+.deadline-empty-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.75rem 1.25rem;
+  margin-top: 0.85rem;
 }
 
 .hall-plan-columns {

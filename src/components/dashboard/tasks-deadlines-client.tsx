@@ -150,7 +150,8 @@ export function TasksDeadlinesClient({
     filter === "upcoming" || filter === "tasks"
   const showCompleted = filter === "completed"
   const showMissingSection =
-    filter === "missing_dates" || (filter === "upcoming" && data.missingDate)
+    filter === "missing_dates" ||
+    (filter === "upcoming" && (Boolean(data.missingDate) || data.upcomingDeadlines.length === 0))
 
   return (
     <div className="deadline-dossier tp-stagger-children">
@@ -240,8 +241,26 @@ export function TasksDeadlinesClient({
                 <div className="deadline-empty-record">
                   <span aria-hidden>00</span>
                   <div>
-                    <strong>No official dates are filed for this route.</strong>
-                    <p>The register remains open: use Missing dates to review what has not been verified, while your own work stays in the action ledger below.</p>
+                    <strong>No official dates on the ledger.</strong>
+                    <p>
+                      Nothing from the target school is dated in the next two years. Review what still
+                      needs a source, keep working the action ledger, or file coursework on the Registrar.
+                    </p>
+                    <div className="deadline-empty-actions">
+                      <button
+                        type="button"
+                        className="hall-ledger-link"
+                        onClick={() => setFilter("missing_dates")}
+                      >
+                        Review missing dates
+                      </button>
+                      <Link href="/dashboard/requirements" className="hall-ledger-link">
+                        Open Registrar
+                      </Link>
+                      <Link href="/dashboard/checklist" className="hall-ledger-link">
+                        Open Dorms tasks
+                      </Link>
+                    </div>
                   </div>
                 </div>
               }

@@ -292,6 +292,22 @@ export function PlanClient({
     <div className={hall ? undefined : "plan-table mx-auto max-w-6xl tp-stagger-children"}>
       {hall ? (
         <>
+          <div className="hall-plan-toolbar">
+            <p className="hall-caption">
+              Place courses on terms for your transfer entry. Requirements stay on the Registrar.
+            </p>
+            <button
+              type="button"
+              className="hall-ledger-link hall-plan-add"
+              onClick={() => {
+                setAddTerm("")
+                setAddError("")
+                setAddOpen(true)
+              }}
+            >
+              + Add a course
+            </button>
+          </div>
           <HallPlan
             blocks={hallBlocks}
             note="Terms are ordered to the entry date. Requirements stay on the Registrar; this page only places courses on a calendar."
@@ -306,7 +322,7 @@ export function PlanClient({
                 setAddOpen(true)
               }}
             >
-              Add a course
+              Add another course
             </button>
           </div>
           {listError ? (

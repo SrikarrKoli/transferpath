@@ -16,11 +16,11 @@ export default async function SourcesPage() {
   const data = await buildSourcesData(supabase)
 
   return (
-    <div className="min-h-screen bg-background">
+    <div className="hall-app min-h-screen bg-[color:var(--hall-paper)]">
       <Navbar />
       <main className="mx-auto max-w-6xl px-6 py-12 sm:py-16">
         <div className="max-w-3xl">
-          <h1 className="font-heading text-3xl font-semibold text-foreground">Sources</h1>
+          <h1 className="font-heading text-3xl font-semibold italic text-[color:var(--hall-ink)]">Sources</h1>
           <p className="mt-3 text-sm leading-relaxed text-muted-foreground">
             A public account of what {PRODUCT_NAME} knows, how it knows it, and how much of the
             picture is missing — stated as a number before anything else on the page.

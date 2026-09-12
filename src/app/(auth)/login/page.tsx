@@ -147,12 +147,12 @@ function LoginPageContent() {
   }
 
   return (
-    <div className="min-h-screen flex">
-      {/* Left Panel */}
-        <div className="relative hidden flex-col overflow-hidden border-r border-border bg-background tp-mesh-bg p-10 text-foreground lg:flex lg:w-[40%]">
+    <div className="hall-app flex min-h-screen">
+      {/* Left Panel — campus paper */}
+        <div className="relative hidden flex-col overflow-hidden border-r border-[color:var(--hall-rule)] bg-[color:var(--hall-paper)] p-10 text-[color:var(--hall-ink)] lg:flex lg:w-[40%]">
         {/* Logo */}
-        <div className="flex items-center gap-2 font-sans text-sm font-semibold tracking-tight text-foreground">
-          <span className="h-8 w-8 shrink-0 rounded-full bg-accent" aria-hidden />
+        <div className="flex items-center gap-2 font-sans text-sm font-semibold tracking-tight">
+          <span className="h-7 w-7 shrink-0 border border-[color:var(--hall-ink)] bg-[color:var(--hall-clay)]/25" aria-hidden />
           {PRODUCT_NAME}
         </div>
 
@@ -162,9 +162,9 @@ function LoginPageContent() {
             <h1 className="font-heading text-balance text-3xl font-semibold leading-snug tracking-tight text-foreground">
               {TAGLINE}
             </h1>
-            <p className="mt-3 text-sm leading-relaxed text-muted-foreground">
-              Plan milestones and deadlines in one place—built first for Texas transfer students, with a
-              voice that scales as we grow.
+            <p className="mt-3 text-sm leading-relaxed text-[color:var(--hall-ink)]/65">
+              Sign in to continue your community-college → four-year transfer campus — schools, courses,
+              deadlines, and essays in one place.
             </p>
           </div>
 
@@ -195,19 +195,24 @@ function LoginPageContent() {
       </div>
 
       {/* Right Panel */}
-      <div className="flex flex-1 items-center justify-center bg-background px-6 py-12">
+      <div className="flex flex-1 items-center justify-center bg-[color:var(--hall-paper)] px-6 py-12">
         <div className="w-full max-w-[400px] space-y-6">
           {/* Mobile Logo */}
-          <div className="flex items-center gap-2 font-sans text-sm font-semibold tracking-tight text-foreground lg:hidden">
-            <span className="h-8 w-8 shrink-0 rounded-full bg-accent" aria-hidden />
+          <div className="flex items-center gap-2 font-sans text-sm font-semibold tracking-tight lg:hidden">
+            <span className="h-7 w-7 shrink-0 border border-[color:var(--hall-ink)] bg-[color:var(--hall-clay)]/25" aria-hidden />
             {PRODUCT_NAME}
           </div>
 
           <div>
-            <h2 className="font-heading text-2xl font-semibold tracking-tight text-foreground">
+            <p className="text-xs font-semibold uppercase tracking-[0.14em] text-[color:var(--hall-ink)]/55">
+              Counselor gate
+            </p>
+            <h2 className="font-heading mt-2 text-2xl font-semibold tracking-tight text-[color:var(--hall-ink)]">
               Welcome back
             </h2>
-            <p className="mt-1 text-sm text-muted-foreground">Log in to your transfer dashboard</p>
+            <p className="mt-1 text-sm text-[color:var(--hall-ink)]/65">
+              Log in to open your transfer campus
+            </p>
           </div>
 
           {/* Google SSO */}
