@@ -11,7 +11,7 @@ import { safeCampusReturnPath } from "@/lib/campus-immersion"
 
 function MiniDashboardPreview() {
   return (
-    <div className="mx-auto w-full max-w-[320px] rounded-xl border border-border bg-popover p-4 shadow-glow-card">
+    <div className="mx-auto w-full max-w-[320px] border border-[color:var(--hall-rule)] bg-[color:var(--hall-paper)] p-4 shadow-none">
       <div className="mb-3 flex items-center gap-2">
         <div className="h-2 w-2 rounded-full bg-primary" />
         <div className="flex min-w-0 flex-col">
