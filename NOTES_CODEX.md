@@ -1,3 +1,10 @@
+# Codex pass — TransferPath immersive interiors, iteration 12d
+
+## Iteration 12d
+
+- Library: prompt settings inputs become hairline paper fields (no filled form chrome).
+- Screenshot note: do not raise/capture when another fullscreen app occludes the TransferPath window rect.
+
 # Codex pass — TransferPath immersive interiors, iteration 12c
 
 ## Iteration 12c

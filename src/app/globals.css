@@ -4730,3 +4730,24 @@ nextjs-portal,
     grid-column: 2;
   }
 }
+
+
+/* Library manuscript paper polish iter13 */
+.campus-entered[data-building="library"] .essay-prompt-settings .h-10,
+.campus-entered[data-building="library"] .essay-prompt-settings input,
+.campus-entered[data-building="library"] .essay-prompt-settings textarea {
+  border: 0;
+  border-bottom: 1px solid var(--hall-ink);
+  border-radius: 0;
+  background: transparent;
+  box-shadow: none;
+}
+
+.campus-entered[data-building="library"] .essay-prompt-settings label,
+.campus-entered[data-building="library"] .essay-prompt-block .tp-eyebrow {
+  font-family: var(--font-jetbrains-mono), ui-monospace, monospace;
+  font-size: 0.6rem;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--hall-stone);
+}
