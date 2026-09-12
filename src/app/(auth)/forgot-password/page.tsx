@@ -31,7 +31,7 @@ export default function ForgotPasswordPage() {
         <div className="border border-[color:var(--hall-rule)] bg-[color:var(--hall-paper)] p-8 shadow-none">
           {submitted ? (
             <div className="flex flex-col items-center gap-4 text-center">
-              <div className="flex h-12 w-12 items-center justify-center rounded-full bg-chart-2/15">
+              <div className="flex h-12 w-12 items-center justify-center rounded-none border border-[color:var(--hall-rule)] bg-[color:var(--hall-clay)]/15">
                 <Check className="h-6 w-6 text-chart-2" strokeWidth={1.5} />
               </div>
               <div>
@@ -43,7 +43,7 @@ export default function ForgotPasswordPage() {
               <button
                 type="button"
                 onClick={() => { setSubmitted(false); setEmail("") }}
-                className="mt-1 flex h-10 w-full items-center justify-center rounded-lg border border-border text-sm font-medium text-foreground transition-colors hover:bg-muted"
+                className="mt-1 flex h-10 w-full items-center justify-center rounded-none border border-[color:var(--hall-rule)] text-sm font-medium text-foreground transition-colors hover:bg-muted"
               >
                 Didn&apos;t get it? Resend email
               </button>
@@ -75,13 +75,13 @@ export default function ForgotPasswordPage() {
                     onChange={(e) => setEmail(e.target.value)}
                     placeholder="you@example.com"
                     required
-                    className="h-10 w-full rounded-lg border border-border bg-background px-3 text-sm text-foreground transition-colors placeholder:text-muted-foreground focus:border-primary focus:outline-none focus:ring-2 focus:ring-ring/50"
+                    className="h-10 w-full rounded-none border border-[color:var(--hall-rule)] bg-background px-3 text-sm text-foreground transition-colors placeholder:text-muted-foreground focus:border-primary focus:outline-none focus:ring-2 focus:ring-ring/50"
                   />
                 </div>
                 <button
                   type="submit"
                   disabled={loading}
-                  className="flex h-10 w-full items-center justify-center gap-2 rounded-lg bg-primary text-sm font-medium text-primary-foreground transition-colors hover:bg-primary/90 disabled:opacity-70"
+                  className="flex h-10 w-full items-center justify-center gap-2 rounded-none bg-[color:var(--hall-ink)] text-sm font-medium text-primary-foreground transition-colors hover:bg-primary/90 disabled:opacity-70"
                 >
                   {loading && <Loader2 className="h-4 w-4 animate-spin" strokeWidth={1.5} />}
                   {loading ? "Sending..." : "Send reset link"}

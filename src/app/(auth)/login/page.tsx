@@ -238,7 +238,7 @@ function LoginPageContent() {
                 setFormError(err instanceof Error ? err.message : "Could not start Google sign-in.")
               }
             }}
-            className="flex h-10 w-full items-center justify-center gap-3 rounded-lg border border-border bg-card text-sm font-medium text-foreground transition-colors hover:bg-muted disabled:cursor-not-allowed disabled:opacity-60"
+            className="flex h-10 w-full items-center justify-center gap-3 rounded-none border border-[color:var(--hall-rule)] bg-[color:var(--hall-paper)] text-sm font-medium text-foreground transition-colors hover:bg-[color:var(--hall-ink)]/[0.04] disabled:cursor-not-allowed disabled:opacity-60"
           >
             <svg width="18" height="18" viewBox="0 0 48 48" xmlns="http://www.w3.org/2000/svg">
               <path fill="#EA4335" d="M24 9.5c3.54 0 6.71 1.22 9.21 3.6l6.85-6.85C35.9 2.38 30.47 0 24 0 14.62 0 6.51 5.38 2.56 13.22l7.98 6.19C12.43 13.72 17.74 9.5 24 9.5z"/>
@@ -340,7 +340,7 @@ function LoginPageContent() {
             <button
               type="submit"
               disabled={loading}
-              className="flex h-10 w-full items-center justify-center gap-2 rounded-lg bg-primary text-sm font-medium text-primary-foreground transition-colors hover:bg-primary/90 disabled:opacity-70"
+              className="flex h-10 w-full items-center justify-center gap-2 rounded-none bg-[color:var(--hall-ink)] text-sm font-medium text-primary-foreground transition-colors hover:bg-primary/90 disabled:opacity-70"
             >
               {loading && <Loader2 className="h-4 w-4 animate-spin" strokeWidth={1.5} />}
               {loading ? "Logging in..." : "Log in"}
