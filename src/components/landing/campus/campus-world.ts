@@ -317,6 +317,8 @@ export function buildCampusWorld(root: THREE.Group, lib: KitLibrary) {
     [-2.95, 3.15, 32],
   ]
   trees.forEach(([x, z, seed]) => {
+    // L5: thin density — drop ~1/3 of kit trees so crowns can breathe
+    if (seed % 3 === 0) return
     if (occupied.has(keyOf(x, z))) return
     const t = toyTree(x, z, seed)
     city.add(t)

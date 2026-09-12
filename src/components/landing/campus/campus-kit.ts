@@ -282,28 +282,40 @@ export function hedge(w: number, h: number, d: number, x: number, z: number, mat
 }
 
 export function toyTree(x: number, z: number, seed: number) {
+  // L5: irregular multi-lobe canopies — less perfect-sphere toy look
   const g = new THREE.Group()
   const trunkMat = lambert(C.trunk)
   const greens = [C.canopyA, C.canopyB, C.canopyC, C.canopyD]
   const canopyMat = flat(greens[seed % greens.length])
-  const scale = 0.78 + (seed % 5) * 0.07
-  g.add(mesh(new THREE.CylinderGeometry(0.045, 0.065, 0.42, 8), trunkMat, 0, 0.21, 0, false))
-  if (seed % 7 === 0) {
-    const pine = mesh(new THREE.ConeGeometry(0.28, 0.72, 8), canopyMat, 0, 0.68, 0)
-    pine.scale.set(1, 1, 1)
+  const accent = flat(greens[(seed + 2) % greens.length])
+  const scale = 0.82 + (seed % 5) * 0.06
+  const trunkH = 0.38 + (seed % 3) * 0.04
+  g.add(mesh(new THREE.CylinderGeometry(0.038, 0.058, trunkH, 7), trunkMat, 0, trunkH / 2, 0, false))
+  if (seed % 8 === 0) {
+    const pine = mesh(new THREE.ConeGeometry(0.26, 0.78, 7), canopyMat, 0, trunkH + 0.28, 0)
+    pine.scale.set(1.05, 1, 0.92)
     g.add(pine)
+    g.add(mesh(new THREE.ConeGeometry(0.18, 0.42, 6), accent, 0.04, trunkH + 0.55, -0.03))
   } else {
-    const canopy = mesh(new THREE.SphereGeometry(0.3, 11, 9), canopyMat, 0, 0.58, 0)
-    canopy.scale.set(1.05, 0.82, 1.0)
-    g.add(canopy)
-    if (seed % 2 === 0) {
-      g.add(mesh(new THREE.SphereGeometry(0.2, 10, 8), canopyMat, 0.12, 0.72, -0.05))
+    const y0 = trunkH + 0.12
+    const lobes: [number, number, number, number, number][] = [
+      [0.28, 0, y0, 0, 1],
+      [0.2, 0.14, y0 + 0.14, -0.06, seed % 2],
+      [0.18, -0.12, y0 + 0.1, 0.1, (seed + 1) % 2],
+      [0.16, 0.06, y0 + 0.22, 0.08, seed % 3 === 0 ? 1 : 0],
+    ]
+    for (const [r, ox, oy, oz, useAccent] of lobes) {
+      if (!useAccent && r < 0.17 && seed % 3 === 1) continue
+      const mat = useAccent ? accent : canopyMat
+      const lobe = mesh(new THREE.SphereGeometry(r, 9, 7), mat, ox, oy, oz)
+      lobe.scale.set(1.05 + (seed % 3) * 0.04, 0.72 + (seed % 2) * 0.08, 0.95)
+      g.add(lobe)
     }
   }
   g.scale.setScalar(scale)
   g.position.set(x, 0, z)
-  g.rotation.y = seed * 0.4
-  blobShadow(g, 0.38, 0.32, 0.28)
+  g.rotation.y = seed * 0.37
+  blobShadow(g, 0.34, 0.28, 0.22)
   return g
 }
 
