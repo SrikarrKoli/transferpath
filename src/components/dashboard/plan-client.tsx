@@ -426,12 +426,12 @@ export function PlanClient({
       )}
 
       <Dialog open={addOpen} onOpenChange={setAddOpen}>
-        <DialogContent className="sm:max-w-md">
+        <DialogContent className="rounded-none border border-[color:var(--hall-rule)] bg-[color:var(--hall-paper)] sm:max-w-md">
           <DialogHeader>
-            <DialogTitle>Add course</DialogTitle>
+            <DialogTitle>Add a course to the Classroom</DialogTitle>
             <DialogDescription>
-              Choose from the catalog and assign a term. Use Later / Not scheduled for courses you
-              have not placed yet.
+              Pick from the catalog and place it on a term. Use Later / Not scheduled when the term
+              is still open.
             </DialogDescription>
           </DialogHeader>
           <div className="space-y-3">
@@ -443,7 +443,7 @@ export function PlanClient({
                 id="plan-add-course"
                 value={addName}
                 onChange={(e) => setAddName(e.target.value)}
-                className="h-10 w-full rounded-xl border border-border bg-card px-3 text-sm"
+                className="h-10 w-full rounded-none border border-[color:var(--hall-rule)] bg-[color:var(--hall-paper)] px-3 text-sm"
               >
                 <option value="">Select a course…</option>
                 {CANONICAL_COURSE_CATEGORIES.map((g) => (
@@ -467,7 +467,7 @@ export function PlanClient({
                 onChange={(e) =>
                   setAddStatus(e.target.value as "planned" | "in_progress" | "completed")
                 }
-                className="h-10 w-full rounded-xl border border-border bg-card px-3 text-sm"
+                className="h-10 w-full rounded-none border border-[color:var(--hall-rule)] bg-[color:var(--hall-paper)] px-3 text-sm"
               >
                 <option value="planned">Planned</option>
                 <option value="in_progress">In progress</option>
@@ -482,7 +482,7 @@ export function PlanClient({
                 id="plan-add-term"
                 value={addTerm}
                 onChange={(e) => setAddTerm(e.target.value)}
-                className="h-10 w-full rounded-xl border border-border bg-card px-3 text-sm"
+                className="h-10 w-full rounded-none border border-[color:var(--hall-rule)] bg-[color:var(--hall-paper)] px-3 text-sm"
               >
                 {termOptions.map((o) => (
                   <option key={o.value || "u"} value={o.value}>
