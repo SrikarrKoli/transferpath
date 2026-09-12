@@ -19,8 +19,14 @@ export function OnboardingStep1({ data, updateData, onNext }: Props) {
     <div className="bg-card border border-border rounded-xl p-8">
       <div className="space-y-6">
         <div>
-          <h1 className="text-2xl font-medium text-foreground mb-2">Where are you now?</h1>
-          <p className="text-muted-foreground">We&apos;ll use this to match your coursework.</p>
+          <p className="mb-2 text-xs font-semibold uppercase tracking-[0.14em] text-muted-foreground">
+            Transfer setup · Step 1 of 5
+          </p>
+          <h1 className="text-2xl font-medium text-foreground mb-2">Where are you transferring from?</h1>
+          <p className="text-muted-foreground">
+            TransferPath maps your path to a four-year school — deadlines, courses, requirements, and essays.
+            Start with your current college so we can match coursework.
+          </p>
         </div>
 
         <div className="space-y-4">
