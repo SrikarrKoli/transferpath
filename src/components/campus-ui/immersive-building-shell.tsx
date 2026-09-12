@@ -16,6 +16,7 @@ export function ImmersiveBuildingShell({
 }) {
   const building = campusBuilding(buildingId)
 
+  const isCounselorOnboarding = buildingId === "counselor"
   return (
     <HallProvider buildingId={buildingId}>
       <article className="campus-entered campus-enter" data-building={buildingId}>
@@ -27,6 +28,12 @@ export function ImmersiveBuildingShell({
             <CampusMiniMap here={buildingId} />
           </div>
           <h1 className="hall-name">{building.name}</h1>
+          {isCounselorOnboarding ? (
+            <p className="mt-2 max-w-xl text-sm leading-relaxed text-[color:var(--campus-ink)]/65">
+              Start here to set up your transfer path — current school, target universities, courses,
+              and timeline. Built for transfer students planning a move to a four-year.
+            </p>
+          ) : null}
         </header>
         <div className="hall-body">{children}</div>
         <footer className="hall-folio">{building.name}</footer>
