@@ -22,19 +22,19 @@ function MiniDashboardPreview() {
       <div className="space-y-2">
         <div className="flex items-center gap-2">
           <span className="w-16 shrink-0 text-micro text-muted-foreground">Spring 2026</span>
-          <div className="flex h-6 flex-1 items-center rounded border border-chart-2/30 bg-chart-2/20 px-2">
+          <div className="flex h-6 flex-1 items-center rounded-none border border-chart-2/30 bg-chart-2/20 px-2">
             <span className="text-micro font-medium text-chart-2">4 courses · 13 cr</span>
           </div>
         </div>
         <div className="flex items-center gap-2">
           <span className="w-16 shrink-0 text-micro text-muted-foreground">Fall 2026</span>
-          <div className="flex h-6 flex-1 items-center rounded border border-chart-3/30 bg-chart-3/20 px-2">
+          <div className="flex h-6 flex-1 items-center rounded-none border border-chart-3/30 bg-chart-3/20 px-2">
             <span className="text-micro font-medium text-chart-3">5 courses · 15 cr</span>
           </div>
         </div>
         <div className="flex items-center gap-2">
           <span className="w-16 shrink-0 text-micro text-muted-foreground">Spring 2027</span>
-          <div className="flex h-6 flex-1 items-center rounded border border-primary/30 bg-primary/15 px-2">
+          <div className="flex h-6 flex-1 items-center rounded-none border border-[color:var(--hall-rule)] bg-primary/15 px-2">
             <span className="text-micro font-medium text-primary">Apply · Deadline Aug 15</span>
           </div>
         </div>
@@ -340,7 +340,7 @@ function LoginPageContent() {
             <button
               type="submit"
               disabled={loading}
-              className="flex h-10 w-full items-center justify-center gap-2 rounded-none bg-[color:var(--hall-ink)] text-sm font-medium text-primary-foreground transition-colors hover:bg-[color:var(--hall-ink)]/90 disabled:opacity-70"
+              className="flex h-10 w-full items-center justify-center gap-2 rounded-none bg-[color:var(--hall-ink)] text-sm font-medium text-[color:var(--hall-paper)] transition-colors hover:bg-[color:var(--hall-ink)]/90 disabled:opacity-70"
             >
               {loading && <Loader2 className="h-4 w-4 animate-spin" strokeWidth={1.5} />}
               {loading ? "Logging in..." : "Log in"}
