@@ -194,7 +194,7 @@ export function SettingsClient({
 
     setMessage({
       type: "success",
-      text: "Settings saved. Your dashboard and sidebar will update automatically.",
+      text: "Saved. Your campus halls will update on the next view.",
     })
     router.refresh()
   }
@@ -348,7 +348,7 @@ export function SettingsClient({
         </nav>
 
         <div className="flex-1 min-w-0">
-          <div className="rounded-xl border border-border bg-card p-6">
+          <div className="border border-[color:var(--hall-rule)] bg-transparent p-5">
             {!profile && (
               <p className="text-sm text-destructive mb-4">
                 Profile missing — your account has no saved profile yet, so settings can&apos;t be
@@ -377,7 +377,7 @@ export function SettingsClient({
                       value={fullName}
                       onChange={(e) => setFullName(e.target.value)}
                       placeholder="Your name"
-                      className="w-full h-9 rounded-xl border border-border bg-card px-3 text-sm text-foreground placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-ring/50 focus:border-primary transition-colors"
+                      className="h-9 w-full rounded-none border border-[color:var(--hall-rule)] bg-[color:var(--hall-paper)] px-3 text-sm text-foreground transition-colors placeholder:text-muted-foreground focus:border-[color:var(--hall-ink)] focus:outline-none focus:ring-1 focus:ring-[color:var(--hall-ink)]/20"
                     />
                   </div>
                   <div className="space-y-1.5">
@@ -465,7 +465,7 @@ export function SettingsClient({
                       value={targetMajor}
                       onChange={(e) => setTargetMajor(e.target.value)}
                       placeholder="e.g. Computer Science"
-                      className="w-full h-9 rounded-xl border border-border bg-card px-3 text-sm text-foreground placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-ring/50 focus:border-primary transition-colors"
+                      className="h-9 w-full rounded-none border border-[color:var(--hall-rule)] bg-[color:var(--hall-paper)] px-3 text-sm text-foreground transition-colors placeholder:text-muted-foreground focus:border-[color:var(--hall-ink)] focus:outline-none focus:ring-1 focus:ring-[color:var(--hall-ink)]/20"
                     />
                   </div>
                   <div className="space-y-1.5">
@@ -516,7 +516,7 @@ export function SettingsClient({
                       value={expectedTerm}
                       onChange={(e) => setExpectedTerm(e.target.value)}
                       placeholder="Custom term if yours isn’t listed (saved as typed)"
-                      className="w-full h-9 rounded-xl border border-border bg-card px-3 text-sm text-foreground placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-ring/50 focus:border-primary transition-colors"
+                      className="h-9 w-full rounded-none border border-[color:var(--hall-rule)] bg-[color:var(--hall-paper)] px-3 text-sm text-foreground transition-colors placeholder:text-muted-foreground focus:border-[color:var(--hall-ink)] focus:outline-none focus:ring-1 focus:ring-[color:var(--hall-ink)]/20"
                     />
                     <p className="text-xs text-muted-foreground">
                       Quick picks roll forward with the calendar. Use the text field for a label that
@@ -537,7 +537,7 @@ export function SettingsClient({
                       value={gpaInput}
                       onChange={(e) => setGpaInput(e.target.value)}
                       placeholder="0.00 – 4.00"
-                      className="w-full h-9 rounded-xl border border-border bg-card px-3 text-sm text-foreground placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-ring/50 focus:border-primary transition-colors"
+                      className="h-9 w-full rounded-none border border-[color:var(--hall-rule)] bg-[color:var(--hall-paper)] px-3 text-sm text-foreground transition-colors placeholder:text-muted-foreground focus:border-[color:var(--hall-ink)] focus:outline-none focus:ring-1 focus:ring-[color:var(--hall-ink)]/20"
                     />
                   </div>
                   <div className="space-y-1.5">
@@ -552,14 +552,14 @@ export function SettingsClient({
                       value={creditsInput}
                       onChange={(e) => setCreditsInput(e.target.value)}
                       placeholder="Total transferable credits"
-                      className="w-full h-9 rounded-xl border border-border bg-card px-3 text-sm text-foreground placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-ring/50 focus:border-primary transition-colors"
+                      className="h-9 w-full rounded-none border border-[color:var(--hall-rule)] bg-[color:var(--hall-paper)] px-3 text-sm text-foreground transition-colors placeholder:text-muted-foreground focus:border-[color:var(--hall-ink)] focus:outline-none focus:ring-1 focus:ring-[color:var(--hall-ink)]/20"
                     />
                   </div>
                 </div>
 
                 <Divider />
 
-                <div className="rounded-xl border border-border bg-muted/60 p-4">
+                <div className="border border-[color:var(--hall-rule)] bg-[color:var(--hall-ink)]/[0.03] p-4">
                   <p className="text-sm font-medium text-foreground mb-1">Courses</p>
                   <p className="text-sm text-muted-foreground mb-3">
                     Courses are managed from onboarding and your plan.
@@ -650,7 +650,7 @@ export function SettingsClient({
                   subtitle="Manage how you access your account."
                 />
 
-                <div className="mb-6 rounded-xl border border-border bg-muted/60 p-4">
+                <div className="mb-6 border border-[color:var(--hall-rule)] bg-[color:var(--hall-ink)]/[0.03] p-4">
                   <p className="text-sm font-medium text-foreground mb-1">Signed in as</p>
                   <p className="text-sm text-muted-foreground break-all">{auth || "—"}</p>
                 </div>
@@ -675,7 +675,7 @@ export function SettingsClient({
                           autoComplete="new-password"
                           value={newPassword}
                           onChange={(e) => setNewPassword(e.target.value)}
-                          className="w-full h-9 rounded-xl border border-border bg-card px-3 text-sm"
+                          className="h-9 w-full rounded-none border border-[color:var(--hall-rule)] bg-[color:var(--hall-paper)] px-3 text-sm"
                         />
                       </div>
                       <div className="space-y-1.5">
@@ -691,7 +691,7 @@ export function SettingsClient({
                           autoComplete="new-password"
                           value={confirmPassword}
                           onChange={(e) => setConfirmPassword(e.target.value)}
-                          className="w-full h-9 rounded-xl border border-border bg-card px-3 text-sm"
+                          className="h-9 w-full rounded-none border border-[color:var(--hall-rule)] bg-[color:var(--hall-paper)] px-3 text-sm"
                         />
                       </div>
                       <div className="flex flex-wrap items-center gap-3">
@@ -719,7 +719,7 @@ export function SettingsClient({
                     )}
                   </>
                 ) : oauthDescription ? (
-                  <div className="rounded-xl border border-border bg-card p-4">
+                  <div className="border border-[color:var(--hall-rule)] bg-transparent p-4">
                     <p className="text-sm text-foreground">
                       You signed in with {oauthDescription}. Password changes don’t apply to that
                       login — manage your account through your provider’s security settings.
@@ -739,7 +739,7 @@ export function SettingsClient({
                 <Divider />
 
                 <p className="text-sm text-muted-foreground mb-3">
-                  End your session on this device. You can also sign out from the sidebar.
+                  End your session on this device. You can sign back in anytime from the Counselor gate.
                 </p>
                 <Button
                   type="button"
