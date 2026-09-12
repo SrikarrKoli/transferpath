@@ -72,7 +72,7 @@ export function HallDeadlines({
                     Nothing from the target school is dated in the next two years. Review what still
                     needs a source, keep working tasks on Dorms, or log coursework on the Registrar.
                   </p>
-                  <div className="deadline-empty-actions">
+                  <div className="deadline-empty-actions mt-3 flex flex-wrap gap-x-4 gap-y-2">
                     <button
                       type="button"
                       className="hall-ledger-link"
