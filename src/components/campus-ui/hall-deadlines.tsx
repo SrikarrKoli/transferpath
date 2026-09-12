@@ -59,8 +59,21 @@ export function HallDeadlines({
         {showDeadlines ? (
           <ol className="hall-dates">
             {data.upcomingDeadlines.length === 0 ? (
-              <li className="hall-date-row" style={{ gridTemplateColumns: "1fr" }}>
-                <p className="hall-date-meta">No institution dates in the next two years.</p>
+              <li className="hall-date-row hall-date-empty">
+                <div>
+                  <span className="hall-date-big">00</span>
+                  <span className="hall-date-year">Unfiled</span>
+                </div>
+                <div>
+                  <p className="hall-date-title">No official dates on the ledger</p>
+                  <p className="hall-date-meta">
+                    Nothing from the target school is dated in the next two years. Open Missing
+                    to see what still needs a source, or file a date when the school publishes one.
+                  </p>
+                </div>
+                <button type="button" className="hall-ledger-link" onClick={() => onFilter("missing_dates")}>
+                  Missing
+                </button>
               </li>
             ) : (
               data.upcomingDeadlines.map((row) => <DeadlineLine key={row.id} row={row} />)

@@ -1,3 +1,27 @@
+# Codex pass — TransferPath immersive interiors, iteration 10
+
+## Iteration 10
+
+- Confirmed the sticky "Application tasks / Open record" underlay was not in the hall DOM on a fresh Clock Tower capture; hardened `.readiness-score-sheet` to `display: none !important` except Rec Center (`data-building="gym"`).
+- Classrooms plan is one continuous ruled register again (`TERM / COURSE / STATUS`) instead of three equal term posters.
+- Clock Tower empty official-dates state is an authored `00 · Unfiled` ledger row with a Missing jump, not orphan copy.
+- Campus locator quieted: small ink ticks + a square here-mark; no clay filled constellation dots.
+- Landing 3D campus left untouched. PR still open, not merged.
+
+## Iteration 10 verification
+
+- `npx tsc --noEmit`: pass.
+- Authenticated screenshots: `~/Documents/Codex/2026-09-11/transferpath-immersive-interiors/outputs/shots/{plan,deadlines,essay}-iter10.png`.
+
+## Iteration 10 screenshot URLs
+
+Hard-refresh while signed in:
+
+1. Classrooms — `http://127.0.0.1:3000/dashboard/plan`
+2. Clock Tower — `http://127.0.0.1:3000/dashboard/deadlines`
+3. Library — `http://127.0.0.1:3000/dashboard/essay`
+4. Rec Center — `http://127.0.0.1:3000/dashboard/competitiveness`
+
 # Codex pass — TransferPath immersive interiors, iteration 9
 
 ## Iteration 9

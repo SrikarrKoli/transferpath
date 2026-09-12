@@ -781,32 +781,78 @@ nextjs-portal,
   line-height: 0.9;
 }
 
-/* Classrooms — term posters */
-.hall-terms {
-  display: grid;
-  grid-template-columns: 1fr;
-  gap: 2.4rem;
+/* Classrooms — one continuous plan register */
+.hall-plan-register {
   min-height: 24rem;
 }
 
-@media (min-width: 800px) {
-  .hall-terms {
-    grid-template-columns: repeat(3, minmax(0, 1fr));
-    gap: 0 2.4rem;
-  }
+.hall-plan-columns {
+  display: grid;
+  grid-template-columns: 11rem minmax(0, 1fr) 7.5rem;
+  gap: 1rem;
+  padding: 0.55rem 0;
+  border-bottom: 1px solid var(--hall-ink);
+  color: var(--hall-stone);
+  font-family: var(--font-jetbrains-mono), ui-monospace, monospace;
+  font-size: 0.6rem;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+}
+
+.hall-terms {
+  display: flex;
+  flex-direction: column;
+  gap: 0;
+}
+
+.hall-term-band {
+  border-bottom: 1px solid var(--hall-rule);
+}
+
+.hall-term-band-head {
+  display: grid;
+  grid-template-columns: 11rem minmax(0, 1fr) 7.5rem;
+  gap: 1rem;
+  align-items: end;
+  padding: 1.15rem 0 0.55rem;
 }
 
 .hall-term-name {
-  margin: 0 0 1.1rem;
-  padding-bottom: 0.65rem;
-  border-bottom: 1px solid var(--hall-ink);
-  font-size: clamp(1.7rem, 2.8vw, 2.35rem);
-  line-height: 0.95;
+  margin: 0;
+  padding: 0;
+  border: 0;
+  font-size: clamp(1.15rem, 1.8vw, 1.45rem);
+  line-height: 1.05;
+}
+
+.hall-term-band-head .hall-caption {
+  grid-column: 2 / -1;
+  margin: 0;
 }
 
 .hall-course {
-  padding: 1rem 0 1.05rem;
-  border-bottom: 1px solid var(--hall-rule);
+  display: grid;
+  grid-template-columns: 11rem minmax(0, 1fr) 7.5rem;
+  gap: 1rem;
+  align-items: baseline;
+  padding: 0.85rem 0;
+  border-top: 1px solid color-mix(in oklab, var(--hall-ink) 18%, transparent);
+}
+
+.hall-course-main {
+  grid-column: 2;
+  min-width: 0;
+}
+
+.hall-course-status {
+  grid-column: 3;
+  margin: 0;
+  text-align: right;
+}
+
+.hall-course-empty .hall-course-main,
+.hall-course-empty .hall-course-title {
+  grid-column: 2 / -1;
 }
 
 .hall-course-code {
@@ -816,9 +862,32 @@ nextjs-portal,
 }
 
 .hall-course-title {
-  margin-top: 0.2rem;
-  font-size: 1.12rem;
+  margin-top: 0.15rem;
+  font-size: 1.05rem;
   letter-spacing: -0.015em;
+}
+
+@media (max-width: 799px) {
+  .hall-plan-columns {
+    display: none;
+  }
+
+  .hall-term-band-head,
+  .hall-course {
+    grid-template-columns: minmax(0, 1fr) auto;
+  }
+
+  .hall-course-main {
+    grid-column: 1;
+  }
+
+  .hall-course-status {
+    grid-column: 2;
+  }
+
+  .hall-term-band-head .hall-caption {
+    grid-column: 1 / -1;
+  }
 }
 
 /* Registrar — matrix */
@@ -3592,13 +3661,13 @@ nextjs-portal,
   }
 }
 
-/* Iteration 7 — hard route isolation and denser single-artifact registers. */
+/* Iteration 7/10 — readiness instrument only inside Rec Center. */
 .readiness-score-sheet {
-  display: none;
+  display: none !important;
 }
 
 .campus-entered[data-building="gym"] .readiness-score-sheet {
-  display: block;
+  display: block !important;
 }
 
 .union-route-line {
