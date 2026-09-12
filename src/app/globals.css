@@ -1014,7 +1014,17 @@ nextjs-portal,
 }
 
 .hall-dorm-columns {
-  grid-template-columns: 1.15rem minmax(0, 1fr) 7rem;
+  grid-template-columns: 1.15rem minmax(0, 1fr) 7.5rem;
+}
+
+.hall-dorm-columns > span:last-child,
+.hall-matrix-columns > span:last-child {
+  text-align: right;
+}
+
+.hall-dorm-columns > span + span,
+.hall-matrix-columns > span + span {
+  padding-left: 0.25rem;
 }
 
 .hall-matrix-columns {

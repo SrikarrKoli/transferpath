@@ -28,7 +28,7 @@ export function HallChecklist({
         <p className="hall-date-meta mt-2">filed on the dorms list</p>
 
         <div className="hall-dorm-columns" aria-hidden>
-          <span></span>
+          <span aria-hidden="true" />
           <span>Task</span>
           <span>Standing</span>
         </div>

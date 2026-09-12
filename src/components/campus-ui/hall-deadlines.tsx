@@ -110,20 +110,29 @@ export function HallDeadlines({
         ) : null}
 
         {showMissing && data.missingDate ? (
-          <div className="mt-8">
-            <p className="hall-date-title">{data.missingDate.headline}</p>
-            <p className="hall-date-meta mt-2">{data.missingDate.provenanceWhat}</p>
-            <div className="mt-3 flex flex-wrap gap-4">
-              {data.missingDate.officialUrl ? (
-                <a href={data.missingDate.officialUrl} className="hall-source" target="_blank" rel="noreferrer">
-                  Official page
-                </a>
-              ) : null}
-              <Link href="/sources" className="hall-ledger-link">
-                Why this is missing
-              </Link>
-            </div>
-          </div>
+          <ol className="hall-dates mt-2">
+            <li className="hall-date-row hall-date-empty">
+              <div>
+                <span className="hall-date-big">—</span>
+                <span className="hall-date-year">Needed</span>
+              </div>
+              <div>
+                <p className="hall-date-title">{data.missingDate.headline}</p>
+                <p className="hall-date-meta">{data.missingDate.provenanceWhat}</p>
+                <div className="mt-3 flex flex-wrap gap-4">
+                  {data.missingDate.officialUrl ? (
+                    <a href={data.missingDate.officialUrl} className="hall-source" target="_blank" rel="noreferrer">
+                      Official page
+                    </a>
+                  ) : null}
+                  <Link href="/sources" className="hall-ledger-link">
+                    Why this is missing
+                  </Link>
+                </div>
+              </div>
+              <span className="hall-urgent text-[0.8rem]">Unfiled</span>
+            </li>
+          </ol>
         ) : null}
       </div>
 
