@@ -4807,3 +4807,22 @@ nextjs-portal,
 .hall-folio {
   margin-top: 2.5rem;
 }
+
+
+/* Iter13 pre-codex library index + readiness density */
+.campus-entered[data-building="library"] .library-index-heading {
+  border-bottom: 1px solid var(--hall-ink);
+}
+
+.campus-entered[data-building="library"] .library-manuscript .library-prompt-tab.is-active {
+  box-shadow: inset 0 -2px 0 var(--hall-ink);
+}
+
+.campus-entered[data-building="gym"] .readiness-register li {
+  min-height: 4.25rem;
+  padding-block: 0.95rem;
+}
+
+.campus-entered[data-building="gym"] .readiness-column-headings {
+  font-size: 0.58rem;
+}
