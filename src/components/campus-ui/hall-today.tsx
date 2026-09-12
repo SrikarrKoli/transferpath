@@ -40,7 +40,14 @@ export function HallToday({ data, userId }: { data: OverviewData; userId: string
                   </span>
                 ) : null}
               </p>
-            ) : null}
+            ) : (
+              <p className="hall-hero-date">
+                Now
+                <span className="mt-2 block text-[0.28em] font-normal tracking-normal text-[color:var(--hall-stone)]">
+                  Next on the register
+                </span>
+              </p>
+            )}
             <h2 className="hall-hero-title">{next.title}</h2>
             {next.dueDetail ? <p className="hall-urgent mt-3 text-[0.95rem]">{next.dueDetail}</p> : null}
             <div className="mt-6 flex flex-wrap items-baseline gap-4">
@@ -53,7 +60,15 @@ export function HallToday({ data, userId }: { data: OverviewData; userId: string
             </div>
           </div>
         ) : (
-          <p className="hall-hero-title">Nothing due on the register today.</p>
+          <div>
+            <p className="hall-hero-date">
+              Clear
+              <span className="mt-2 block text-[0.28em] font-normal tracking-normal text-[color:var(--hall-stone)]">
+                Today
+              </span>
+            </p>
+            <p className="hall-hero-title">Nothing due on the register today.</p>
+          </div>
         )}
 
         {data.comingUp.length > 0 ? (

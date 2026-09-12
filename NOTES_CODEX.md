@@ -1,3 +1,11 @@
+# Codex pass — TransferPath immersive interiors, iteration 12c
+
+## Iteration 12c
+
+- Union: always show a large ledger mark (`Now` / `Clear`) above the next-action title when no calendar date is filed.
+- Rec Center: quieter training-route line and heading scale.
+- Codex Iter13 waiter scheduled for 9:50 PM local unlock.
+
 # Codex pass — TransferPath immersive interiors, iteration 12
 
 ## Iteration 12

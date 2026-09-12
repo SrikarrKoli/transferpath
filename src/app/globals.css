@@ -3751,6 +3751,20 @@ nextjs-portal,
   display: block !important;
 }
 
+.campus-entered[data-building="gym"] .readiness-route-line {
+  padding-block: 0.55rem;
+  font-size: 0.72rem;
+}
+
+.campus-entered[data-building="gym"] .readiness-sheet-heading h1 {
+  max-width: 16ch;
+}
+
+.campus-entered[data-building="gym"] .tp-eyebrow {
+  letter-spacing: 0.12em;
+}
+
+
 .union-route-line {
   border-top: 1px solid #1a2332;
 }
