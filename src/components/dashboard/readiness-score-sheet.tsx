@@ -58,15 +58,18 @@ export function ReadinessScoreSheet({
       </header>
 
       {weakest.length > 0 ? (
-        <div className="hall-plan-toolbar readiness-raise">
+        <div className="readiness-raise">
           <p className="hall-caption">Raise the reading — start with the thinnest measures</p>
-          <div className="flex flex-wrap gap-x-4 gap-y-2">
+          <ul className="readiness-raise-list">
             {weakest.map((row) => (
-              <Link key={row.key} href={row.href} className="hall-ledger-link hall-plan-add">
-                {row.label} · {row.value}%
-              </Link>
+              <li key={row.key}>
+                <Link href={row.href} className="hall-ledger-link">
+                  {row.label}
+                  <span className="readiness-raise-pct"> · {row.value}%</span>
+                </Link>
+              </li>
             ))}
-          </div>
+          </ul>
         </div>
       ) : (
         <p className="hall-caption mt-4">Every measure on this sheet is fully recorded.</p>

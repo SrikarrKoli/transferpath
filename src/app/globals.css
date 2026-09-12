@@ -3835,7 +3835,27 @@ nextjs-portal,
 
 .readiness-raise {
   margin-top: 1rem;
-  margin-bottom: 1rem;
+  margin-bottom: 1.25rem;
+  padding-bottom: 0.85rem;
+  border-bottom: 1px solid var(--hall-rule);
+}
+
+.readiness-raise-list {
+  display: flex;
+  flex-direction: column;
+  gap: 0.45rem;
+  margin-top: 0.65rem;
+  padding: 0;
+  list-style: none;
+}
+
+.readiness-raise-list .hall-ledger-link {
+  font-weight: 600;
+}
+
+.readiness-raise-pct {
+  font-weight: 500;
+  color: var(--hall-clay);
 }
 
 .campus-entered[data-building="gym"] .readiness-score-sheet {
