@@ -1,4 +1,39 @@
-# Codex pass — TransferPath immersive interiors, iteration 8
+# Codex pass — TransferPath immersive interiors, iteration 9
+
+## Iteration 9
+
+- Immersive desktop navigation is now a narrow ink hall-directory spine instead of the full SaaS sidebar. It keeps all seven rooms directly reachable while removing the repeated pathway meter, generic nav grouping, and empty Work Rooms deadline card from the room frame.
+- The shared arrival band is shorter and quieter: `Campus` return sits in the ink rail, the repeated `NOW ENTERING` copy is gone, and the right edge now carries a hall-specific material notation beside the locator map.
+- Each room has its own paper identity without adding cards: Clock Tower double-bound ledger head, Library ruled manuscript binding, Classrooms plan-table grid/spine, Registrar filed stamp and dossier edge, Rec Center calibrated score instrument, Dorms checkbox ledger, and Student Union daily-issue rules.
+- Register display titles now use the editorial serif against mono/tabular metadata, with stronger double-rule cadence at artifact heads and preserved dense rows below.
+- Library Coach, strength signals, and reference notes now live inside the manuscript writing spread as ruled marginalia on the same sheet, rather than as a floating adjacent panel.
+- Student Union readiness copy now names weights as maximum point contributions. Credit totals above the 30-credit planning target read `Target met · n recorded`, so `34 of 30` no longer appears beside an ambiguous `25%`.
+- Clock Tower empty official-date registers now render an authored `00` record explaining that no official dates are filed and directing the reader to Missing dates; the prior generic empty message was not rendering because null children were counted as content.
+- Restored the missing `safeCampusReturnPath` export already referenced by the committed login page, restricted to local dashboard/onboarding paths, so HEAD can type-check and build.
+- Landing and all landing 3D campus craft remain untouched.
+
+## Iteration 9 verification
+
+- Focused ESLint across every touched TypeScript/TSX file: pass with zero warnings.
+- `npx tsc --noEmit`: pass.
+- `npm run build`: pass after allowing the configured Google Font fetches. The only notice is the pre-existing Next.js `middleware` → `proxy` deprecation.
+- Browser capture could not reach the authenticated halls: the existing Chrome surface was not approved for computer use, and a fresh Playwright context redirects to login without the user session. Use the URLs below for the final authenticated visual pass.
+
+## Iteration 9 screenshot URLs
+
+Capture at 1440 × 1000 with the populated Dallas College → The University of Texas at Austin · Finance · Spring 2027 profile:
+
+1. Student Union — `http://localhost:3000/dashboard`
+2. Clock Tower — `http://localhost:3000/dashboard/deadlines`
+3. Classrooms — `http://localhost:3000/dashboard/plan`
+4. Library — `http://localhost:3000/dashboard/essay`
+5. Registrar — `http://localhost:3000/dashboard/requirements`
+6. Recreation Center — `http://localhost:3000/dashboard/competitiveness`
+7. Dorms — `http://localhost:3000/dashboard/checklist`
+
+Mobile spot-check at 390 × 844, prioritizing Library marginalia stacking, the compact hall header, and Classrooms course controls.
+
+# Prior pass — TransferPath immersive interiors, iteration 8
 
 ## Iteration 8
 

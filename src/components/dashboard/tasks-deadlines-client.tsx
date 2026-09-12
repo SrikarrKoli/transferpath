@@ -235,7 +235,16 @@ export function TasksDeadlinesClient({
               title="Deadline ledger"
               subtitle="Official dates · recorded in calendar order"
               trailing={`${data.upcomingDeadlines.length} row${data.upcomingDeadlines.length === 1 ? "" : "s"}`}
-              empty="No upcoming deadlines in the next two years."
+              isEmpty={data.upcomingDeadlines.length === 0}
+              empty={
+                <div className="deadline-empty-record">
+                  <span aria-hidden>00</span>
+                  <div>
+                    <strong>No official dates are filed for this route.</strong>
+                    <p>The register remains open: use Missing dates to review what has not been verified, while your own work stays in the action ledger below.</p>
+                  </div>
+                </div>
+              }
               dominant
             >
               {data.upcomingDeadlines.length > 0 ? (
@@ -257,6 +266,7 @@ export function TasksDeadlinesClient({
               title="Action ledger"
               subtitle="Student-owned actions · mark completion here"
               trailing={`${data.openTasks.length} open`}
+              isEmpty={data.openTasks.length === 0}
               empty="No open application or preparation tasks."
             >
               {data.openTasks.map((row, i) => (
@@ -283,6 +293,7 @@ export function TasksDeadlinesClient({
             <Section
               title="Completed"
               trailing={`${data.completedTasks.length} row${data.completedTasks.length === 1 ? "" : "s"}`}
+              isEmpty={data.completedTasks.length === 0}
               empty="Nothing completed yet."
             >
               {data.completedTasks.map((row, i) => (
@@ -293,6 +304,7 @@ export function TasksDeadlinesClient({
             <Section
               title="Completed"
               trailing={`${data.completedTasks.length} row${data.completedTasks.length === 1 ? "" : "s"}`}
+              isEmpty={data.completedTasks.length === 0}
               empty="Nothing completed yet."
             >
               {data.completedTasks.slice(0, 5).map((row, i) => (
@@ -327,18 +339,18 @@ function Section({
   subtitle,
   trailing,
   empty,
+  isEmpty = false,
   dominant = false,
   children,
 }: {
   title: string
   subtitle?: string
   trailing?: string
-  empty?: string
+  empty?: React.ReactNode
+  isEmpty?: boolean
   dominant?: boolean
   children: React.ReactNode
 }) {
-  const hasChildren = React.Children.count(children) > 0
-
   return (
     <section className={cn("dossier-section", dominant && "dossier-section-dominant")}>
       <div className="dossier-section-heading">
@@ -354,10 +366,10 @@ function Section({
           </p>
         ) : null}
       </div>
-      {hasChildren ? (
+      {!isEmpty ? (
         <ul>{children}</ul>
       ) : empty ? (
-        <p className="dossier-empty">{empty}</p>
+        <div className="dossier-empty">{empty}</div>
       ) : null}
     </section>
   )

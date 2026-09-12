@@ -42,41 +42,43 @@ export function buildTodayReadinessInputs(input: {
   return [
     {
       label: "Coursework matched to requirements",
-      weightLabel: "25%",
+      weightLabel: "25 pts max",
       valueLabel:
         keys.length === 0 ? "—" : `${prereqDone} of ${keys.length} matched`,
       href: "/dashboard/requirements",
     },
     {
       label: "Credits toward the 30-credit planner target",
-      weightLabel: "25%",
+      weightLabel: "25 pts max",
       valueLabel:
         input.creditsCompleted != null
-          ? `${input.creditsCompleted} of ${PLANNER_CREDIT_TARGET}`
+          ? input.creditsCompleted >= PLANNER_CREDIT_TARGET
+            ? `Target met · ${input.creditsCompleted} recorded`
+            : `${input.creditsCompleted} of ${PLANNER_CREDIT_TARGET} credits`
           : "Not on file",
       href: "/dashboard/plan",
     },
     {
       label: "Tasks completed",
-      weightLabel: "20%",
+      weightLabel: "20 pts max",
       valueLabel: `${tasksDone} of ${taskKeys.length}`,
       href: "/dashboard/deadlines",
     },
     {
       label: "GPA on file",
-      weightLabel: "15%",
+      weightLabel: "15 pts max",
       valueLabel: input.gpa != null ? input.gpa.toFixed(2) : "Not on file",
       href: "/dashboard/settings",
     },
     {
       label: "Essay started",
-      weightLabel: "10%",
+      weightLabel: "10 pts max",
       valueLabel: input.essayStarted ? "Draft saved" : "Not started",
       href: "/dashboard/essay",
     },
     {
       label: "Pathway complete",
-      weightLabel: "5%",
+      weightLabel: "5 pts max",
       valueLabel:
         profileParts >= 3
           ? "School, term, name"

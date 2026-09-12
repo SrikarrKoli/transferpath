@@ -180,14 +180,52 @@ export function EssayWorkspaceUi({
             {settingsSlot ? <div className="essay-prompt-settings">{settingsSlot}</div> : null}
           </div>
 
-          <div className="essay-writing-field">
-            <textarea
-              value={value}
-              onChange={(e) => onChange(e.target.value)}
-              className="essay-textarea"
-              placeholder="Start writing your draft here…"
-              aria-label="Essay draft"
-            />
+          <div className="essay-writing-spread">
+            <div className="essay-writing-field">
+              <textarea
+                value={value}
+                onChange={(e) => onChange(e.target.value)}
+                className="essay-textarea"
+                placeholder="Start writing your draft here…"
+                aria-label="Essay draft"
+              />
+            </div>
+
+            <aside className="essay-margin-notes" aria-label="Manuscript marginalia">
+              {coachNotes.length > 0 ? (
+                <CoachPanel
+                  icon={sparklesIcon}
+                  label="Coach marginalia"
+                  title={coachTitle}
+                  items={coachNotes}
+                />
+              ) : null}
+              {strengthSignals.length > 0 ? (
+                <CoachPanel
+                  icon={wandIcon}
+                  label="Strength marks"
+                  title={strengthsTitle}
+                  items={strengthSignals}
+                />
+              ) : null}
+              {reference ? (
+                <div className="essay-reference-note">
+                  <p className="tp-eyebrow text-muted-foreground">
+                    {reference.eyebrow}
+                  </p>
+                  <p className="mt-3 text-base leading-relaxed text-foreground/90">
+                    {reference.body}
+                  </p>
+                  <button
+                    type="button"
+                    onClick={reference.onCtaClick}
+                    className="essay-reference-link"
+                  >
+                    {reference.ctaLabel}
+                  </button>
+                </div>
+              ) : null}
+            </aside>
           </div>
 
           <div className="essay-paper-footer">
@@ -230,41 +268,6 @@ export function EssayWorkspaceUi({
           </div>
         </div>
 
-        <aside className="essay-margin-notes">
-          {coachNotes.length > 0 ? (
-            <CoachPanel
-              icon={sparklesIcon}
-              label="Coach"
-              title={coachTitle}
-              items={coachNotes}
-            />
-          ) : null}
-          {strengthSignals.length > 0 ? (
-            <CoachPanel
-              icon={wandIcon}
-              label="Strength signals"
-              title={strengthsTitle}
-              items={strengthSignals}
-            />
-          ) : null}
-          {reference ? (
-            <div className="essay-reference-note">
-              <p className="tp-eyebrow text-muted-foreground">
-                {reference.eyebrow}
-              </p>
-              <p className="mt-3 text-base leading-relaxed text-foreground/90">
-                {reference.body}
-              </p>
-              <button
-                type="button"
-                onClick={reference.onCtaClick}
-                className="essay-reference-link"
-              >
-                {reference.ctaLabel}
-              </button>
-            </div>
-          ) : null}
-        </aside>
       </div>
     </div>
   )
