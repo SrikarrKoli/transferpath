@@ -1,8 +1,8 @@
 "use client"
 
 /**
- * TransferPath campus: authored landmark halls + Kenney CC0 life/props.
- * Ground is plazas, lots, and paths — not a lawn with a subdivision on it.
+ * TransferPath campus: authored landmark halls + sparse Kenney CC0 life/props.
+ * Ground follows the cream-and-ink dossier palette rather than game-board turf.
  */
 
 import * as THREE from "three"
@@ -39,7 +39,7 @@ function islandShape() {
   const s = new THREE.Shape()
   const w = 6.85
   const d = 6.15
-  const r = 1.15
+  const r = 0.38
   s.moveTo(-w + r, -d)
   s.lineTo(w - r, -d)
   s.quadraticCurveTo(w, -d, w, -d + r)
@@ -73,19 +73,19 @@ export function buildCampusWorld(root: THREE.Group, lib: KitLibrary) {
     }
   }
 
-  const grassMat = flat(0x5a9a48)
-  const sandMat = flat(0xeddeb0)
-  const waterMat = lambert(0x5cbcce, { transparent: true, opacity: 0.93 })
-  const waterDeepMat = lambert(0x2f8fa8)
-  const plinthMat = lambert(0xc4a878)
-  const pierMat = lambert(0xd4b48a)
-  const islandMat = flat(0x5a9a48)
-  const plazaMat = flat(0xf7f2e8)
-  const plazaAlt = flat(0xe8d4b0)
-  const walkMat = flat(0xb08958)
-  const roadMat = flat(0xfff8ee)
-  const curbMat = flat(0x8a6840)
-  const hedgeMat = flat(0x2a522c)
+  const grassMat = flat(0x7d896f)
+  const sandMat = flat(0xe4d8bd)
+  const waterMat = lambert(0x8db7bd, { transparent: true, opacity: 0.64 })
+  const waterDeepMat = lambert(0x668e96)
+  const plinthMat = lambert(0xb9aa8c)
+  const pierMat = lambert(0xc5b69b)
+  const islandMat = flat(0x737f68)
+  const plazaMat = flat(0xf2ede2)
+  const plazaAlt = flat(0xe5ddcf)
+  const walkMat = flat(0xb5aa97)
+  const roadMat = flat(0xeee9df)
+  const curbMat = flat(0x59616a)
+  const hedgeMat = flat(0x405443)
 
   const drop = mesh(
     new THREE.CircleGeometry(11.2, 40),
@@ -106,9 +106,9 @@ export function buildCampusWorld(root: THREE.Group, lib: KitLibrary) {
   const islandGeo = new THREE.ExtrudeGeometry(islandShape(), {
     depth: 0.55,
     bevelEnabled: true,
-    bevelSize: 0.28,
-    bevelThickness: 0.16,
-    bevelSegments: 2,
+    bevelSize: 0.045,
+    bevelThickness: 0.045,
+    bevelSegments: 1,
   })
   islandGeo.rotateX(-Math.PI / 2)
   root.add(mesh(islandGeo, islandMat, 0.1, -0.72, 0.2, false))
@@ -464,29 +464,18 @@ export function buildCampusWorld(root: THREE.Group, lib: KitLibrary) {
     "people/character-male-d",
     "people/character-female-d",
   ]
+  // Keep enough figures for scale without turning the campus into a toy crowd.
   const walk: { x: number; z: number }[] = [
     { x: 0.25, z: 1.15 },
-    { x: -0.45, z: 1.55 },
-    { x: 0.55, z: 1.85 },
-    { x: 0.1, z: 0.65 },
     { x: 4.15, z: -1.55 },
     { x: 0.2, z: 3.15 },
     { x: -3.65, z: 1.55 },
-    { x: -2.15, z: 0.15 },
     { x: 3.35, z: 3.55 },
     { x: -3.85, z: -2.15 },
     { x: -6.55, z: 2.55 },
-    { x: 2.15, z: 3.15 },
     { x: 4.55, z: 2.15 },
     { x: -1.55, z: -1.55 },
-    { x: 1.85, z: 0.85 },
     { x: -8.15, z: 2.45 },
-    { x: 4.25, z: -0.35 },
-    { x: -4.25, z: 0.55 },
-    { x: 2.55, z: 2.45 },
-    { x: -1.25, z: 2.15 },
-    { x: 0.85, z: -0.85 },
-    { x: 5.05, z: 2.85 },
   ]
   walk.forEach((w, i) => {
     const p = stamp(lib, walkers[i % walkers.length], w.x, w.z, i * 0.7, 1.28, false)
@@ -496,21 +485,9 @@ export function buildCampusWorld(root: THREE.Group, lib: KitLibrary) {
     people.push(p)
   })
 
-  ;[
-    [0.35, 1.15],
-    [-0.45, 1.45],
-    [0.55, 0.75],
-    [-0.15, 1.85],
-    [1.15, 0.95],
-    [-1.05, 0.85],
-  ].forEach(([x, z], i) => {
-    walk.push({ x, z })
-    void i
-  })
-
   const pawnColors = [0x2c3d55, 0xc45c3a, 0xf4ead6, 0x5a8f78, 0xb86b52, 0x3d516c]
   walk.forEach((w, i) => {
-    if (i % 2 === 1) return
+    if (i % 4 !== 0) return
     const pawn = new THREE.Group()
     const shirt = lambert(pawnColors[i % pawnColors.length])
     pawn.add(mesh(new THREE.CylinderGeometry(0.14, 0.16, 0.44, 8), shirt, 0, 0.3, 0))

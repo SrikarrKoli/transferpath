@@ -1,9 +1,9 @@
 "use client"
 
 /**
- * Authored toy-campus primitives. Landmarks are custom meshes (not Kenney
- * suburban houses). Shared language: rounded masses, Lambert pastels,
- * punched window grids, contact blobs — reads in Playwright/WebGL screenshots.
+ * Authored campus primitives. Landmarks are custom meshes (not Kenney
+ * suburban houses). Shared language: crisp masonry masses, pitched roofs,
+ * punched window grids, and restrained contact shadows.
  */
 
 import * as THREE from "three"
@@ -26,12 +26,12 @@ export const C = {
   glass: 0x3d4f68,
   trim: 0xf7f2e8,
   gold: 0xe8c46a,
-  hedge: 0x2f5a32,
-  grass: 0x4f8f3e,
-  canopyA: 0x2d5a32,
-  canopyB: 0x3a6b38,
-  canopyC: 0x245028,
-  canopyD: 0x4a7a40,
+  hedge: 0x425744,
+  grass: 0x77856b,
+  canopyA: 0x465c47,
+  canopyB: 0x52664c,
+  canopyC: 0x394f3e,
+  canopyD: 0x63715a,
   trunk: 0x6b4a2e,
   peach: 0xefd3c0,
   paleBlue: 0xd5e0ea,
@@ -53,13 +53,13 @@ export function flat(color: number, extra?: THREE.MeshBasicMaterialParameters) {
   return new THREE.MeshBasicMaterial({ color, ...extra })
 }
 
-/** Saturated mass that keeps its hue under tone mapping (emissive = albedo). */
+/** Color-stable masonry with enough light response to preserve architectural depth. */
 export function hold(color: number, extra?: THREE.MeshLambertMaterialParameters) {
   const c = new THREE.Color(color)
   return new THREE.MeshLambertMaterial({
     color: c,
     emissive: c.clone(),
-    emissiveIntensity: 0.32,
+    emissiveIntensity: 0.16,
     ...extra,
   })
 }
@@ -87,9 +87,10 @@ export function rbox(
   x = 0,
   y = 0,
   z = 0,
-  radius = 0.045,
+  radius = 0.012,
   cast = true
 ) {
+  if (radius <= 0) return mesh(new THREE.BoxGeometry(w, h, d), material, x, y, z, cast)
   const segments = radius > 0.02 ? 3 : 1
   return mesh(new RoundedBoxGeometry(w, h, d, segments, radius), material, x, y, z, cast)
 }
@@ -100,7 +101,7 @@ export function blobShadow(parent: THREE.Object3D, rx: number, rz: number, opaci
     new THREE.MeshBasicMaterial({
       color: 0x1a2814,
       transparent: true,
-      opacity,
+      opacity: opacity * 0.55,
       depthWrite: false,
     })
   )
@@ -309,7 +310,7 @@ export function toyTree(x: number, z: number, seed: number) {
 export function fountain() {
   const g = new THREE.Group()
   const stone = lambert(C.stone)
-  const water = lambert(0x6ec4d4, { transparent: true, opacity: 0.88 })
+  const water = lambert(0x8eb8bd, { transparent: true, opacity: 0.68 })
   g.add(
     rbox(0.95, 0.12, 0.95, stone, 0, 0.08, 0, 0.08, false),
     mesh(new THREE.CylinderGeometry(0.38, 0.4, 0.08, 20), water, 0, 0.16, 0, false),
@@ -367,11 +368,11 @@ export function annex(opts: {
   const body = flat(opts.body)
   const roof = flat(opts.roof)
   const glass = flat(C.glass)
-  g.add(rbox(opts.w, opts.h, opts.d, body, 0, opts.h / 2, 0, 0.05))
+  g.add(rbox(opts.w, opts.h, opts.d, body, 0, opts.h / 2, 0, 0.008))
   const kind = opts.roofKind ?? "gable"
   if (kind === "gable") g.add(gableRoof(opts.w, opts.d, 0.38 + opts.h * 0.12, roof, opts.h))
   else if (kind === "hip") g.add(hipRoof(opts.w, opts.d, 0.42, roof, opts.h))
-  else g.add(rbox(opts.w + 0.08, 0.08, opts.d + 0.08, roof, 0, opts.h + 0.04, 0, 0.03))
+  else g.add(rbox(opts.w + 0.08, 0.08, opts.d + 0.08, roof, 0, opts.h + 0.04, 0, 0.008))
   const rows = opts.rows ?? 1
   windowGrid(g, {
     cols: opts.cols,

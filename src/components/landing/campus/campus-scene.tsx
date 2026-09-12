@@ -245,7 +245,7 @@ export function CampusScene({ selected, hovered, focusToken, onHover, onSelect, 
       applyCam()
 
       if (!reduced) {
-        if (water) water.position.y = -0.72 + Math.sin(t * 1.15) * 0.025
+        if (water) water.position.y = -0.72 + Math.sin(t * 0.72) * 0.008
         people.forEach((p) => {
           const home = p.userData.home as { x: number; z: number } | undefined
           if (!home) return

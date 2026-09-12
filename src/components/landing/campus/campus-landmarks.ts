@@ -48,8 +48,8 @@ export function buildClockTower() {
   const glass = flat(0x243448)
   const trim = hold(C.trim)
 
-  g.add(rbox(1.35, 0.22, 1.35, stoneDeep, 0, 0.11, 0, 0.06, false))
-  g.add(rbox(1.02, 2.55, 1.02, stone, 0, 1.5, 0, 0.05))
+  g.add(rbox(1.35, 0.22, 1.35, stoneDeep, 0, 0.11, 0, 0.008, false))
+  g.add(rbox(1.02, 2.55, 1.02, stone, 0, 1.5, 0, 0.006))
   for (let i = 0; i < 4; i++) {
     const y = 0.55 + i * 0.58
     g.add(rbox(1.08, 0.07, 1.08, stoneDeep, 0, y, 0, 0.02, false))
@@ -75,7 +75,7 @@ export function buildClockTower() {
     inset: 0.53,
   })
 
-  g.add(rbox(1.18, 0.95, 1.18, stone, 0, 3.22, 0, 0.05))
+  g.add(rbox(1.18, 0.95, 1.18, stone, 0, 3.22, 0, 0.006))
   arcade(g, { bays: 3, span: 0.95, z: 0.6, y: 3.05, glass })
   arcade(g, { bays: 3, span: 0.95, z: -0.6, y: 3.05, glass })
 
@@ -107,11 +107,11 @@ export function buildCounselorHall() {
   const navy = hold(C.navy)
   const hedgeMat = flat(C.hedge)
 
-  g.add(rbox(2.55, 1.28, 1.48, body, -0.2, 0.64, 0, 0.055))
+  g.add(rbox(2.55, 1.28, 1.48, body, -0.2, 0.64, 0, 0.008))
   g.add(hipRoof(2.72, 1.62, 0.58, roof, 1.28))
   g.add(rbox(2.62, 0.07, 1.55, trim, -0.2, 1.3, 0, 0.02, false))
 
-  g.add(rbox(1.18, 1.08, 2.05, wing, 1.28, 0.54, 0.28, 0.05))
+  g.add(rbox(1.18, 1.08, 2.05, wing, 1.28, 0.54, 0.28, 0.008))
   g.add(hipRoof(1.32, 2.18, 0.48, roof, 1.08))
 
   const turret = mesh(new THREE.CylinderGeometry(0.42, 0.46, 1.62, 14), body, 1.05, 0.81, -0.55)
@@ -154,12 +154,12 @@ export function buildLibrary() {
   const navy = hold(C.navy)
   const reading = hold(0x4e8fa8)
 
-  g.add(rbox(2.35, 1.72, 1.62, body, 0, 0.86, 0, 0.05))
+  g.add(rbox(2.35, 1.72, 1.62, body, 0, 0.86, 0, 0.008))
   g.add(gableRoof(2.48, 1.72, 0.72, copper, 1.72))
-  g.add(rbox(0.55, 0.55, 0.55, body, 0, 2.05, 0, 0.04))
+  g.add(rbox(0.55, 0.55, 0.55, body, 0, 2.05, 0, 0.006))
   g.add(hipRoof(0.62, 0.62, 0.28, copper, 2.32))
   g.add(mesh(new THREE.SphereGeometry(0.1, 10, 8), flat(C.gold), 0, 2.58, 0, false))
-  g.add(rbox(1.28, 1.35, 1.35, reading, 1.62, 0.68, 0.08, 0.05))
+  g.add(rbox(1.28, 1.35, 1.35, reading, 1.62, 0.68, 0.08, 0.008))
   g.add(rbox(1.22, 0.95, 0.08, glass, 1.62, 0.72, 0.78, 0.02, false))
   g.add(hipRoof(1.38, 1.45, 0.36, copper, 1.36))
 
@@ -188,7 +188,7 @@ export function buildClassrooms() {
   const frame = hold(C.trim)
   const navy = hold(C.navy)
 
-  g.add(rbox(3.85, 1.18, 1.22, body, 0, 0.59, 0, 0.05))
+  g.add(rbox(3.85, 1.18, 1.22, body, 0, 0.59, 0, 0.006))
   g.add(rbox(3.92, 0.22, 1.28, brick, 0, 0.12, 0, 0.03, false))
   g.add(gableRoof(3.95, 1.32, 0.55, roof, 1.18))
   for (let i = 0; i < 7; i++) {
@@ -199,7 +199,7 @@ export function buildClassrooms() {
     g.add(rbox(0.16, 0.2, 0.05, glass, x, 0.92, 0.67, 0.01, false))
   }
 
-  g.add(rbox(1.15, 1.15, 1.35, brick, 1.55, 0.58, 0.85, 0.05))
+  g.add(rbox(1.15, 1.15, 1.35, brick, 1.55, 0.58, 0.85, 0.006))
   g.add(gableRoof(1.22, 1.42, 0.42, navy, 1.15))
   g.add(mesh(new THREE.CylinderGeometry(0.16, 0.18, 0.28, 12), brick, 1.55, 1.48, 0.85, false))
   g.add(mesh(new THREE.SphereGeometry(0.2, 12, 10), navy, 1.55, 1.72, 0.85))
@@ -220,7 +220,7 @@ export function buildRegistrar() {
   const navy = hold(C.navy)
   const dome = hold(0x3d7a5c)
 
-  g.add(rbox(2.05, 1.58, 1.72, body, 0, 0.79, 0, 0.05))
+  g.add(rbox(2.05, 1.58, 1.72, body, 0, 0.79, 0, 0.006))
   g.add(rbox(2.12, 0.1, 1.78, trim, 0, 1.6, 0, 0.02, false))
   ;[-0.72, 0, 0.72].forEach((x) => {
     g.add(rbox(0.18, 1.05, 0.06, glass, x, 0.82, 0.88, 0.015, false))
@@ -253,7 +253,7 @@ export function buildDorms() {
 
   const wing = (x: number, z: number, rotY: number, cols: number) => {
     const w = new THREE.Group()
-    w.add(rbox(1.55, 2.15, 1.05, brick, 0, 1.08, 0, 0.05))
+    w.add(rbox(1.55, 2.15, 1.05, brick, 0, 1.08, 0, 0.006))
     w.add(gableRoof(1.65, 1.15, 0.48, roof, 2.15))
     w.add(rbox(1.58, 0.08, 1.08, brickDeep, 0, 0.78, 0, 0.02, false))
     w.add(rbox(1.58, 0.08, 1.08, brickDeep, 0, 1.48, 0, 0.02, false))
@@ -285,7 +285,7 @@ export function buildDorms() {
   }
   wing(-0.95, 0.15, 0, 4)
   wing(0.95, 0.15, 0, 4)
-  g.add(rbox(1.15, 1.55, 0.85, brick, 0, 0.78, -0.55, 0.05))
+  g.add(rbox(1.15, 1.55, 0.85, brick, 0, 0.78, -0.55, 0.006))
   g.add(hipRoof(1.25, 0.95, 0.38, roof, 1.55))
   g.add(door(flat(C.navy), 0, 0.45, 0.0, 0.28, 0.5))
   g.add(rbox(1.35, 0.08, 1.15, flat(C.stone), 0, 0.04, 0.55, 0.03, false))
@@ -305,7 +305,7 @@ export function buildRecCenter() {
   const line = hold(C.trim)
   const court = flat(0x2f7a58)
 
-  g.add(rbox(2.55, 1.05, 1.72, body, 0, 0.52, 0, 0.05))
+  g.add(rbox(2.55, 1.05, 1.72, body, 0, 0.52, 0, 0.006))
   g.add(barrelVault(2.55, 0.88, vault, 1.05, true))
   for (let i = 0; i < 3; i++) {
     g.add(rbox(0.62, 0.72, 0.07, glass, -0.72 + i * 0.72, 0.58, 0.88, 0.02, false))
@@ -335,7 +335,7 @@ export function buildUnion() {
   const stripeA = hold(C.trim)
   const stripeB = hold(C.navy)
 
-  g.add(rbox(2.25, 1.28, 1.65, body, 0, 0.64, 0, 0.06))
+  g.add(rbox(2.25, 1.28, 1.65, body, 0, 0.64, 0, 0.008))
   g.add(hipRoof(2.42, 1.8, 0.58, roof, 1.28))
   g.add(rbox(2.32, 0.08, 1.72, cream, 0, 1.3, 0, 0.02, false))
 
@@ -357,7 +357,7 @@ export function buildUnion() {
   g.add(rbox(0.36, 0.1, 0.36, cream, -0.85, 2.1, -0.15, 0.02, false))
   g.add(rbox(0.72, 0.28, 0.08, flat(C.navy), 0, 1.05, 0.9, 0.02, false))
 
-  g.add(rbox(0.62, 0.78, 0.62, cream, 1.05, 0.39, 0.2, 0.05))
+  g.add(rbox(0.62, 0.78, 0.62, cream, 1.05, 0.39, 0.2, 0.008))
   g.add(hipRoof(0.7, 0.7, 0.3, flat(C.terracottaDeep), 0.78))
   g.add(umbrella(0.55, 1.55, 0xf7f2e8, 1.05))
   g.add(umbrella(-0.15, 1.75, 0x2c3d55, 1.0))
