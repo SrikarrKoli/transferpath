@@ -332,7 +332,7 @@ export function SettingsClient({
                       setMessage(null)
                       router.replace(settingsPath(tab.id), { scroll: false })
                     }}
-                    className={`w-full flex items-center gap-2.5 px-3 py-2 rounded-lg text-sm transition-colors text-left ${
+                    className={`flex w-full items-center gap-2.5 px-3 py-2 text-left text-sm transition-colors ${
                       isActive
                         ? "border-l-2 border-primary bg-primary/5 text-primary font-medium pl-[10px]"
                         : "text-muted-foreground hover:bg-muted hover:text-foreground"
@@ -389,7 +389,7 @@ export function SettingsClient({
                       type="email"
                       value={auth}
                       readOnly
-                      className="w-full h-9 rounded-lg border border-border bg-muted/40 px-3 text-sm text-muted-foreground cursor-not-allowed"
+                      className="h-9 w-full cursor-not-allowed rounded-none border border-[color:var(--hall-rule)] bg-[color:var(--hall-ink)]/[0.04] px-3 text-sm text-muted-foreground"
                     />
                     <p className="text-xs text-muted-foreground">
                       Sign-in email (read-only in v1).
@@ -822,7 +822,7 @@ export function SettingsClient({
 
                   <div
                     id="request-transcript"
-                    className="scroll-mt-24 rounded-lg border border-border bg-muted/30 p-4"
+                    className="scroll-mt-24 border border-[color:var(--hall-rule)] bg-[color:var(--hall-ink)]/[0.03] p-4"
                   >
                     <p className="font-medium text-foreground">Requesting your official transcript</p>
                     <ol className="mt-2 list-decimal space-y-1.5 pl-5 text-muted-foreground">
@@ -848,7 +848,7 @@ export function SettingsClient({
 
                   <div
                     id="rec-letters"
-                    className="scroll-mt-24 rounded-lg border border-border bg-muted/30 p-4"
+                    className="scroll-mt-24 border border-[color:var(--hall-rule)] bg-[color:var(--hall-ink)]/[0.03] p-4"
                   >
                     <p className="font-medium text-foreground">Who to ask for recommendation letters</p>
                     <ul className="mt-2 list-disc space-y-1.5 pl-5 text-muted-foreground">
