@@ -211,7 +211,11 @@ export function EssayClient({ userId, initialEssayMap, profile }: EssayClientPro
                   <span>
                     <span className="block">{prompt.label}</span>
                     <span className="library-folio-state">
-                      {wc >= 50 ? `${wc} words` : "Not started"}
+                      {wc === 0
+                        ? "Not started"
+                        : wc < 50
+                          ? "Draft started"
+                          : `${wc} words`}
                     </span>
                   </span>
                 </button>
