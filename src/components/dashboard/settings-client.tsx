@@ -406,7 +406,7 @@ export function SettingsClient({
                     type="button"
                     onClick={handleSave}
                     disabled={saving || !profile}
-                    className="bg-primary hover:bg-primary/90 text-white"
+                    className="rounded-none bg-[color:var(--hall-ink)] text-[color:var(--hall-paper)] hover:bg-[color:var(--hall-ink)]/90"
                   >
                     {saving ? "Saving…" : "Save changes"}
                   </Button>
@@ -577,7 +577,7 @@ export function SettingsClient({
                     type="button"
                     onClick={handleSave}
                     disabled={saving || !profile}
-                    className="bg-primary hover:bg-primary/90 text-white"
+                    className="rounded-none bg-[color:var(--hall-ink)] text-[color:var(--hall-paper)] hover:bg-[color:var(--hall-ink)]/90"
                   >
                     {saving ? "Saving…" : "Save changes"}
                   </Button>
@@ -635,7 +635,7 @@ export function SettingsClient({
                     type="button"
                     onClick={handleSaveNotifications}
                     disabled={savingNotifications || !profile}
-                    className="bg-primary hover:bg-primary/90 text-white"
+                    className="rounded-none bg-[color:var(--hall-ink)] text-[color:var(--hall-paper)] hover:bg-[color:var(--hall-ink)]/90"
                   >
                     {savingNotifications ? "Saving…" : "Save notification settings"}
                   </Button>
@@ -698,7 +698,7 @@ export function SettingsClient({
                         <Button
                           type="submit"
                           disabled={passwordSaving}
-                          className="bg-primary hover:bg-primary/90 text-white"
+                          className="rounded-none bg-[color:var(--hall-ink)] text-[color:var(--hall-paper)] hover:bg-[color:var(--hall-ink)]/90"
                         >
                           {passwordSaving ? "Updating…" : "Update password"}
                         </Button>
@@ -745,7 +745,7 @@ export function SettingsClient({
                   type="button"
                   variant="outline"
                   onClick={handleSignOut}
-                  className="gap-2"
+                  className="gap-2 rounded-none border-[color:var(--hall-rule)]"
                 >
                   <LogOut className="h-4 w-4" />
                   Sign out
@@ -779,7 +779,7 @@ export function SettingsClient({
                     type="button"
                     onClick={handleSavePreferences}
                     disabled={savingPreferences || !profile}
-                    className="bg-primary hover:bg-primary/90 text-white"
+                    className="rounded-none bg-[color:var(--hall-ink)] text-[color:var(--hall-paper)] hover:bg-[color:var(--hall-ink)]/90"
                   >
                     {savingPreferences ? "Saving…" : "Save preferences"}
                   </Button>
