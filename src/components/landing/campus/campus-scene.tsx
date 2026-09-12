@@ -52,11 +52,11 @@ export function CampusScene({ selected, hovered, focusToken, onHover, onSelect, 
     renderer.shadowMap.type = THREE.PCFShadowMap
     renderer.outputColorSpace = THREE.SRGBColorSpace
     renderer.toneMapping = THREE.ReinhardToneMapping
-    renderer.toneMappingExposure = 1.06
+    renderer.toneMappingExposure = 1.12
     mount.appendChild(renderer.domElement)
 
     const scene = new THREE.Scene()
-    scene.fog = new THREE.Fog(0xa8d8e6, 42, 78)
+    scene.fog = new THREE.Fog(0xb2dce8, 48, 86)
     pmrem = new THREE.PMREMGenerator(renderer)
     scene.environment = pmrem.fromScene(new RoomEnvironment(), 0.08).texture
 
@@ -270,8 +270,10 @@ export function CampusScene({ selected, hovered, focusToken, onHover, onSelect, 
               mat.map = next
               mat.needsUpdate = true
             }
-            c.scale.setScalar(on ? 0.34 : 0.26)
-            mat.opacity = on ? 1 : 0.94
+            // hide floating indices until hover/select — kills badge spam
+            c.scale.set(on ? 0.48 : 0.36, on ? 0.28 : 0.22, 1)
+            mat.opacity = on ? 0.98 : 0.0
+            c.visible = on
           }
         })
       }
