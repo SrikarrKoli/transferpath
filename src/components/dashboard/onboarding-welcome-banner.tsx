@@ -32,15 +32,15 @@ export function OnboardingWelcomeBanner() {
           <p className="font-semibold">You&apos;re already set up on TransferPath.</p>
           <p className="mt-1 text-[#1a2332]/70">
             Get started opens your campus when you have a profile. Explore halls for deadlines, courses,
-            and essays — or update schools anytime in Settings.
+            and essays — or update schools anytime in Counselor Hall.
           </p>
         </div>
         <div className="flex shrink-0 items-center gap-2">
           <Link
-            href="/dashboard/settings"
+            href="/dashboard/settings?tab=transfer"
             className="border border-[#1a2332]/25 bg-white px-3 py-1.5 text-xs font-semibold hover:bg-[#1a2332]/04"
           >
-            Settings
+            Counselor · Settings
           </Link>
           <button
             type="button"

@@ -298,7 +298,7 @@ export function EssayClient({ userId, initialEssayMap, profile }: EssayClientPro
       </section>
 
       <Dialog open={previewOpen} onOpenChange={setPreviewOpen}>
-        <DialogContent className="max-h-[85vh] max-w-2xl overflow-y-auto">
+        <DialogContent className="max-h-[85vh] max-w-2xl overflow-y-auto rounded-none border border-[color:var(--hall-rule)] bg-[color:var(--hall-paper)]">
           <DialogHeader>
             <DialogTitle className="font-heading">
               {title}

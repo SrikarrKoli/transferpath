@@ -118,7 +118,7 @@ export function SourcesClient({ data }: SourcesClientProps) {
 
   if (data.loadError) {
     return (
-      <div className="rounded-xl border border-border bg-card p-6">
+      <div className="rounded-none border border-[color:var(--hall-rule)] bg-transparent p-6">
         <p className="text-sm text-foreground">{data.loadError}</p>
         <Link
           href="/sources"
@@ -136,7 +136,7 @@ export function SourcesClient({ data }: SourcesClientProps) {
 
   return (
     <div className="space-y-10">
-      <section className="rounded-xl border border-border bg-card p-6 sm:p-8">
+      <section className="rounded-none border border-[color:var(--hall-rule)] bg-transparent p-6 sm:p-8">
         <p className="font-heading text-lg font-semibold leading-snug text-foreground sm:text-xl">
           We have transfer deadline data for {data.coveredSchools} of the{" "}
           {data.totalSchools} four-year schools in {PRODUCT_NAME}. For the other{" "}
@@ -156,7 +156,7 @@ export function SourcesClient({ data }: SourcesClientProps) {
 
       <div className="grid gap-8 lg:grid-cols-[minmax(0,1.7fr)_minmax(0,1fr)] lg:items-start">
         <div className="space-y-8">
-          <section className="rounded-xl border border-border bg-card p-5 sm:p-6">
+          <section className="rounded-none border border-[color:var(--hall-rule)] bg-transparent p-5 sm:p-6">
             <div className="flex flex-col gap-3 sm:flex-row sm:items-end sm:justify-between">
               <div>
                 <p className="tp-eyebrow text-muted-foreground">Coverage by institution</p>
@@ -232,7 +232,7 @@ export function SourcesClient({ data }: SourcesClientProps) {
             </div>
           </section>
 
-          <section className="rounded-xl border border-border bg-card p-5 sm:p-6">
+          <section className="rounded-none border border-[color:var(--hall-rule)] bg-transparent p-5 sm:p-6">
             <p className="tp-eyebrow text-muted-foreground">Three kinds of date</p>
             <div className="mt-4 space-y-4">
               <div>
@@ -281,7 +281,7 @@ export function SourcesClient({ data }: SourcesClientProps) {
             </div>
           </section>
 
-          <section className="rounded-xl border border-border bg-card p-5 sm:p-6">
+          <section className="rounded-none border border-[color:var(--hall-rule)] bg-transparent p-5 sm:p-6">
             <p className="tp-eyebrow text-muted-foreground">Statewide versus school-specific</p>
             <p className="mt-3 text-sm leading-relaxed text-foreground">
               ApplyTexas opening dates and the FAFSA / TASFA priority date apply across Texas. A
@@ -294,7 +294,7 @@ export function SourcesClient({ data }: SourcesClientProps) {
         </div>
 
         <aside className="space-y-6 lg:sticky lg:top-24">
-          <section className="rounded-xl border border-border bg-card p-5 sm:p-6">
+          <section className="rounded-none border border-[color:var(--hall-rule)] bg-transparent p-5 sm:p-6">
             <p className="tp-eyebrow text-muted-foreground">Coverage at a glance</p>
             <div className="mt-4 space-y-4">
               <div>
@@ -321,7 +321,7 @@ export function SourcesClient({ data }: SourcesClientProps) {
             />
           </section>
 
-          <section className="rounded-xl border border-border bg-card p-5 sm:p-6">
+          <section className="rounded-none border border-[color:var(--hall-rule)] bg-transparent p-5 sm:p-6">
             <p className="tp-eyebrow text-muted-foreground">Corrections</p>
             <p className="mt-3 text-sm leading-relaxed text-muted-foreground">
               Found a date that is wrong or out of range? Tell us which school and where you saw the
@@ -333,7 +333,7 @@ export function SourcesClient({ data }: SourcesClientProps) {
             </p>
           </section>
 
-          <section className="rounded-xl border border-border bg-card p-5 sm:p-6">
+          <section className="rounded-none border border-[color:var(--hall-rule)] bg-transparent p-5 sm:p-6">
             <p className="tp-eyebrow text-muted-foreground">Before you act on a date</p>
             <p className="mt-3 text-sm leading-relaxed text-foreground">
               Confirm every date with the institution before you act on it. {PRODUCT_NAME} provides
