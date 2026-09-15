@@ -166,23 +166,6 @@ That creates a **public** repo named `transferpath` and pushes `main`. Use a dif
 
 ---
 
-## Deploy live (free)
-
-**Recommended:** [Vercel](https://vercel.com) (Hobby/free) + your existing **Supabase** project.
-
-Step-by-step: **[scripts/deploy-vercel.md](./scripts/deploy-vercel.md)**
-
-Summary:
-
-1. Push this repo to GitHub (above).
-2. Vercel → **Import** the repo → add `NEXT_PUBLIC_SUPABASE_*` env vars → Deploy.
-3. Set Supabase **Site URL** and **Redirect URLs** to your `*.vercel.app` domain.
-4. Set `NEXT_PUBLIC_SITE_URL` to that URL and redeploy.
-
-No credit card required for typical student-project traffic on Vercel Hobby + Supabase Free.
-
----
-
 ## Weekly deadline emails (optional)
 
 Route: `GET|POST /api/cron/deadline-reminders`  
