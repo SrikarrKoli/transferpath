@@ -1,8 +1,14 @@
 # TransferPath
 
+**Live site:** [transferpath.vercel.app](https://transferpath.vercel.app)
+
 **TransferPath** is a free, open-source web app that helps **Texas community college students** plan a transfer to a four-year university. Students set a target school and major, map courses semester-by-semester, track requirements, and work through an application checklist—with deadlines pulled from a shared database.
 
 > **Planner only, not admissions advice.** Deadlines and requirements are for organization. Always confirm dates and rules on each school’s official site.
+
+### Author
+
+Built and maintained by **[Srikar Kolipaka](https://github.com/SrikarrKoli)** ([@SrikarrKoli](https://github.com/SrikarrKoli)) — main contributor.
 
 ---
 

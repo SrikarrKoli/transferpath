@@ -96,7 +96,7 @@ export function EssayWorkspaceUi({
                 type="button"
                 onClick={onSave}
                 disabled={saving}
-                className="hall-ledger-link hall-plan-add"
+                className="hall-save-ink"
               >
                 {saving ? "Saving…" : saveLabel}
               </button>

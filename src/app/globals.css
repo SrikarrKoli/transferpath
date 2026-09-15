@@ -4932,3 +4932,28 @@ nextjs-portal,
   background: color-mix(in oklab, var(--hall-paper) 92%, white);
   padding-top: 0.35rem;
 }
+
+
+.hall-save-ink {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 2rem;
+  padding: 0.35rem 0.85rem;
+  border: 1px solid var(--hall-ink);
+  background: var(--hall-ink);
+  color: var(--hall-paper);
+  font-size: 0.8rem;
+  font-weight: 600;
+  letter-spacing: 0.02em;
+  cursor: pointer;
+}
+
+.hall-save-ink:disabled {
+  opacity: 0.55;
+  cursor: not-allowed;
+}
+
+.hall-save-ink:not(:disabled):hover {
+  background: color-mix(in oklab, var(--hall-ink) 88%, white);
+}
