@@ -3,6 +3,7 @@ import { redirect } from "next/navigation"
 import { SettingsClient, type SettingsProfileRow, type SettingsAuthInfo } from "@/components/dashboard/settings-client"
 import { settingsProfileRemountKey } from "@/lib/settings-profile-remount-key"
 import { parseSettingsTab } from "@/lib/settings-tab"
+import { ImmersiveBuildingShell } from "@/components/campus-ui/immersive-building-shell"
 
 export default async function SettingsPage({
   searchParams,
@@ -66,12 +67,14 @@ export default async function SettingsPage({
     : null
 
   return (
-    <SettingsClient
-      key={settingsProfileRemountKey(row)}
-      authEmail={user.email ?? null}
-      profile={row}
-      authInfo={authInfo}
-      initialTab={initialTab}
-    />
+    <ImmersiveBuildingShell buildingId="counselor" purpose="settings">
+      <SettingsClient
+        key={settingsProfileRemountKey(row)}
+        authEmail={user.email ?? null}
+        profile={row}
+        authInfo={authInfo}
+        initialTab={initialTab}
+      />
+    </ImmersiveBuildingShell>
   )
 }

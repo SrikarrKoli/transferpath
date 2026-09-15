@@ -137,8 +137,8 @@ function buildAcademicTasks(p: ChecklistProfileSummary): ChecklistTaskDef[] {
 
 /** All checklist task definitions for a profile (labels use profile schools/major). */
 export function buildTaskDefinitions(p: ChecklistProfileSummary): ChecklistSectionDef[] {
-  const cur = p.currentUniversityName?.trim() || "your community college"
-  const tgt = p.targetUniversityName?.trim() || "your target university"
+  const cur = p.currentUniversityName?.trim() || "your current school"
+  const tgt = p.targetUniversityName?.trim() || "your target school"
   const major = p.targetMajor?.trim() || "your intended major"
   const term = p.expectedTransferTerm?.trim()
   const termPhrase = term ?? "your planned entry term"
@@ -148,11 +148,19 @@ export function buildTaskDefinitions(p: ChecklistProfileSummary): ChecklistSecti
     {
       title: "Application Tasks",
       tasks: [
-        { task_key: "create_applytexas", text: "Create ApplyTexas account", status: "not-started" },
+        {
+          task_key: "create_applytexas",
+          text: "Create ApplyTexas account",
+          status: "not-started",
+          action: "Open ApplyTexas →",
+          actionHref: "https://www.goapplytexas.org",
+        },
         {
           task_key: "research_requirements",
           text: `Research ${tgt} ${major} requirements`,
           status: "not-started",
+          action: "Open requirements →",
+          actionHref: "/dashboard/requirements",
         },
         {
           task_key: "write_essay_part1",
@@ -256,7 +264,7 @@ export function buildTaskDefinitions(p: ChecklistProfileSummary): ChecklistSecti
           text: `Plan first semester at ${tgt} (tentative schedule)`,
           status: "not-started",
           action: "Preview →",
-          actionHref: "/dashboard/timeline",
+          actionHref: "/dashboard/plan",
         },
       ],
     },
@@ -264,8 +272,8 @@ export function buildTaskDefinitions(p: ChecklistProfileSummary): ChecklistSecti
 }
 
 export function buildChecklistHeaderSubtitle(p: ChecklistProfileSummary): string {
-  const cur = p.currentUniversityName?.trim() || "your community college"
-  const tgt = p.targetUniversityName?.trim() || "your target university"
+  const cur = p.currentUniversityName?.trim() || "your current school"
+  const tgt = p.targetUniversityName?.trim() || "your target school"
   const parts = [`${cur} → ${tgt}`]
   const major = p.targetMajor?.trim()
   if (major) parts.push(major)

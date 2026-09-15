@@ -26,13 +26,15 @@ export type ExistingSession = { id: string; email: string }
 export interface OnboardingClientProps {
   /** When set, wizard skips sign-up and upserts `user_profiles` for this user. */
   existingSession: ExistingSession | null
+  /** When nested in ImmersiveBuildingShell, skip the duplicate product masthead. */
+  embedded?: boolean
 }
 
 function isSessionMissingError(message: string): boolean {
   return /session missing/i.test(message)
 }
 
-export function OnboardingClient({ existingSession }: OnboardingClientProps) {
+export function OnboardingClient({ existingSession, embedded = false }: OnboardingClientProps) {
   const router = useRouter()
   const [currentStep, setCurrentStep] = useState(1)
   const [isLoading, setIsLoading] = useState(false)
@@ -197,25 +199,41 @@ export function OnboardingClient({ existingSession }: OnboardingClientProps) {
   }
 
   return (
-    <div className="flex min-h-screen flex-col bg-background">
-      <header className="px-6 py-6">
+    <div className={embedded ? "flex flex-col" : "flex min-h-screen flex-col bg-background"}>
+      <header className={embedded ? "px-1 pb-4 pt-1" : "px-6 py-6"}>
         <div className="mx-auto max-w-3xl">
-          <div className="mb-8 flex items-center justify-center gap-2 text-lg font-medium text-primary">
-            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-              <path
-                d="M12 2L20 7V17L12 22L4 17V7L12 2Z"
-                stroke="currentColor"
-                strokeWidth="1.5"
-                strokeLinecap="round"
-                strokeLinejoin="round"
-              />
-              <path d="M12 11L12 16" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" />
-              <path d="M12 11L16 8.5" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" />
-              <path d="M12 11L8 8.5" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" />
-            </svg>
-            {PRODUCT_NAME}
-          </div>
+          {embedded ? null : (
+            <div className="mb-8 flex items-center justify-center gap-2 text-lg font-medium text-primary">
+              <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                <path
+                  d="M12 2L20 7V17L12 22L4 17V7L12 2Z"
+                  stroke="currentColor"
+                  strokeWidth="1.5"
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                />
+                <path d="M12 11L12 16" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" />
+                <path d="M12 11L16 8.5" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" />
+                <path d="M12 11L8 8.5" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" />
+              </svg>
+              {PRODUCT_NAME}
+            </div>
+          )}
 
+          {embedded ? (
+            <div className="hall-steps" aria-label="Onboarding steps">
+              {steps.map((step) => (
+                <span
+                  key={step.id}
+                  data-on={step.id === currentStep ? "true" : "false"}
+                  data-done={step.id < currentStep ? "true" : "false"}
+                >
+                  <span className="hall-step-index">{String(step.id).padStart(2, "0")}</span>
+                  {step.label}
+                </span>
+              ))}
+            </div>
+          ) : (
           <div className="flex items-center justify-center">
             {steps.map((step, index) => (
               <div key={step.id} className="flex items-center">
@@ -260,10 +278,11 @@ export function OnboardingClient({ existingSession }: OnboardingClientProps) {
               </div>
             ))}
           </div>
+          )}
         </div>
       </header>
 
-      <main className="flex flex-1 items-start justify-center px-6 py-8">
+      <main className={`flex flex-1 items-start justify-center ${embedded ? "px-1 py-2" : "px-6 py-8"}`}>
         <div className="w-full max-w-lg">
           {currentStep === 1 && (
             <OnboardingStep1 data={data} updateData={updateData} onNext={handleNext} />

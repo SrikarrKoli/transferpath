@@ -132,8 +132,9 @@ function pickApplicationDeadline(
       university_id: null,
       academic_term: null,
       academic_year: null,
-      timelineScope: "target",
+      timelineScope: next.timelineScope,
       officialUrl: next.officialUrl,
+      sourceCheckedAt: next.sourceCheckedAt,
     }
   }
   return null
@@ -154,7 +155,7 @@ function incompleteTasks(
       out.push({
         task_key: task.task_key,
         text: task.text,
-        href: task.actionHref ?? "/dashboard/checklist",
+        href: task.actionHref ?? "/dashboard/deadlines",
         done: false,
       })
       if (out.length >= limit) return out

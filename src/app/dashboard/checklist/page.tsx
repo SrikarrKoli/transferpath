@@ -1,5 +1,6 @@
 import { createClient } from "@/lib/supabase/server"
 import { redirect } from "next/navigation"
+import { ImmersiveBuildingShell } from "@/components/campus-ui/immersive-building-shell"
 import { ChecklistClient, type ChecklistProfileSummary } from "@/components/dashboard/checklist-client"
 import { getCachedNextDeadline } from "@/lib/dashboard-data"
 
@@ -17,7 +18,9 @@ function universityJoinName(raw: unknown): string | null {
 
 export default async function ChecklistPage() {
   const supabase = await createClient()
-  const { data: { user } } = await supabase.auth.getUser()
+  const {
+    data: { user },
+  } = await supabase.auth.getUser()
   if (!user) redirect("/login")
 
   const [{ data: profile }, { data: userCourses }, { data: essayRows }] = await Promise.all([
@@ -61,25 +64,29 @@ export default async function ChecklistPage() {
 
   const completionMap: Record<string, { is_complete: boolean; completed_at: string | null }> =
     Object.fromEntries(
-      (items ?? []).map((item) => [item.task_key, { is_complete: item.is_complete, completed_at: item.completed_at }])
+      (items ?? []).map((item) => [
+        item.task_key,
+        { is_complete: item.is_complete, completed_at: item.completed_at },
+      ])
     )
 
-  const essayHasContent =
-    essayRows?.some((e) => (e.content ?? "").trim().length > 0) ?? false
+  const essayHasContent = essayRows?.some((e) => (e.content ?? "").trim().length > 0) ?? false
 
   return (
-    <ChecklistClient
-      userId={user.id}
-      initialCompletionMap={completionMap}
-      checklistProfile={checklistProfile}
-      nextDeadlineDaysUntil={nextDeadline?.daysUntil ?? null}
-      userCourses={(userCourses ?? []).map((r) => ({
-        course_name: r.course_name,
-        status: r.status,
-      }))}
-      creditsCompleted={profile?.credits_completed ?? null}
-      gpa={profile?.gpa ?? null}
-      essayHasContent={essayHasContent}
-    />
+    <ImmersiveBuildingShell buildingId="dorm">
+      <ChecklistClient
+        userId={user.id}
+        initialCompletionMap={completionMap}
+        checklistProfile={checklistProfile}
+        nextDeadlineDaysUntil={nextDeadline?.daysUntil ?? null}
+        userCourses={(userCourses ?? []).map((r) => ({
+          course_name: r.course_name,
+          status: r.status,
+        }))}
+        creditsCompleted={profile?.credits_completed ?? null}
+        gpa={profile?.gpa ?? null}
+        essayHasContent={essayHasContent}
+      />
+    </ImmersiveBuildingShell>
   )
 }

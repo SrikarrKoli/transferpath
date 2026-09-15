@@ -3,7 +3,6 @@
 import { useMemo, useState } from "react"
 import Link from "next/link"
 import { useRouter } from "next/navigation"
-import { GraduationCap, FileText, MapPin } from "lucide-react"
 import { createClient } from "@/lib/supabase/client"
 import {
   buildTaskDefinitions,
@@ -152,12 +151,6 @@ export function ChecklistClient({
     if (!error) router.refresh()
   }
 
-  const categoryIcons = {
-    academic: <GraduationCap className="h-5 w-5" strokeWidth={1.5} />,
-    application: <FileText className="h-5 w-5" strokeWidth={1.5} />,
-    preparation: <MapPin className="h-5 w-5" strokeWidth={1.5} />,
-  }
-
   return (
     <ChecklistWorkspaceUi
       data={workspaceData}
@@ -167,7 +160,6 @@ export function ChecklistClient({
           {children}
         </Link>
       )}
-      categoryIcons={categoryIcons}
     />
   )
 }

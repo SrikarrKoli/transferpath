@@ -1,5 +1,6 @@
 import { createClient } from "@/lib/supabase/server"
 import { redirect } from "next/navigation"
+import { ImmersiveBuildingShell } from "@/components/campus-ui/immersive-building-shell"
 import { RequirementsClient } from "@/components/dashboard/requirements-client"
 import {
   getCachedNextDeadline,
@@ -73,16 +74,18 @@ export default async function RequirementsPage() {
   const timelineTodayYmd = serverTodayYmdUtc()
 
   return (
-    <RequirementsClient
-      profile={profile}
-      userCourses={userCourses ?? []}
-      essays={essays ?? []}
-      deadlines={deadlines}
-      requirementNotes={requirementNotes}
-      nextDeadline={nextDeadline}
-      hasTargetUniversity={hasTargetUniversity}
-      timelineTodayYmd={timelineTodayYmd}
-      checklistCompleteByTaskKey={checklistCompleteByTaskKey}
-    />
+    <ImmersiveBuildingShell buildingId="registrar">
+      <RequirementsClient
+        profile={profile}
+        userCourses={userCourses ?? []}
+        essays={essays ?? []}
+        deadlines={deadlines}
+        requirementNotes={requirementNotes}
+        nextDeadline={nextDeadline}
+        hasTargetUniversity={hasTargetUniversity}
+        timelineTodayYmd={timelineTodayYmd}
+        checklistCompleteByTaskKey={checklistCompleteByTaskKey}
+      />
+    </ImmersiveBuildingShell>
   )
 }

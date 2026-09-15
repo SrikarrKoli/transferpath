@@ -23,7 +23,7 @@ import {
 import type { FieldOfStudy } from "@/lib/field-of-study"
 import { FIELD_OF_STUDY_OPTIONS, fieldOfStudyOrDefault } from "@/lib/field-of-study"
 import { PRODUCT_NAME } from "@/lib/brand"
-import { type SettingsTab } from "@/lib/settings-tab"
+import { settingsPath, type SettingsTab } from "@/lib/settings-tab"
 
 /** If set, Help tab shows a mailto link; otherwise we show a short configuration note. */
 const SUPPORT_EMAIL = process.env.NEXT_PUBLIC_SUPPORT_EMAIL?.trim()
@@ -61,8 +61,8 @@ interface SettingsClientProps {
 function SectionHeader({ title, subtitle }: { title: string; subtitle?: string }) {
   return (
     <div className="mb-4">
-      <h3 className="text-[15px] font-medium text-foreground">{title}</h3>
-      {subtitle && <p className="mt-0.5 text-[13px] text-muted-foreground">{subtitle}</p>}
+      <h3 className="text-body font-medium text-foreground">{title}</h3>
+      {subtitle && <p className="mt-0.5 text-caption text-muted-foreground">{subtitle}</p>}
     </div>
   )
 }
@@ -194,7 +194,7 @@ export function SettingsClient({
 
     setMessage({
       type: "success",
-      text: "Settings saved. Your dashboard and sidebar will update automatically.",
+      text: "Saved. Your campus halls will update on the next view.",
     })
     router.refresh()
   }
@@ -308,15 +308,17 @@ export function SettingsClient({
       : null
 
   return (
-    <div className="min-h-screen bg-background">
-      <div className="px-8 pt-8 pb-6">
-        <h1 className="text-3xl font-semibold tracking-tight text-foreground">Settings</h1>
+    <div className="bg-transparent">
+      <div className="pb-4">
+        <p className="text-xs font-semibold uppercase tracking-[0.14em] text-muted-foreground">
+          Edit your transfer info
+        </p>
         <p className="mt-1 text-sm text-muted-foreground">
-          Manage your profile and transfer planning
+          Profile, schools, major, term, and reminders — same fields as onboarding, editable anytime.
         </p>
       </div>
 
-      <div className="px-8 pb-12 flex flex-col gap-6 lg:flex-row lg:gap-8">
+      <div className="flex flex-col gap-6 pb-8 lg:flex-row lg:gap-8">
         <nav className="w-full lg:w-[180px] lg:shrink-0">
           <ul className="flex flex-row flex-wrap gap-1 lg:flex-col lg:flex-nowrap">
             {tabs.map((tab) => {
@@ -328,8 +330,9 @@ export function SettingsClient({
                     onClick={() => {
                       setActiveTab(tab.id)
                       setMessage(null)
+                      router.replace(settingsPath(tab.id), { scroll: false })
                     }}
-                    className={`w-full flex items-center gap-2.5 px-3 py-2 rounded-lg text-sm transition-colors text-left ${
+                    className={`flex w-full items-center gap-2.5 px-3 py-2 text-left text-sm transition-colors ${
                       isActive
                         ? "border-l-2 border-primary bg-primary/5 text-primary font-medium pl-[10px]"
                         : "text-muted-foreground hover:bg-muted hover:text-foreground"
@@ -345,7 +348,7 @@ export function SettingsClient({
         </nav>
 
         <div className="flex-1 min-w-0">
-          <div className="rounded-xl border border-border bg-card p-6">
+          <div className="border border-[color:var(--hall-rule)] bg-transparent p-5">
             {!profile && (
               <p className="text-sm text-destructive mb-4">
                 Profile missing — your account has no saved profile yet, so settings can&apos;t be
@@ -374,7 +377,7 @@ export function SettingsClient({
                       value={fullName}
                       onChange={(e) => setFullName(e.target.value)}
                       placeholder="Your name"
-                      className="w-full h-9 rounded-xl border border-border bg-card px-3 text-sm text-foreground placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-ring/50 focus:border-primary transition-colors"
+                      className="h-9 w-full rounded-none border border-[color:var(--hall-rule)] bg-[color:var(--hall-paper)] px-3 text-sm text-foreground transition-colors placeholder:text-muted-foreground focus:border-[color:var(--hall-ink)] focus:outline-none focus:ring-1 focus:ring-[color:var(--hall-ink)]/20"
                     />
                   </div>
                   <div className="space-y-1.5">
@@ -386,7 +389,7 @@ export function SettingsClient({
                       type="email"
                       value={auth}
                       readOnly
-                      className="w-full h-9 rounded-lg border border-border bg-muted/40 px-3 text-sm text-muted-foreground cursor-not-allowed"
+                      className="h-9 w-full cursor-not-allowed rounded-none border border-[color:var(--hall-rule)] bg-[color:var(--hall-ink)]/[0.04] px-3 text-sm text-muted-foreground"
                     />
                     <p className="text-xs text-muted-foreground">
                       Sign-in email (read-only in v1).
@@ -403,7 +406,7 @@ export function SettingsClient({
                     type="button"
                     onClick={handleSave}
                     disabled={saving || !profile}
-                    className="bg-primary hover:bg-primary/90 text-white"
+                    className="rounded-none bg-[color:var(--hall-ink)] text-[color:var(--hall-paper)] hover:bg-[color:var(--hall-ink)]/90"
                   >
                     {saving ? "Saving…" : "Save changes"}
                   </Button>
@@ -462,7 +465,7 @@ export function SettingsClient({
                       value={targetMajor}
                       onChange={(e) => setTargetMajor(e.target.value)}
                       placeholder="e.g. Computer Science"
-                      className="w-full h-9 rounded-xl border border-border bg-card px-3 text-sm text-foreground placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-ring/50 focus:border-primary transition-colors"
+                      className="h-9 w-full rounded-none border border-[color:var(--hall-rule)] bg-[color:var(--hall-paper)] px-3 text-sm text-foreground transition-colors placeholder:text-muted-foreground focus:border-[color:var(--hall-ink)] focus:outline-none focus:ring-1 focus:ring-[color:var(--hall-ink)]/20"
                     />
                   </div>
                   <div className="space-y-1.5">
@@ -473,7 +476,7 @@ export function SettingsClient({
                       value={fieldOfStudy}
                       onValueChange={(v) => setFieldOfStudy(v as FieldOfStudy)}
                     >
-                      <SelectTrigger id="field-of-study" className="w-full h-9">
+                      <SelectTrigger id="field-of-study" className="h-9 w-full rounded-none border-[color:var(--hall-rule)] bg-[color:var(--hall-paper)]">
                         <SelectValue placeholder="Select field" />
                       </SelectTrigger>
                       <SelectContent>
@@ -496,7 +499,7 @@ export function SettingsClient({
                       value={transferTermSelectValue}
                       onValueChange={(v) => setExpectedTerm(v)}
                     >
-                      <SelectTrigger id="term-select" className="w-full h-9">
+                      <SelectTrigger id="term-select" className="h-9 w-full rounded-none border-[color:var(--hall-rule)] bg-[color:var(--hall-paper)]">
                         <SelectValue placeholder="Choose upcoming intake" />
                       </SelectTrigger>
                       <SelectContent>
@@ -513,7 +516,7 @@ export function SettingsClient({
                       value={expectedTerm}
                       onChange={(e) => setExpectedTerm(e.target.value)}
                       placeholder="Custom term if yours isn’t listed (saved as typed)"
-                      className="w-full h-9 rounded-xl border border-border bg-card px-3 text-sm text-foreground placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-ring/50 focus:border-primary transition-colors"
+                      className="h-9 w-full rounded-none border border-[color:var(--hall-rule)] bg-[color:var(--hall-paper)] px-3 text-sm text-foreground transition-colors placeholder:text-muted-foreground focus:border-[color:var(--hall-ink)] focus:outline-none focus:ring-1 focus:ring-[color:var(--hall-ink)]/20"
                     />
                     <p className="text-xs text-muted-foreground">
                       Quick picks roll forward with the calendar. Use the text field for a label that
@@ -534,7 +537,7 @@ export function SettingsClient({
                       value={gpaInput}
                       onChange={(e) => setGpaInput(e.target.value)}
                       placeholder="0.00 – 4.00"
-                      className="w-full h-9 rounded-xl border border-border bg-card px-3 text-sm text-foreground placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-ring/50 focus:border-primary transition-colors"
+                      className="h-9 w-full rounded-none border border-[color:var(--hall-rule)] bg-[color:var(--hall-paper)] px-3 text-sm text-foreground transition-colors placeholder:text-muted-foreground focus:border-[color:var(--hall-ink)] focus:outline-none focus:ring-1 focus:ring-[color:var(--hall-ink)]/20"
                     />
                   </div>
                   <div className="space-y-1.5">
@@ -549,23 +552,23 @@ export function SettingsClient({
                       value={creditsInput}
                       onChange={(e) => setCreditsInput(e.target.value)}
                       placeholder="Total transferable credits"
-                      className="w-full h-9 rounded-xl border border-border bg-card px-3 text-sm text-foreground placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-ring/50 focus:border-primary transition-colors"
+                      className="h-9 w-full rounded-none border border-[color:var(--hall-rule)] bg-[color:var(--hall-paper)] px-3 text-sm text-foreground transition-colors placeholder:text-muted-foreground focus:border-[color:var(--hall-ink)] focus:outline-none focus:ring-1 focus:ring-[color:var(--hall-ink)]/20"
                     />
                   </div>
                 </div>
 
                 <Divider />
 
-                <div className="rounded-xl border border-border bg-muted/60 p-4">
+                <div className="border border-[color:var(--hall-rule)] bg-[color:var(--hall-ink)]/[0.03] p-4">
                   <p className="text-sm font-medium text-foreground mb-1">Courses</p>
                   <p className="text-sm text-muted-foreground mb-3">
-                    Courses are managed from onboarding and your timeline.
+                    Courses are managed from onboarding and your plan.
                   </p>
                   <Link
-                    href="/dashboard/timeline"
+                    href="/dashboard/plan"
                     className="text-sm text-primary font-medium hover:underline"
                   >
-                    Open timeline →
+                    Open plan →
                   </Link>
                 </div>
 
@@ -574,7 +577,7 @@ export function SettingsClient({
                     type="button"
                     onClick={handleSave}
                     disabled={saving || !profile}
-                    className="bg-primary hover:bg-primary/90 text-white"
+                    className="rounded-none bg-[color:var(--hall-ink)] text-[color:var(--hall-paper)] hover:bg-[color:var(--hall-ink)]/90"
                   >
                     {saving ? "Saving…" : "Save changes"}
                   </Button>
@@ -632,7 +635,7 @@ export function SettingsClient({
                     type="button"
                     onClick={handleSaveNotifications}
                     disabled={savingNotifications || !profile}
-                    className="bg-primary hover:bg-primary/90 text-white"
+                    className="rounded-none bg-[color:var(--hall-ink)] text-[color:var(--hall-paper)] hover:bg-[color:var(--hall-ink)]/90"
                   >
                     {savingNotifications ? "Saving…" : "Save notification settings"}
                   </Button>
@@ -647,7 +650,7 @@ export function SettingsClient({
                   subtitle="Manage how you access your account."
                 />
 
-                <div className="mb-6 rounded-xl border border-border bg-muted/60 p-4">
+                <div className="mb-6 border border-[color:var(--hall-rule)] bg-[color:var(--hall-ink)]/[0.03] p-4">
                   <p className="text-sm font-medium text-foreground mb-1">Signed in as</p>
                   <p className="text-sm text-muted-foreground break-all">{auth || "—"}</p>
                 </div>
@@ -672,7 +675,7 @@ export function SettingsClient({
                           autoComplete="new-password"
                           value={newPassword}
                           onChange={(e) => setNewPassword(e.target.value)}
-                          className="w-full h-9 rounded-xl border border-border bg-card px-3 text-sm"
+                          className="h-9 w-full rounded-none border border-[color:var(--hall-rule)] bg-[color:var(--hall-paper)] px-3 text-sm"
                         />
                       </div>
                       <div className="space-y-1.5">
@@ -688,14 +691,14 @@ export function SettingsClient({
                           autoComplete="new-password"
                           value={confirmPassword}
                           onChange={(e) => setConfirmPassword(e.target.value)}
-                          className="w-full h-9 rounded-xl border border-border bg-card px-3 text-sm"
+                          className="h-9 w-full rounded-none border border-[color:var(--hall-rule)] bg-[color:var(--hall-paper)] px-3 text-sm"
                         />
                       </div>
                       <div className="flex flex-wrap items-center gap-3">
                         <Button
                           type="submit"
                           disabled={passwordSaving}
-                          className="bg-primary hover:bg-primary/90 text-white"
+                          className="rounded-none bg-[color:var(--hall-ink)] text-[color:var(--hall-paper)] hover:bg-[color:var(--hall-ink)]/90"
                         >
                           {passwordSaving ? "Updating…" : "Update password"}
                         </Button>
@@ -716,7 +719,7 @@ export function SettingsClient({
                     )}
                   </>
                 ) : oauthDescription ? (
-                  <div className="rounded-xl border border-border bg-card p-4">
+                  <div className="border border-[color:var(--hall-rule)] bg-transparent p-4">
                     <p className="text-sm text-foreground">
                       You signed in with {oauthDescription}. Password changes don’t apply to that
                       login — manage your account through your provider’s security settings.
@@ -736,13 +739,13 @@ export function SettingsClient({
                 <Divider />
 
                 <p className="text-sm text-muted-foreground mb-3">
-                  End your session on this device. You can also sign out from the sidebar.
+                  End your session on this device. You can sign back in anytime from the Counselor gate.
                 </p>
                 <Button
                   type="button"
                   variant="outline"
                   onClick={handleSignOut}
-                  className="gap-2"
+                  className="gap-2 rounded-none border-[color:var(--hall-rule)]"
                 >
                   <LogOut className="h-4 w-4" />
                   Sign out
@@ -776,7 +779,7 @@ export function SettingsClient({
                     type="button"
                     onClick={handleSavePreferences}
                     disabled={savingPreferences || !profile}
-                    className="bg-primary hover:bg-primary/90 text-white"
+                    className="rounded-none bg-[color:var(--hall-ink)] text-[color:var(--hall-paper)] hover:bg-[color:var(--hall-ink)]/90"
                   >
                     {savingPreferences ? "Saving…" : "Save preferences"}
                   </Button>
@@ -788,13 +791,17 @@ export function SettingsClient({
               <div>
                 <SectionHeader
                   title="Help & feedback"
-                  subtitle={`${PRODUCT_NAME} is a planning tool — always verify dates and requirements on official sources.`}
+                  subtitle={`${PRODUCT_NAME} is a planning tool — see Sources for what we hold and how we hold it.`}
                 />
                 <div className="space-y-4 text-sm text-foreground">
                   <p className="text-muted-foreground">
                     Deadlines, insights, and checklist items in this app are for organization only.
                     They don’t replace your target institution’s admissions office, registrar, or
-                    financial aid communications.
+                    financial aid communications.{" "}
+                    <Link href="/sources" className="text-primary hover:underline">
+                      Sources
+                    </Link>{" "}
+                    lists what deadline data we hold and how we hold it.
                   </p>
                   <div>
                     <p className="font-medium mb-2">Official resources</p>
@@ -815,7 +822,7 @@ export function SettingsClient({
 
                   <div
                     id="request-transcript"
-                    className="scroll-mt-24 rounded-lg border border-border bg-muted/30 p-4"
+                    className="scroll-mt-24 border border-[color:var(--hall-rule)] bg-[color:var(--hall-ink)]/[0.03] p-4"
                   >
                     <p className="font-medium text-foreground">Requesting your official transcript</p>
                     <ol className="mt-2 list-decimal space-y-1.5 pl-5 text-muted-foreground">
@@ -841,7 +848,7 @@ export function SettingsClient({
 
                   <div
                     id="rec-letters"
-                    className="scroll-mt-24 rounded-lg border border-border bg-muted/30 p-4"
+                    className="scroll-mt-24 border border-[color:var(--hall-rule)] bg-[color:var(--hall-ink)]/[0.03] p-4"
                   >
                     <p className="font-medium text-foreground">Who to ask for recommendation letters</p>
                     <ul className="mt-2 list-disc space-y-1.5 pl-5 text-muted-foreground">

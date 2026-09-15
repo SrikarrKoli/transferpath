@@ -62,12 +62,22 @@ export type NextDeadline = {
   daysUntil: number
   /** From `deadlines.official_info_url`, or `universities.website` when joined */
   officialUrl: string | null
+  sourceCheckedAt: string | null
+  timelineScope: "target" | "statewide"
+  category: string
 } | null
 
 function rowToNextDeadline(
-  row: { title: string; due_date: string },
+  row: {
+    title: string
+    due_date: string
+    category?: string | null
+    university_id?: string | null
+    source_checked_at?: string | null
+  },
   today: string,
-  officialUrl: string | null
+  officialUrl: string | null,
+  timelineScope: "target" | "statewide"
 ): NextDeadline {
   const dueIso = row.due_date as string
   return {
@@ -76,20 +86,26 @@ function rowToNextDeadline(
     dueDateIso: dueIso,
     daysUntil: daysBetweenUtc(today, dueIso),
     officialUrl,
+    sourceCheckedAt: row.source_checked_at ?? null,
+    timelineScope,
+    category: row.category ?? "deadline",
   }
 }
 
 type NextDeadlineQueryRow = {
   title: string
   due_date: string
+  category: string
   official_info_url: string | null
   academic_term: string | null
   academic_year: number | null
+  university_id: string | null
+  source_checked_at: string | null
   universities?: unknown
 }
 
 const NEXT_DEADLINE_SELECT =
-  "title, due_date, official_info_url, academic_term, academic_year, universities(website)"
+  "title, due_date, category, official_info_url, academic_term, academic_year, university_id, source_checked_at, universities(website)"
 
 /**
  * When `expected_transfer_term` parses (e.g. "Fall 2026"), keep rows that are generic intakes
@@ -157,7 +173,7 @@ export async function getNextDeadline(
       const row = firstUpcomingFiltered(schoolRows as NextDeadlineQueryRow[], parsedTerm)
       if (row) {
         const url = resolveOfficialUrl(row.official_info_url, row.universities)
-        return rowToNextDeadline(row, today, url)
+        return rowToNextDeadline(row, today, url, "target")
       }
     }
 
@@ -173,7 +189,7 @@ export async function getNextDeadline(
       const row = firstUpcomingFiltered(globalRows as NextDeadlineQueryRow[], parsedTerm)
       if (row) {
         const url = resolveOfficialUrl(row.official_info_url, null)
-        return rowToNextDeadline(row, today, url)
+        return rowToNextDeadline(row, today, url, "statewide")
       }
     }
     return null
@@ -190,7 +206,12 @@ export async function getNextDeadline(
   if (error || !data?.length) return null
   const row = firstUpcomingFiltered(data as NextDeadlineQueryRow[], parsedTerm)
   if (!row) return null
-  return rowToNextDeadline(row, today, resolveOfficialUrl(row.official_info_url, null))
+  return rowToNextDeadline(
+    row,
+    today,
+    resolveOfficialUrl(row.official_info_url, null),
+    "statewide"
+  )
 }
 
 export type RequirementDeadlineRow = {
@@ -205,6 +226,7 @@ export type RequirementDeadlineRow = {
   /** School-specific row for your target vs ApplyTexas / statewide milestones */
   timelineScope: "target" | "statewide"
   officialUrl: string | null
+  sourceCheckedAt: string | null
 }
 
 type RawTimelineRow = {
@@ -217,6 +239,7 @@ type RawTimelineRow = {
   academic_term: string | null
   academic_year: number | null
   official_info_url: string | null
+  source_checked_at: string | null
   universities: unknown
 }
 
@@ -232,11 +255,12 @@ function toRequirementRow(r: RawTimelineRow): RequirementDeadlineRow {
     academic_year: r.academic_year,
     timelineScope: r.university_id == null ? "statewide" : "target",
     officialUrl: resolveOfficialUrl(r.official_info_url, r.universities),
+    sourceCheckedAt: r.source_checked_at ?? null,
   }
 }
 
 const TIMELINE_SELECT =
-  "id, title, due_date, category, description, university_id, academic_term, academic_year, official_info_url, universities(website)"
+  "id, title, due_date, category, description, university_id, academic_term, academic_year, official_info_url, source_checked_at, universities(website)"
 
 /**
  * Upcoming deadlines in the next 24 months (UTC), max 12 rows.

@@ -43,11 +43,17 @@ export function OnboardingStep5({
     : data.targetSemester !== "" && data.email !== "" && data.password.length >= 6
 
   return (
-    <div className="bg-card border border-border rounded-xl p-8">
+    <div className="border border-[color:var(--hall-rule)] bg-transparent p-6 sm:p-8">
       <div className="space-y-6">
         <div>
+          <p className="mb-2 text-xs font-semibold uppercase tracking-[0.14em] text-muted-foreground">
+            Transfer setup · Step 5 of 5
+          </p>
           <h1 className="text-2xl font-medium text-foreground mb-2">When do you want to transfer?</h1>
-          <p className="text-muted-foreground">Set your target and we&apos;ll help you stay on track.</p>
+          <p className="text-muted-foreground">
+            Choose your target entry term. Create your account (or confirm you&apos;re signed in) so we can save
+            deadlines and reminders to your campus.
+          </p>
         </div>
 
         <div className="space-y-4">
@@ -116,7 +122,7 @@ export function OnboardingStep5({
             </>
           )}
 
-          <div className="flex items-center justify-between py-3 px-4 bg-secondary/50 rounded-lg">
+          <div className="flex items-center justify-between border border-[color:var(--hall-rule)] bg-[color:var(--hall-ink)]/[0.03] px-4 py-3">
             <span className="text-sm text-foreground">Send me deadline reminders</span>
             <button
               type="button"
@@ -135,7 +141,7 @@ export function OnboardingStep5({
         </div>
 
         {error && (
-          <div className="rounded-lg border border-destructive/25 bg-destructive/10 px-3 py-2.5 text-sm text-destructive">
+          <div className="rounded-none border border-destructive/25 bg-destructive/10 px-3 py-2.5 text-sm text-destructive">
             {error}
           </div>
         )}

@@ -50,11 +50,15 @@ function revalidateDashboardSegment() {
   revalidatePath("/dashboard", "layout")
   const paths = [
     "/dashboard",
-    "/dashboard/timeline",
+    "/dashboard/plan",
+    "/dashboard/deadlines",
     "/dashboard/requirements",
-    "/dashboard/checklist",
     "/dashboard/essay",
     "/dashboard/settings",
+    // Legacy routes still revalidated for redirect pages.
+    "/dashboard/timeline",
+    "/dashboard/checklist",
+    "/dashboard/competitiveness",
   ] as const
   for (const p of paths) {
     revalidatePath(p, "page")

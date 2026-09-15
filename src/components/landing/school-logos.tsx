@@ -2,25 +2,28 @@
 
 const routes = [
   ["Dallas College", "UT Austin"],
-  ["Collin College", "Texas A&M"],
-  ["ACC", "University of Houston"],
+  ["Collin", "Texas A&M"],
+  ["ACC", "Houston"],
   ["HCC", "Baylor"],
-  ["Tarrant County College", "SMU"],
+  ["TCC", "SMU"],
 ] as const
 
 export function SchoolLogos() {
   return (
-    <section id="schools" className="border-b border-border px-6 py-10">
-      <div className="mx-auto flex max-w-6xl flex-wrap items-baseline gap-x-10 gap-y-3">
-        <span className="text-sm text-muted-foreground">Common routes</span>
+    <section className="border-b border-border py-6">
+      <p className="text-xs text-muted-foreground">Common routes</p>
+      <ul className="mt-3 flex flex-wrap gap-2">
         {routes.map(([from, to]) => (
-          <span key={from} className="whitespace-nowrap text-sm">
+          <li
+            key={from}
+            className="border border-border px-2.5 py-1 text-sm text-foreground"
+          >
             <span className="text-muted-foreground">{from}</span>
-            <span className="mx-1.5 text-accent" aria-hidden>→</span>
-            <span className="font-medium text-foreground">{to}</span>
-          </span>
+            <span className="mx-1.5 text-muted-foreground/50">→</span>
+            <span className="font-medium">{to}</span>
+          </li>
         ))}
-      </div>
+      </ul>
     </section>
   )
 }

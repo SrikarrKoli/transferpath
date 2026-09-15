@@ -10,8 +10,8 @@ export interface SemesterRoadmapProps {
 }
 
 const milestoneLinks = [
-  { href: "/dashboard/checklist", label: "Checklist" },
-  { href: "/dashboard/essay", label: "Essay" },
+  { href: "/dashboard/deadlines", label: "Tasks & deadlines" },
+  { href: "/dashboard/essay", label: "Essays" },
   { href: "/dashboard/requirements", label: "Requirements" },
 ] as const
 
@@ -28,10 +28,10 @@ export function SemesterRoadmap({
       <div className="mb-6 flex items-center justify-between">
         <h3 className="text-lg font-medium text-foreground">Semester roadmap</h3>
         <Link
-          href="/dashboard/timeline"
+          href="/dashboard/plan"
           className="text-sm font-medium text-primary underline-offset-4 transition-colors duration-150 hover:underline"
         >
-          View full →
+          View full plan →
         </Link>
       </div>
 
@@ -56,7 +56,7 @@ export function SemesterRoadmap({
                   >
                     <span>{c.course_name}</span>
                     {c.semester_taken?.trim() ? (
-                      <span className="mt-0.5 text-[10px] font-normal text-muted-foreground">
+                      <span className="mt-0.5 text-micro font-normal text-muted-foreground">
                         {c.semester_taken.trim()}
                       </span>
                     ) : null}

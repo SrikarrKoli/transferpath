@@ -45,11 +45,16 @@ export function OnboardingStep2({ data, updateData, onNext, onBack }: Props) {
   const canProceed = primaryId !== ""
 
   return (
-    <div className="bg-card border border-border rounded-xl p-8">
+    <div className="border border-[color:var(--hall-rule)] bg-transparent p-6 sm:p-8">
       <div className="space-y-6">
         <div>
-          <h1 className="text-2xl font-medium text-foreground mb-2">Where do you want to go?</h1>
-          <p className="text-muted-foreground">Search for up to 2 target schools.</p>
+          <p className="mb-2 text-xs font-semibold uppercase tracking-[0.14em] text-muted-foreground">
+            Transfer setup · Step 2 of 5
+          </p>
+          <h1 className="text-2xl font-medium text-foreground mb-2">Which four-year schools are you aiming for?</h1>
+          <p className="text-muted-foreground">
+            Pick up to two targets. We&apos;ll map deadlines and requirements to those campuses.
+          </p>
         </div>
 
         <div className="space-y-4">

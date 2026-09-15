@@ -2,6 +2,8 @@
 
 import * as React from "react"
 import { cn } from "@/lib/utils"
+import { useHall } from "@/components/campus-ui/hall-context"
+import { HallChecklist } from "@/components/campus-ui/hall-checklist"
 import type { ChecklistWorkspaceData, ChecklistWorkspaceTask } from "@/types/checklist-workspace"
 
 type Filter = "all" | "urgent" | "completed" | string
@@ -53,7 +55,6 @@ export function ChecklistWorkspaceUi({
   data,
   onToggleTask,
   LinkComponent,
-  categoryIcons = {},
 }: ChecklistWorkspaceUiProps) {
   const initial = React.useMemo(
     () =>
@@ -74,7 +75,6 @@ export function ChecklistWorkspaceUi({
       initial={initial}
       onToggleTask={onToggleTask}
       LinkComponent={LinkComponent}
-      categoryIcons={categoryIcons}
     />
   )
 }
@@ -84,7 +84,6 @@ function ChecklistWorkspaceBody({
   initial,
   onToggleTask,
   LinkComponent,
-  categoryIcons = {},
 }: ChecklistWorkspaceUiProps & { initial: Record<string, boolean> }) {
   const Link =
     LinkComponent ??
@@ -139,20 +138,22 @@ function ChecklistWorkspaceBody({
     return true
   }
 
-  const R = 34
-  const C = 2 * Math.PI * R
-  const offset = C - (stats.pct / 100) * C
   const h = data.header
+  const hall = useHall()
+
+  if (hall) {
+    return (
+      <HallChecklist data={data} tasks={tasks} onToggle={toggle} />
+    )
+  }
 
   return (
-    <div className="mx-auto max-w-5xl space-y-10 tp-stagger-children">
-      <header className="space-y-3">
-        <p className="text-[11px] font-medium uppercase tracking-widest text-accent">
-          {h.eyebrow ?? "Checklist"}
+    <div className="checklist-register tp-stagger-children">
+      <header className="checklist-register-header">
+        <p className="tp-eyebrow text-accent">
+          Dormitory / move-forward record
         </p>
-        <h1 className="font-heading text-4xl font-semibold tracking-tight text-foreground md:text-5xl">
-          {h.title}
-        </h1>
+        <h1>{h.title}</h1>
         <div className="flex flex-wrap items-center gap-x-3 gap-y-1 text-sm text-muted-foreground">
           <span>{h.fromInstitution}</span>
           <span className="text-muted-foreground/40">→</span>
@@ -161,8 +162,8 @@ function ChecklistWorkspaceBody({
           </span>
           {h.lastUpdatedLabel ? (
             <>
-              <span className="hidden h-1 w-1 rounded-full bg-muted-foreground/30 md:inline-block" />
-              <span className="font-mono text-[11px] uppercase tracking-wider text-muted-foreground">
+              <span aria-hidden>·</span>
+              <span className="font-mono text-eyebrow uppercase tracking-wider text-muted-foreground">
                 Updated · {h.lastUpdatedLabel}
               </span>
             </>
@@ -170,67 +171,20 @@ function ChecklistWorkspaceBody({
         </div>
       </header>
 
-      <section className="rounded-xl border border-border bg-card p-6 sm:p-8">
-        <div className="grid gap-8 md:grid-cols-[auto_1fr] md:items-center">
-          <div className="relative mx-auto grid size-36 place-items-center sm:mx-0">
-            <svg viewBox="0 0 80 80" className="absolute inset-0 -rotate-90" aria-hidden>
-              <circle cx="40" cy="40" r={R} fill="none" stroke="currentColor" strokeWidth="8" className="text-muted/80" />
-              <circle
-                cx="40"
-                cy="40"
-                r={R}
-                fill="none"
-                stroke="currentColor"
-                strokeWidth="8"
-                strokeLinecap="round"
-                strokeDasharray={C}
-                strokeDashoffset={offset}
-                className="text-accent transition-[stroke-dashoffset] duration-700 ease-out"
-              />
-            </svg>
-            <div className="text-center">
-              <div className="font-heading text-3xl font-semibold leading-none text-foreground">
-                {stats.done}
-              </div>
-              <div className="mt-1 text-[11px] uppercase tracking-widest text-muted-foreground">
-                of {stats.total}
-              </div>
-            </div>
-          </div>
-
-          <div className="space-y-4">
-            {stats.per.map((p, i) => {
-              const pct = p.total ? (p.done / p.total) * 100 : 0
-              return (
-                <div key={p.id}>
-                  <div className="mb-1.5 flex items-baseline justify-between">
-                    <span className="text-sm font-medium text-foreground">{p.label}</span>
-                    <span className="font-mono text-xs text-muted-foreground">
-                      {p.done}
-                      <span className="text-muted-foreground/50">/{p.total}</span>
-                    </span>
-                  </div>
-                  <div className="h-1.5 overflow-hidden rounded-full bg-muted">
-                    <div
-                      className="h-full rounded-full bg-accent transition-[width] duration-700 ease-out"
-                      style={{ width: `${pct}%`, transitionDelay: `${i * 80}ms` }}
-                    />
-                  </div>
-                </div>
-              )
-            })}
-            {h.readinessMessage ? (
-              <p className="pt-2 text-sm text-muted-foreground">
-                You&apos;re{" "}
-                <span className="font-semibold text-foreground">{stats.pct}% ready</span> to apply.{" "}
-                <span>{h.readinessMessage}</span>
-              </p>
-            ) : null}
-          </div>
+      <section className="checklist-register-summary" aria-label="Checklist completion summary">
+        <div>
+          <span className="checklist-score">{stats.done}</span>
+          <span className="checklist-score-denominator"> / {stats.total} filed</span>
         </div>
+        <div className="checklist-summary-columns">
+          {stats.per.map((p) => (
+            <p key={p.id}><span>{p.label}</span><strong>{p.done}/{p.total}</strong></p>
+          ))}
+        </div>
+        <p>{stats.pct}% complete{h.readinessMessage ? ` · ${h.readinessMessage}` : ""}</p>
       </section>
 
-      <div className="flex flex-wrap items-center gap-2">
+      <div className="checklist-register-filters" aria-label="Filter checklist">
         {chips.map((c) => {
           const active = filter === c.id
           return (
@@ -238,11 +192,12 @@ function ChecklistWorkspaceBody({
               key={c.id}
               type="button"
               onClick={() => setFilter(c.id)}
+              data-on={active ? "true" : "false"}
               className={cn(
-                "inline-flex items-center gap-1.5 rounded-full border px-4 py-1.5 text-sm transition-all",
+                "checklist-filter",
                 active
-                  ? "border-primary bg-primary text-primary-foreground shadow-sm"
-                  : "border-border bg-card text-muted-foreground hover:border-border-strong hover:text-foreground"
+                  ? "is-active"
+                  : undefined
               )}
             >
               {c.id === "urgent" && (
@@ -254,8 +209,8 @@ function ChecklistWorkspaceBody({
               {typeof c.count === "number" && c.count > 0 ? (
                 <span
                   className={cn(
-                    "ml-0.5 grid h-4 min-w-4 place-items-center rounded-full px-1 text-[11px] font-semibold",
-                    active ? "bg-accent text-accent-foreground" : "bg-accent/15 text-accent"
+                    "ml-0.5 tabular-nums",
+                    active ? "text-current" : "text-accent"
                   )}
                 >
                   {c.count}
@@ -266,38 +221,25 @@ function ChecklistWorkspaceBody({
         })}
       </div>
 
-      <div className="space-y-5">
+      <div className="checklist-register-body">
         {visibleCats.map((cat) => {
           const visibleTasks = cat.tasks.filter(isTaskVisible)
           if (visibleTasks.length === 0) return null
           const done = cat.tasks.filter((t) => tasks[t.id]).length
           const isOpen = open[cat.id]
-          const icon = categoryIcons[cat.id] ?? cat.icon
-
           return (
             <section
               key={cat.id}
-              className="overflow-hidden rounded-2xl border border-border bg-card tp-interactive-panel"
+              className="checklist-register-section"
             >
               <button
                 type="button"
                 onClick={() => setOpen((s) => ({ ...s, [cat.id]: !s[cat.id] }))}
-                className="flex w-full items-center justify-between gap-3 px-6 py-5 text-left transition-colors hover:bg-muted/40"
+                className="checklist-section-heading"
               >
-                <div className="flex items-center gap-3">
-                  {icon ? (
-                    <div className="grid size-9 place-items-center rounded-lg bg-primary/5 text-primary">
-                      {icon}
-                    </div>
-                  ) : null}
-                  <div>
-                    <h2 className="font-heading text-xl font-semibold tracking-tight text-foreground">
-                      {cat.label} Tasks
-                    </h2>
-                    <p className="font-mono text-[11px] uppercase tracking-wider text-muted-foreground">
-                      {done}/{cat.tasks.length} complete
-                    </p>
-                  </div>
+                <div>
+                  <h2>{cat.label} register</h2>
+                  <p>{done}/{cat.tasks.length} complete</p>
                 </div>
                 <ChevronIcon
                   className={cn(
@@ -308,17 +250,17 @@ function ChecklistWorkspaceBody({
               </button>
 
               {isOpen ? (
-                <ul className="divide-y divide-border border-t border-border">
+                <ul>
                   {visibleTasks.map((t) => {
                     const isDone = tasks[t.id]
                     return (
                       <li
                         key={t.id}
-                        className="group relative flex items-center gap-4 px-6 py-4 transition-colors hover:bg-accent/5"
+                        className={cn("checklist-register-row", t.urgent && !isDone && "is-urgent")}
                       >
                         {t.urgent && !isDone ? (
                           <span
-                            className="absolute inset-y-3 left-0 w-[3px] rounded-r-full bg-accent"
+                            className="checklist-urgent-rule"
                             aria-hidden
                           />
                         ) : null}
@@ -328,10 +270,10 @@ function ChecklistWorkspaceBody({
                           aria-pressed={isDone}
                           aria-label={isDone ? "Mark incomplete" : "Mark complete"}
                           className={cn(
-                            "grid size-5 shrink-0 place-items-center rounded-full border-2 transition-all",
+                            "checklist-box",
                             isDone
-                              ? "border-accent bg-accent text-accent-foreground"
-                              : "border-muted-foreground/30 bg-transparent hover:border-accent hover:bg-accent/10"
+                              ? "is-done"
+                              : undefined
                           )}
                         >
                           {isDone ? <CheckIcon className="size-3" /> : null}
@@ -347,15 +289,15 @@ function ChecklistWorkspaceBody({
                           >
                             {t.title}
                             {t.hint ? (
-                              <span className="ml-2 font-mono text-[11px] uppercase tracking-wider text-muted-foreground">
+                              <span className="ml-2 font-mono text-eyebrow uppercase tracking-wider text-muted-foreground">
                                 [{t.hint}]
                               </span>
                             ) : null}
                           </p>
                         </div>
                         {t.urgent && !isDone ? (
-                          <span className="hidden items-center gap-1 rounded-full bg-accent/10 px-2 py-0.5 text-[11px] font-medium uppercase tracking-wider text-accent sm:inline-flex">
-                            <FlameIcon className="size-3" /> Urgent
+                          <span className="checklist-urgent-label">
+                            Urgent
                           </span>
                         ) : null}
                         {t.link ? (

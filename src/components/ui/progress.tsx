@@ -74,7 +74,71 @@ function ProgressValue({ className, ...props }: ProgressPrimitive.Value.Props) {
   )
 }
 
+/*
+  Bar-only progress for the planning surfaces.
+
+  The app had six separate hand-rolled versions of this — five divs with an
+  inline width and one SVG — none of which exposed a role or a value, so
+  progress was invisible to assistive tech everywhere it appeared. This builds
+  on the same Base UI root as `Progress`, so role="progressbar" and the
+  aria-value* attributes come for free, but it renders only the bar: callers
+  keep their own label and value markup, which differs a lot per surface.
+
+  `label` is required. A progress bar with no accessible name announces a bare
+  percentage with no indication of what is being measured.
+*/
+function Meter({
+  value,
+  label,
+  tone = "accent",
+  size = "sm",
+  className,
+  trackClassName,
+  indicatorClassName,
+  indicatorStyle,
+}: {
+  value: number
+  label: string
+  tone?: "accent" | "success" | "primary"
+  size?: "sm" | "md" | "lg"
+  className?: string
+  /** For surfaces with their own palette, e.g. the sidebar. */
+  trackClassName?: string
+  /** For surfaces with their own palette, e.g. the sidebar. Overrides `tone`. */
+  indicatorClassName?: string
+  /** For a fill colour computed from data, e.g. the GPA gauge. Prefer `tone`. */
+  indicatorStyle?: React.CSSProperties
+}) {
+  const hasCustomFill = Boolean(indicatorClassName || indicatorStyle?.backgroundColor)
+
+  return (
+    <ProgressPrimitive.Root value={value} aria-label={label} className={cn("block", className)}>
+      <ProgressPrimitive.Track
+        className={cn(
+          "relative w-full overflow-hidden rounded-full bg-secondary",
+          size === "sm" && "h-1",
+          size === "md" && "h-1.5",
+          size === "lg" && "h-2",
+          trackClassName
+        )}
+      >
+        <ProgressPrimitive.Indicator
+          style={indicatorStyle}
+          className={cn(
+            "rounded-full transition-[width] duration-700 ease-out",
+            !hasCustomFill && tone === "accent" && "bg-accent",
+            !hasCustomFill && tone === "success" && "bg-success",
+            !hasCustomFill && tone === "primary" && "bg-primary",
+            indicatorClassName
+          )}
+        />
+      </ProgressPrimitive.Track>
+    </ProgressPrimitive.Root>
+  )
+}
+
 export {
+  Meter,
   Progress,
   ProgressTrack,
   ProgressIndicator,

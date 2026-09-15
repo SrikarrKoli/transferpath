@@ -1,8 +1,14 @@
 # TransferPath
 
+**Live site:** [transferpath.vercel.app](https://transferpath.vercel.app)
+
 **TransferPath** is a free, open-source web app that helps **Texas community college students** plan a transfer to a four-year university. Students set a target school and major, map courses semester-by-semester, track requirements, and work through an application checklist—with deadlines pulled from a shared database.
 
 > **Planner only, not admissions advice.** Deadlines and requirements are for organization. Always confirm dates and rules on each school’s official site.
+
+### Author
+
+Built and maintained by **[Srikar Kolipaka](https://github.com/SrikarrKoli)** ([@SrikarrKoli](https://github.com/SrikarrKoli)) — main contributor.
 
 ---
 
@@ -12,7 +18,7 @@
 
 | Area | What it does |
 |------|----------------|
-| **Landing** | Marketing home: how it works, schools, sign-up CTA |
+| **Landing** | Interactive 3D campus city (orbit/pan/zoom, click buildings) mapped to product areas |
 | **Onboarding** | 5-step wizard: current school, target school, major, field of study, transfer term |
 | **Overview** | Readiness score, next critical action, roadmap (same phases as Timeline), deadlines, gaps |
 | **Semester Timeline** | Journey map: Foundation & core → Major prerequisites → Essay → Application → Target enrollment; add/edit courses |
@@ -194,6 +200,12 @@ Uses `deadline_reminder_recipients()` and Resend. See migration `20260521200000_
 | `npm run build` | Production build |
 | `npm run start` | Run production build locally |
 | `npm run lint` | ESLint |
+
+---
+
+## 3D campus assets
+
+The landing map is a realtime Three.js city assembled from Kenney CC0 GLB kits (commercial, suburban, roads, industrial, castle, nature, cars, mini characters). Licenses and pack links: [`public/campus/ASSETS.md`](./public/campus/ASSETS.md).
 
 ---
 
