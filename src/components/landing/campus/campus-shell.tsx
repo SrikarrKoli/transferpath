@@ -152,7 +152,7 @@ export function CampusShell() {
           )}
         </div>
 
-        {sessionState === "guest" ? (
+        {sessionState !== "member" ? (
           <div className="pointer-events-none absolute inset-x-0 top-[4.25rem] z-20 flex justify-center px-3 lg:top-4 lg:justify-start lg:pl-4">
             <div className="pointer-events-auto max-w-md border border-[#1a2332]/18 bg-[#f7f2e8]/96 px-3 py-2 text-sm text-[#1a2332]/80 shadow-none">
               New here?{" "}

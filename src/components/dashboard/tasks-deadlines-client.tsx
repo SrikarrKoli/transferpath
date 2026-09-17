@@ -286,7 +286,7 @@ export function TasksDeadlinesClient({
               subtitle="Student-owned actions · mark completion here"
               trailing={`${data.openTasks.length} open`}
               isEmpty={data.openTasks.length === 0}
-              empty="No open application or preparation tasks."
+              empty="No open prep tasks on the action ledger. Add one, or check Dorms."
             >
               {data.openTasks.map((row, i) => (
                 <TaskRow
@@ -313,7 +313,7 @@ export function TasksDeadlinesClient({
               title="Completed"
               trailing={`${data.completedTasks.length} row${data.completedTasks.length === 1 ? "" : "s"}`}
               isEmpty={data.completedTasks.length === 0}
-              empty="Nothing completed yet."
+              empty="Nothing checked off yet — finished work will file here."
             >
               {data.completedTasks.map((row, i) => (
                 <CompletedTaskRow key={row.id} row={row} first={i === 0} />
@@ -324,7 +324,7 @@ export function TasksDeadlinesClient({
               title="Completed"
               trailing={`${data.completedTasks.length} row${data.completedTasks.length === 1 ? "" : "s"}`}
               isEmpty={data.completedTasks.length === 0}
-              empty="Nothing completed yet."
+              empty="Nothing checked off yet — finished work will file here."
             >
               {data.completedTasks.slice(0, 5).map((row, i) => (
                 <CompletedTaskRow key={row.id} row={row} first={i === 0} />
