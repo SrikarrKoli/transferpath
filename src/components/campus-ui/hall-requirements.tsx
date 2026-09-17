@@ -2,7 +2,7 @@ import Link from "next/link"
 import type { RequirementsWorkspaceData } from "@/types/requirements-workspace"
 
 function standing(status: string) {
-  if (status === "done") return "Logged"
+  if (status === "done") return "On plan"
   if (status === "active") return "In progress"
   return "Open"
 }
@@ -32,7 +32,7 @@ export function HallRequirements({ data }: { data: RequirementsWorkspaceData }) 
         </p>
         <div className="hall-plan-toolbar mt-5">
           <p className="hall-caption">
-            Place a course on your Classroom plan to move Open → Logged. Requirements stay here; term placement is in Plan.
+            Place a course on your Classroom plan to move Open → On plan. Requirements stay here; term placement is in Plan.
           </p>
           <div className="flex flex-wrap gap-x-4 gap-y-2">
             <Link href="/dashboard/plan" className="hall-ledger-link hall-plan-add">
@@ -100,7 +100,7 @@ export function HallRequirements({ data }: { data: RequirementsWorkspaceData }) 
           {data.header.program} · {data.header.term}
         </p>
         <p className="mt-6">
-          Logged means you already placed a matching course. Open means it is still required. Dates
+          On plan means you already placed a matching course. Open means it is still required. Dates
           live in the Clock Tower.
         </p>
         <div className="mt-3 flex flex-wrap gap-x-4 gap-y-2">

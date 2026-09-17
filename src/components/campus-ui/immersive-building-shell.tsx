@@ -20,9 +20,9 @@ export function ImmersiveBuildingShell({
   const building = campusBuilding(buildingId)
   const purposeCopy =
     purpose === "onboarding"
-      ? "Start here to set up your transfer path — current school, target universities, courses, and timeline. Built for transfer students planning a move to a four-year."
+      ? "Set your current school, targets, courses, and timeline here. That unlocks deadlines and requirements across campus."
       : purpose === "settings"
-        ? "Change the schools, major, term, and reminders that drive your transfer campus. Saves update your halls immediately."
+        ? "Update schools, major, term, and reminders. Changes show up in Deadlines, Plan, and Requirements right away."
         : null
 
   const isOnboarding = purpose === "onboarding"

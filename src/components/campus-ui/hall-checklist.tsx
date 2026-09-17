@@ -25,7 +25,7 @@ export function HallChecklist({
         <p className="hall-mid">
           {doneCount} of {all.length}
         </p>
-        <p className="hall-date-meta mt-2">filed on the dorms list</p>
+        <p className="hall-date-meta mt-2">personal apply tasks</p>
 
         <div className="hall-dorm-columns" aria-hidden>
           <span aria-hidden="true" />
@@ -34,7 +34,7 @@ export function HallChecklist({
         </div>
 
         {open.length === 0 ? (
-          <p className="hall-prompt mt-8">Every personal task on this list is marked done.</p>
+          <p className="hall-prompt mt-8">All personal tasks here are done.</p>
         ) : (
           <ul className="hall-checks">
             {open.map((t) => (
@@ -84,7 +84,7 @@ export function HallChecklist({
                     <p className="line-through opacity-50">{t.title}</p>
                     <p className="hall-date-meta">{t.category}</p>
                   </div>
-                  <span className="hall-date-meta text-[0.8rem]">Filed</span>
+                  <span className="hall-date-meta text-[0.8rem]">Done</span>
                 </li>
               ))}
             </ul>

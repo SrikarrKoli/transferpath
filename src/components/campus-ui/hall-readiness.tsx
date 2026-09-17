@@ -48,7 +48,7 @@ export function HallReadiness({ data }: { data: HallReadinessData }) {
           This number is a reading of what is already on file — courses, dates, and the essay — not
           an admission prediction.
         </p>
-        <p className="mt-6 hall-caption">Raise the reading</p>
+        <p className="mt-6 hall-caption">Ways to raise your score</p>
         <div className="mt-2 flex flex-col gap-2 items-start">
           <Link href="/dashboard/requirements" className="hall-ledger-link">
             Log requirements · Registrar

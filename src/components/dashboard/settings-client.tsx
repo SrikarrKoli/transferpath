@@ -194,7 +194,7 @@ export function SettingsClient({
 
     setMessage({
       type: "success",
-      text: "Saved. Your campus halls will update on the next view.",
+      text: "Saved. Your deadlines, plan, and requirements will refresh on the next view.",
     })
     router.refresh()
   }
@@ -739,7 +739,7 @@ export function SettingsClient({
                 <Divider />
 
                 <p className="text-sm text-muted-foreground mb-3">
-                  End your session on this device. You can sign back in anytime from the Counselor gate.
+                  End your session on this device. You can sign back in anytime from the login page.
                 </p>
                 <Button
                   type="button"

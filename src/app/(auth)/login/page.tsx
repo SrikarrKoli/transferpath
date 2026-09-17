@@ -173,7 +173,7 @@ function LoginPageContent() {
               {TAGLINE}
             </h1>
             <p className="mt-3 text-sm leading-relaxed text-[color:var(--hall-ink)]/65">
-              Sign in to continue your community-college → four-year transfer campus — schools, courses,
+              Sign in to keep working your community-college → four-year transfer — schools, courses,
               deadlines, and essays in one place.
             </p>
           </div>
@@ -215,7 +215,7 @@ function LoginPageContent() {
 
           <div>
             <p className="text-xs font-semibold uppercase tracking-[0.14em] text-[color:var(--hall-ink)]/55">
-              Counselor gate
+              Sign in
             </p>
             <h2 className="font-heading mt-2 text-2xl font-semibold tracking-tight text-[color:var(--hall-ink)]">
               Welcome back
@@ -223,7 +223,7 @@ function LoginPageContent() {
             <p className="mt-1 text-sm text-[color:var(--hall-ink)]/65">
               {destHall
                 ? `Continue to ${destHall} after you log in`
-                : "Log in to open your transfer campus"}
+                : "Log in to open your schools, deadlines, and essays"}
             </p>
           </div>
 

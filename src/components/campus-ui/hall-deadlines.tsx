@@ -38,7 +38,7 @@ export function HallDeadlines({
   return (
     <div className="hall-split">
       <div>
-        <div className="hall-index" role="tablist" aria-label="Ledger view">
+        <div className="hall-index" role="tablist" aria-label="Deadline views">
           {FILTERS.map((item) => {
             const count = data.filterCounts[item.id]
             return (

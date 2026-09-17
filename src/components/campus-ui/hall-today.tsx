@@ -129,7 +129,7 @@ export function HallToday({ data, userId }: { data: OverviewData; userId: string
                 <p className="hall-hero-date">
                   Now
                   <span className="mt-2 block text-[0.28em] font-normal tracking-normal text-[color:var(--hall-stone)]">
-                    Next on your route
+                    Up next
                   </span>
                 </p>
               )}
@@ -166,9 +166,9 @@ export function HallToday({ data, userId }: { data: OverviewData; userId: string
                   Today
                 </span>
               </p>
-              <p className="hall-hero-title">Nothing due on your route today.</p>
+              <p className="hall-hero-title">Nothing due today.</p>
               <p className="hall-prompt mt-4">
-                Use the time to push applications, check requirements, or knock out a checklist task.
+                Good time to place a course, check a deadline, or draft an essay.
               </p>
               <div className="union-step-actions mt-6">
                 <PrimaryAction href="/dashboard/checklist" label="Open checklist" />
@@ -213,7 +213,7 @@ export function HallToday({ data, userId }: { data: OverviewData; userId: string
       </div>
 
       <aside className="hall-margin">
-        <p className="hall-caption">Your route</p>
+        <p className="hall-caption">Your transfer</p>
         <p className="mt-2">
           <span className="text-[color:var(--hall-stone)]">{data.pathway.fromInstitution}</span>
           <span aria-hidden> → </span>

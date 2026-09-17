@@ -94,7 +94,7 @@ function NavList({
   return (
     <div className="space-y-4">
       <div>
-        <p className="px-3 pb-2 tp-eyebrow text-sidebar-foreground/40">Campus route</p>
+        <p className="px-3 pb-2 tp-eyebrow text-sidebar-foreground/40">Your work</p>
         <ul className="space-y-1">
           {DASHBOARD_PLAN_NAV.map((item) => (
             <NavLink
@@ -109,7 +109,7 @@ function NavList({
         </ul>
       </div>
       <div>
-        <p className="px-3 pb-2 tp-eyebrow text-sidebar-foreground/40">Work rooms</p>
+        <p className="px-3 pb-2 tp-eyebrow text-sidebar-foreground/40">More tools</p>
         <ul className="space-y-1">
           {DASHBOARD_TOOL_NAV.map((item) => (
             <NavLink
@@ -170,7 +170,7 @@ function PathwayPanel({
 
   return (
     <div className="border-b border-sidebar-border px-4 py-4">
-      <p className="tp-eyebrow text-sidebar-foreground/45">Current pathway</p>
+      <p className="tp-eyebrow text-sidebar-foreground/45">Your path</p>
       <p className="mt-2 font-heading text-base leading-snug text-sidebar-foreground">{pathwayHeadline}</p>
       {currentSchoolName ? (
         <p className="mt-1 text-xs text-sidebar-foreground/60">From {currentSchoolName}</p>

@@ -5197,6 +5197,10 @@ nextjs-portal,
   color: var(--hall-ink, var(--campus-ink));
 }
 
+.union-coach-copy {
+  min-width: 0;
+}
+
 .union-coach-title {
   font-size: 0.92rem;
   font-weight: 600;
