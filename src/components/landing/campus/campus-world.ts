@@ -196,6 +196,21 @@ export function buildCampusWorld(root: THREE.Group, lib: KitLibrary) {
     g.add(hall)
     uniquifyMaterials(g)
     tag(g, id)
+
+    // Invisible pick volume — keeps directory/map lockstep honest when props crowd the facade.
+    const box = new THREE.Box3().setFromObject(hall)
+    const size = new THREE.Vector3()
+    const center = new THREE.Vector3()
+    box.getSize(size)
+    box.getCenter(center)
+    const hit = new THREE.Mesh(
+      new THREE.BoxGeometry(Math.max(size.x, 1.1) * 1.08, Math.max(size.y, 1.4) * 1.05, Math.max(size.z, 1.1) * 1.08),
+      new THREE.MeshBasicMaterial({ visible: false, transparent: true, opacity: 0, depthWrite: false }),
+    )
+    hit.position.set(center.x - g.position.x, Math.max(size.y, 1.4) * 0.52, center.z - g.position.z)
+    hit.userData.buildingId = id
+    hit.userData.isHitVolume = true
+    g.add(hit)
     const index = CAMPUS_BUILDINGS.findIndex((b) => b.id === id)
     const pin = numberPin(index + 1, id)
     pin.position.set(0, PIN_Y[id], 0)
@@ -317,8 +332,8 @@ export function buildCampusWorld(root: THREE.Group, lib: KitLibrary) {
     [-2.95, 3.15, 32],
   ]
   trees.forEach(([x, z, seed]) => {
-    // L5: thin density — drop ~1/3 of kit trees so crowns can breathe
-    if (seed % 3 === 0) return
+    // L5: thin density — drop ~half of kit trees so crowns can breathe
+    if (seed % 2 === 0) return
     if (occupied.has(keyOf(x, z))) return
     const t = toyTree(x, z, seed)
     city.add(t)
@@ -401,19 +416,8 @@ export function buildCampusWorld(root: THREE.Group, lib: KitLibrary) {
   garden(0.95, 4.85, 1.15, 0.95)
   garden(-5.35, -0.55, 1.1, 1.2)
 
-  // L4: two palms only — Kenney palms read toy in a row
-  ;[
-    [-7.55, 2.15],
-    [-7.45, 4.85],
-  ].forEach(([x, z], i) => {
-    add(i % 2 ? "nature/tree_palm" : "nature/tree_palmShort", x, z, i * 0.2, 0.82, false)
-  })
-  add("nature/rock_largeB", -8.05, 3.25, 0.2, 0.65, false)
-  add("castle/rocks-small", -7.55, 6.05, 0.12, 1)
-  add("nature/flower_purpleA", -0.55, 1.85, 0, 0.9, false)
-  add("nature/flower_yellowA", 0.55, 1.85, 0, 0.9, false)
-  add("nature/plant_bushLarge", 4.95, -0.85, 0, 0.55, false)
-  add("nature/plant_bush", -4.55, -1.55, 0, 0.7, false)
+
+  // Palms removed — they read as asset-pack toys against the paper campus.
 
   const deck = rbox(4.05, 0.1, 1.05, pierMat, -8.65, 0.06, 2.55, 0.03)
   city.add(deck)

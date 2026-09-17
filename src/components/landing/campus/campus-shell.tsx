@@ -95,14 +95,15 @@ export function CampusShell() {
         <p className="mt-10 text-[10px] font-semibold uppercase tracking-[0.18em] text-[#1a2332]/35">
           Directory
         </p>
-        <ul className="mt-3 -mx-1 min-h-0 flex-1 overflow-auto">
+        <ul className="mt-3 -mx-1 min-h-0 flex-1 overflow-auto [scrollbar-width:thin] [scrollbar-color:rgba(26,35,50,0.25)_transparent]">
           {CAMPUS_BUILDINGS.map((b) => {
             const on = selected === b.id || hovered === b.id
             return (
               <li key={b.id}>
                 <button
                   type="button"
-                  onClick={() => enterBuilding(b.id)}
+                  onClick={() => selectBuilding(b.id)}
+                  onDoubleClick={() => enterBuilding(b.id)}
                   onMouseEnter={() => setHovered(b.id)}
                   onMouseLeave={() => setHovered(null)}
                   className={`flex w-full items-baseline gap-3 border-b border-[#1a2332]/10 px-1 py-2.5 text-left transition-colors ${
@@ -120,16 +121,11 @@ export function CampusShell() {
         </ul>
 
         {/* Single onboarding cue for the whole landing */}
-        {sessionState !== "member" ? (
-          <p className="pt-5 text-[12px] leading-snug text-[#1a2332]/50">
-            New?{" "}
-            <Link href="/onboarding" className="font-semibold text-[#1a2332] underline-offset-2 hover:underline">
-              Start in Counselor Hall
-            </Link>
-          </p>
-        ) : (
-          <p className="pt-5 text-[12px] text-[#1a2332]/45">Signed in</p>
-        )}
+        <p className="pt-5 text-[12px] leading-snug text-[#1a2332]/42">
+          {sessionState === "member"
+            ? "Signed in — pick a building to continue."
+            : "Select a building. Start with Counselor Hall if you’re new."}
+        </p>
       </aside>
 
       <div className="relative min-w-0 flex-1">
@@ -188,7 +184,8 @@ export function CampusShell() {
                 <button
                   key={b.id}
                   type="button"
-                  onClick={() => enterBuilding(b.id)}
+                  onClick={() => selectBuilding(b.id)}
+                  onDoubleClick={() => enterBuilding(b.id)}
                   className={`shrink-0 whitespace-nowrap px-3 py-1.5 text-xs font-medium ${
                     on ? "bg-[#1a2332] text-[#f4efe6]" : "bg-[#f4efe6]/90 text-[#1a2332]/80"
                   }`}
@@ -200,14 +197,6 @@ export function CampusShell() {
           </div>
         </div>
 
-        {/* Name only — no how-to chrome */}
-        {hovered && !selected && live ? (
-          <div className="pointer-events-none absolute left-1/2 top-[16%] z-20 -translate-x-1/2">
-            <div className="bg-[#1a2332]/88 px-3.5 py-1.5 text-[13px] font-medium tracking-tight text-[#f4efe6]">
-              {live.name}
-            </div>
-          </div>
-        ) : null}
 
         {dock ? (
           <div className="absolute inset-x-0 bottom-0 z-30 p-3 sm:p-5">

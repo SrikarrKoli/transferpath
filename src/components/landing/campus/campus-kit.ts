@@ -291,7 +291,7 @@ export function toyTree(x: number, z: number, seed: number) {
   const scale = 0.82 + (seed % 5) * 0.06
   const trunkH = 0.38 + (seed % 3) * 0.04
   g.add(mesh(new THREE.CylinderGeometry(0.038, 0.058, trunkH, 7), trunkMat, 0, trunkH / 2, 0, false))
-  if (seed % 8 === 0) {
+  if (seed % 3 !== 1) {  // prefer conical massing over lollipop spheres
     const pine = mesh(new THREE.ConeGeometry(0.26, 0.78, 7), canopyMat, 0, trunkH + 0.28, 0)
     pine.scale.set(1.05, 1, 0.92)
     g.add(pine)

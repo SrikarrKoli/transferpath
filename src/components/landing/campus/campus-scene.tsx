@@ -224,7 +224,7 @@ export function CampusScene({ selected, hovered, focusToken, onHover, onSelect, 
       }
       if (on) {
         mat.emissive.setHex(0x8c4a32)
-        mat.emissiveIntensity = 0.16
+        mat.emissiveIntensity = 0.28
       } else {
         mat.emissive.copy(mat.userData._baseEmissive)
         mat.emissiveIntensity = mat.userData._baseIntensity
