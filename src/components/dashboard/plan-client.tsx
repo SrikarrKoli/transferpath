@@ -29,7 +29,7 @@ import type { PlanTermSection } from "@/types/plan-terms"
 import { Provenance } from "@/components/ui/provenance"
 import { cn } from "@/lib/utils"
 import { useHall } from "@/components/campus-ui/hall-context"
-import { HallPlan, type HallPlanBlock } from "@/components/campus-ui/hall-plan"
+import { HallPlan, type HallPlanBlock, type HallPlanNext } from "@/components/campus-ui/hall-plan"
 
 export type PlanCourseRow = {
   id: string
@@ -288,43 +288,104 @@ export function PlanClient({
           })),
   }))
 
+  const openAddBlank = useCallback(() => {
+    setAddTerm("")
+    setAddError("")
+    setAddOpen(true)
+  }, [])
+
+  const hallNext: HallPlanNext = useMemo(() => {
+    const calendarSections = planTerms.sections.filter((s) => s.kind === "calendar")
+    const currentTerm = calendarSections.find((s) => s.temporalState === "current") ?? null
+    const nextTerm = calendarSections.find((s) => s.temporalState === "planned") ?? null
+    const currentEmpty = !currentTerm || currentTerm.courses.length === 0
+    const nextEmpty = !nextTerm || nextTerm.courses.length === 0
+    const firstPlanned = rows.find((r) => r.status === "planned")
+
+    if (rows.length === 0) {
+      return {
+        caption: "Start here" as const,
+        title: "Add your first course",
+        prompt: "Place a course on a term so this page starts matching your transfer path.",
+        primary: { kind: "button" as const, label: "Add a course", onClick: openAddBlank },
+        secondaries: [
+          { kind: "link" as const, label: "Open Requirements", href: "/dashboard/requirements" },
+          { kind: "link" as const, label: "Open Checklist", href: "/dashboard/checklist" },
+        ],
+      }
+    }
+
+    if (currentEmpty && nextEmpty && (currentTerm || nextTerm)) {
+      const focus = currentTerm && currentTerm.courses.length === 0 ? currentTerm : nextTerm!
+      return {
+        caption: "Do this next" as const,
+        title: `Add a course for ${focus.termLabel}`,
+        prompt: "You have courses on the plan, but nothing on the current or next term yet.",
+        primary: {
+          kind: "button" as const,
+          label: "Add a course",
+          onClick: () => openAddForTerm(focus.termLabel),
+        },
+        secondaries: [
+          { kind: "link" as const, label: "Open Requirements", href: "/dashboard/requirements" },
+          { kind: "link" as const, label: "Open Checklist", href: "/dashboard/checklist" },
+        ],
+      }
+    }
+
+    if (firstPlanned) {
+      return {
+        caption: "Do this next" as const,
+        title: firstPlanned.course_name,
+        prompt: "Mark it in progress when you start the class — or keep placing courses on terms.",
+        meta: firstPlanned.semester_taken
+          ? `Planned · ${firstPlanned.semester_taken}`
+          : "Planned · no term yet",
+        primary: {
+          kind: "button" as const,
+          label: "Mark in progress",
+          onClick: () => {
+            void patchCourse(firstPlanned.id, { status: "in_progress" })
+          },
+        },
+        secondaries: [
+          { kind: "button" as const, label: "+ Add a course", onClick: openAddBlank },
+          { kind: "link" as const, label: "Open Requirements", href: "/dashboard/requirements" },
+        ],
+      }
+    }
+
+    return {
+      caption: "Do this next" as const,
+      title: "Check requirements against your plan",
+      prompt: "Your courses are placed. See what is still open under Requirements.",
+      primary: {
+        kind: "link" as const,
+        label: "Open Requirements",
+        href: "/dashboard/requirements",
+      },
+      secondaries: [
+        { kind: "button" as const, label: "+ Add a course", onClick: openAddBlank },
+        { kind: "link" as const, label: "Open Checklist", href: "/dashboard/checklist" },
+      ],
+    }
+  }, [planTerms.sections, rows, openAddBlank, patchCourse])
+
   return (
     <div className={hall ? undefined : "plan-table mx-auto max-w-6xl tp-stagger-children"}>
       {hall ? (
         <>
-          <div className="hall-plan-toolbar">
-            <p className="hall-caption">
-              Place courses on terms for your transfer entry. Requirements stay on the Registrar.
-            </p>
-            <button
-              type="button"
-              className="hall-ledger-link hall-plan-add"
-              onClick={() => {
-                setAddTerm("")
-                setAddError("")
-                setAddOpen(true)
-              }}
-            >
-              + Add a course
-            </button>
-          </div>
           <HallPlan
             blocks={hallBlocks}
-            note="Terms are ordered to the entry date. Requirements stay on the Registrar; this page only places courses on a calendar."
+            next={hallNext}
+            onAddCourse={openAddBlank}
+            margin={{
+              fromInstitution: checklistProfile.currentUniversityName,
+              toInstitution: checklistProfile.targetUniversityName,
+              program: checklistProfile.targetMajor ?? checklistProfile.fieldOfStudy,
+              term: checklistProfile.expectedTransferTerm,
+            }}
           />
-          <div className="hall-plan-foot">
-            <button
-              type="button"
-              className="hall-ledger-link"
-              onClick={() => {
-                setAddTerm("")
-                setAddError("")
-                setAddOpen(true)
-              }}
-            >
-              Add another course
-            </button>
-          </div>
           {listError ? (
             <p className="mt-4 text-sm text-[color:var(--hall-clay)]" role="alert">
               {listError}
@@ -428,7 +489,7 @@ export function PlanClient({
       <Dialog open={addOpen} onOpenChange={setAddOpen}>
         <DialogContent className="rounded-none border border-[color:var(--hall-rule)] bg-[color:var(--hall-paper)] sm:max-w-md">
           <DialogHeader>
-            <DialogTitle>Add a course to the Classroom</DialogTitle>
+            <DialogTitle>Add a course</DialogTitle>
             <DialogDescription>
               Pick from the catalog and place it on a term. Use Later / Not scheduled when the term
               is still open.

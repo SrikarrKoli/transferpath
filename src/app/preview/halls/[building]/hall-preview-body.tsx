@@ -49,7 +49,23 @@ export function HallPreviewBody({ buildingId }: { buildingId: BuildingId }) {
       ) : buildingId === "classroom" ? (
         <HallPlan
           blocks={previewPlan}
-          note="Terms are ordered to the entry date. Requirements stay on the Registrar; this page only places courses on a calendar."
+          next={{
+            caption: "Do this next",
+            title: "COSC 1436",
+            prompt: "Mark it in progress when you start the class — or keep placing courses on terms.",
+            meta: "Planned · Fall 2026",
+            primary: { kind: "button", label: "Mark in progress", onClick: () => undefined },
+            secondaries: [
+              { kind: "link", label: "+ Add a course", href: "/dashboard/plan" },
+              { kind: "link", label: "Open Requirements", href: "/dashboard/requirements" },
+            ],
+          }}
+          margin={{
+            fromInstitution: "Austin Community College",
+            toInstitution: "UT Austin",
+            program: "Computer Science",
+            term: "Fall 2027",
+          }}
         />
       ) : buildingId === "registrar" ? (
         <HallRequirements data={previewRequirements} />
