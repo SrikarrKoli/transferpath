@@ -187,11 +187,6 @@ function DeadlinesNextBlock({
         Do this next
       </p>
       <p className="hall-hero-title">Nothing dated yet</p>
-      <p className="hall-prompt mt-4">
-        {unset
-          ? "Set your school and entry term so we can pull official dates onto this page."
-          : "No upcoming school dates are on file. Confirm a missing deadline or keep moving on checklist work."}
-      </p>
       <div className="union-step-actions mt-6">
         <PrimaryAction
           href="/dashboard/settings?tab=transfer"
@@ -262,10 +257,6 @@ export function HallDeadlines({
                 </div>
                 <div>
                   <p className="hall-date-title">No official deadlines yet</p>
-                  <p className="hall-date-meta">
-                    Nothing from your target school is dated in the next two years. Confirm school
-                    and entry term, review missing dates, or open requirements and your checklist.
-                  </p>
                   <div className="deadline-empty-actions union-step-actions mt-3">
                     <PrimaryAction href="/dashboard/settings?tab=transfer" label="Set school & term" />
                     <Link href="/dashboard/checklist" className="hall-ledger-link">
@@ -346,9 +337,7 @@ export function HallDeadlines({
             </li>
           </ol>
         ) : showMissing && !data.missingDate ? (
-          <p className="hall-date-meta mt-4">
-            No missing application deadlines for your entry term — or your pathway is not set up yet.
-          </p>
+          <p className="hall-date-meta mt-4">Nothing missing for this term.</p>
         ) : null}
       </div>
 
@@ -362,16 +351,7 @@ export function HallDeadlines({
         <p className="mt-1 text-[0.9rem] text-[color:var(--hall-stone)]">
           {data.header.program} · {data.header.term}
         </p>
-        {data.openTasks.length > 0 ? (
-          <p className="mt-6">
-            {data.openTasks.length} open {data.openTasks.length === 1 ? "task" : "tasks"} sit on
-            the checklist — this page is the calendar.
-          </p>
-        ) : null}
-        <p className="mt-6">
-          Course requirements are tracked under Requirements, not by a date here.
-        </p>
-        <div className="mt-3 flex flex-col items-start gap-2">
+        <div className="mt-6 flex flex-col items-start gap-2">
           <Link href="/dashboard/requirements" className="hall-ledger-link">
             Open Requirements
           </Link>

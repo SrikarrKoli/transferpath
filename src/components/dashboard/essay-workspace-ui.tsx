@@ -100,7 +100,6 @@ export function EssayWorkspaceUi({
             {nextCaption}
           </p>
           <h2 className="hall-hero-title">{nextTitle}</h2>
-          <p className="hall-prompt mt-4">{nextPrompt}</p>
           <p className="mt-3 text-sm text-[color:var(--hall-stone)]">
             {essay.title}
             {essay.subtitle ? ` — ${essay.subtitle}` : ""}
@@ -135,7 +134,7 @@ export function EssayWorkspaceUi({
         {settingsSlot ? <div className="mt-4">{settingsSlot}</div> : null}
         <div className="hall-plan-toolbar mt-5">
           <p className="hall-caption">
-            Draft for your transfer application. Save often — coach notes update after you pause.
+            Save often. Coach notes update after you pause.
           </p>
           <div className="flex flex-wrap gap-x-4 gap-y-2">
             {onPreview ? (

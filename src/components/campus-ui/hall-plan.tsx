@@ -75,7 +75,6 @@ function PlanNextBlock({ next }: { next: HallPlanNext }) {
         {next.caption}
       </p>
       <h2 className="hall-hero-title">{next.title}</h2>
-      {next.prompt ? <p className="hall-prompt mt-4">{next.prompt}</p> : null}
       {next.meta ? (
         <p className="mt-3 text-sm text-[color:var(--hall-stone)]">{next.meta}</p>
       ) : null}
@@ -202,10 +201,6 @@ export function HallPlan({
             </p>
           </>
         ) : null}
-        <p className="mt-6">
-          This page places courses on a calendar. Gaps in what you still need are tracked under
-          Requirements.
-        </p>
         <div className="mt-3 flex flex-col items-start gap-2">
           <Link href="/dashboard/requirements" className="hall-ledger-link">
             Open Requirements

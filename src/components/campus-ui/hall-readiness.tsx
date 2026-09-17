@@ -91,7 +91,6 @@ export function HallReadiness({ data }: { data: HallReadinessData }) {
             {next.caption}
           </p>
           <h2 className="hall-hero-title">{next.title}</h2>
-          <p className="hall-prompt mt-4">{next.prompt}</p>
           <div className="union-step-actions mt-6">
             <Link href={next.primary.href} className="union-primary-cta">
               {next.primary.label}
@@ -116,11 +115,7 @@ export function HallReadiness({ data }: { data: HallReadinessData }) {
         </dl>
       </div>
       <aside className="hall-margin">
-        <p>
-          This number reads what is already on file — courses, dates, and essays — not an admission
-          prediction.
-        </p>
-        <p className="mt-6 hall-caption">Ways to raise your score</p>
+        <p className="hall-caption">Raise score</p>
         <div className="mt-2 flex flex-col items-start gap-2">
           <Link href="/dashboard/requirements" className="hall-ledger-link">
             Open Requirements

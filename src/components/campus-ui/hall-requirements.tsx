@@ -25,7 +25,6 @@ function pathwayUnset(header: RequirementsWorkspaceData["header"]) {
 type NextAction = {
   caption: "Do this next" | "Start here"
   title: string
-  prompt?: string
   meta?: string
   primary: { href: string; label: string }
   secondaries: { href: string; label: string }[]
@@ -41,8 +40,6 @@ function pickNext(data: RequirementsWorkspaceData): NextAction {
     return {
       caption: "Start here",
       title: "Set your school and entry term",
-      prompt:
-        "Requirements only make sense once we know where you are transferring. That unlocks this list.",
       primary: { href: "/dashboard/settings?tab=transfer", label: "Set school & term" },
       secondaries: [
         { href: "/dashboard/plan", label: "Open Plan" },
@@ -55,7 +52,6 @@ function pickNext(data: RequirementsWorkspaceData): NextAction {
     return {
       caption: "Start here",
       title: "No requirements on file yet",
-      prompt: "Confirm your target school, then place courses on Plan so this page can track them.",
       primary: { href: "/dashboard/settings?tab=transfer", label: "Edit schools" },
       secondaries: [
         { href: "/dashboard/plan", label: "Open Plan" },
@@ -71,7 +67,6 @@ function pickNext(data: RequirementsWorkspaceData): NextAction {
       meta: [missing.code || null, missing.equiv ? `→ ${missing.equiv}` : null, "Still open"]
         .filter(Boolean)
         .join(" · "),
-      prompt: "Place a matching course on Plan to mark this requirement on plan.",
       primary: { href: "/dashboard/plan", label: "Place on Plan" },
       secondaries: [
         { href: "/dashboard/deadlines", label: "Open Deadlines" },
@@ -85,7 +80,6 @@ function pickNext(data: RequirementsWorkspaceData): NextAction {
       caption: "Do this next",
       title: active.title,
       meta: [active.code || null, "In progress"].filter(Boolean).join(" · "),
-      prompt: "Keep this course moving on Plan until it lands as on plan here.",
       primary: { href: "/dashboard/plan", label: "Open Plan" },
       secondaries: [
         { href: "/dashboard/deadlines", label: "Open Deadlines" },
@@ -97,7 +91,6 @@ function pickNext(data: RequirementsWorkspaceData): NextAction {
   return {
     caption: "Do this next",
     title: "Requirements look covered",
-    prompt: "Good time to confirm upcoming dates or tick checklist items still left.",
     primary: { href: "/dashboard/deadlines", label: "Open Deadlines" },
     secondaries: [
       { href: "/dashboard/checklist", label: "Open Checklist" },
@@ -113,7 +106,6 @@ function RequirementsNextBlock({ next }: { next: NextAction }) {
         {next.caption}
       </p>
       <h2 className="hall-hero-title">{next.title}</h2>
-      {next.prompt ? <p className="hall-prompt mt-4">{next.prompt}</p> : null}
       {next.meta ? (
         <p className="mt-3 text-sm text-[color:var(--hall-stone)]">{next.meta}</p>
       ) : null}
@@ -153,9 +145,8 @@ export function HallRequirements({ data }: { data: RequirementsWorkspaceData }) 
       <div>
         <RequirementsNextBlock next={next} />
 
-        <p className="hall-mid mt-8">{headline}</p>
-        <p className="hall-date-meta mt-2">
-          {done} of {total} on this path
+        <p className="hall-caption mt-10">
+          {done}/{total} on plan
         </p>
 
         <div className="hall-matrix-wrap mt-8">
@@ -221,10 +212,7 @@ export function HallRequirements({ data }: { data: RequirementsWorkspaceData }) 
         <p className="mt-1">
           {data.header.program} · {data.header.term}
         </p>
-        <p className="mt-6">
-          On plan means you already placed a matching course. Open means it is still required. Dates
-          live under Deadlines.
-        </p>
+        
         <div className="mt-3 flex flex-wrap gap-x-4 gap-y-2">
           <Link href="/dashboard/plan" className="hall-ledger-link">
             Open Plan
