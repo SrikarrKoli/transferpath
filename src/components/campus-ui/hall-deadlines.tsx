@@ -65,15 +65,18 @@ export function HallDeadlines({
               <li className="hall-date-row hall-date-empty">
                 <div>
                   <span className="hall-date-big">00</span>
-                  <span className="hall-date-year">Unfiled</span>
+                  <span className="hall-date-year">No date</span>
                 </div>
                 <div>
-                  <p className="hall-date-title">No official dates on the ledger</p>
+                  <p className="hall-date-title">No official deadlines yet</p>
                   <p className="hall-date-meta">
-                    Nothing from the target school is dated in the next two years. Review what still
-                    needs a source, keep working tasks on Dorms, or log coursework on the Registrar.
+                    Nothing from your target school is dated in the next two years. Confirm school
+                    and entry term, review missing dates, or open requirements and your checklist.
                   </p>
                   <div className="deadline-empty-actions mt-3 flex flex-wrap gap-x-4 gap-y-2">
+                    <Link href="/dashboard/settings?tab=transfer" className="hall-ledger-link">
+                      Set school &amp; term
+                    </Link>
                     <button
                       type="button"
                       className="hall-ledger-link"
@@ -82,21 +85,21 @@ export function HallDeadlines({
                       Review missing dates
                     </button>
                     <Link href="/dashboard/requirements" className="hall-ledger-link">
-                      Open Registrar
+                      Open requirements
                     </Link>
                     <Link href="/dashboard/checklist" className="hall-ledger-link">
-                      Open Dorms tasks
+                      Open checklist
                     </Link>
                     <button
                       type="button"
                       className="hall-ledger-link"
                       onClick={() => onFilter("tasks")}
                     >
-                      Your work on this ledger
+                      Your prep tasks
                     </button>
                   </div>
                 </div>
-                <span className="hall-urgent text-[0.8rem]">Unfiled</span>
+                <span className="hall-urgent text-[0.8rem]">No date</span>
               </li>
             ) : (
               data.upcomingDeadlines.map((row) => <DeadlineLine key={row.id} row={row} />)
@@ -153,7 +156,7 @@ export function HallDeadlines({
                   </Link>
                 </div>
               </div>
-              <span className="hall-urgent text-[0.8rem]">Unfiled</span>
+              <span className="hall-urgent text-[0.8rem]">No date</span>
             </li>
           </ol>
         ) : showMissing && !data.missingDate ? (

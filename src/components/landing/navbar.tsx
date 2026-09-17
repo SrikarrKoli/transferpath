@@ -11,11 +11,11 @@ export function Navbar() {
           {PRODUCT_NAME}.
         </Link>
         <div className="hidden items-center gap-7 md:flex">
-          <Link href="#plan" className="text-sm text-muted-foreground hover:text-foreground">
-            The plan
+          <Link href="/sources" className="text-sm text-muted-foreground hover:text-foreground">
+            Sources
           </Link>
-          <Link href="#deadlines" className="text-sm text-muted-foreground hover:text-foreground">
-            Deadlines
+          <Link href="/onboarding" className="text-sm text-muted-foreground hover:text-foreground">
+            Start setup
           </Link>
           <Link href="/login" className="text-sm text-muted-foreground hover:text-foreground">
             Log in

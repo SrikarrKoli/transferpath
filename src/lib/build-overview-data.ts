@@ -330,7 +330,7 @@ export function buildOverviewData(input: {
       pathwayPrompt: {
         title: "Where are you hoping to transfer, and when?",
         body: "Those two answers decide which deadlines, requirements and terms we can show you. Everything else on TransferPath follows from them, so there is nothing useful we can put on this screen until we have them.",
-        settingsHref: "/dashboard/settings",
+        settingsHref: "/dashboard/settings?tab=transfer",
       },
       nextAction: null,
       comingUp: [],

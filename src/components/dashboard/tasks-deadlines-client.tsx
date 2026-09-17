@@ -187,13 +187,13 @@ export function TasksDeadlinesClient({
 
       <div className="dossier-folio-heading" aria-hidden>
         <div>
-          <span>Clock Tower / official record</span>
-          <strong>Transfer deadline ledger</strong>
+          <span>Clock Tower · deadlines</span>
+          <strong>Your transfer dates</strong>
         </div>
         <p>Live register · {h.term}</p>
       </div>
 
-      <div className="dossier-filters" aria-label="Filter ledger">
+      <div className="dossier-filters" aria-label="Filter deadlines">
         {(Object.keys(FILTER_LABELS) as TasksDeadlinesFilterId[]).map((id) => {
           const count = data.filterCounts[id]
           const active = filter === id
@@ -233,20 +233,24 @@ export function TasksDeadlinesClient({
         <div className="deadline-ledger-main">
           {showDeadlines ? (
             <Section
-              title="Deadline ledger"
-              subtitle="Official dates · recorded in calendar order"
+              title="Official deadlines"
+              subtitle="School dates · shown in calendar order"
               trailing={`${data.upcomingDeadlines.length} row${data.upcomingDeadlines.length === 1 ? "" : "s"}`}
               isEmpty={data.upcomingDeadlines.length === 0}
               empty={
                 <div className="deadline-empty-record">
                   <span aria-hidden>00</span>
                   <div>
-                    <strong>No official dates on the ledger.</strong>
+                    <strong>No official deadlines yet.</strong>
                     <p>
-                      Nothing from the target school is dated in the next two years. Review what still
-                      needs a source, keep working the action ledger, or file coursework on the Registrar.
+                      We do not have dated requirements for your target school in the next two years.
+                      Confirm your school and entry term, review missing dates, or jump to requirements
+                      and your personal checklist.
                     </p>
                     <div className="deadline-empty-actions">
+                      <Link href="/dashboard/settings?tab=transfer" className="hall-ledger-link">
+                        Set school &amp; term
+                      </Link>
                       <button
                         type="button"
                         className="hall-ledger-link"
@@ -255,10 +259,10 @@ export function TasksDeadlinesClient({
                         Review missing dates
                       </button>
                       <Link href="/dashboard/requirements" className="hall-ledger-link">
-                        Open Registrar
+                        Open requirements
                       </Link>
                       <Link href="/dashboard/checklist" className="hall-ledger-link">
-                        Open Dorms tasks
+                        Open checklist
                       </Link>
                     </div>
                   </div>
@@ -282,11 +286,11 @@ export function TasksDeadlinesClient({
 
           {showOpenTasks ? (
             <Section
-              title="Action ledger"
-              subtitle="Student-owned actions · mark completion here"
+              title="Your prep tasks"
+              subtitle="Personal to-dos · mark complete here"
               trailing={`${data.openTasks.length} open`}
               isEmpty={data.openTasks.length === 0}
-              empty="No open prep tasks on the action ledger. Add one, or check Dorms."
+              empty="No open prep tasks. Add one here, or open the Dorms checklist."
             >
               {data.openTasks.map((row, i) => (
                 <TaskRow
@@ -313,7 +317,7 @@ export function TasksDeadlinesClient({
               title="Completed"
               trailing={`${data.completedTasks.length} row${data.completedTasks.length === 1 ? "" : "s"}`}
               isEmpty={data.completedTasks.length === 0}
-              empty="Nothing checked off yet — finished work will file here."
+              empty="Nothing checked off yet — completed tasks will show here."
             >
               {data.completedTasks.map((row, i) => (
                 <CompletedTaskRow key={row.id} row={row} first={i === 0} />
@@ -324,7 +328,7 @@ export function TasksDeadlinesClient({
               title="Completed"
               trailing={`${data.completedTasks.length} row${data.completedTasks.length === 1 ? "" : "s"}`}
               isEmpty={data.completedTasks.length === 0}
-              empty="Nothing checked off yet — finished work will file here."
+              empty="Nothing checked off yet — completed tasks will show here."
             >
               {data.completedTasks.slice(0, 5).map((row, i) => (
                 <CompletedTaskRow key={row.id} row={row} first={i === 0} />
@@ -585,7 +589,7 @@ function MissingDatesSection({
       ) : (
         <p className="mt-3 text-sm leading-relaxed text-muted-foreground">
           {emptyVoice
-            ? "We hold application deadline dates for your entry term, or your pathway is not set up yet. When a date is genuinely unknown, it appears here with an explanation — not as a blank row."
+            ? "Confirm your target school and entry term first — then missing official dates show up here with an explanation, not as a blank row."
             : "No missing application deadlines for your entry term."}
         </p>
       )}

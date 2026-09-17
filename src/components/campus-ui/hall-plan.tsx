@@ -18,7 +18,7 @@ export function HallPlan({
   note?: string
 }) {
   if (blocks.length === 0) {
-    return <p className="hall-prompt">No courses placed on a term yet.</p>
+    return <p className="hall-prompt">No courses on your plan yet. Add one to start tracking terms.</p>
   }
 
   return (
@@ -37,7 +37,7 @@ export function HallPlan({
             </header>
             {block.courses.length === 0 ? (
               <div className="hall-course hall-course-empty">
-                <p className="hall-course-title">No courses filed on this term.</p>
+                <p className="hall-course-title">No courses on this term yet.</p>
               </div>
             ) : (
               block.courses.map((course) => (

@@ -684,7 +684,7 @@ function PlanCourseEditorRow({
       <div className="plan-course-identity">
         <p className="text-sm font-medium text-foreground">{course.course_name}</p>
         {course.status === "planned" && termName ? (
-          <span className="text-caption text-muted-foreground">Filed for {termName}</span>
+          <span className="text-caption text-muted-foreground">For {termName}</span>
         ) : null}
       </div>
       <div className="plan-course-status">

@@ -32,11 +32,11 @@ export function HallRequirements({ data }: { data: RequirementsWorkspaceData }) 
         </p>
         <div className="hall-plan-toolbar mt-5">
           <p className="hall-caption">
-            Log coursework to move Open → Logged. Placement on terms lives in the Classroom.
+            Place a course on your Classroom plan to move Open → Logged. Requirements stay here; term placement is in Plan.
           </p>
           <div className="flex flex-wrap gap-x-4 gap-y-2">
             <Link href="/dashboard/plan" className="hall-ledger-link hall-plan-add">
-              + Log / place a course
+              + Place a course on Plan
             </Link>
             <Link href="/dashboard/deadlines" className="hall-ledger-link">
               Clock Tower dates
@@ -81,7 +81,7 @@ export function HallRequirements({ data }: { data: RequirementsWorkspaceData }) 
                       <Link href="/dashboard/plan" className="hall-ledger-link">
                         {standing(item.status)}
                         {item.credits ? ` · ${item.credits} cr` : ""}
-                        {" · Log"}
+                        {" · Place on Plan"}
                       </Link>
                     )}
                   </td>
@@ -100,12 +100,12 @@ export function HallRequirements({ data }: { data: RequirementsWorkspaceData }) 
           {data.header.program} · {data.header.term}
         </p>
         <p className="mt-6">
-          Logged means a course is on your record. Open means the catalog still expects it. Dates
+          Logged means you already placed a matching course. Open means it is still required. Dates
           live in the Clock Tower.
         </p>
         <div className="mt-3 flex flex-wrap gap-x-4 gap-y-2">
           <Link href="/dashboard/plan" className="hall-ledger-link">
-            Open Classroom
+            Open Plan
           </Link>
           <Link href="/dashboard/settings?tab=transfer" className="hall-ledger-link">
             Edit schools
