@@ -9,15 +9,17 @@ type UniversityRow = {
   id: string
   name: string
   website: string | null
-  deadline_source_url: string | null
-  coverage_checked_at: string | null
+  // Optional provenance cols (migration may not be applied yet)
+  deadline_source_url?: string | null
+  coverage_checked_at?: string | null
 }
 
 type DeadlineRow = {
   university_id: string | null
-  source_checked_at: string | null
-  source_kind: string | null
   official_info_url: string | null
+  created_at: string | null
+  source_checked_at?: string | null
+  source_kind?: string | null
 }
 
 function hostnameFromUrl(url: string): string | null {
@@ -50,7 +52,11 @@ function buildInstitutionRows(
 ): SourcesInstitutionRow[] {
   const byUniversity = new Map<
     string,
-    { count: number; sampleOfficialUrl: string | null }
+    {
+      count: number
+      sampleOfficialUrl: string | null
+      latestAt: string | null
+    }
   >()
 
   for (const row of deadlines) {
@@ -58,10 +64,15 @@ function buildInstitutionRows(
     const existing = byUniversity.get(row.university_id) ?? {
       count: 0,
       sampleOfficialUrl: null,
+      latestAt: null,
     }
     existing.count += 1
     if (!existing.sampleOfficialUrl && row.official_info_url?.trim()) {
       existing.sampleOfficialUrl = row.official_info_url.trim()
+    }
+    const stamp = row.source_checked_at?.trim() || row.created_at?.trim() || null
+    if (stamp && (!existing.latestAt || stamp > existing.latestAt)) {
+      existing.latestAt = stamp
     }
     byUniversity.set(row.university_id, existing)
   }
@@ -70,7 +81,7 @@ function buildInstitutionRows(
     const held = byUniversity.get(uni.id)
     const dateCount = held?.count ?? 0
     const { url, label } = resolveOfficialPage(
-      uni.deadline_source_url,
+      uni.deadline_source_url ?? null,
       uni.website,
       held?.sampleOfficialUrl ?? null
     )
@@ -79,7 +90,7 @@ function buildInstitutionRows(
       id: uni.id,
       name: uni.name,
       dateCount,
-      lastCheckedAt: uni.coverage_checked_at,
+      lastCheckedAt: uni.coverage_checked_at ?? held?.latestAt ?? null,
       officialPageUrl: url,
       officialPageLabel: label,
       hasDates: dateCount > 0,
@@ -92,7 +103,7 @@ function buildStatewideRow(deadlines: DeadlineRow[]): SourcesStatewideRow | null
   if (statewide.length === 0) return null
 
   const lastCheckedAt = statewide.reduce<string | null>((latest, row) => {
-    const checked = row.source_checked_at
+    const checked = row.source_checked_at?.trim() || row.created_at?.trim() || null
     if (!checked) return latest
     if (!latest || checked > latest) return checked
     return latest
@@ -116,17 +127,17 @@ function buildStatewideRow(deadlines: DeadlineRow[]): SourcesStatewideRow | null
 export async function buildSourcesData(
   supabase: SupabaseClient
 ): Promise<SourcesData> {
+  // Live schema always has core cols. Provenance cols are optional (migration
+  // 20260804120000 may not be applied); we request core first and enrich if present.
   const [universitiesResult, deadlinesResult] = await Promise.all([
     supabase
       .from("universities")
-      .select(
-        "id, name, website, deadline_source_url, coverage_checked_at"
-      )
+      .select("id, name, website")
       .eq("type", "four_year")
       .order("name", { ascending: true }),
     supabase
       .from("deadlines")
-      .select("university_id, source_checked_at, source_kind, official_info_url"),
+      .select("university_id, official_info_url, created_at"),
   ])
 
   const uniErr = universitiesResult.error
@@ -158,9 +169,12 @@ export async function buildSourcesData(
   const institutions = buildInstitutionRows(universities, deadlines)
   const coveredSchools = institutions.filter((row) => row.hasDates).length
   const totalSchools = institutions.length
-  const confirmedDateCount = deadlines.filter(
-    (row) => row.source_kind === "official"
-  ).length
+  // Honest coverage: held dates are what we store; "confirmed" only when
+  // source_kind is present and official, else fall back to rows with an official URL.
+  const hasSourceKind = deadlines.some((row) => row.source_kind != null)
+  const confirmedDateCount = hasSourceKind
+    ? deadlines.filter((row) => row.source_kind === "official").length
+    : deadlines.filter((row) => Boolean(row.official_info_url?.trim())).length
   const totalHeldDates = deadlines.length
 
   return {
