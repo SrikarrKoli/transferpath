@@ -116,7 +116,7 @@ export const previewToday: OverviewData = {
     scopeChips: ["UT Austin"],
     dueDetail: "51 days · ApplyTexas",
     primaryHref: "/dashboard/deadlines",
-    primaryLabel: "Open Clock Tower",
+    primaryLabel: "Open Deadlines",
     provenance: { level: "verified", source: "UT Austin admissions", checkedAt: "2026-09-01" },
   },
   comingUp: [
@@ -132,7 +132,7 @@ export const previewToday: OverviewData = {
       title: "Order official ACC transcript",
       meta: "Application task",
       href: "/dashboard/checklist",
-      actionLabel: "Dorms",
+      actionLabel: "Checklist",
     },
   ],
   thisTerm: {

@@ -245,7 +245,7 @@ export function HallToday({ data, userId }: { data: OverviewData; userId: string
             Open Requirements
           </Link>
           <Link href="/dashboard/deadlines" className="hall-ledger-link">
-            Open Clock Tower
+            Open Deadlines
           </Link>
         </div>
       </aside>

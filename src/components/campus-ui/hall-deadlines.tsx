@@ -17,6 +17,197 @@ const FILTERS: { id: TasksDeadlinesFilterId; label: string }[] = [
   { id: "missing_dates", label: "Missing" },
 ]
 
+function PrimaryAction({
+  href,
+  label,
+  external,
+}: {
+  href: string
+  label: string
+  external?: boolean
+}) {
+  if (external || href.startsWith("http")) {
+    return (
+      <a href={href} target="_blank" rel="noopener noreferrer" className="union-primary-cta">
+        {label}
+        <span className="sr-only"> (opens in a new tab)</span>
+      </a>
+    )
+  }
+  return (
+    <Link href={href} className="union-primary-cta">
+      {label}
+    </Link>
+  )
+}
+
+function pathwayLooksUnset(header: TasksDeadlinesData["header"]) {
+  return (
+    header.toInstitution === "Target school not set" ||
+    header.term === "Term not set" ||
+    header.fromInstitution === "Current school not set"
+  )
+}
+
+function DeadlinesNextBlock({
+  data,
+  onFilter,
+  onToggleTask,
+}: {
+  data: TasksDeadlinesData
+  onFilter: (id: TasksDeadlinesFilterId) => void
+  onToggleTask: (id: string, done: boolean) => void
+}) {
+  const soonest = data.upcomingDeadlines[0] ?? null
+  const missing = data.missingDate
+  const nextTask = data.openTasks[0] ?? null
+  const unset = pathwayLooksUnset(data.header)
+
+  if (soonest) {
+    const dateParts = splitHallDate(soonest.dateLabel)
+    const primaryHref = soonest.officialUrl ?? "/dashboard/requirements"
+    const primaryLabel = soonest.officialUrl ? "Open official page" : "Open requirements"
+    return (
+      <section className="union-next-block" aria-labelledby="deadlines-next-heading">
+        <p className="hall-caption" id="deadlines-next-heading">
+          Do this next
+        </p>
+        <p className="hall-hero-date">
+          {dateParts.primary}
+          {dateParts.year ? (
+            <span className="mt-2 block text-[0.28em] font-normal tracking-normal text-[color:var(--hall-stone)]">
+              {dateParts.year}
+            </span>
+          ) : null}
+        </p>
+        <h2 className="hall-hero-title">{soonest.title}</h2>
+        <p className="mt-3 text-sm text-[color:var(--hall-stone)]">
+          {[soonest.scopeChip, soonest.categoryMeta, soonest.countdownLabel]
+            .filter(Boolean)
+            .join(" · ")}
+        </p>
+        <div className="union-step-actions mt-6">
+          <PrimaryAction href={primaryHref} label={primaryLabel} external={Boolean(soonest.officialUrl)} />
+          <Link href="/dashboard/checklist" className="hall-ledger-link">
+            Open checklist
+          </Link>
+          <button type="button" className="hall-ledger-link" onClick={() => onFilter("deadlines")}>
+            See all dates
+          </button>
+        </div>
+      </section>
+    )
+  }
+
+  if (missing) {
+    return (
+      <section className="union-next-block" aria-labelledby="deadlines-next-heading">
+        <p className="hall-caption" id="deadlines-next-heading">
+          Do this next
+        </p>
+        <p className="hall-hero-date">
+          Needed
+          <span className="mt-2 block text-[0.28em] font-normal tracking-normal text-[color:var(--hall-stone)]">
+            Confirm the date
+          </span>
+        </p>
+        <h2 className="hall-hero-title">{missing.headline}</h2>
+        <p className="hall-prompt mt-4">{missing.provenanceWhat}</p>
+        <div className="union-step-actions mt-6">
+          {missing.officialUrl ? (
+            <PrimaryAction href={missing.officialUrl} label="Open official page" external />
+          ) : (
+            <PrimaryAction href={missing.recordHref || "/dashboard/requirements"} label="Confirm this date" />
+          )}
+          <Link href="/sources" className="hall-ledger-link">
+            Why this is missing
+          </Link>
+          {missing.officialUrl ? (
+            <Link href={missing.recordHref || "/dashboard/requirements"} className="hall-ledger-link">
+              Open requirements
+            </Link>
+          ) : (
+            <button type="button" className="hall-ledger-link" onClick={() => onFilter("missing_dates")}>
+              See missing
+            </button>
+          )}
+        </div>
+      </section>
+    )
+  }
+
+  if (nextTask) {
+    return (
+      <section className="union-next-block" aria-labelledby="deadlines-next-heading">
+        <p className="hall-caption" id="deadlines-next-heading">
+          Do this next
+        </p>
+        <p className="hall-hero-date">
+          Now
+          <span className="mt-2 block text-[0.28em] font-normal tracking-normal text-[color:var(--hall-stone)]">
+            Your work
+          </span>
+        </p>
+        <h2 className="hall-hero-title">{nextTask.title}</h2>
+        <p className="mt-3 text-sm text-[color:var(--hall-stone)]">
+          {[nextTask.categoryLabel, nextTask.meta].filter(Boolean).join(" · ")}
+        </p>
+        <div className="union-step-actions mt-6">
+          {nextTask.action ? (
+            <PrimaryAction href={nextTask.action.href} label={nextTask.action.label} />
+          ) : (
+            <button
+              type="button"
+              className="union-primary-cta"
+              onClick={() => onToggleTask(nextTask.id, true)}
+            >
+              Mark done
+            </button>
+          )}
+          {nextTask.action ? (
+            <button
+              type="button"
+              className="hall-ledger-link"
+              onClick={() => onToggleTask(nextTask.id, true)}
+            >
+              Mark done
+            </button>
+          ) : null}
+          <button type="button" className="hall-ledger-link" onClick={() => onFilter("tasks")}>
+            See your work
+          </button>
+        </div>
+      </section>
+    )
+  }
+
+  return (
+    <section className="union-next-block" aria-labelledby="deadlines-next-heading">
+      <p className="hall-caption" id="deadlines-next-heading">
+        Do this next
+      </p>
+      <p className="hall-hero-title">Nothing dated yet</p>
+      <p className="hall-prompt mt-4">
+        {unset
+          ? "Set your school and entry term so we can pull official dates onto this page."
+          : "No upcoming school dates are on file. Confirm a missing deadline or keep moving on checklist work."}
+      </p>
+      <div className="union-step-actions mt-6">
+        <PrimaryAction
+          href="/dashboard/settings?tab=transfer"
+          label={unset ? "Set school & term" : "Edit schools & term"}
+        />
+        <Link href="/dashboard/checklist" className="hall-ledger-link">
+          Open checklist
+        </Link>
+        <button type="button" className="hall-ledger-link" onClick={() => onFilter("missing_dates")}>
+          Review missing dates
+        </button>
+      </div>
+    </section>
+  )
+}
+
 export function HallDeadlines({
   data,
   filter,
@@ -38,7 +229,9 @@ export function HallDeadlines({
   return (
     <div className="hall-split">
       <div>
-        <div className="hall-index" role="tablist" aria-label="Deadline views">
+        <DeadlinesNextBlock data={data} onFilter={onFilter} onToggleTask={onToggleTask} />
+
+        <div className="hall-index mt-6" role="tablist" aria-label="Deadline views">
           {FILTERS.map((item) => {
             const count = data.filterCounts[item.id]
             return (
@@ -73,9 +266,10 @@ export function HallDeadlines({
                     Nothing from your target school is dated in the next two years. Confirm school
                     and entry term, review missing dates, or open requirements and your checklist.
                   </p>
-                  <div className="deadline-empty-actions mt-3 flex flex-wrap gap-x-4 gap-y-2">
-                    <Link href="/dashboard/settings?tab=transfer" className="hall-ledger-link">
-                      Set school &amp; term
+                  <div className="deadline-empty-actions union-step-actions mt-3">
+                    <PrimaryAction href="/dashboard/settings?tab=transfer" label="Set school & term" />
+                    <Link href="/dashboard/checklist" className="hall-ledger-link">
+                      Open checklist
                     </Link>
                     <button
                       type="button"
@@ -83,19 +277,6 @@ export function HallDeadlines({
                       onClick={() => onFilter("missing_dates")}
                     >
                       Review missing dates
-                    </button>
-                    <Link href="/dashboard/requirements" className="hall-ledger-link">
-                      Open requirements
-                    </Link>
-                    <Link href="/dashboard/checklist" className="hall-ledger-link">
-                      Open checklist
-                    </Link>
-                    <button
-                      type="button"
-                      className="hall-ledger-link"
-                      onClick={() => onFilter("tasks")}
-                    >
-                      Your prep tasks
                     </button>
                   </div>
                 </div>
@@ -147,7 +328,12 @@ export function HallDeadlines({
                 <p className="hall-date-meta">{data.missingDate.provenanceWhat}</p>
                 <div className="mt-3 flex flex-wrap gap-4">
                   {data.missingDate.officialUrl ? (
-                    <a href={data.missingDate.officialUrl} className="hall-source" target="_blank" rel="noreferrer">
+                    <a
+                      href={data.missingDate.officialUrl}
+                      className="hall-source"
+                      target="_blank"
+                      rel="noreferrer"
+                    >
                       Official page
                     </a>
                   ) : null}
@@ -167,28 +353,33 @@ export function HallDeadlines({
       </div>
 
       <aside className="hall-margin">
-        <p>
-          {data.header.fromInstitution} → {data.header.toInstitution}
+        <p className="hall-caption">Your transfer</p>
+        <p className="mt-2">
+          <span className="text-[color:var(--hall-stone)]">{data.header.fromInstitution}</span>
+          <span aria-hidden> → </span>
+          <strong>{data.header.toInstitution}</strong>
         </p>
-        <p className="mt-1">
+        <p className="mt-1 text-[0.9rem] text-[color:var(--hall-stone)]">
           {data.header.program} · {data.header.term}
         </p>
         {data.openTasks.length > 0 ? (
           <p className="mt-6">
             {data.openTasks.length} open {data.openTasks.length === 1 ? "task" : "tasks"} sit on
-            the Dorms list — this page is the calendar.
+            the checklist — this page is the calendar.
           </p>
         ) : null}
         <p className="mt-6">
-          English Composition, Calculus, and field courses are satisfied by logging a course on the
-          Registrar, not by a date here.
+          Course requirements are tracked under Requirements, not by a date here.
         </p>
-        <div className="mt-3 flex flex-wrap gap-x-4 gap-y-2">
+        <div className="mt-3 flex flex-col items-start gap-2">
           <Link href="/dashboard/requirements" className="hall-ledger-link">
-            Open Registrar
+            Open Requirements
           </Link>
           <Link href="/dashboard/checklist" className="hall-ledger-link">
-            Open Dorms
+            Open Checklist
+          </Link>
+          <Link href="/dashboard/plan" className="hall-ledger-link">
+            Open Plan
           </Link>
         </div>
       </aside>
