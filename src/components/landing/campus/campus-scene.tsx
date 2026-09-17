@@ -43,10 +43,10 @@ export function CampusScene({ selected, hovered, focusToken, onHover, onSelect, 
 
     const w0 = mount.clientWidth || 960
     const h0 = mount.clientHeight || 640
-    renderer = new THREE.WebGLRenderer({ antialias: true, alpha: false, preserveDrawingBuffer: true })
-    renderer.setPixelRatio(Math.min(window.devicePixelRatio || 1, 2))
+    renderer = new THREE.WebGLRenderer({ antialias: true, alpha: false, powerPreference: "high-performance" })
+    renderer.setPixelRatio(Math.min(window.devicePixelRatio || 1, 1.5))
     renderer.setSize(w0, h0)
-    renderer.setClearColor(0xa8d8e6, 1)
+    renderer.setClearColor(0xc5d4c0, 1)
     renderer.shadowMap.enabled = true
     renderer.shadowMap.type = THREE.PCFShadowMap
     renderer.outputColorSpace = THREE.SRGBColorSpace
@@ -55,7 +55,7 @@ export function CampusScene({ selected, hovered, focusToken, onHover, onSelect, 
     mount.appendChild(renderer.domElement)
 
     const scene = new THREE.Scene()
-    scene.fog = new THREE.Fog(0xb2dce8, 48, 86)
+    scene.fog = new THREE.Fog(0xc5d4c0, 52, 90)
     pmrem = new THREE.PMREMGenerator(renderer)
     scene.environment = pmrem.fromScene(new RoomEnvironment(), 0.08).texture
 
@@ -70,7 +70,7 @@ export function CampusScene({ selected, hovered, focusToken, onHover, onSelect, 
     const sun = new THREE.DirectionalLight(0xfff3dc, 1.85)
     sun.position.set(-14, 22, 12)
     sun.castShadow = true
-    sun.shadow.mapSize.set(2048, 2048)
+    sun.shadow.mapSize.set(1024, 1024)
     sun.shadow.camera.left = -16
     sun.shadow.camera.right = 16
     sun.shadow.camera.top = 16
@@ -223,7 +223,7 @@ export function CampusScene({ selected, hovered, focusToken, onHover, onSelect, 
         mat.userData._baseIntensity = mat.emissiveIntensity
       }
       if (on) {
-        mat.emissive.setHex(0xb85c38)
+        mat.emissive.setHex(0x8c4a32)
         mat.emissiveIntensity = 0.16
       } else {
         mat.emissive.copy(mat.userData._baseEmissive)

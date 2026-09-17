@@ -468,48 +468,8 @@ export function clockFaces(radius = 0.28, stickOut = 0.5) {
   return g
 }
 
-export function numberPin(n: number, id: string) {
-  // Quiet editorial index — no floating clay orbs. Idle nearly invisible; active = thin ink plate.
-  const g = new THREE.Group()
-  g.userData.buildingId = id
-  const make = (active: boolean) => {
-    const canvas = document.createElement("canvas")
-    canvas.width = 160
-    canvas.height = 96
-    const ctx = canvas.getContext("2d")!
-    ctx.clearRect(0, 0, 160, 96)
-    if (active) {
-      ctx.fillStyle = "#1A2332"
-      ctx.fillRect(8, 16, 144, 64)
-      ctx.strokeStyle = "#F4F0E6"
-      ctx.lineWidth = 3
-      ctx.strokeRect(12, 20, 136, 56)
-      ctx.fillStyle = "#F4F0E6"
-    } else {
-      // hairline plate only — barely there until hover/select
-      ctx.strokeStyle = "rgba(26,35,50,0.35)"
-      ctx.lineWidth = 2
-      ctx.strokeRect(20, 28, 120, 40)
-      ctx.fillStyle = "rgba(26,35,50,0.45)"
-    }
-    ctx.font = "600 42px ui-monospace, SFMono-Regular, Menlo, monospace"
-    ctx.textAlign = "center"
-    ctx.textBaseline = "middle"
-    ctx.fillText(String(n).padStart(2, "0"), 80, 50)
-    const tex = new THREE.CanvasTexture(canvas)
-    tex.colorSpace = THREE.SRGBColorSpace
-    return tex
-  }
-  const s = new THREE.Sprite(
-    new THREE.SpriteMaterial({ map: make(false), transparent: true, depthTest: false, opacity: 0.18 })
-  )
-  s.scale.set(0.42, 0.25, 1)
-  s.userData.buildingId = id
-  s.userData.isPinSprite = true
-  s.userData.texIdle = s.material.map
-  s.userData.texActive = make(true)
-  g.add(s)
-  return g
+export function numberPin(_n: number, _id?: string) {
+  return new THREE.Group()
 }
 
 export function facadePlaque(n: number, x: number, y: number, z: number) {
