@@ -28,11 +28,83 @@ export function readinessFromRequirements(data: RequirementsWorkspaceData): Hall
   }
 }
 
+function pickReadinessNext(data: HallReadinessData) {
+  const core = data.rows.find((r) => r.label === "Core logged")
+  const nextDate = data.rows.find((r) => r.label === "Next date")
+  if (data.score < 40) {
+    return {
+      caption: "Start here" as const,
+      title: "Log the courses that still show open",
+      prompt: "Readiness climbs when requirements move onto Plan. Start with the open ones.",
+      primary: { href: "/dashboard/requirements", label: "Open Requirements" },
+      secondaries: [
+        { href: "/dashboard/plan", label: "Open Plan" },
+        { href: "/dashboard/checklist", label: "Open Checklist" },
+      ],
+    }
+  }
+  if (nextDate) {
+    return {
+      caption: "Do this next" as const,
+      title: nextDate.value,
+      prompt: "Confirm this date, then keep filing requirements and drafts.",
+      primary: { href: "/dashboard/deadlines", label: "Open Deadlines" },
+      secondaries: [
+        { href: "/dashboard/requirements", label: "Open Requirements" },
+        { href: "/dashboard/essay", label: "Open Essays" },
+      ],
+    }
+  }
+  if (data.score < 80) {
+    return {
+      caption: "Do this next" as const,
+      title: "Close the gaps still on file",
+      prompt: core
+        ? `${core.value} core items logged. Place the rest on Plan or finish checklist work.`
+        : "Place remaining requirements on Plan or finish checklist work.",
+      primary: { href: "/dashboard/requirements", label: "Open Requirements" },
+      secondaries: [
+        { href: "/dashboard/checklist", label: "Open Checklist" },
+        { href: "/dashboard/essay", label: "Open Essays" },
+      ],
+    }
+  }
+  return {
+    caption: "Do this next" as const,
+    title: "Readiness looks solid on paper",
+    prompt: "Use the time to polish essays and double-check dates before you apply.",
+    primary: { href: "/dashboard/essay", label: "Open Essays" },
+    secondaries: [
+      { href: "/dashboard/deadlines", label: "Open Deadlines" },
+      { href: "/dashboard/checklist", label: "Open Checklist" },
+    ],
+  }
+}
+
 export function HallReadiness({ data }: { data: HallReadinessData }) {
+  const next = pickReadinessNext(data)
   return (
     <div className="hall-split">
       <div>
-        <p className="hall-score">{data.score}</p>
+        <section className="union-next-block" aria-labelledby="readiness-next-heading">
+          <p className="hall-caption" id="readiness-next-heading">
+            {next.caption}
+          </p>
+          <h2 className="hall-hero-title">{next.title}</h2>
+          <p className="hall-prompt mt-4">{next.prompt}</p>
+          <div className="union-step-actions mt-6">
+            <Link href={next.primary.href} className="union-primary-cta">
+              {next.primary.label}
+            </Link>
+            {next.secondaries.map((action) => (
+              <Link key={action.href} href={action.href} className="hall-ledger-link">
+                {action.label}
+              </Link>
+            ))}
+          </div>
+        </section>
+
+        <p className="hall-score mt-8">{data.score}</p>
         <p className="hall-prompt mt-6 max-w-md">{data.line}</p>
         <dl className="hall-measures">
           {data.rows.map((row) => (
@@ -45,22 +117,22 @@ export function HallReadiness({ data }: { data: HallReadinessData }) {
       </div>
       <aside className="hall-margin">
         <p>
-          This number is a reading of what is already on file — courses, dates, and the essay — not
-          an admission prediction.
+          This number reads what is already on file — courses, dates, and essays — not an admission
+          prediction.
         </p>
         <p className="mt-6 hall-caption">Ways to raise your score</p>
-        <div className="mt-2 flex flex-col gap-2 items-start">
+        <div className="mt-2 flex flex-col items-start gap-2">
           <Link href="/dashboard/requirements" className="hall-ledger-link">
-            Log requirements · Registrar
+            Open Requirements
           </Link>
           <Link href="/dashboard/deadlines" className="hall-ledger-link">
-            File dates · Clock Tower
+            Open Deadlines
           </Link>
           <Link href="/dashboard/essay" className="hall-ledger-link">
-            Draft essay · Library
+            Open Essays
           </Link>
           <Link href="/dashboard/settings?tab=transfer" className="hall-ledger-link">
-            Confirm schools · Counselor
+            Confirm schools
           </Link>
         </div>
       </aside>

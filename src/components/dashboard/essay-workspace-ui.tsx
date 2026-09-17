@@ -1,5 +1,6 @@
 "use client"
 
+import Link from "next/link"
 import { useMemo, type ReactNode } from "react"
 import { Meter } from "@/components/ui/progress"
 import { Provenance } from "@/components/ui/provenance"
@@ -77,9 +78,60 @@ export function EssayWorkspaceUi({
   const hall = useHall()
 
   if (hall) {
+    const empty = wordCount === 0
+    const nextCaption = empty ? "Start here" : overLimit ? "Do this next" : "Do this next"
+    const nextTitle = empty
+      ? "Write the first sentence"
+      : overLimit
+        ? "Trim to the word limit"
+        : wordCount < Math.min(150, essay.wordLimit)
+          ? "Keep drafting this prompt"
+          : "Save and tighten this draft"
+    const nextPrompt = empty
+      ? "One concrete sentence beats a blank page. Coach notes show up after you pause."
+      : overLimit
+        ? `You are at ${wordCount} words — cut down to ${essay.wordLimit} before you polish.`
+        : "Save often. When this prompt feels solid, switch prompts from the strip above."
+
     return (
       <div className={className}>
-        <p className="hall-prompt">{essay.prompt}</p>
+        <section className="union-next-block" aria-labelledby="essay-next-heading">
+          <p className="hall-caption" id="essay-next-heading">
+            {nextCaption}
+          </p>
+          <h2 className="hall-hero-title">{nextTitle}</h2>
+          <p className="hall-prompt mt-4">{nextPrompt}</p>
+          <p className="mt-3 text-sm text-[color:var(--hall-stone)]">
+            {essay.title}
+            {essay.subtitle ? ` — ${essay.subtitle}` : ""}
+          </p>
+          <div className="union-step-actions mt-6">
+            {onSave ? (
+              <button
+                type="button"
+                onClick={onSave}
+                disabled={saving || empty}
+                className="union-primary-cta"
+              >
+                {saving ? "Saving…" : empty ? "Start in the box below" : saveLabel}
+              </button>
+            ) : (
+              <span className="union-primary-cta" aria-hidden>
+                Draft below
+              </span>
+            )}
+            {onPreview ? (
+              <button type="button" onClick={onPreview} className="hall-ledger-link">
+                {previewLabel}
+              </button>
+            ) : null}
+            <Link href="/dashboard/checklist" className="hall-ledger-link">
+              Open Checklist
+            </Link>
+          </div>
+        </section>
+
+        <p className="hall-prompt mt-8">{essay.prompt}</p>
         {settingsSlot ? <div className="mt-4">{settingsSlot}</div> : null}
         <div className="hall-plan-toolbar mt-5">
           <p className="hall-caption">
