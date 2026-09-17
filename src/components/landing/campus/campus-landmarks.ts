@@ -25,9 +25,9 @@ import {
 } from "./campus-kit"
 
 export const PIN_Y: Record<BuildingId, number> = {
-  quad: 5.35,
+  quad: 6.45,
   counselor: 2.48,
-  library: 2.95,
+  library: 3.35,
   classroom: 2.28,
   registrar: 2.72,
   dorm: 2.72,
@@ -83,13 +83,13 @@ export function buildClockTower() {
   })
 
   // Clock lantern — wider than the shaft so dials are the silhouette cue.
-  g.add(rbox(1.28, 1.12, 1.28, stone, 0, 3.95, 0, 0.006))
+  g.add(rbox(1.42, 1.12, 1.42, stone, 0, 3.95, 0, 0.006))
   g.add(rbox(1.36, 0.08, 1.36, trim, 0, 3.42, 0, 0.02, false))
   g.add(rbox(1.36, 0.08, 1.36, trim, 0, 4.48, 0, 0.02, false))
   arcade(g, { bays: 3, span: 1.05, z: 0.66, y: 3.72, glass })
   arcade(g, { bays: 3, span: 1.05, z: -0.66, y: 3.72, glass })
 
-  const faces = clockFaces(0.46, 0.72)
+  const faces = clockFaces(0.54, 0.75)
   faces.position.y = 3.98
   g.add(faces)
 
@@ -180,6 +180,14 @@ export function buildLibrary() {
   g.add(rbox(1.22, 1.15, 0.08, glass, 1.85, 0.85, 0.95, 0.02, false))
   g.add(hipRoof(1.48, 1.65, 0.4, copper, 1.58))
 
+  // Visible shelf rails and book spines in the glazed reading wing.
+  for (const y of [0.48, 0.83, 1.18]) {
+    g.add(rbox(1.16, 0.045, 0.07, trim, 1.85, y, 1.005, 0, false))
+    for (let i = 0; i < 9; i++) {
+      g.add(rbox(0.065, 0.21 + (i % 3) * 0.025, 0.035, i % 2 ? copper : body, 1.34 + i * 0.125, y + 0.14, 1.015, 0, false))
+    }
+  }
+
   // Tall arched window wall behind the colonnade
   for (let i = 0; i < 6; i++) {
     const x = -1.15 + i * 0.46
@@ -189,9 +197,9 @@ export function buildLibrary() {
 
   // Full south colonnade — six columns under a pediment (earns the name).
   const colXs = [-1.15, -0.69, -0.23, 0.23, 0.69, 1.15]
-  colXs.forEach((x) => g.add(column(1.35, trim, x, 1.12, 0.08)))
-  g.add(rbox(2.65, 0.14, 0.55, stone, 0, 1.48, 1.12, 0.02))
-  g.add(pediment(2.75, 0.55, 0.18, navy, 1.55, 1.12))
+  colXs.forEach((x) => g.add(column(1.65, trim, x, 1.32, 0.08)))
+  g.add(rbox(2.65, 0.14, 0.55, stone, 0, 1.78, 1.32, 0.02))
+  g.add(pediment(2.95, 0.6, 0.22, navy, 1.85, 1.32))
   g.add(rbox(2.55, 0.08, 0.72, stone, 0, 0.08, 1.05, 0.02, false))
 
   g.add(door(navy, 0, 0.55, 0.95, 0.34, 0.62))

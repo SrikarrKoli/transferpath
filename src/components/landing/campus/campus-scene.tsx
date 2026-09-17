@@ -20,6 +20,7 @@ type Props = {
 
 export function CampusScene({ selected, hovered, focusToken, onHover, onSelect, onEnter, onAnchor }: Props) {
   const mountRef = useRef<HTMLDivElement>(null)
+  const labelRefs = useRef(new Map<BuildingId, HTMLButtonElement>())
   const selectedRef = useRef(selected)
   const hoveredRef = useRef(hovered)
   const focusTokenRef = useRef(focusToken)
@@ -52,7 +53,7 @@ export function CampusScene({ selected, hovered, focusToken, onHover, onSelect, 
     renderer.setSize(w0, h0)
     renderer.setClearColor(0xc5d4c0, 1)
     renderer.shadowMap.enabled = true
-    renderer.shadowMap.type = THREE.PCFSoftShadowMap
+    renderer.shadowMap.type = THREE.PCFShadowMap
     renderer.outputColorSpace = THREE.SRGBColorSpace
     renderer.toneMapping = THREE.ReinhardToneMapping
     renderer.toneMappingExposure = 1.1
@@ -67,7 +68,7 @@ export function CampusScene({ selected, hovered, focusToken, onHover, onSelect, 
     const orbit = { theta: Math.PI / 3.15, phi: 0.88, radius: 20.4 }
     const look = new THREE.Vector3(0.15, 0.55, 0.55)
     const lookGoal = look.clone()
-    const radiusGoal = { v: 19.2 }
+    const radiusGoal = { v: 22 }
 
     scene.add(new THREE.AmbientLight(0xfff4e6, 0.92))
     scene.add(new THREE.HemisphereLight(0xf4fbff, 0xd4b07a, 0.62))
@@ -120,8 +121,8 @@ export function CampusScene({ selected, hovered, focusToken, onHover, onSelect, 
     const focusBuilding = (id: BuildingId) => {
       const b = CAMPUS_BUILDINGS.find((x) => x.id === id)
       if (!b) return
-      lookGoal.set(b.x * 0.9, 0.85, b.z * 0.9)
-      radiusGoal.v = 22
+      lookGoal.set(b.x * 0.9, id === "quad" ? 2.0 : 1.3, b.z * 0.9)
+      radiusGoal.v = 23
     }
 
     const raycaster = new THREE.Raycaster()
@@ -130,7 +131,7 @@ export function CampusScene({ selected, hovered, focusToken, onHover, onSelect, 
     let panning = false
     let lastX = 0
     let lastY = 0
-    let lastFocusToken = focusToken
+    let lastFocusToken = -1
     let meshById = new Map<BuildingId, THREE.Group>()
     const selectionHalo = new THREE.Group()
     selectionHalo.visible = false
@@ -219,13 +220,7 @@ export function CampusScene({ selected, hovered, focusToken, onHover, onSelect, 
       lastY = e.clientY
       const id = pick()
       if (id && e.button === 0) {
-        // Click once to select; click the selected building again to enter.
-        if (selectedRef.current === id) {
-          onEnterRef.current(id)
-        } else {
-          onSelectRef.current(id)
-          focusBuilding(id)
-        }
+        onSelectRef.current(id)
       } else {
         panning = e.button === 2 || e.shiftKey
         dragging = !panning
@@ -247,6 +242,12 @@ export function CampusScene({ selected, hovered, focusToken, onHover, onSelect, 
       e.preventDefault()
       radiusGoal.v = THREE.MathUtils.clamp(radiusGoal.v + e.deltaY * 0.02, 15, 34)
     }
+    const onDoubleClick = (e: MouseEvent) => {
+      const rect = mount.getBoundingClientRect()
+      pointer.set(((e.clientX - rect.left) / rect.width) * 2 - 1, -((e.clientY - rect.top) / rect.height) * 2 + 1)
+      const id = pick()
+      if (id) onEnterRef.current(id)
+    }
     const onContext = (e: Event) => e.preventDefault()
 
     mount.addEventListener("pointermove", onMove)
@@ -254,67 +255,60 @@ export function CampusScene({ selected, hovered, focusToken, onHover, onSelect, 
     mount.addEventListener("pointerup", onUp)
     mount.addEventListener("wheel", onWheel, { passive: false })
     mount.addEventListener("contextmenu", onContext)
+    mount.addEventListener("dblclick", onDoubleClick)
 
-    const tintMaterial = (
-      mat: THREE.Material,
-      mode: "idle" | "focus" | "dim" | "hover",
-    ) => {
-      if (!mat) return
-      if (mat instanceof THREE.MeshBasicMaterial) {
-        if (!mat.color) return
-        if (!(mat.userData._baseColor instanceof THREE.Color)) {
-          mat.userData._baseColor = mat.color.clone()
-          mat.userData._baseOpacity = mat.opacity
-          mat.userData._baseTransparent = mat.transparent
+    // Structural flags survive separate Three module instances in lazy-loaded chunks.
+    const tintMaterial = (material: THREE.Material | null | undefined, mode: "idle" | "focus" | "dim" | "hover") => {
+      const mat = material as THREE.MeshLambertMaterial | undefined
+      if (!mat?.color?.isColor) return
+      // Exposure and sRGB encoding soften a linear color multiplier. Attenuate
+      // the final display color too, so selection reads under bright campus light.
+      if (!mat.userData.campusDim) {
+        const dim = { value: 1 }
+        mat.userData.campusDim = dim
+        mat.onBeforeCompile = (shader) => {
+          shader.uniforms.campusDim = dim
+          shader.fragmentShader = "uniform float campusDim;\n" + shader.fragmentShader.replace(
+            "#include <colorspace_fragment>",
+            "#include <colorspace_fragment>\ngl_FragColor.rgb *= campusDim;",
+          )
         }
-        const base = mat.userData._baseColor as THREE.Color
-        if (mode === "focus") mat.color.copy(base).offsetHSL(0, 0, 0.07)
-        else if (mode === "hover") mat.color.copy(base).offsetHSL(0.01, 0.04, 0.05)
-        else if (mode === "dim") mat.color.copy(base).multiplyScalar(0.4)
-        else mat.color.copy(base)
-        // Keep opacity only if the material started transparent (glass/water).
-        if (mat.userData._baseTransparent) {
-          mat.opacity = mode === "dim" ? mat.userData._baseOpacity * 0.5 : mat.userData._baseOpacity
-        }
-        return
+        mat.customProgramCacheKey = () => "campus-selection-dim-v1"
+        mat.needsUpdate = true
       }
-      if (!(mat instanceof THREE.MeshStandardMaterial) && !(mat instanceof THREE.MeshLambertMaterial)) return
-      if (!mat.color || !mat.emissive) return
-      if (!(mat.userData._baseEmissive instanceof THREE.Color) || !(mat.userData._baseColor instanceof THREE.Color)) {
+      mat.userData.campusDim.value = mode === "dim" ? 0.55 : 1
+      if (!mat.userData._baseColor?.isColor) mat.userData._baseColor = mat.color.clone()
+      const base = mat.userData._baseColor as THREE.Color
+      mat.color.copy(base)
+      if (mode === "dim") mat.color.multiplyScalar(0.34)
+      if (mode === "focus") mat.color.offsetHSL(0, 0, 0.055)
+      if (mode === "hover") mat.color.offsetHSL(0, 0, 0.035)
+      if (!mat.emissive?.isColor) return
+      if (!mat.userData._baseEmissive?.isColor) {
         mat.userData._baseEmissive = mat.emissive.clone()
         mat.userData._baseIntensity = mat.emissiveIntensity
-        mat.userData._baseColor = mat.color.clone()
       }
-      const baseCol = mat.userData._baseColor as THREE.Color
-      const baseEm = mat.userData._baseEmissive as THREE.Color
-      if (mode === "focus") {
-        mat.color.copy(baseCol)
-        mat.emissive.setHex(0xe3d6b8)
-        mat.emissiveIntensity = 0.18
-      } else if (mode === "hover") {
-        mat.color.copy(baseCol)
-        mat.emissive.setHex(0x8a5a3a)
-        mat.emissiveIntensity = 0.28
-      } else if (mode === "dim") {
-        mat.color.copy(baseCol).multiplyScalar(0.4)
-        mat.emissive.copy(baseEm).multiplyScalar(0.45)
-        mat.emissiveIntensity = (mat.userData._baseIntensity ?? 1) * 0.45
-      } else {
-        mat.color.copy(baseCol)
-        mat.emissive.copy(baseEm)
-        mat.emissiveIntensity = mat.userData._baseIntensity ?? 1
-      }
+      mat.emissive.copy(mat.userData._baseEmissive)
+      mat.emissiveIntensity = mat.userData._baseIntensity ?? 0
+      if (mode === "dim") mat.emissiveIntensity *= 0.34
+      if (mode === "focus") { mat.emissive.setHex(0xe3d6b8); mat.emissiveIntensity = 0.18 }
     }
 
     const t0 = performance.now()
+    let previousFrame = t0
     const tick = (now: number) => {
+      const ease = reduced ? 1 : 1 - Math.exp(-5 * Math.min((now - previousFrame) / 1000, 0.25))
+      previousFrame = now
       const t = (now - t0) / 1000
       if (focusTokenRef.current !== lastFocusToken) {
         lastFocusToken = focusTokenRef.current
         if (selectedRef.current) focusBuilding(selectedRef.current)
+        else { lookGoal.set(0.15, 0.55, 0.55); radiusGoal.v = 22 }
       }
-      look.lerp(lookGoal, reduced ? 1 : 0.07)
-      orbit.radius = THREE.MathUtils.lerp(orbit.radius, radiusGoal.v, 0.08)
+      look.lerp(lookGoal, ease)
+      if (look.distanceToSquared(lookGoal) < 0.000004) look.copy(lookGoal)
+      orbit.radius = THREE.MathUtils.lerp(orbit.radius, radiusGoal.v, ease)
+      if (Math.abs(orbit.radius - radiusGoal.v) < 0.002) orbit.radius = radiusGoal.v
       // A stable orientation makes the directory a learnable map.
       applyCam()
 
@@ -336,7 +330,11 @@ export function CampusScene({ selected, hovered, focusToken, onHover, onSelect, 
           selectionHalo.visible = true
           selectionHalo.position.x = g.position.x
           selectionHalo.position.z = g.position.z
-          selectionHalo.position.y = 0
+          selectionHalo.position.y = 0.19
+          const footprint = g.userData.footprint as { x: number; z: number; width: number; depth: number }
+          selectionHalo.position.x += footprint.x
+          selectionHalo.position.z += footprint.z
+          selectionHalo.scale.set(footprint.width / 1.8, 1, footprint.depth / 1.8)
           // Quiet pulse — mark stays ground-seated.
           const pulse = 0.92 + Math.sin(performance.now() * 0.0024) * 0.05
           discMat.opacity = 0.22 + pulse * 0.06
@@ -361,10 +359,12 @@ export function CampusScene({ selected, hovered, focusToken, onHover, onSelect, 
               ? "hover"
               : "idle"
         const lift = isSelected ? 0.12 : isHovered && !hasSelection ? 0.1 : 0
-        g.position.y = THREE.MathUtils.lerp(g.position.y, lift, 0.14)
+        g.position.y = THREE.MathUtils.lerp(g.position.y, lift, ease)
+        if (Math.abs(g.position.y - lift) < 0.001) g.position.y = lift
         g.traverse((c) => {
-          if (c instanceof THREE.Mesh && !c.userData.isHitVolume) {
-            const mats = Array.isArray(c.material) ? c.material : [c.material]
+          if ((c as THREE.Mesh).isMesh && !c.userData.isHitVolume) {
+            const material = (c as THREE.Mesh).material
+            const mats = Array.isArray(material) ? material : [material]
             mats.forEach((m) => tintMaterial(m, mode))
           }
           if (c.userData.isPinSprite && c instanceof THREE.Sprite) {
@@ -382,10 +382,20 @@ export function CampusScene({ selected, hovered, focusToken, onHover, onSelect, 
         })
       }
 
+      camera.updateMatrixWorld()
+      for (const [id, group] of meshById) {
+        const label = labelRefs.current.get(id)
+        if (!label) continue
+        group.updateWorldMatrix(true, false)
+        const point = group.localToWorld(new THREE.Vector3(0, PIN_Y[id], 0)).project(camera)
+        label.style.left = `${(point.x + 1) * mount.clientWidth / 2}px`
+        label.style.top = `${(1 - point.y) * mount.clientHeight / 2}px`
+        label.style.visibility = point.z >= -1 && point.z <= 1 ? "visible" : "hidden"
+      }
       const selectedGroup = selectedRef.current ? meshById.get(selectedRef.current) : undefined
       if (selectedGroup && selectedRef.current) {
         selectedGroup.updateWorldMatrix(true, false)
-        const anchor = selectedGroup.localToWorld(new THREE.Vector3(0, PIN_Y[selectedRef.current] * 0.82, 0)).project(camera)
+        const anchor = selectedGroup.localToWorld(new THREE.Vector3(0, PIN_Y[selectedRef.current], 0)).project(camera)
         onAnchorRef.current((anchor.x + 1) * mount.clientWidth / 2, (1 - anchor.y) * mount.clientHeight / 2)
       }
       renderer!.render(scene, camera)
@@ -406,6 +416,9 @@ export function CampusScene({ selected, hovered, focusToken, onHover, onSelect, 
         if (cancelled) return
         const built = buildCampusWorld(root, lib)
         meshById = built.meshById
+        for (const building of CAMPUS_BUILDINGS) {
+          if (!meshById.has(building.id)) throw new Error(`Missing campus landmark: ${building.id}`)
+        }
         people = built.people
 
         setStatus("")
@@ -426,6 +439,7 @@ export function CampusScene({ selected, hovered, focusToken, onHover, onSelect, 
       mount.removeEventListener("pointerup", onUp)
       mount.removeEventListener("wheel", onWheel)
       mount.removeEventListener("contextmenu", onContext)
+      mount.removeEventListener("dblclick", onDoubleClick)
       pmrem?.dispose()
       renderer?.dispose()
       mount.replaceChildren()
@@ -435,6 +449,26 @@ export function CampusScene({ selected, hovered, focusToken, onHover, onSelect, 
   return (
     <div className="absolute inset-0">
       <div ref={mountRef} className="absolute inset-0 touch-none" />
+      {!status && CAMPUS_BUILDINGS.map((building, index) => (
+        <button
+          key={building.id}
+          ref={(node) => { if (node) labelRefs.current.set(building.id, node); else labelRefs.current.delete(building.id) }}
+          type="button"
+          className="campus-map-label"
+          data-selected={selected === building.id}
+          data-muted={!!selected && selected !== building.id}
+          data-hovered={hovered === building.id}
+          aria-pressed={selected === building.id}
+          onClick={() => onSelect(building.id)}
+          onDoubleClick={() => onEnter(building.id)}
+          onKeyDown={(event) => { if (event.key === "Enter") { event.preventDefault(); onEnter(building.id) } }}
+          onMouseEnter={() => onHover(building.id)}
+          onMouseLeave={() => onHover(null)}
+        >
+          <span>{String(index + 1).padStart(2, "0")} · {building.name}</span>
+          {selected === building.id && <small>{building.feature}</small>}
+        </button>
+      ))}
       {status ? (
         <div className="pointer-events-none absolute inset-0 z-10 flex items-center justify-center bg-[#a8d8e6]">
           <p className="font-heading text-lg font-semibold text-[#1a2332]">{status}</p>

@@ -86,8 +86,9 @@ export async function loadCampusLibrary(onProgress?: (done: number, total: numbe
 
 export function uniquifyMaterials(obj: THREE.Object3D) {
   obj.traverse((c) => {
-    if (!(c instanceof THREE.Mesh)) return
-    const list = Array.isArray(c.material) ? c.material : [c.material]
+    if (!(c as THREE.Mesh).isMesh) return
+    const mesh = c as THREE.Mesh
+    const list = Array.isArray(mesh.material) ? mesh.material : [mesh.material]
     const cloned = list.map((m) => {
       const n = m.clone()
       if (n instanceof THREE.MeshStandardMaterial || n instanceof THREE.MeshLambertMaterial) {
@@ -96,7 +97,7 @@ export function uniquifyMaterials(obj: THREE.Object3D) {
       }
       return n
     })
-    c.material = Array.isArray(c.material) ? cloned : cloned[0]
+    mesh.material = Array.isArray(mesh.material) ? cloned : cloned[0]
   })
 }
 

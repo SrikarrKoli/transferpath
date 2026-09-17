@@ -37,7 +37,7 @@ export function CampusShell() {
   const [focusToken, setFocusToken] = useState(0)
   const [sessionState, setSessionState] = useState<"loading" | "guest" | "member">("loading")
 
-  const liveId = hovered ?? selected
+  const liveId = selected ?? hovered
   const live = CAMPUS_BUILDINGS.find((b) => b.id === liveId)
   const dock = CAMPUS_BUILDINGS.find((b) => b.id === selected)
 
@@ -114,15 +114,18 @@ export function CampusShell() {
         <p className="mt-7 text-[10px] font-medium uppercase tracking-[0.14em] text-[#1a2332]/36">
           Directory
         </p>
+        <p className="mt-1 text-[11px] text-[#1a2332]/55">New here? Start with Counselor Hall.</p>
         <ul className="campus-directory-list mt-2 -mx-1 min-h-0 flex-1 overflow-auto">
           {CAMPUS_BUILDINGS.map((b) => {
-            const on = selected === b.id || hovered === b.id
+            const on = selected === b.id
             return (
               <li key={b.id}>
                 <button
                   type="button"
                   onClick={() => selectBuilding(b.id)}
                   onDoubleClick={() => enterBuilding(b.id)}
+                  aria-pressed={selected === b.id}
+                  onKeyDown={(event) => { if (event.key === "Enter") { event.preventDefault(); enterBuilding(b.id) } }}
                   onMouseEnter={() => setHovered(b.id)}
                   onMouseLeave={() => setHovered(null)}
                   className={`flex w-full items-baseline gap-2 border-b border-[#1a2332]/08 py-2 pl-2.5 pr-1 text-left transition-colors ${
@@ -146,11 +149,11 @@ export function CampusShell() {
         <p className="pt-4 text-[11.5px] leading-snug text-[#1a2332]/55">
           {sessionState === "member"
             ? "Signed in — pick a building to continue."
-            : "Select a building. Start with Counselor Hall if you’re new."}
+            : "Click to select. Double-click or press Enter to go inside."}
         </p>
       </aside>
 
-      <div className="relative min-w-0 flex-1">
+      <div className="campus-map-stage relative min-w-0 flex-1">
         <CampusScene
           selected={selected}
           hovered={hovered}
@@ -161,7 +164,8 @@ export function CampusShell() {
           onAnchor={tetherBuilding}
         />
 
-        <div className="pointer-events-none absolute right-4 top-4 z-30 hidden lg:flex items-center gap-1.5">
+        <div className="campus-map-topbar hidden lg:flex">
+          <span className="mr-auto text-[11px] uppercase tracking-[0.13em]">Campus directory <span className="ml-4 normal-case tracking-normal opacity-55">Eight places. One transfer path.</span></span>
           {sessionState === "member" ? (
             <Link
               href="/dashboard"
@@ -214,6 +218,8 @@ export function CampusShell() {
                   type="button"
                   onClick={() => selectBuilding(b.id)}
                   onDoubleClick={() => enterBuilding(b.id)}
+                  aria-pressed={selected === b.id}
+                  onKeyDown={(event) => { if (event.key === "Enter") { event.preventDefault(); enterBuilding(b.id) } }}
                   className={`shrink-0 whitespace-nowrap px-3 py-1.5 text-xs font-medium ${
                     on ? "bg-[#1a2332] text-[#f4efe6]" : "bg-[#f4efe6]/90 text-[#1a2332]/80"
                   }`}
@@ -250,13 +256,11 @@ export function CampusShell() {
                     href={campusEnterHref(dock, sessionState === "member" ? "member" : "guest")}
                     className="bg-[#1a2332] px-4 py-2.5 text-center text-[13px] font-medium text-[#f4efe6] hover:bg-[#1a2332]/90"
                   >
-                    {sessionState === "member" || dock.href.startsWith("/onboarding")
-                      ? dock.cta
-                      : `Enter ${dock.short}`}
+                    {dock.cta}
                   </Link>
                   <button
                     type="button"
-                    onClick={() => setSelected(null)}
+                    onClick={() => { setSelected(null); setFocusToken((n) => n + 1) }}
                     className="px-3 py-2.5 text-[13px] font-medium text-[#1a2332]/65 hover:text-[#1a2332]"
                   >
                     Close

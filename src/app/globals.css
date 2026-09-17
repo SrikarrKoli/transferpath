@@ -5235,3 +5235,20 @@ nextjs-portal,
   .campus-plaque { right: 16px; bottom: 16px; width: 280px; }
   .campus-plaque p { font-size: 12px; }
 }
+
+/* Landing pass 4: projected wayfinding and a grounded map frame. */
+.campus-map-stage::after { content: ""; position: absolute; inset: 0; pointer-events: none; background: radial-gradient(ellipse at 46% 48%, transparent 36%, #39443826 100%); z-index: 1; }
+.campus-map-topbar { position: absolute; inset: 0 0 auto; height: 58px; align-items: center; gap: 8px; padding: 0 20px; background: #f4efe6; border-bottom: 1px solid #1a23322b; z-index: 35; }
+.campus-map-label { position: absolute; visibility: hidden; transform: translate(-50%, -100%); z-index: 22; padding: 4px 7px; background: #f4efe6dc; border: 1px solid #1a23322e; color: #344039; font-size: 10px; line-height: 1.35; white-space: nowrap; cursor: pointer; transition: background .18s, color .18s; }
+.campus-map-label::after { content: ""; position: absolute; top: 100%; left: 50%; height: 12px; border-left: 1px solid #6d7568; }
+.campus-map-label[data-muted="true"] { background: #e2e1d2b8; color: #4e554b; border-color: transparent; }
+.campus-map-label[data-hovered="true"], .campus-map-label:focus-visible { background: #f4efe6; outline: 1px solid #95734e; }
+.campus-map-label[data-selected="true"] { z-index: 28; padding: 9px 13px; background: #1a2332; border: 2px solid #c2a475; color: #fff8e9; font-size: 13px; box-shadow: 0 5px 16px #1a233230; }
+.campus-map-label small { display: block; margin-top: 3px; font-size: 11px; color: #e1caa4; }
+.campus-map-label[data-selected="true"]::after { height: 16px; border-color: #95734e; border-left-width: 2px; }
+.campus-root .campus-plaque { position: absolute; top: 84px; bottom: auto; right: 20px; z-index: 30; }
+.campus-root .campus-tether { position: absolute; inset: 0; width: 100%; height: 100%; z-index: 24; pointer-events: none; }
+@media (max-width: 1023px) {
+  .campus-root .campus-plaque { top: auto; bottom: 16px; right: 16px; width: 260px; }
+  .campus-map-label { font-size: 9px; }
+}

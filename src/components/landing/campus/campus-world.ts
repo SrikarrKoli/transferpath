@@ -70,6 +70,10 @@ export function buildCampusWorld(root: THREE.Group, lib: KitLibrary) {
   ground.rotation.x = -Math.PI / 2
   ground.receiveShadow = true
   root.add(ground)
+  // A broad, continuous stone campus foundation seats the streets and buildings.
+  const plate = rbox(14.4, 0.09, 11.4, lambert(0xb6b59b), 0, -0.025, 0.8, 0.4, false)
+  plate.receiveShadow = true
+  root.add(plate)
   const approach = mesh(new THREE.PlaneGeometry(16, 3.8), sandMat, -10, 0.005, 2.5, false)
   approach.rotation.x = -Math.PI / 2
   root.add(approach)
@@ -156,7 +160,8 @@ export function buildCampusWorld(root: THREE.Group, lib: KitLibrary) {
       new THREE.BoxGeometry(Math.max(size.x, 1.1) * 1.08, Math.max(size.y, 1.4) * 1.05, Math.max(size.z, 1.1) * 1.08),
       new THREE.MeshBasicMaterial({ visible: false, transparent: true, opacity: 0, depthWrite: false }),
     )
-    hit.position.set(center.x - g.position.x, Math.max(size.y, 1.4) * 0.52, center.z - g.position.z)
+    hit.position.copy(center)
+    g.userData.footprint = { x: center.x, z: center.z, width: size.x + 0.45, depth: size.z + 0.45 }
     hit.userData.buildingId = id
     hit.userData.isHitVolume = true
     g.add(hit)
@@ -243,13 +248,10 @@ export function buildCampusWorld(root: THREE.Group, lib: KitLibrary) {
 
   // Sparse authored canopy — fewer stamps, mixed silhouettes via seed.
   const trees: [number, number, number][] = [
-    [-1.45, 0.55, 1],
     [3.45, 0.25, 5],
     [-2.95, -1.65, 13],
     [5.45, 2.75, 11],
     [-5.45, 2.25, 3],
-    [1.05, 3.95, 6],
-    [-1.25, 3.75, 19],
     [-4.95, 0.05, 21],
     [5.05, -3.15, 15],
     [-2.85, 3.25, 20],
