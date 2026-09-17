@@ -11,7 +11,6 @@ import { buildLandmark, PIN_Y } from "./campus-landmarks"
 import {
   C,
   bench,
-  blobShadow,
   flat,
   fountain,
   hedge,
@@ -33,44 +32,6 @@ function tag(obj: THREE.Object3D, id: BuildingId) {
   obj.traverse((c) => {
     c.userData.buildingId = id
   })
-}
-
-function islandShape(scale = 1) {
-  // Soft organic plate — more control points + larger radii so the silhouette
-  // reads as foam-edged island instead of a faceted lozenge against the void.
-  const s = new THREE.Shape()
-  const pts: [number, number][] = [
-    [-6.2, -5.55],
-    [-3.4, -6.05],
-    [-0.2, -5.85],
-    [3.1, -6.15],
-    [5.9, -5.35],
-    [6.85, -3.1],
-    [6.55, -0.4],
-    [6.95, 2.4],
-    [5.85, 4.85],
-    [3.0, 5.95],
-    [-0.15, 6.15],
-    [-3.35, 5.75],
-    [-5.95, 4.55],
-    [-6.95, 2.15],
-    [-6.65, -0.55],
-    [-6.85, -3.25],
-  ]
-  const scaled = pts.map(([x, z]) => [x * scale, z * scale] as [number, number])
-  const n = scaled.length
-  const mid = (i: number, j: number): [number, number] => [
-    (scaled[i][0] + scaled[j][0]) / 2,
-    (scaled[i][1] + scaled[j][1]) / 2,
-  ]
-  const m0 = mid(n - 1, 0)
-  s.moveTo(m0[0], m0[1])
-  for (let i = 0; i < n; i++) {
-    const m = mid(i, (i + 1) % n)
-    s.quadraticCurveTo(scaled[i][0], scaled[i][1], m[0], m[1])
-  }
-  s.closePath()
-  return s
 }
 
 export function buildCampusWorld(root: THREE.Group, lib: KitLibrary) {
@@ -96,12 +57,7 @@ export function buildCampusWorld(root: THREE.Group, lib: KitLibrary) {
   // Lambert on the plate so sun shadows seat instead of floating over unlit Basic mats.
   const grassMat = lambert(0x7d896f, { emissive: new THREE.Color(0x7d896f), emissiveIntensity: 0.12 })
   const sandMat = lambert(0xe4d8bd, { emissive: new THREE.Color(0xe4d8bd), emissiveIntensity: 0.1 })
-  const waterMat = lambert(0x8db7bd, { transparent: true, opacity: 0.64 })
-  const waterDeepMat = lambert(0x668e96)
   const pierMat = lambert(0xc5b69b)
-  const islandMat = lambert(0x6e7a62, { emissive: new THREE.Color(0x6e7a62), emissiveIntensity: 0.14 })
-  const skirtMat = lambert(0x5a6650, { emissive: new THREE.Color(0x5a6650), emissiveIntensity: 0.1 })
-  const foamMat = lambert(0x8a9680, { emissive: new THREE.Color(0x8a9680), emissiveIntensity: 0.16 })
   const plazaMat = lambert(0xf2ede2, { emissive: new THREE.Color(0xf2ede2), emissiveIntensity: 0.14 })
   const plazaAlt = lambert(0xe5ddcf, { emissive: new THREE.Color(0xe5ddcf), emissiveIntensity: 0.12 })
   const walkMat = lambert(0xa89880, { emissive: new THREE.Color(0xa89880), emissiveIntensity: 0.1 })
@@ -109,76 +65,14 @@ export function buildCampusWorld(root: THREE.Group, lib: KitLibrary) {
   const curbMat = lambert(0x4a525a, { emissive: new THREE.Color(0x4a525a), emissiveIntensity: 0.08 })
   const hedgeMat = flat(0x405443)
 
-  const drop = mesh(
-    new THREE.CircleGeometry(12.4, 64),
-    new THREE.MeshBasicMaterial({ color: 0x1a3040, transparent: true, opacity: 0.18, depthWrite: false }),
-    0.2,
-    -1.34,
-    0.35,
-    false
-  )
-  drop.rotation.x = -Math.PI / 2
-  drop.scale.set(1.08, 0.92, 1)
-  root.add(drop)
-
-  // Unified green underplate — no leftover tan cylinder reading as unfinished seams.
-  const underplate = mesh(new THREE.CylinderGeometry(11.2, 11.6, 0.38, 96), skirtMat, 0.05, -1.12, 0.25, false)
-  underplate.scale.set(1.02, 1, 0.94)
-  root.add(underplate)
-
-  const islandGeo = new THREE.ExtrudeGeometry(islandShape(1), {
-    depth: 0.58,
-    bevelEnabled: true,
-    bevelSize: 0.1,
-    bevelThickness: 0.09,
-    bevelSegments: 4,
-    curveSegments: 48,
-  })
-  islandGeo.rotateX(-Math.PI / 2)
-  const island = mesh(islandGeo, islandMat, 0.05, -0.74, 0.2, false)
-  root.add(island)
-
-  // Soft foam lip — slightly larger, paler skirt so the void edge reads continuous.
-  const lipGeo = new THREE.ExtrudeGeometry(islandShape(1.045), {
-    depth: 0.14,
-    bevelEnabled: true,
-    bevelSize: 0.06,
-    bevelThickness: 0.05,
-    bevelSegments: 3,
-    curveSegments: 48,
-  })
-  lipGeo.rotateX(-Math.PI / 2)
-  root.add(mesh(lipGeo, foamMat, 0.05, -0.78, 0.2, false))
-
-  // Single soft void fade — no stacked concentric rings (AI-island trope).
-  {
-    const soft = new THREE.Mesh(
-      new THREE.CircleGeometry(8.2, 96),
-      new THREE.MeshBasicMaterial({
-        color: 0xc5d4c0,
-        transparent: true,
-        opacity: 0.14,
-        depthWrite: false,
-      }),
-    )
-    soft.rotation.x = -Math.PI / 2
-    soft.position.set(0.05, -0.84, 0.2)
-    soft.scale.set(1.06, 0.9, 1)
-    soft.renderOrder = -2
-    root.add(soft)
-  }
-
-  const sand = mesh(new THREE.CircleGeometry(5.4, 48), sandMat, -8.2, 0.02, 2.5, false)
-  sand.rotation.x = -Math.PI / 2
-  sand.scale.set(1.22, 0.72, 1)
-  root.add(sand)
-
-  const waterDeep = mesh(new THREE.CircleGeometry(48, 64), waterDeepMat, -8, -1.32, 3.4, false)
-  waterDeep.rotation.x = -Math.PI / 2
-  root.add(waterDeep)
-  const water = mesh(new THREE.CircleGeometry(28, 64), waterMat, -9, -1.05, 4, false)
-  water.rotation.x = -Math.PI / 2
-  root.add(water)
+  // Continuous terrain reaches beyond the frame; no raised disc or stacked rim.
+  const ground = mesh(new THREE.PlaneGeometry(180, 180), grassMat, 0, -0.04, 0, false)
+  ground.rotation.x = -Math.PI / 2
+  ground.receiveShadow = true
+  root.add(ground)
+  const approach = mesh(new THREE.PlaneGeometry(16, 3.8), sandMat, -10, 0.005, 2.5, false)
+  approach.rotation.x = -Math.PI / 2
+  root.add(approach)
 
   const city = new THREE.Group()
   city.position.y = 0.05
@@ -282,8 +176,6 @@ export function buildCampusWorld(root: THREE.Group, lib: KitLibrary) {
   const font = fountain()
   font.position.set(0, 0, 1.05)
   city.add(font)
-  city.add(hedge(0.18, 0.38, 2.05, -1.25, 1.05, hedgeMat))
-  city.add(hedge(0.18, 0.38, 2.05, 1.25, 1.05, hedgeMat))
   city.add(bench(lambert(C.creamDeep), -0.85, 1.85, 0.2))
   city.add(bench(lambert(C.creamDeep), 0.85, 1.85, -0.2))
 
@@ -323,14 +215,8 @@ export function buildCampusWorld(root: THREE.Group, lib: KitLibrary) {
   // Short irregular hedge clusters — not continuous ribbon borders.
   const hedgeRows: [number, number, number, number, number][] = [
     [-4.85, -2.75, 0.72, 0.28, 0.18],
-    [-4.05, -2.92, 0.55, 0.34, 0.16],
-    [3.75, -1.78, 0.62, 0.26, 0.18],
     [4.45, -1.95, 0.48, 0.32, 0.15],
-    [1.55, 2.35, 0.18, 0.3, 0.55],
-    [1.62, 2.95, 0.16, 0.36, 0.42],
     [-4.45, 2.05, 0.18, 0.28, 0.48],
-    [-4.55, 2.55, 0.15, 0.34, 0.38],
-    [4.95, 0.95, 0.16, 0.3, 0.45],
     [5.05, 1.45, 0.18, 0.26, 0.35],
   ]
   hedgeRows.forEach(([x, z, w, h, d]) => city.add(hedge(w, h, d, x, z, hedgeMat)))
@@ -339,10 +225,6 @@ export function buildCampusWorld(root: THREE.Group, lib: KitLibrary) {
     city.add(rbox(w, 0.04, d, plazaMat, cx, 0.03, cz, 0.02, false))
     // Broken corners only — avoid full perimeter ribbons.
     city.add(hedge(w * 0.28, 0.2, 0.1, cx - w * 0.28, cz - d / 2, hedgeMat))
-    city.add(hedge(w * 0.22, 0.24, 0.1, cx + w * 0.32, cz - d / 2, hedgeMat))
-    city.add(hedge(w * 0.24, 0.18, 0.1, cx - w * 0.18, cz + d / 2, hedgeMat))
-    city.add(hedge(0.1, 0.22, d * 0.32, cx - w / 2, cz - d * 0.15, hedgeMat))
-    city.add(hedge(0.1, 0.26, d * 0.28, cx + w / 2, cz + d * 0.12, hedgeMat))
   }
   lot(4.15, -0.55, 3.6, 2.2)
   lot(-0.15, 3.25, 2.8, 2.3)
@@ -362,23 +244,13 @@ export function buildCampusWorld(root: THREE.Group, lib: KitLibrary) {
   // Sparse authored canopy — fewer stamps, mixed silhouettes via seed.
   const trees: [number, number, number][] = [
     [-1.45, 0.55, 1],
-    [1.55, 0.45, 4],
-    [-1.35, 2.35, 7],
-    [1.25, 2.15, 2],
-    [-3.95, 0.75, 10],
     [3.45, 0.25, 5],
     [-2.95, -1.65, 13],
-    [2.75, -1.55, 8],
     [5.45, 2.75, 11],
     [-5.45, 2.25, 3],
-    [-3.65, -2.95, 16],
     [1.05, 3.95, 6],
     [-1.25, 3.75, 19],
-    [4.05, 3.65, 9],
-    [0.75, -2.25, 14],
     [-4.95, 0.05, 21],
-    [2.65, 4.65, 12],
-    [-5.55, -1.95, 17],
     [5.05, -3.15, 15],
     [-2.85, 3.25, 20],
   ]
@@ -391,10 +263,7 @@ export function buildCampusWorld(root: THREE.Group, lib: KitLibrary) {
 
   const clusters: [number, number, number][] = [
     [-5.15, 3.35, 41],
-    [5.15, 3.95, 43],
     [4.75, -3.45, 44],
-    [-5.25, -3.15, 45],
-    [0.25, 4.65, 46],
   ]
   clusters.forEach(([x, z, seed]) => {
     if (occupied.has(keyOf(x, z)) || reserved.has(keyOf(x, z))) return
@@ -444,8 +313,6 @@ export function buildCampusWorld(root: THREE.Group, lib: KitLibrary) {
 
   const garden = (x: number, z: number, w: number, d: number) => {
     city.add(rbox(w, 0.08, d, grassMat, x, 0.06, z, 0.03, false))
-    city.add(hedge(w + 0.08, 0.22, 0.1, x, z - d / 2, hedgeMat))
-    city.add(hedge(w + 0.08, 0.22, 0.1, x, z + d / 2, hedgeMat))
   }
   garden(-4.35, -3.15, 1.4, 1.05)
   garden(3.15, -3.15, 1.35, 1.0)
@@ -473,20 +340,6 @@ export function buildCampusWorld(root: THREE.Group, lib: KitLibrary) {
   city.add(bench(lambert(C.creamDeep), 2.15, -1.55, 0.1))
   city.add(bench(lambert(C.creamDeep), -2.25, 0.35, -0.15))
   city.add(bench(lambert(C.creamDeep), 4.35, 1.85, 0.4))
-
-  const boat = (x: number, z: number, rot: number, color: number) => {
-    const g = new THREE.Group()
-    g.add(
-      rbox(0.88, 0.13, 0.32, lambert(color), 0, 0.08, 0, 0.04),
-      rbox(0.3, 0.14, 0.24, lambert(C.trim), -0.12, 0.18, 0, 0.03)
-    )
-    blobShadow(g, 0.55, 0.28, 0.22)
-    g.position.set(x, 0, z)
-    g.rotation.y = rot
-    return g
-  }
-  city.add(boat(-9.45, 2.55, 0.15, C.navySoft))
-  city.add(boat(-9.25, 4.65, -0.25, 0xf2eee4))
 
   // L4: sparse cars — Kenney vehicles read toy when dense
   add("cars/sedan", 3.05, 0.15, Math.PI / 2, 0.16)
@@ -538,5 +391,5 @@ export function buildCampusWorld(root: THREE.Group, lib: KitLibrary) {
     people.push(pawn)
   })
 
-  return { meshById, people, water }
+  return { meshById, people }
 }

@@ -344,12 +344,12 @@ export function toyTree(x: number, z: number, seed: number) {
       g.add(lobe)
     }
   } else {
-    // Oval canopy — flatter, denser silhouette for variety.
+    // Slender upright crown contrasts with spreading oaks and pointed pines.
     const crown = mesh(new THREE.SphereGeometry(0.32, 9, 7), canopyMat, 0, trunkH + 0.22, 0)
-    crown.scale.set(1.15 + (seed % 3) * 0.06, 0.62 + (seed % 2) * 0.08, 1.0)
+    crown.scale.set(0.58, 1.65 + (seed % 2) * 0.16, 0.62)
     g.add(crown)
     const bump = mesh(new THREE.SphereGeometry(0.16, 7, 6), accent, 0.1, trunkH + 0.32, -0.06)
-    bump.scale.set(1.1, 0.7, 0.95)
+    bump.scale.set(0.65, 1.2, 0.7)
     g.add(bump)
   }
   g.scale.setScalar(scale)

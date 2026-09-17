@@ -4,6 +4,7 @@ import { useEffect, useRef, useState } from "react"
 import * as THREE from "three"
 import { RoomEnvironment } from "three/addons/environments/RoomEnvironment.js"
 import { CAMPUS_BUILDINGS, type BuildingId } from "./campus-data"
+import { PIN_Y } from "./campus-landmarks"
 import { loadCampusLibrary } from "./campus-models"
 import { buildCampusWorld } from "./campus-world"
 
@@ -14,9 +15,10 @@ type Props = {
   onHover: (id: BuildingId | null) => void
   onSelect: (id: BuildingId) => void
   onEnter: (id: BuildingId) => void
+  onAnchor: (x: number, y: number) => void
 }
 
-export function CampusScene({ selected, hovered, focusToken, onHover, onSelect, onEnter }: Props) {
+export function CampusScene({ selected, hovered, focusToken, onHover, onSelect, onEnter, onAnchor }: Props) {
   const mountRef = useRef<HTMLDivElement>(null)
   const selectedRef = useRef(selected)
   const hoveredRef = useRef(hovered)
@@ -24,12 +26,14 @@ export function CampusScene({ selected, hovered, focusToken, onHover, onSelect, 
   const onHoverRef = useRef(onHover)
   const onSelectRef = useRef(onSelect)
   const onEnterRef = useRef(onEnter)
+  const onAnchorRef = useRef(onAnchor)
   selectedRef.current = selected
   hoveredRef.current = hovered
   focusTokenRef.current = focusToken
   onHoverRef.current = onHover
   onSelectRef.current = onSelect
   onEnterRef.current = onEnter
+  onAnchorRef.current = onAnchor
   const [status, setStatus] = useState("Building campus…")
 
   useEffect(() => {
@@ -106,6 +110,10 @@ export function CampusScene({ selected, hovered, focusToken, onHover, onSelect, 
       camera.right = f * a
       camera.top = f
       camera.bottom = -f
+      // Keep the selected landmark left of the right-hand plaque.
+      const shift = selectedRef.current && mount.clientWidth >= 768 ? 0.85 : 0
+      camera.left += shift
+      camera.right += shift
       camera.updateProjectionMatrix()
     }
 
@@ -260,9 +268,9 @@ export function CampusScene({ selected, hovered, focusToken, onHover, onSelect, 
           mat.userData._baseTransparent = mat.transparent
         }
         const base = mat.userData._baseColor as THREE.Color
-        if (mode === "focus") mat.color.copy(base).offsetHSL(0.02, 0.08, 0.1)
+        if (mode === "focus") mat.color.copy(base).offsetHSL(0, 0, 0.07)
         else if (mode === "hover") mat.color.copy(base).offsetHSL(0.01, 0.04, 0.05)
-        else if (mode === "dim") mat.color.copy(base).multiplyScalar(0.52)
+        else if (mode === "dim") mat.color.copy(base).multiplyScalar(0.4)
         else mat.color.copy(base)
         // Keep opacity only if the material started transparent (glass/water).
         if (mat.userData._baseTransparent) {
@@ -281,14 +289,14 @@ export function CampusScene({ selected, hovered, focusToken, onHover, onSelect, 
       const baseEm = mat.userData._baseEmissive as THREE.Color
       if (mode === "focus") {
         mat.color.copy(baseCol)
-        mat.emissive.setHex(0xb85a32)
-        mat.emissiveIntensity = 0.52
+        mat.emissive.setHex(0xe3d6b8)
+        mat.emissiveIntensity = 0.18
       } else if (mode === "hover") {
         mat.color.copy(baseCol)
         mat.emissive.setHex(0x8a5a3a)
         mat.emissiveIntensity = 0.28
       } else if (mode === "dim") {
-        mat.color.copy(baseCol).multiplyScalar(0.58)
+        mat.color.copy(baseCol).multiplyScalar(0.4)
         mat.emissive.copy(baseEm).multiplyScalar(0.45)
         mat.emissiveIntensity = (mat.userData._baseIntensity ?? 1) * 0.45
       } else {
@@ -307,7 +315,7 @@ export function CampusScene({ selected, hovered, focusToken, onHover, onSelect, 
       }
       look.lerp(lookGoal, reduced ? 1 : 0.07)
       orbit.radius = THREE.MathUtils.lerp(orbit.radius, radiusGoal.v, 0.08)
-      if (!reduced && !dragging && !panning) orbit.theta += 0.00016
+      // A stable orientation makes the directory a learnable map.
       applyCam()
 
       if (!reduced) {
@@ -352,7 +360,7 @@ export function CampusScene({ selected, hovered, focusToken, onHover, onSelect, 
             : isHovered
               ? "hover"
               : "idle"
-        const lift = isSelected ? 0.28 : isHovered && !hasSelection ? 0.1 : 0
+        const lift = isSelected ? 0.12 : isHovered && !hasSelection ? 0.1 : 0
         g.position.y = THREE.MathUtils.lerp(g.position.y, lift, 0.14)
         g.traverse((c) => {
           if (c instanceof THREE.Mesh && !c.userData.isHitVolume) {
@@ -374,6 +382,12 @@ export function CampusScene({ selected, hovered, focusToken, onHover, onSelect, 
         })
       }
 
+      const selectedGroup = selectedRef.current ? meshById.get(selectedRef.current) : undefined
+      if (selectedGroup && selectedRef.current) {
+        selectedGroup.updateWorldMatrix(true, false)
+        const anchor = selectedGroup.localToWorld(new THREE.Vector3(0, PIN_Y[selectedRef.current] * 0.82, 0)).project(camera)
+        onAnchorRef.current((anchor.x + 1) * mount.clientWidth / 2, (1 - anchor.y) * mount.clientHeight / 2)
+      }
       renderer!.render(scene, camera)
       raf = requestAnimationFrame(tick)
     }
@@ -393,7 +407,7 @@ export function CampusScene({ selected, hovered, focusToken, onHover, onSelect, 
         const built = buildCampusWorld(root, lib)
         meshById = built.meshById
         people = built.people
-        water = built.water
+
         setStatus("")
         applyCam()
         raf = requestAnimationFrame(tick)

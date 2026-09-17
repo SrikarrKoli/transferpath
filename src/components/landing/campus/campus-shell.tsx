@@ -3,8 +3,8 @@
 import dynamic from "next/dynamic"
 import Link from "next/link"
 import { useRouter } from "next/navigation"
-import { useEffect, useState } from "react"
-import { CTA_GET_STARTED, PRODUCT_NAME, REGION_TAGLINE, TAGLINE } from "@/lib/brand"
+import { useEffect, useState, useRef, useCallback } from "react"
+import { CTA_GET_STARTED, PRODUCT_NAME, REGION_TAGLINE } from "@/lib/brand"
 import { createClient } from "@/lib/supabase/client"
 import { campusEnterHref } from "@/lib/campus-immersion"
 import { CAMPUS_BUILDINGS, type BuildingId } from "./campus-data"
@@ -20,6 +20,18 @@ const CampusScene = dynamic(() => import("./campus-scene").then((m) => m.CampusS
 
 export function CampusShell() {
   const router = useRouter()
+  const plaqueRef = useRef<HTMLDivElement>(null)
+  const leaderRef = useRef<SVGPathElement>(null)
+  const markerRef = useRef<SVGCircleElement>(null)
+  const tetherBuilding = useCallback((x: number, y: number) => {
+    const plaque = plaqueRef.current
+    if (!plaque || !leaderRef.current || !markerRef.current) return
+    const endX = plaque.offsetLeft
+    const endY = plaque.offsetTop + 28
+    leaderRef.current.setAttribute("d", `M ${x} ${y} L ${endX - 22} ${endY} L ${endX} ${endY}`)
+    markerRef.current.setAttribute("cx", String(x))
+    markerRef.current.setAttribute("cy", String(y))
+  }, [])
   const [selected, setSelected] = useState<BuildingId | null>(null)
   const [hovered, setHovered] = useState<BuildingId | null>(null)
   const [focusToken, setFocusToken] = useState(0)
@@ -79,7 +91,7 @@ export function CampusShell() {
 
   return (
     <div className="campus-root flex h-[100dvh] overflow-hidden bg-[#c5d4c0] text-[#1a2332]">
-      <aside className="campus-directory relative z-20 hidden w-[16rem] shrink-0 flex-col border-r border-[#1a2332]/10 bg-[#f4efe6] px-5 py-6 lg:flex">
+      <aside className="campus-directory relative z-20 hidden w-[14.5rem] shrink-0 flex-col border-r border-[#1a2332]/10 bg-[#f4efe6] px-5 py-5 lg:flex">
         <Link href="/" className="inline-flex items-center gap-2.5">
           <span
             className="flex size-6 items-center justify-center border border-[#1a2332]/55 font-[family-name:var(--font-fraunces)] text-[13px] font-semibold leading-none text-[#1a2332]/80"
@@ -92,8 +104,8 @@ export function CampusShell() {
           </span>
         </Link>
 
-        <h1 className="mt-6 font-[family-name:var(--font-fraunces)] text-[1.35rem] font-semibold leading-[1.18] tracking-[-0.01em] text-[#1a2332]">
-          {TAGLINE.replace(/\.$/, "")}.
+        <h1 className="mt-5 font-[family-name:var(--font-fraunces)] text-[1.35rem] font-semibold leading-[1.18] tracking-[-0.01em] text-[#1a2332]">
+          Your transfer, mapped clearly.
         </h1>
         <p className="mt-2 max-w-[14.5rem] text-[12.5px] leading-relaxed text-[#1a2332]/52">
           {REGION_TAGLINE}
@@ -131,7 +143,7 @@ export function CampusShell() {
           })}
         </ul>
 
-        <p className="pt-4 text-[11.5px] leading-snug text-[#1a2332]/4">
+        <p className="pt-4 text-[11.5px] leading-snug text-[#1a2332]/55">
           {sessionState === "member"
             ? "Signed in — pick a building to continue."
             : "Select a building. Start with Counselor Hall if you’re new."}
@@ -146,9 +158,10 @@ export function CampusShell() {
           onHover={setHovered}
           onSelect={selectBuilding}
           onEnter={enterBuilding}
+          onAnchor={tetherBuilding}
         />
 
-        <div className="pointer-events-none absolute right-4 top-4 z-30 flex items-center gap-1.5">
+        <div className="pointer-events-none absolute right-4 top-4 z-30 hidden lg:flex items-center gap-1.5">
           {sessionState === "member" ? (
             <Link
               href="/dashboard"
@@ -160,7 +173,7 @@ export function CampusShell() {
             <>
               <Link
                 href="/login"
-                className="pointer-events-auto px-3 py-1.5 text-[12px] font-medium text-[#1a2332]/5 hover:text-[#1a2332]"
+                className="pointer-events-auto px-3 py-1.5 text-[12px] font-medium text-[#1a2332]/65 hover:text-[#1a2332]"
               >
                 Log in
               </Link>
@@ -214,18 +227,23 @@ export function CampusShell() {
 
 
         {dock ? (
-          <div className="absolute inset-x-0 bottom-0 z-30 p-3 sm:p-5">
-            <div className="mx-auto max-w-xl border border-[#1a2332]/35 bg-[#f3ead8]/97 shadow-[0_14px_36px_-24px_rgba(26,35,50,0.45)]">
-              <div className="h-[2px] bg-[#8b6914]/75" aria-hidden />
-              <div className="flex flex-col gap-3 px-4 py-3.5 sm:flex-row sm:items-end sm:gap-5 sm:px-5 sm:py-4">
+          <>
+            <svg className="campus-tether" aria-hidden="true">
+              <path ref={leaderRef} fill="none" stroke="#86694c" strokeWidth="1.5" />
+              <circle ref={markerRef} r="4" fill="#f4efe6" stroke="#86694c" strokeWidth="1.5" />
+            </svg>
+            <div ref={plaqueRef} className="campus-plaque" aria-labelledby="campus-plaque-title">
+            <div>
+              <div className="h-[2px] bg-[#95734e]" aria-hidden />
+              <div className="flex flex-col gap-3 px-4 py-4">
                 <div className="min-w-0 flex-1">
-                  <p className="text-[11px] font-medium tracking-wide text-[#1a2332]/45">
+                  <p className="text-[11px] font-medium text-[#1a2332]/45">
                     {dock.feature}
                   </p>
-                  <h2 className="mt-1 font-[family-name:var(--font-fraunces)] text-xl font-semibold tracking-[-0.01em] text-[#1a2332] sm:text-[1.35rem]">
+                  <h2 id="campus-plaque-title" className="mt-1 font-[family-name:var(--font-fraunces)] text-xl font-semibold tracking-[-0.01em] text-[#1a2332] sm:text-[1.35rem]">
                     {dock.name}
                   </h2>
-                  <p className="mt-1.5 max-w-md text-[13px] leading-relaxed text-[#1a2332]/58">{dock.blurb}</p>
+                  <p className="mt-1.5 max-w-md text-[13px] leading-relaxed text-[#1a2332]/70">{dock.blurb}</p>
                 </div>
                 <div className="flex shrink-0 gap-2">
                   <Link
@@ -239,7 +257,7 @@ export function CampusShell() {
                   <button
                     type="button"
                     onClick={() => setSelected(null)}
-                    className="px-3 py-2.5 text-[13px] font-medium text-[#1a2332]/4 hover:text-[#1a2332]"
+                    className="px-3 py-2.5 text-[13px] font-medium text-[#1a2332]/65 hover:text-[#1a2332]"
                   >
                     Close
                   </button>
@@ -247,6 +265,7 @@ export function CampusShell() {
               </div>
             </div>
           </div>
+          </>
         ) : null}
       </div>
 
