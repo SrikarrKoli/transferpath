@@ -79,7 +79,7 @@ export function CampusShell() {
 
   return (
     <div className="campus-root flex h-[100dvh] overflow-hidden bg-[#c5d4c0] text-[#1a2332]">
-      <aside className="relative z-20 hidden w-[17.5rem] shrink-0 flex-col border-r border-[#1a2332]/10 bg-[#f4efe6] px-6 py-7 lg:flex">
+      <aside className="campus-directory relative z-20 hidden w-[16rem] shrink-0 flex-col border-r border-[#1a2332]/10 bg-[#f4efe6] px-5 py-6 lg:flex">
         <Link href="/" className="inline-flex items-center gap-2.5">
           <span
             className="flex size-6 items-center justify-center border border-[#1a2332]/55 font-[family-name:var(--font-fraunces)] text-[13px] font-semibold leading-none text-[#1a2332]/80"
@@ -87,22 +87,22 @@ export function CampusShell() {
           >
             T
           </span>
-          <span className="font-[family-name:var(--font-fraunces)] text-[1.05rem] font-semibold tracking-tight text-[#1a2332]">
+          <span className="font-[family-name:var(--font-fraunces)] text-[1.02rem] font-semibold tracking-tight text-[#1a2332]">
             {PRODUCT_NAME}
           </span>
         </Link>
 
-        <h1 className="mt-8 font-[family-name:var(--font-fraunces)] text-[1.55rem] font-semibold leading-[1.15] tracking-[-0.01em] text-[#1a2332]">
+        <h1 className="mt-6 font-[family-name:var(--font-fraunces)] text-[1.35rem] font-semibold leading-[1.18] tracking-[-0.01em] text-[#1a2332]">
           {TAGLINE.replace(/\.$/, "")}.
         </h1>
-        <p className="mt-3 max-w-[16rem] text-[13px] leading-relaxed text-[#1a2332]/55">
+        <p className="mt-2 max-w-[14.5rem] text-[12.5px] leading-relaxed text-[#1a2332]/52">
           {REGION_TAGLINE}
         </p>
 
-        <p className="mt-10 text-[10px] font-semibold uppercase tracking-[0.2em] text-[#1a2332]/38">
-          Campus directory
+        <p className="mt-7 text-[10px] font-medium uppercase tracking-[0.14em] text-[#1a2332]/36">
+          Directory
         </p>
-        <ul className="mt-3 -mx-1 min-h-0 flex-1 overflow-auto [scrollbar-width:thin] [scrollbar-color:rgba(26,35,50,0.25)_transparent]">
+        <ul className="campus-directory-list mt-2 -mx-1 min-h-0 flex-1 overflow-auto">
           {CAMPUS_BUILDINGS.map((b) => {
             const on = selected === b.id || hovered === b.id
             return (
@@ -113,13 +113,17 @@ export function CampusShell() {
                   onDoubleClick={() => enterBuilding(b.id)}
                   onMouseEnter={() => setHovered(b.id)}
                   onMouseLeave={() => setHovered(null)}
-                  className={`flex w-full items-baseline gap-3 border-b border-[#1a2332]/10 px-1 py-2.5 text-left transition-colors ${
-                    on ? "text-[#1a2332] shadow-[inset_0_-1.5px_0_#1a2332]" : "text-[#1a2332]/78 hover:bg-[#1a2332]/03"
+                  className={`flex w-full items-baseline gap-2 border-b border-[#1a2332]/08 py-2 pl-2.5 pr-1 text-left transition-colors ${
+                    on
+                      ? "border-l-2 border-l-[#1a2332] bg-[rgba(26,35,50,0.03)] pl-2 font-semibold text-[#1a2332]"
+                      : "border-l-2 border-l-transparent text-[#1a2332]/72 hover:bg-[rgba(26,35,50,0.025)]"
                   }`}
                 >
                   <span className="min-w-0">
-                    <span className="block text-[14px] font-semibold leading-tight">{b.name}</span>
-                    <span className="block text-[12px] text-[#1a2332]/45">{b.feature}</span>
+                    <span className={`block text-[13.5px] leading-tight ${on ? "font-semibold" : "font-medium"}`}>
+                      {b.name}
+                    </span>
+                    <span className="block text-[11.5px] font-normal text-[#1a2332]/42">{b.feature}</span>
                   </span>
                 </button>
               </li>
@@ -127,8 +131,7 @@ export function CampusShell() {
           })}
         </ul>
 
-        {/* Single onboarding cue for the whole landing */}
-        <p className="pt-5 text-[12px] leading-snug text-[#1a2332]/42">
+        <p className="pt-4 text-[11.5px] leading-snug text-[#1a2332]/4">
           {sessionState === "member"
             ? "Signed in — pick a building to continue."
             : "Select a building. Start with Counselor Hall if you’re new."}
@@ -157,13 +160,13 @@ export function CampusShell() {
             <>
               <Link
                 href="/login"
-                className="pointer-events-auto px-3 py-1.5 text-[12px] font-medium text-[#1a2332]/55 hover:text-[#1a2332]"
+                className="pointer-events-auto px-3 py-1.5 text-[12px] font-medium text-[#1a2332]/5 hover:text-[#1a2332]"
               >
                 Log in
               </Link>
               <Link
                 href="/onboarding"
-                className="pointer-events-auto border border-[#1a2332]/45 bg-[#f4efe6]/88 px-3 py-1.5 text-[12px] font-medium text-[#1a2332] backdrop-blur-sm hover:border-[#1a2332]/8"
+                className="pointer-events-auto bg-[#1a2332] px-3.5 py-1.5 text-[12px] font-medium text-[#f4efe6] shadow-[0_1px_0_rgba(26,35,50,0.25)] hover:bg-[#1a2332]/92"
               >
                 {CTA_GET_STARTED}
               </Link>
@@ -212,26 +215,22 @@ export function CampusShell() {
 
         {dock ? (
           <div className="absolute inset-x-0 bottom-0 z-30 p-3 sm:p-5">
-            <div className="mx-auto max-w-2xl border border-[#1a2332]/70 bg-[#f7f2e8]/96 shadow-[0_18px_40px_-28px_rgba(26,35,50,0.55)] backdrop-blur-[2px]">
-              <div className="flex items-center justify-between border-b border-[#1a2332]/12 px-4 py-2 sm:px-5">
-                <p className="text-[10px] font-semibold uppercase tracking-[0.2em] text-[#1a2332]/42">
-                  Campus plaque
-                </p>
-                <p className="font-[family-name:var(--font-fraunces)] text-[11px] text-[#1a2332]/45">
-                  {dock.feature}
-                </p>
-              </div>
-              <div className="flex flex-col gap-3 px-4 py-4 sm:flex-row sm:items-end sm:gap-5 sm:px-5 sm:py-4">
-                <div className="min-w-0 flex-1 border-l-2 border-[#c45c3a]/70 pl-3.5">
-                  <h2 className="font-[family-name:var(--font-fraunces)] text-xl font-semibold tracking-[-0.01em] text-[#1a2332] sm:text-[1.4rem]">
+            <div className="mx-auto max-w-xl border border-[#1a2332]/35 bg-[#f3ead8]/97 shadow-[0_14px_36px_-24px_rgba(26,35,50,0.45)]">
+              <div className="h-[2px] bg-[#8b6914]/75" aria-hidden />
+              <div className="flex flex-col gap-3 px-4 py-3.5 sm:flex-row sm:items-end sm:gap-5 sm:px-5 sm:py-4">
+                <div className="min-w-0 flex-1">
+                  <p className="text-[11px] font-medium tracking-wide text-[#1a2332]/45">
+                    {dock.feature}
+                  </p>
+                  <h2 className="mt-1 font-[family-name:var(--font-fraunces)] text-xl font-semibold tracking-[-0.01em] text-[#1a2332] sm:text-[1.35rem]">
                     {dock.name}
                   </h2>
-                  <p className="mt-1.5 max-w-md text-[13px] leading-relaxed text-[#1a2332]/62">{dock.blurb}</p>
+                  <p className="mt-1.5 max-w-md text-[13px] leading-relaxed text-[#1a2332]/58">{dock.blurb}</p>
                 </div>
                 <div className="flex shrink-0 gap-2">
                   <Link
                     href={campusEnterHref(dock, sessionState === "member" ? "member" : "guest")}
-                    className="border border-[#1a2332] bg-[#1a2332] px-4 py-2.5 text-center text-[13px] font-medium text-[#f4efe6] hover:bg-[#1a2332]/90"
+                    className="bg-[#1a2332] px-4 py-2.5 text-center text-[13px] font-medium text-[#f4efe6] hover:bg-[#1a2332]/90"
                   >
                     {sessionState === "member" || dock.href.startsWith("/onboarding")
                       ? dock.cta
@@ -240,7 +239,7 @@ export function CampusShell() {
                   <button
                     type="button"
                     onClick={() => setSelected(null)}
-                    className="px-3 py-2.5 text-[13px] font-medium text-[#1a2332]/45 hover:text-[#1a2332]"
+                    className="px-3 py-2.5 text-[13px] font-medium text-[#1a2332]/4 hover:text-[#1a2332]"
                   >
                     Close
                   </button>

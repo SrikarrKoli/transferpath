@@ -150,27 +150,23 @@ export function buildCampusWorld(root: THREE.Group, lib: KitLibrary) {
   lipGeo.rotateX(-Math.PI / 2)
   root.add(mesh(lipGeo, foamMat, 0.05, -0.78, 0.2, false))
 
-  // Feather into the void so the silhouette isn't a hard aliased cut.
-  ;[
-    [1.08, 0.28],
-    [1.14, 0.16],
-    [1.2, 0.08],
-  ].forEach(([scale, opacity]) => {
+  // Single soft void fade — no stacked concentric rings (AI-island trope).
+  {
     const soft = new THREE.Mesh(
-      new THREE.CircleGeometry(7.4 * scale, 96),
+      new THREE.CircleGeometry(8.2, 96),
       new THREE.MeshBasicMaterial({
         color: 0xc5d4c0,
         transparent: true,
-        opacity,
+        opacity: 0.14,
         depthWrite: false,
       }),
     )
     soft.rotation.x = -Math.PI / 2
-    soft.position.set(0.05, -0.82, 0.2)
-    soft.scale.set(1.05, 0.92, 1)
+    soft.position.set(0.05, -0.84, 0.2)
+    soft.scale.set(1.06, 0.9, 1)
     soft.renderOrder = -2
     root.add(soft)
-  })
+  }
 
   const sand = mesh(new THREE.CircleGeometry(5.4, 48), sandMat, -8.2, 0.02, 2.5, false)
   sand.rotation.x = -Math.PI / 2
@@ -324,22 +320,29 @@ export function buildCampusWorld(root: THREE.Group, lib: KitLibrary) {
     spoke(b.x, b.z)
   })
 
-  // Lot hedges + remaining canopy (dark, not mint matching roofs)
+  // Short irregular hedge clusters — not continuous ribbon borders.
   const hedgeRows: [number, number, number, number, number][] = [
-    [-4.9, -2.85, 1.6, 0.32, 0.16],
-    [3.9, -1.85, 1.8, 0.32, 0.16],
-    [1.55, 2.55, 0.16, 0.34, 1.4],
-    [-4.55, 2.15, 0.16, 0.34, 1.2],
-    [4.95, 1.15, 0.16, 0.32, 1.1],
+    [-4.85, -2.75, 0.72, 0.28, 0.18],
+    [-4.05, -2.92, 0.55, 0.34, 0.16],
+    [3.75, -1.78, 0.62, 0.26, 0.18],
+    [4.45, -1.95, 0.48, 0.32, 0.15],
+    [1.55, 2.35, 0.18, 0.3, 0.55],
+    [1.62, 2.95, 0.16, 0.36, 0.42],
+    [-4.45, 2.05, 0.18, 0.28, 0.48],
+    [-4.55, 2.55, 0.15, 0.34, 0.38],
+    [4.95, 0.95, 0.16, 0.3, 0.45],
+    [5.05, 1.45, 0.18, 0.26, 0.35],
   ]
   hedgeRows.forEach(([x, z, w, h, d]) => city.add(hedge(w, h, d, x, z, hedgeMat)))
 
   const lot = (cx: number, cz: number, w: number, d: number) => {
     city.add(rbox(w, 0.04, d, plazaMat, cx, 0.03, cz, 0.02, false))
-    city.add(hedge(w, 0.22, 0.1, cx, cz - d / 2, hedgeMat))
-    city.add(hedge(w, 0.22, 0.1, cx, cz + d / 2, hedgeMat))
-    city.add(hedge(0.1, 0.22, d, cx - w / 2, cz, hedgeMat))
-    city.add(hedge(0.1, 0.22, d, cx + w / 2, cz, hedgeMat))
+    // Broken corners only — avoid full perimeter ribbons.
+    city.add(hedge(w * 0.28, 0.2, 0.1, cx - w * 0.28, cz - d / 2, hedgeMat))
+    city.add(hedge(w * 0.22, 0.24, 0.1, cx + w * 0.32, cz - d / 2, hedgeMat))
+    city.add(hedge(w * 0.24, 0.18, 0.1, cx - w * 0.18, cz + d / 2, hedgeMat))
+    city.add(hedge(0.1, 0.22, d * 0.32, cx - w / 2, cz - d * 0.15, hedgeMat))
+    city.add(hedge(0.1, 0.26, d * 0.28, cx + w / 2, cz + d * 0.12, hedgeMat))
   }
   lot(4.15, -0.55, 3.6, 2.2)
   lot(-0.15, 3.25, 2.8, 2.3)
@@ -356,43 +359,30 @@ export function buildCampusWorld(root: THREE.Group, lib: KitLibrary) {
   lane(3.15, 2.75, 0.48, 1.2)
   lane(-4.05, 2.05, 0.48, 1.1)
 
+  // Sparse authored canopy — fewer stamps, mixed silhouettes via seed.
   const trees: [number, number, number][] = [
     [-1.45, 0.55, 1],
-    [1.45, 0.55, 2],
-    [-1.4, 2.25, 3],
-    [1.4, 2.25, 4],
-    [-0.7, 2.55, 5],
-    [0.7, 2.55, 6],
-    [-3.85, 0.85, 7],
-    [3.35, 0.35, 8],
-    [-2.85, -1.55, 9],
-    [2.85, -1.65, 10],
-    [5.55, 2.85, 11],
-    [-5.55, 2.35, 12],
-    [-3.55, -2.85, 13],
-    [1.15, 3.85, 14],
-    [-1.15, 3.85, 15],
-    [4.15, 3.85, 16],
-    [-2.15, 4.55, 17],
-    [0.85, -2.15, 18],
-    [-0.85, -2.15, 19],
-    [3.85, -2.85, 20],
-    [-4.85, 0.15, 21],
-    [2.55, 4.85, 22],
-    [-5.65, -1.85, 23],
-    [-4.25, -3.15, 24],
-    [2.85, -3.15, 25],
-    [5.15, -3.25, 26],
-    [-1.85, 4.15, 27],
-    [1.85, 4.15, 28],
-    [4.55, 1.05, 29],
-    [-4.15, 1.55, 30],
-    [0.95, -1.55, 31],
-    [-2.95, 3.15, 32],
+    [1.55, 0.45, 4],
+    [-1.35, 2.35, 7],
+    [1.25, 2.15, 2],
+    [-3.95, 0.75, 10],
+    [3.45, 0.25, 5],
+    [-2.95, -1.65, 13],
+    [2.75, -1.55, 8],
+    [5.45, 2.75, 11],
+    [-5.45, 2.25, 3],
+    [-3.65, -2.95, 16],
+    [1.05, 3.95, 6],
+    [-1.25, 3.75, 19],
+    [4.05, 3.65, 9],
+    [0.75, -2.25, 14],
+    [-4.95, 0.05, 21],
+    [2.65, 4.65, 12],
+    [-5.55, -1.95, 17],
+    [5.05, -3.15, 15],
+    [-2.85, 3.25, 20],
   ]
   trees.forEach(([x, z, seed]) => {
-    // L5: thin density — drop ~half of kit trees so crowns can breathe
-    if (seed % 2 === 0) return
     if (occupied.has(keyOf(x, z))) return
     const t = toyTree(x, z, seed)
     city.add(t)
@@ -400,14 +390,11 @@ export function buildCampusWorld(root: THREE.Group, lib: KitLibrary) {
   })
 
   const clusters: [number, number, number][] = [
-    [-5.15, 3.25, 41],
-    [-4.55, 3.85, 42],
-    [5.25, 4.05, 43],
-    [4.85, -3.55, 44],
-    [-5.35, -3.05, 45],
-    [0.35, 4.55, 46],
-    [-0.55, -3.45, 47],
-    [5.45, 0.15, 48],
+    [-5.15, 3.35, 41],
+    [5.15, 3.95, 43],
+    [4.75, -3.45, 44],
+    [-5.25, -3.15, 45],
+    [0.25, 4.65, 46],
   ]
   clusters.forEach(([x, z, seed]) => {
     if (occupied.has(keyOf(x, z)) || reserved.has(keyOf(x, z))) return

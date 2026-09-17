@@ -128,34 +128,60 @@ export function windowGrid(
     glass: THREE.Material
     inset?: number
     depth?: number
+    /** Seed for irregular mullion spacing — breaks copy-paste grids. */
+    jitter?: number
+    skip?: Array<[number, number]>
   }
 ) {
   const { cols, rows, wallW, wallH, face, y0, glass } = opts
   const inset = opts.inset ?? 0.028
   const depth = opts.depth ?? 0.05
-  const cellW = wallW / cols
-  const cellH = wallH / rows
-  const paneW = cellW * 0.52
-  const paneH = cellH * 0.58
+  const jitter = opts.jitter ?? 0
+  const skip = new Set((opts.skip ?? []).map(([c, r]) => `${c},${r}`))
+  // Authored column weights — slight irregularity instead of equal cells.
+  const colW: number[] = []
+  let colSum = 0
+  for (let c = 0; c < cols; c++) {
+    const w = 1 + ((c * 17 + jitter * 3) % 7) * 0.035 - 0.07
+    colW.push(w)
+    colSum += w
+  }
+  const rowH: number[] = []
+  let rowSum = 0
   for (let r = 0; r < rows; r++) {
-    for (let c = 0; c < cols; c++) {
-      const u = (c + 0.5) * cellW - wallW / 2
-      const v = y0 + (r + 0.5) * cellH
-      const pane = new THREE.Mesh(new THREE.BoxGeometry(paneW, paneH, depth), glass)
-      pane.castShadow = false
-      pane.receiveShadow = true
-      if (face === "south") pane.position.set(u, v, inset)
-      if (face === "north") pane.position.set(u, v, -inset)
-      if (face === "east") {
-        pane.geometry = new THREE.BoxGeometry(depth, paneH, paneW)
-        pane.position.set(inset, v, u)
+    const h = 1 + ((r * 11 + jitter * 5) % 5) * 0.04 - 0.06
+    rowH.push(h)
+    rowSum += h
+  }
+  let uCursor = -wallW / 2
+  for (let c = 0; c < cols; c++) {
+    const cellW = (colW[c] / colSum) * wallW
+    let vCursor = y0
+    for (let r = 0; r < rows; r++) {
+      const cellH = (rowH[r] / rowSum) * wallH
+      if (!skip.has(`${c},${r}`)) {
+        const paneW = cellW * (0.48 + ((c + r + jitter) % 3) * 0.03)
+        const paneH = cellH * (0.54 + ((c * 2 + r + jitter) % 3) * 0.03)
+        const u = uCursor + cellW / 2
+        const v = vCursor + cellH / 2
+        const pane = new THREE.Mesh(new THREE.BoxGeometry(paneW, paneH, depth), glass)
+        pane.castShadow = false
+        pane.receiveShadow = true
+        if (face === "south") pane.position.set(u, v, inset)
+        if (face === "north") pane.position.set(u, v, -inset)
+        if (face === "east") {
+          pane.geometry = new THREE.BoxGeometry(depth, paneH, paneW)
+          pane.position.set(inset, v, u)
+        }
+        if (face === "west") {
+          pane.geometry = new THREE.BoxGeometry(depth, paneH, paneW)
+          pane.position.set(-inset, v, u)
+        }
+        parent.add(pane)
       }
-      if (face === "west") {
-        pane.geometry = new THREE.BoxGeometry(depth, paneH, paneW)
-        pane.position.set(-inset, v, u)
-      }
-      parent.add(pane)
+      vCursor += cellH
     }
+    uCursor += cellW
   }
 }
 
@@ -283,39 +309,53 @@ export function hedge(w: number, h: number, d: number, x: number, z: number, mat
 }
 
 export function toyTree(x: number, z: number, seed: number) {
-  // L5: irregular multi-lobe canopies — less perfect-sphere toy look
+  // Three authored silhouettes with scale/rotation jitter — no identical conical rows.
   const g = new THREE.Group()
   const trunkMat = lambert(C.trunk)
   const greens = [C.canopyA, C.canopyB, C.canopyC, C.canopyD]
   const canopyMat = flat(greens[seed % greens.length])
   const accent = flat(greens[(seed + 2) % greens.length])
-  const scale = 0.82 + (seed % 5) * 0.06
-  const trunkH = 0.38 + (seed % 3) * 0.04
-  g.add(mesh(new THREE.CylinderGeometry(0.038, 0.058, trunkH, 7), trunkMat, 0, trunkH / 2, 0, false))
-  if (seed % 3 !== 1) {  // prefer conical massing over lollipop spheres
-    const pine = mesh(new THREE.ConeGeometry(0.26, 0.78, 7), canopyMat, 0, trunkH + 0.28, 0)
-    pine.scale.set(1.05, 1, 0.92)
+  const scale = 0.78 + (seed % 7) * 0.055
+  const trunkH = 0.34 + (seed % 4) * 0.05
+  g.add(mesh(new THREE.CylinderGeometry(0.034, 0.055, trunkH, 7), trunkMat, 0, trunkH / 2, 0, false))
+  const kind = seed % 3
+  if (kind === 0) {
+    // Layered pine — two offset cones, not a perfect stamp.
+    const pine = mesh(new THREE.ConeGeometry(0.24, 0.72, 6), canopyMat, 0, trunkH + 0.26, 0)
+    pine.scale.set(1.02 + (seed % 3) * 0.04, 0.95 + (seed % 2) * 0.08, 0.88 + (seed % 4) * 0.03)
+    pine.rotation.y = seed * 0.2
     g.add(pine)
-    g.add(mesh(new THREE.ConeGeometry(0.18, 0.42, 6), accent, 0.04, trunkH + 0.55, -0.03))
-  } else {
-    const y0 = trunkH + 0.12
-    const lobes: [number, number, number, number, number][] = [
-      [0.28, 0, y0, 0, 1],
-      [0.2, 0.14, y0 + 0.14, -0.06, seed % 2],
-      [0.18, -0.12, y0 + 0.1, 0.1, (seed + 1) % 2],
-      [0.16, 0.06, y0 + 0.22, 0.08, seed % 3 === 0 ? 1 : 0],
+    const tip = mesh(new THREE.ConeGeometry(0.15, 0.36, 5), accent, 0.03, trunkH + 0.52, -0.02)
+    tip.scale.set(0.95, 1.05, 0.9)
+    g.add(tip)
+  } else if (kind === 1) {
+    // Broad deciduous cluster.
+    const y0 = trunkH + 0.1
+    const lobes: [number, number, number, number, boolean][] = [
+      [0.3, 0, y0, 0, false],
+      [0.2, 0.16, y0 + 0.1, -0.05, true],
+      [0.18, -0.14, y0 + 0.08, 0.1, false],
+      [0.15, 0.04, y0 + 0.22, 0.06, seed % 2 === 0],
     ]
     for (const [r, ox, oy, oz, useAccent] of lobes) {
-      if (!useAccent && r < 0.17 && seed % 3 === 1) continue
       const mat = useAccent ? accent : canopyMat
-      const lobe = mesh(new THREE.SphereGeometry(r, 9, 7), mat, ox, oy, oz)
-      lobe.scale.set(1.05 + (seed % 3) * 0.04, 0.72 + (seed % 2) * 0.08, 0.95)
+      const lobe = mesh(new THREE.SphereGeometry(r, 8, 6), mat, ox, oy, oz)
+      lobe.scale.set(1.08 + (seed % 3) * 0.05, 0.68 + (seed % 2) * 0.1, 0.92 + (seed % 4) * 0.03)
       g.add(lobe)
     }
+  } else {
+    // Oval canopy — flatter, denser silhouette for variety.
+    const crown = mesh(new THREE.SphereGeometry(0.32, 9, 7), canopyMat, 0, trunkH + 0.22, 0)
+    crown.scale.set(1.15 + (seed % 3) * 0.06, 0.62 + (seed % 2) * 0.08, 1.0)
+    g.add(crown)
+    const bump = mesh(new THREE.SphereGeometry(0.16, 7, 6), accent, 0.1, trunkH + 0.32, -0.06)
+    bump.scale.set(1.1, 0.7, 0.95)
+    g.add(bump)
   }
   g.scale.setScalar(scale)
   g.position.set(x, 0, z)
-  g.rotation.y = seed * 0.37
+  g.rotation.y = seed * 0.41 + 0.15
+  g.rotation.z = ((seed % 5) - 2) * 0.015
   blobShadow(g, 0.34, 0.28, 0.22)
   return g
 }

@@ -498,6 +498,16 @@
   font-family: var(--font-inter), ui-sans-serif, system-ui, sans-serif;
 }
 
+.campus-directory-list {
+  scrollbar-width: none;
+  -ms-overflow-style: none;
+}
+.campus-directory-list::-webkit-scrollbar {
+  display: none;
+  width: 0;
+  height: 0;
+}
+
 nextjs-portal,
 [data-next-badge-root] {
   display: none !important;

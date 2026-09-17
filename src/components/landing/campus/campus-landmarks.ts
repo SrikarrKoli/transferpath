@@ -68,6 +68,7 @@ export function buildClockTower() {
     y0: 0.52,
     glass,
     inset: 0.48,
+    jitter: 1,
   })
   windowGrid(g, {
     cols: 1,
@@ -78,6 +79,7 @@ export function buildClockTower() {
     y0: 0.52,
     glass,
     inset: 0.48,
+    jitter: 4,
   })
 
   // Clock lantern — wider than the shaft so dials are the silhouette cue.
@@ -212,13 +214,24 @@ export function buildClassrooms() {
   g.add(rbox(3.85, 1.18, 1.22, body, 0, 0.59, 0, 0.006))
   g.add(rbox(3.92, 0.22, 1.28, brick, 0, 0.12, 0, 0.03, false))
   g.add(gableRoof(3.95, 1.32, 0.55, roof, 1.18))
-  for (let i = 0; i < 7; i++) {
-    const x = -1.5 + i * 0.5
-    g.add(rbox(0.22, 0.28, 0.06, frame, x, 0.52, 0.64, 0.015, false))
-    g.add(rbox(0.16, 0.2, 0.05, glass, x, 0.52, 0.67, 0.01, false))
-    g.add(rbox(0.22, 0.28, 0.06, frame, x, 0.92, 0.64, 0.015, false))
-    g.add(rbox(0.16, 0.2, 0.05, glass, x, 0.92, 0.67, 0.01, false))
-  }
+  // Irregular bay rhythm — break the copy-paste window grid.
+  const classBays = [-1.58, -1.12, -0.58, -0.12, 0.42, 0.88, 1.28]
+  classBays.forEach((x, i) => {
+    const tall = i === 2 || i === 5
+    const pw = tall ? 0.2 : 0.16
+    const ph = tall ? 0.26 : 0.2
+    const fw = tall ? 0.26 : 0.22
+    g.add(rbox(fw, 0.28, 0.06, frame, x, 0.52, 0.64, 0.015, false))
+    g.add(rbox(pw, ph, 0.05, glass, x, 0.52, 0.67, 0.01, false))
+    if (i !== 3) {
+      // Skip one upper pane for facade irregularity.
+      g.add(rbox(fw, 0.28, 0.06, frame, x, 0.92, 0.64, 0.015, false))
+      g.add(rbox(pw, ph * 0.92, 0.05, glass, x, 0.92, 0.67, 0.01, false))
+    }
+  })
+  // Slight roof dormer so the bar isn't a flat stamp.
+  g.add(rbox(0.42, 0.28, 0.35, body, -0.85, 1.35, 0.15, 0.01))
+  g.add(gableRoof(0.48, 0.4, 0.22, roof, 1.48))
 
   g.add(rbox(1.15, 1.15, 1.35, brick, 1.55, 0.58, 0.85, 0.006))
   g.add(gableRoof(1.22, 1.42, 0.42, navy, 1.15))
@@ -243,9 +256,13 @@ export function buildRegistrar() {
 
   g.add(rbox(2.05, 1.58, 1.72, body, 0, 0.79, 0, 0.006))
   g.add(rbox(2.12, 0.1, 1.78, trim, 0, 1.6, 0, 0.02, false))
-  ;[-0.72, 0, 0.72].forEach((x) => {
-    g.add(rbox(0.18, 1.05, 0.06, glass, x, 0.82, 0.88, 0.015, false))
-    g.add(rbox(0.24, 0.06, 0.07, trim, x, 1.38, 0.89, 0.01, false))
+  ;[
+    [-0.78, 1.05],
+    [0.02, 0.92],
+    [0.68, 1.12],
+  ].forEach(([x, h], i) => {
+    g.add(rbox(i === 1 ? 0.22 : 0.16, h, 0.06, glass, x, 0.55 + h / 2, 0.88, 0.015, false))
+    g.add(rbox(i === 1 ? 0.28 : 0.22, 0.06, 0.07, trim, x, 0.55 + h + 0.04, 0.89, 0.01, false))
   })
 
   g.add(mesh(new THREE.CylinderGeometry(0.42, 0.46, 0.32, 16), trim, 0, 1.82, 0, false))
@@ -272,21 +289,24 @@ export function buildDorms() {
   const glass = flat(0x243448)
   const trim = hold(C.trim)
 
-  const wing = (x: number, z: number, rotY: number, cols: number) => {
+  const wing = (x: number, z: number, rotY: number, cols: number, jitter: number, hBoost = 0) => {
     const w = new THREE.Group()
-    w.add(rbox(1.55, 2.15, 1.05, brick, 0, 1.08, 0, 0.006))
-    w.add(gableRoof(1.65, 1.15, 0.48, roof, 2.15))
+    const h = 2.15 + hBoost
+    w.add(rbox(1.55, h, 1.05, brick, 0, h / 2, 0, 0.006))
+    w.add(gableRoof(1.65, 1.15, 0.48, roof, h))
     w.add(rbox(1.58, 0.08, 1.08, brickDeep, 0, 0.78, 0, 0.02, false))
     w.add(rbox(1.58, 0.08, 1.08, brickDeep, 0, 1.48, 0, 0.02, false))
     windowGrid(w, {
       cols,
       rows: 3,
       wallW: 1.35,
-      wallH: 1.7,
+      wallH: 1.7 + hBoost * 0.4,
       face: "south",
       y0: 0.28,
       glass,
       inset: 0.54,
+      jitter,
+      skip: jitter % 2 === 0 ? [[1, 2]] : [[2, 0]],
     })
     windowGrid(w, {
       cols: 2,
@@ -297,15 +317,16 @@ export function buildDorms() {
       y0: 0.28,
       glass,
       inset: 0.8,
+      jitter: jitter + 3,
     })
     w.add(balcony(1.35, 0.72, 0.58, trim))
-    w.add(balcony(1.35, 1.42, 0.58, trim))
+    if (hBoost >= 0) w.add(balcony(1.35, 1.42, 0.58, trim))
     w.position.set(x, 0, z)
     w.rotation.y = rotY
     g.add(w)
   }
-  wing(-0.95, 0.15, 0, 4)
-  wing(0.95, 0.15, 0, 4)
+  wing(-0.95, 0.15, 0, 4, 2, 0)
+  wing(0.95, 0.15, 0, 3, 5, 0.12)
   g.add(rbox(1.15, 1.55, 0.85, brick, 0, 0.78, -0.55, 0.006))
   g.add(hipRoof(1.25, 0.95, 0.38, roof, 1.55))
   g.add(door(flat(C.navy), 0, 0.45, 0.0, 0.28, 0.5))

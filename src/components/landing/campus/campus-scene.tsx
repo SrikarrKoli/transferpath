@@ -44,7 +44,7 @@ export function CampusScene({ selected, hovered, focusToken, onHover, onSelect, 
     const w0 = mount.clientWidth || 960
     const h0 = mount.clientHeight || 640
     renderer = new THREE.WebGLRenderer({ antialias: true, alpha: false, powerPreference: "high-performance" })
-    renderer.setPixelRatio(Math.min(window.devicePixelRatio || 1, 2))
+    renderer.setPixelRatio(Math.min(window.devicePixelRatio || 1, 1.5))
     renderer.setSize(w0, h0)
     renderer.setClearColor(0xc5d4c0, 1)
     renderer.shadowMap.enabled = true
@@ -70,7 +70,7 @@ export function CampusScene({ selected, hovered, focusToken, onHover, onSelect, 
     const sun = new THREE.DirectionalLight(0xfff3dc, 1.85)
     sun.position.set(-14, 22, 12)
     sun.castShadow = true
-    sun.shadow.mapSize.set(2048, 2048)
+    sun.shadow.mapSize.set(1024, 1024)
     sun.shadow.camera.left = -16
     sun.shadow.camera.right = 16
     sun.shadow.camera.top = 16
@@ -86,7 +86,7 @@ export function CampusScene({ selected, hovered, focusToken, onHover, onSelect, 
     rim.position.set(4, 12, 18)
     scene.add(rim)
     // Warm uplight — follows selection so map focus is obvious without a SaaS glow stick.
-    const selectGlow = new THREE.PointLight(0xffc089, 0, 5.5, 2)
+    const selectGlow = new THREE.PointLight(0xffc089, 0, 4.2, 2.2)
     selectGlow.position.set(0, 0.35, 0)
     scene.add(selectGlow)
 
@@ -126,34 +126,34 @@ export function CampusScene({ selected, hovered, focusToken, onHover, onSelect, 
     let meshById = new Map<BuildingId, THREE.Group>()
     const selectionHalo = new THREE.Group()
     selectionHalo.visible = false
+    // Ground-embedded ink+gold mark — reads as plaza inlay, not floating UI glow.
     const discMat = new THREE.MeshBasicMaterial({
-      color: 0xc45c3a,
+      color: 0x1a2332,
       transparent: true,
-      opacity: 0.22,
+      opacity: 0.28,
       depthWrite: false,
     })
     const outerMat = new THREE.MeshBasicMaterial({
       color: 0x1a2332,
       transparent: true,
-      opacity: 0.9,
+      opacity: 0.92,
       depthWrite: false,
     })
     const innerMat = new THREE.MeshBasicMaterial({
       color: 0xe8c46a,
       transparent: true,
-      opacity: 0.95,
+      opacity: 0.88,
       depthWrite: false,
     })
-    // Sit above plaza/road tiles (~0.05–0.1) so the ring isn't buried / z-fighting.
-    const disc = new THREE.Mesh(new THREE.CircleGeometry(1.15, 64), discMat)
+    const disc = new THREE.Mesh(new THREE.CircleGeometry(1.05, 64), discMat)
     disc.rotation.x = -Math.PI / 2
-    disc.position.y = 0.14
-    const outerRing = new THREE.Mesh(new THREE.RingGeometry(1.0, 1.38, 72), outerMat)
+    disc.position.y = 0.048
+    const outerRing = new THREE.Mesh(new THREE.RingGeometry(0.92, 1.18, 64), outerMat)
     outerRing.rotation.x = -Math.PI / 2
-    outerRing.position.y = 0.155
-    const innerRing = new THREE.Mesh(new THREE.RingGeometry(0.82, 1.0, 72), innerMat)
+    outerRing.position.y = 0.055
+    const innerRing = new THREE.Mesh(new THREE.RingGeometry(0.78, 0.92, 64), innerMat)
     innerRing.rotation.x = -Math.PI / 2
-    innerRing.position.y = 0.165
+    innerRing.position.y = 0.062
     selectionHalo.add(disc, outerRing, innerRing)
     root.add(selectionHalo)
     let people: THREE.Group[] = []
@@ -247,22 +247,48 @@ export function CampusScene({ selected, hovered, focusToken, onHover, onSelect, 
     mount.addEventListener("wheel", onWheel, { passive: false })
     mount.addEventListener("contextmenu", onContext)
 
-    const tintMaterial = (mat: THREE.Material, on: boolean) => {
+    const tintMaterial = (
+      mat: THREE.Material,
+      mode: "idle" | "focus" | "dim" | "hover",
+    ) => {
       if (mat instanceof THREE.MeshBasicMaterial) {
-        if (!mat.userData._baseColor) mat.userData._baseColor = mat.color.clone()
-        if (on) mat.color.copy(mat.userData._baseColor).offsetHSL(0.015, 0.06, 0.07)
-        else mat.color.copy(mat.userData._baseColor)
+        if (!mat.userData._baseColor) {
+          mat.userData._baseColor = mat.color.clone()
+          mat.userData._baseOpacity = mat.opacity
+          mat.userData._baseTransparent = mat.transparent
+        }
+        const base = mat.userData._baseColor as THREE.Color
+        if (mode === "focus") mat.color.copy(base).offsetHSL(0.02, 0.08, 0.1)
+        else if (mode === "hover") mat.color.copy(base).offsetHSL(0.01, 0.04, 0.05)
+        else if (mode === "dim") mat.color.copy(base).multiplyScalar(0.52)
+        else mat.color.copy(base)
+        // Keep opacity only if the material started transparent (glass/water).
+        if (mat.userData._baseTransparent) {
+          mat.opacity = mode === "dim" ? mat.userData._baseOpacity * 0.5 : mat.userData._baseOpacity
+        }
         return
       }
       if (!(mat instanceof THREE.MeshStandardMaterial) && !(mat instanceof THREE.MeshLambertMaterial)) return
       if (!mat.userData._baseEmissive) {
         mat.userData._baseEmissive = mat.emissive.clone()
         mat.userData._baseIntensity = mat.emissiveIntensity
+        mat.userData._baseColor = mat.color.clone()
       }
-      if (on) {
+      const baseCol = mat.userData._baseColor as THREE.Color
+      if (mode === "focus") {
+        mat.color.copy(baseCol)
         mat.emissive.setHex(0xb85a32)
-        mat.emissiveIntensity = 0.42
+        mat.emissiveIntensity = 0.52
+      } else if (mode === "hover") {
+        mat.color.copy(baseCol)
+        mat.emissive.setHex(0x8a5a3a)
+        mat.emissiveIntensity = 0.28
+      } else if (mode === "dim") {
+        mat.color.copy(baseCol).multiplyScalar(0.58)
+        mat.emissive.copy(mat.userData._baseEmissive).multiplyScalar(0.45)
+        mat.emissiveIntensity = mat.userData._baseIntensity * 0.45
       } else {
+        mat.color.copy(baseCol)
         mat.emissive.copy(mat.userData._baseEmissive)
         mat.emissiveIntensity = mat.userData._baseIntensity
       }
@@ -299,34 +325,44 @@ export function CampusScene({ selected, hovered, focusToken, onHover, onSelect, 
           selectionHalo.position.x = g.position.x
           selectionHalo.position.z = g.position.z
           selectionHalo.position.y = 0
-          const pulse = 0.88 + Math.sin(performance.now() * 0.0032) * 0.1
-          discMat.opacity = 0.18 + pulse * 0.08
-          outerMat.opacity = pulse
-          innerMat.opacity = Math.min(1, pulse + 0.05)
-          selectGlow.intensity = 1.8 + Math.sin(performance.now() * 0.0032) * 0.35
-          selectGlow.position.set(g.position.x, 0.45 + g.position.y, g.position.z)
+          // Quiet pulse — mark stays ground-seated.
+          const pulse = 0.92 + Math.sin(performance.now() * 0.0024) * 0.05
+          discMat.opacity = 0.22 + pulse * 0.06
+          outerMat.opacity = 0.75 + pulse * 0.15
+          innerMat.opacity = 0.8 + pulse * 0.1
+          selectGlow.intensity = 0.85 + Math.sin(performance.now() * 0.0024) * 0.15
+          selectGlow.position.set(g.position.x, 0.28 + g.position.y, g.position.z)
         } else {
           selectionHalo.visible = false
           selectGlow.intensity = THREE.MathUtils.lerp(selectGlow.intensity, 0, 0.15)
         }
       }
+      const hasSelection = !!selectedRef.current
       for (const [id, g] of meshById) {
-        const on = selectedRef.current === id || hoveredRef.current === id
-        const lift = selectedRef.current === id ? 0.2 : on ? 0.1 : 0
+        const isSelected = selectedRef.current === id
+        const isHovered = hoveredRef.current === id
+        const mode: "idle" | "focus" | "dim" | "hover" = isSelected
+          ? "focus"
+          : hasSelection
+            ? "dim"
+            : isHovered
+              ? "hover"
+              : "idle"
+        const lift = isSelected ? 0.28 : isHovered && !hasSelection ? 0.1 : 0
         g.position.y = THREE.MathUtils.lerp(g.position.y, lift, 0.14)
         g.traverse((c) => {
-          if (c instanceof THREE.Mesh) {
+          if (c instanceof THREE.Mesh && !c.userData.isHitVolume) {
             const mats = Array.isArray(c.material) ? c.material : [c.material]
-            mats.forEach((m) => tintMaterial(m, on))
+            mats.forEach((m) => tintMaterial(m, mode))
           }
           if (c.userData.isPinSprite && c instanceof THREE.Sprite) {
             const mat = c.material as THREE.SpriteMaterial
+            const on = isSelected || isHovered
             const next = on ? c.userData.texActive : c.userData.texIdle
             if (next && mat.map !== next) {
               mat.map = next
               mat.needsUpdate = true
             }
-            // hide floating indices until hover/select — kills badge spam
             c.scale.set(on ? 0.48 : 0.36, on ? 0.28 : 0.22, 1)
             mat.opacity = on ? 0.98 : 0.0
             c.visible = on
