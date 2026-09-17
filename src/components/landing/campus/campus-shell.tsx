@@ -90,6 +90,9 @@ export function CampusShell() {
           {REGION_TAGLINE} Map deadlines, courses, and essays — click a building, then walk into the hall.
         </p>
         <p className="mt-8 text-[11px] font-semibold uppercase tracking-[0.16em] text-[#1a2332]/38">Campus directory</p>
+        <p className="mt-1 text-[12px] leading-snug text-[#1a2332]/55">
+          New here? Open <span className="font-semibold text-[#1a2332]/75">Counselor Hall</span> first — about 2 minutes — then every building unlocks.
+        </p>
         <ul className="mt-2 -mx-2 min-h-0 flex-1 overflow-auto">
           {CAMPUS_BUILDINGS.map((b, i) => {
             const on = selected === b.id || hovered === b.id
@@ -118,7 +121,7 @@ export function CampusShell() {
           })}
         </ul>
         <p className="pt-4 text-xs text-[#1a2332]/42">
-          Click to select · Double-click or Enter to walk in · Drag to look around
+          Tip: Counselor Hall first · Click to select · Double-click or Enter to enter · Drag to look
         </p>
       </aside>
 

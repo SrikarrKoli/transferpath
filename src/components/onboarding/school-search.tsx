@@ -20,6 +20,8 @@ export interface SchoolSearchProps {
   placeholder?: string
   /** When set, limits results to this institution type. */
   universityType?: "community_college" | "four_year"
+  /** Shown when search returns no matches — lets guests leave step 1 without a listed school. */
+  onContinueWithoutSchool?: () => void
 }
 
 /** Remounts when parent-driven selection/value changes so `query` re-syncs without setState-in-effect. */
@@ -30,6 +32,7 @@ function SchoolSearchInner({
   onClear,
   placeholder = "Search for a school...",
   universityType,
+  onContinueWithoutSchool,
 }: SchoolSearchProps) {
   const [query, setQuery] = useState(value)
   const [results, setResults] = useState<SchoolResult[]>([])
@@ -176,10 +179,22 @@ function SchoolSearchInner({
       )}
 
       {isOpen && query.length >= 2 && results.length === 0 && !isLoading && (
-        <div className="absolute z-50 mt-1 w-full rounded-none border border-[color:var(--hall-rule)] bg-[color:var(--hall-paper)] px-3 py-4 text-center shadow-none">
+        <div className="absolute z-50 mt-1 w-full space-y-2 rounded-none border border-[color:var(--hall-rule)] bg-[color:var(--hall-paper)] px-3 py-4 text-center shadow-none">
           <p className="text-sm text-muted-foreground">
-            No schools found — yours may not be listed yet
+            No schools found — yours may not be listed yet.
           </p>
+          {onContinueWithoutSchool ? (
+            <button
+              type="button"
+              onClick={() => {
+                setIsOpen(false)
+                onContinueWithoutSchool()
+              }}
+              className="text-sm font-medium text-primary underline-offset-4 hover:underline"
+            >
+              Continue without a listed school
+            </button>
+          ) : null}
         </div>
       )}
     </div>
