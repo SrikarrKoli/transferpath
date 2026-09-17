@@ -30,7 +30,16 @@ export function safeCampusReturnPath(raw: string | null | undefined): string | n
   if (path.startsWith("//") || path.includes("://")) return null
   const bare = path.split("?")[0]?.split("#")[0] ?? ""
   if (bare === "/onboarding" || bare.startsWith("/onboarding/")) return bare
-  if (bare === "/dashboard" || bare.startsWith("/dashboard/")) return bare
+  if (bare === "/dashboard" || bare.startsWith("/dashboard/")) {
+    // Keep a simple ?tab= deep link (e.g. password recovery → Account & security).
+    const qIdx = path.indexOf("?")
+    if (qIdx >= 0) {
+      const query = path.slice(qIdx + 1).split("#")[0] ?? ""
+      const tab = new URLSearchParams(query).get("tab")
+      if (tab && /^[a-z_]+$/.test(tab)) return `${bare}?tab=${tab}`
+    }
+    return bare
+  }
   return null
 }
 

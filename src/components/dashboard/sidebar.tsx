@@ -7,10 +7,12 @@ import {
   Calendar,
   ClipboardList,
   CheckSquare,
+  ListChecks,
   PenLine,
   Settings,
   LogOut,
   BookOpen,
+  Gauge,
 } from "lucide-react"
 import { createClient } from "@/lib/supabase/client"
 import type { NextDeadline } from "@/lib/next-deadline"
@@ -29,13 +31,15 @@ import { Meter } from "@/components/ui/progress"
 
 const planNavIcons = {
   "/dashboard": Home,
-  "/dashboard/requirements": ClipboardList,
-  "/dashboard/plan": Calendar,
   "/dashboard/deadlines": CheckSquare,
+  "/dashboard/plan": Calendar,
+  "/dashboard/requirements": ClipboardList,
+  "/dashboard/checklist": ListChecks,
 } as const
 
 const toolNavIcons = {
   "/dashboard/essay": PenLine,
+  "/dashboard/competitiveness": Gauge,
 } as const
 
 const accountNavIcons = {

@@ -5059,3 +5059,72 @@ nextjs-portal,
   text-underline-offset: 3px;
 }
 
+/* hall-directory immersive nav */
+.hall-back-row {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  gap: 0.65rem 1rem;
+}
+
+.hall-map-link {
+  font-size: 0.8rem;
+  font-weight: 500;
+  color: color-mix(in oklab, var(--campus-ink, var(--hall-ink)) 55%, transparent);
+  text-decoration: underline;
+  text-underline-offset: 3px;
+}
+
+.hall-map-link:hover {
+  color: var(--campus-ink, var(--hall-ink));
+}
+
+.hall-masthead-meta {
+  display: flex;
+  flex-direction: column;
+  align-items: stretch;
+  gap: 0.75rem;
+}
+
+.hall-directory {
+  width: 100%;
+  overflow-x: auto;
+  -webkit-overflow-scrolling: touch;
+  padding-bottom: 0.15rem;
+}
+
+.hall-directory-list {
+  display: flex;
+  flex-wrap: nowrap;
+  gap: 0.35rem;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.hall-directory-link {
+  display: inline-flex;
+  align-items: center;
+  white-space: nowrap;
+  border: 1px solid color-mix(in oklab, var(--campus-ink, var(--hall-ink)) 18%, transparent);
+  background: transparent;
+  padding: 0.35rem 0.65rem;
+  font-size: 0.72rem;
+  font-weight: 600;
+  letter-spacing: 0.02em;
+  text-decoration: none;
+  color: color-mix(in oklab, var(--campus-ink, var(--hall-ink)) 62%, transparent);
+  transition: border-color 120ms ease, color 120ms ease, background 120ms ease;
+}
+
+.hall-directory-link:hover {
+  border-color: var(--campus-ink, var(--hall-ink));
+  color: var(--campus-ink, var(--hall-ink));
+}
+
+.hall-directory-link.is-active {
+  border-color: var(--campus-ink, var(--hall-ink));
+  background: var(--campus-ink, var(--hall-ink));
+  color: var(--campus-paper, var(--hall-paper));
+}
+

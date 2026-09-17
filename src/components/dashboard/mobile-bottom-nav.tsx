@@ -43,7 +43,7 @@ const BOTTOM_ICONS = {
 const BOTTOM_SHORT_LABEL: Record<string, string> = {
   "/dashboard": "Today",
   "/dashboard/plan": "Plan",
-  "/dashboard/deadlines": "Tasks",
+  "/dashboard/deadlines": "Deadlines",
   "/dashboard/requirements": "Reqs",
 }
 

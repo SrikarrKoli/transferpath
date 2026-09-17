@@ -1,7 +1,7 @@
 import Link from "next/link"
 import type { BuildingId } from "@/components/landing/campus/campus-data"
 import { campusBuilding } from "@/lib/campus-immersion"
-import { CampusMiniMap } from "@/components/campus-ui/campus-minimap"
+import { HallDirectory } from "@/components/campus-ui/hall-directory"
 import { HallProvider } from "@/components/campus-ui/hall-context"
 
 export function ImmersiveBuildingShell({
@@ -25,15 +25,26 @@ export function ImmersiveBuildingShell({
         ? "Change the schools, major, term, and reminders that drive your transfer campus. Saves update your halls immediately."
         : null
 
+  const isOnboarding = purpose === "onboarding"
+  const backHref = isOnboarding ? "/" : "/dashboard"
+  const backLabel = isOnboarding ? "← Campus map" : "← Student Union"
+
   return (
     <HallProvider buildingId={buildingId}>
       <article className="campus-entered campus-enter" data-building={buildingId}>
         <header className="hall-masthead">
           <div className="hall-masthead-meta">
-            <Link href="/" className="hall-back">
-              ← Campus
-            </Link>
-            <CampusMiniMap here={buildingId} />
+            <div className="hall-back-row">
+              <Link href={backHref} className="hall-back">
+                {backLabel}
+              </Link>
+              {!isOnboarding ? (
+                <Link href="/" className="hall-map-link">
+                  Map
+                </Link>
+              ) : null}
+            </div>
+            {!isOnboarding ? <HallDirectory /> : null}
           </div>
           <h1 className="hall-name">{building.name}</h1>
           <p className="hall-feature mt-1 text-sm font-medium tracking-wide text-[color:var(--campus-ink)]/55">
