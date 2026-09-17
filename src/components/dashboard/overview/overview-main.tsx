@@ -80,6 +80,8 @@ export function OverviewMain({ data, userId }: OverviewMainProps) {
             <NextActionCard action={data.nextAction} userId={userId} />
           ) : null}
 
+          <ApplyPortalsRow />
+
           {data.comingUp.length > 0 ? (
             <section className="union-sheet-section">
               <div className="mb-4 flex flex-wrap items-end justify-between gap-3">
@@ -163,6 +165,39 @@ function NextPrimaryAction({ action }: { action: TodayNextAction }) {
     <Link href={action.primaryHref} className={primaryBtnClass}>
       {action.primaryLabel}
     </Link>
+  )
+}
+
+
+function ApplyPortalsRow() {
+  return (
+    <section className="union-sheet-section">
+      <h2 className="font-heading text-lg text-foreground">Apply</h2>
+      <p className="mt-2 text-sm text-muted-foreground">
+        Most Texas publics use ApplyTexas. Many private and out-of-state schools use Common App
+        (College Board).
+      </p>
+      <div className="mt-4 flex flex-wrap gap-3">
+        <a
+          href="https://www.goapplytexas.org/"
+          target="_blank"
+          rel="noopener noreferrer"
+          className="inline-flex items-center justify-center rounded-md bg-primary px-5 py-2.5 text-sm font-medium text-primary-foreground transition hover:bg-primary/90"
+        >
+          ApplyTexas
+          <span className="sr-only"> (opens in a new tab)</span>
+        </a>
+        <a
+          href="https://www.commonapp.org/apply"
+          target="_blank"
+          rel="noopener noreferrer"
+          className="inline-flex items-center justify-center rounded-md border border-border-strong px-5 py-2.5 text-sm font-medium text-foreground transition hover:bg-muted"
+        >
+          College Board · Common App
+          <span className="sr-only"> (opens in a new tab)</span>
+        </a>
+      </div>
+    </section>
   )
 }
 
