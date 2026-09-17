@@ -119,6 +119,17 @@ export function CampusScene({ selected, hovered, focusToken, onHover, onSelect, 
     let lastY = 0
     let lastFocusToken = focusToken
     let meshById = new Map<BuildingId, THREE.Group>()
+    const ringMat = new THREE.MeshBasicMaterial({
+      color: 0x1a2332,
+      transparent: true,
+      opacity: 0.2,
+      depthWrite: false,
+    })
+    const selectionRing = new THREE.Mesh(new THREE.RingGeometry(0.6, 0.88, 48), ringMat)
+    selectionRing.rotation.x = -Math.PI / 2
+    selectionRing.position.y = 0.035
+    selectionRing.visible = false
+    root.add(selectionRing)
     let people: THREE.Group[] = []
     let water: THREE.Object3D | undefined
 
@@ -254,6 +265,19 @@ export function CampusScene({ selected, hovered, focusToken, onHover, onSelect, 
         })
       }
 
+      if (selectionRing) {
+        const sid = selectedRef.current
+        if (sid && meshById.has(sid)) {
+          const g = meshById.get(sid)!
+          selectionRing.visible = true
+          selectionRing.position.x = g.position.x
+          selectionRing.position.z = g.position.z
+          const pulse = 0.18 + Math.sin(performance.now() * 0.004) * 0.04
+          ;(selectionRing.material as THREE.MeshBasicMaterial).opacity = pulse
+        } else {
+          selectionRing.visible = false
+        }
+      }
       for (const [id, g] of meshById) {
         const on = selectedRef.current === id || hoveredRef.current === id
         g.position.y = THREE.MathUtils.lerp(g.position.y, on ? 0.12 : 0, 0.12)

@@ -424,7 +424,6 @@ export function buildCampusWorld(root: THREE.Group, lib: KitLibrary) {
   add("castle/bridge-straight", -6.55, 2.45, Math.PI / 2, 0.95)
   // L4: two quiet pier stalls, not a carnival row
   city.add(kiosk(lambert(C.cream), lambert(C.terracottaDeep), -8.15, 2.35, 0.1))
-  city.add(kiosk(lambert(C.peach), lambert(C.navy), -8.85, 2.65, -0.12))
   city.add(bench(lambert(C.creamDeep), 2.15, -1.55, 0.1))
   city.add(bench(lambert(C.creamDeep), -2.25, 0.35, -0.15))
   city.add(bench(lambert(C.creamDeep), 4.35, 1.85, 0.4))

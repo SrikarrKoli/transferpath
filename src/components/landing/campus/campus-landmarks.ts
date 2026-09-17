@@ -92,7 +92,7 @@ export function buildClockTower() {
   g.add(steps(0.7, 0.42, stoneDeep, 0.82))
   g.add(door(flat(C.navySoft), 0, 0.42, 0.54, 0.26, 0.48))
   g.add(facadePlaque(1, 0.38, 0.72, 0.54))
-  blobShadow(g, 1.05, 1.0, 0.45)
+  blobShadow(g, 1.05, 1.0, 0.58)
   return g
 }
 
@@ -140,7 +140,7 @@ export function buildCounselorHall() {
   g.add(rbox(0.85, 0.22, 0.42, hedgeMat, 1.55, 0.12, 1.15, 0.06, false))
   g.add(rbox(0.55, 0.18, 0.55, hedgeMat, -1.15, 0.1, 0.85, 0.06, false))
   g.add(facadePlaque(2, 1.28, 0.72, 1.32))
-  blobShadow(g, 2.05, 1.35, 0.42)
+  blobShadow(g, 2.05, 1.35, 0.58)
   return g
 }
 
@@ -174,7 +174,7 @@ export function buildLibrary() {
   g.add(door(navy, 0, 0.5, 0.84, 0.3, 0.55))
   g.add(steps(1.05, 0.5, flat(C.stone), 1.18))
   g.add(facadePlaque(3, 0.95, 0.7, 0.84))
-  blobShadow(g, 1.55, 1.2, 0.42)
+  blobShadow(g, 1.55, 1.2, 0.58)
   return g
 }
 
@@ -292,7 +292,7 @@ export function buildDorms() {
   g.add(rbox(0.85, 0.42, 0.18, flat(C.hedge), 0, 0.22, 0.85, 0.06, false))
   g.add(rbox(0.22, 0.12, 0.22, trim, 0, 1.62, -0.55, 0.02))
   g.add(facadePlaque(6, 0, 1.05, 0.02))
-  blobShadow(g, 1.85, 1.25, 0.42)
+  blobShadow(g, 1.85, 1.25, 0.58)
   return g
 }
 
