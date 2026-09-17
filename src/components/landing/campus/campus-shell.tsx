@@ -87,7 +87,7 @@ export function CampusShell() {
           {TAGLINE.replace(/\.$/, "")}.
         </h1>
         <p className="mt-2 text-sm leading-relaxed text-[#1a2332]/58">
-          {REGION_TAGLINE} Map deadlines, courses, and essays — click a building, then walk into the hall.
+          {REGION_TAGLINE} Map deadlines, courses, and essays — click a building to select it, click again to walk in.
         </p>
         <p className="mt-8 text-[11px] font-semibold uppercase tracking-[0.16em] text-[#1a2332]/38">Campus directory</p>
         <p className="mt-1 text-[12px] leading-snug text-[#1a2332]/55">
@@ -100,7 +100,7 @@ export function CampusShell() {
               <li key={b.id}>
                 <button
                   type="button"
-                  onClick={() => selectBuilding(b.id)}
+                  onClick={() => enterBuilding(b.id)}
                   onDoubleClick={() => enterBuilding(b.id)}
                   onMouseEnter={() => setHovered(b.id)}
                   onMouseLeave={() => setHovered(null)}
@@ -121,7 +121,7 @@ export function CampusShell() {
           })}
         </ul>
         <p className="pt-4 text-xs text-[#1a2332]/42">
-          Tip: Counselor Hall first · Click to select · Double-click or Enter to enter · Drag to look
+          Tip: Counselor Hall first · Click to select, click again to enter · Drag to look
         </p>
       </aside>
 
@@ -187,7 +187,7 @@ export function CampusShell() {
                 <button
                   key={b.id}
                   type="button"
-                  onClick={() => selectBuilding(b.id)}
+                  onClick={() => enterBuilding(b.id)}
                   onDoubleClick={() => enterBuilding(b.id)}
                   className={`shrink-0 whitespace-nowrap rounded-full px-3 py-1.5 text-xs font-medium ${
                     on ? "bg-[#1a2332] text-[#f7f2e8]" : "bg-[#f7f2e8]/90 text-[#1a2332]/80"
@@ -205,7 +205,7 @@ export function CampusShell() {
             <div className="rounded-full bg-[#1a2332]/90 px-4 py-2 text-sm font-medium text-[#f7f2e8]">
               {live.name}
               <span className="mx-2 opacity-40">·</span>
-              <span className="opacity-80">Click to select · double-click to enter</span>
+              <span className="opacity-80">Click to select · click again to enter</span>
             </div>
           </div>
         ) : null}
@@ -244,7 +244,7 @@ export function CampusShell() {
                   </button>
                 </div>
                 <p className="text-center text-[11px] text-[#1a2332]/48 sm:text-right">
-                  or double-click the building
+                  or click the building again on the map
                 </p>
               </div>
             </div>

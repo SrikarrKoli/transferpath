@@ -5128,3 +5128,86 @@ nextjs-portal,
   color: var(--campus-paper, var(--hall-paper));
 }
 
+/* union-first-run-coach */
+.union-coach {
+  margin-top: 1.5rem;
+  border: 1px solid color-mix(in oklab, var(--hall-ink, var(--campus-ink)) 18%, transparent);
+  background: color-mix(in oklab, var(--hall-paper, var(--campus-paper)) 92%, var(--hall-ink, var(--campus-ink)));
+  padding: 1rem 1.1rem 1.15rem;
+}
+
+.union-coach-head {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 0.75rem 1rem;
+}
+
+.union-coach-lede {
+  margin-top: 0.35rem;
+  max-width: 36rem;
+  font-size: 0.92rem;
+  line-height: 1.45;
+  color: color-mix(in oklab, var(--hall-ink, var(--campus-ink)) 68%, transparent);
+}
+
+.union-coach-dismiss {
+  border: 1px solid color-mix(in oklab, var(--hall-ink, var(--campus-ink)) 22%, transparent);
+  background: transparent;
+  padding: 0.35rem 0.7rem;
+  font-size: 0.75rem;
+  font-weight: 600;
+  color: color-mix(in oklab, var(--hall-ink, var(--campus-ink)) 62%, transparent);
+  cursor: pointer;
+}
+
+.union-coach-dismiss:hover {
+  border-color: var(--hall-ink, var(--campus-ink));
+  color: var(--hall-ink, var(--campus-ink));
+}
+
+.union-coach-steps {
+  margin: 1rem 0 0;
+  padding: 0;
+  list-style: none;
+  display: grid;
+  gap: 0.75rem;
+}
+
+@media (min-width: 720px) {
+  .union-coach-steps {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+  }
+}
+
+.union-coach-step {
+  display: flex;
+  gap: 0.65rem;
+  border: 1px solid color-mix(in oklab, var(--hall-ink, var(--campus-ink)) 14%, transparent);
+  background: var(--hall-paper, var(--campus-paper));
+  padding: 0.75rem 0.8rem;
+}
+
+.union-coach-num {
+  font-family: var(--font-heading, inherit);
+  font-size: 1.1rem;
+  font-weight: 600;
+  line-height: 1;
+  color: var(--hall-ink, var(--campus-ink));
+}
+
+.union-coach-title {
+  font-size: 0.92rem;
+  font-weight: 600;
+  color: var(--hall-ink, var(--campus-ink));
+}
+
+.union-coach-body {
+  margin-top: 0.25rem;
+  margin-bottom: 0.55rem;
+  font-size: 0.8rem;
+  line-height: 1.4;
+  color: color-mix(in oklab, var(--hall-ink, var(--campus-ink)) 62%, transparent);
+}
+

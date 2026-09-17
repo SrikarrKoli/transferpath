@@ -30,7 +30,6 @@ export function CampusScene({ selected, hovered, focusToken, onHover, onSelect, 
   onHoverRef.current = onHover
   onSelectRef.current = onSelect
   onEnterRef.current = onEnter
-  const lastClickRef = useRef<{ id: BuildingId | null; t: number }>({ id: null, t: 0 })
   const [status, setStatus] = useState("Building campus…")
 
   useEffect(() => {
@@ -175,13 +174,13 @@ export function CampusScene({ selected, hovered, focusToken, onHover, onSelect, 
       lastY = e.clientY
       const id = pick()
       if (id && e.button === 0) {
-        const now = performance.now()
-        onSelectRef.current(id)
-        focusBuilding(id)
-        if (lastClickRef.current.id === id && now - lastClickRef.current.t < 420) {
+        // Click once to select; click the selected building again to enter.
+        if (selectedRef.current === id) {
           onEnterRef.current(id)
+        } else {
+          onSelectRef.current(id)
+          focusBuilding(id)
         }
-        lastClickRef.current = { id, t: now }
       } else {
         panning = e.button === 2 || e.shiftKey
         dragging = !panning

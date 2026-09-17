@@ -4,6 +4,7 @@ import Link from "next/link"
 import { splitHallDate } from "@/lib/hall-date"
 import type { OverviewData } from "@/types/overview"
 import { MarkTaskDoneButton } from "@/components/dashboard/overview/mark-task-done-button"
+import { UnionFirstRunCoach } from "@/components/dashboard/overview/union-first-run-coach"
 
 const APPLY_TEXAS_URL = "https://www.goapplytexas.org/"
 const COLLEGE_BOARD_URL = "https://www.commonapp.org/apply"
@@ -181,6 +182,8 @@ export function HallToday({ data, userId }: { data: OverviewData; userId: string
             </>
           )}
         </section>
+
+        <UnionFirstRunCoach />
 
         <ApplyPortals />
 

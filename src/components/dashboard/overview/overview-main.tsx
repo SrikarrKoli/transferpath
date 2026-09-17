@@ -14,6 +14,7 @@ import {
 } from "@/components/dashboard/overview/today-readiness-panel"
 import { useHall } from "@/components/campus-ui/hall-context"
 import { HallToday } from "@/components/campus-ui/hall-today"
+import { UnionFirstRunCoach } from "@/components/dashboard/overview/union-first-run-coach"
 
 interface OverviewMainProps {
   data: OverviewData
@@ -79,6 +80,8 @@ export function OverviewMain({ data, userId }: OverviewMainProps) {
           {data.nextAction ? (
             <NextActionCard action={data.nextAction} userId={userId} />
           ) : null}
+
+          <UnionFirstRunCoach />
 
           <ApplyPortalsRow />
 
