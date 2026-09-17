@@ -108,7 +108,7 @@ export function HallChecklist({
             Open Clock Tower
           </Link>
           <Link href="/dashboard/requirements" className="hall-ledger-link">
-            Open Registrar
+            Open Requirements
           </Link>
           <Link href="/dashboard/essay" className="hall-ledger-link">
             Open Library

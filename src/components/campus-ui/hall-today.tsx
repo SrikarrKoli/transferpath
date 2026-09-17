@@ -167,10 +167,10 @@ export function HallToday({ data, userId }: { data: OverviewData; userId: string
               </p>
               <p className="hall-hero-title">Nothing due on your route today.</p>
               <p className="hall-prompt mt-4">
-                Use the time to push applications, check requirements, or knock out a Dorms task.
+                Use the time to push applications, check requirements, or knock out a checklist task.
               </p>
               <div className="union-step-actions mt-6">
-                <PrimaryAction href="/dashboard/checklist" label="Open Dorms tasks" />
+                <PrimaryAction href="/dashboard/checklist" label="Open checklist" />
                 <Link href="/dashboard/plan" className="hall-ledger-link">
                   Review plan
                 </Link>
@@ -239,7 +239,7 @@ export function HallToday({ data, userId }: { data: OverviewData; userId: string
             Edit schools & term
           </Link>
           <Link href="/dashboard/requirements" className="hall-ledger-link">
-            Open Registrar
+            Open Requirements
           </Link>
           <Link href="/dashboard/deadlines" className="hall-ledger-link">
             Open Clock Tower
