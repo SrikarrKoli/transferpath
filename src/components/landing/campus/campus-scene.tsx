@@ -251,8 +251,10 @@ export function CampusScene({ selected, hovered, focusToken, onHover, onSelect, 
       mat: THREE.Material,
       mode: "idle" | "focus" | "dim" | "hover",
     ) => {
+      if (!mat) return
       if (mat instanceof THREE.MeshBasicMaterial) {
-        if (!mat.userData._baseColor) {
+        if (!mat.color) return
+        if (!(mat.userData._baseColor instanceof THREE.Color)) {
           mat.userData._baseColor = mat.color.clone()
           mat.userData._baseOpacity = mat.opacity
           mat.userData._baseTransparent = mat.transparent
@@ -269,12 +271,14 @@ export function CampusScene({ selected, hovered, focusToken, onHover, onSelect, 
         return
       }
       if (!(mat instanceof THREE.MeshStandardMaterial) && !(mat instanceof THREE.MeshLambertMaterial)) return
-      if (!mat.userData._baseEmissive) {
+      if (!mat.color || !mat.emissive) return
+      if (!(mat.userData._baseEmissive instanceof THREE.Color) || !(mat.userData._baseColor instanceof THREE.Color)) {
         mat.userData._baseEmissive = mat.emissive.clone()
         mat.userData._baseIntensity = mat.emissiveIntensity
         mat.userData._baseColor = mat.color.clone()
       }
       const baseCol = mat.userData._baseColor as THREE.Color
+      const baseEm = mat.userData._baseEmissive as THREE.Color
       if (mode === "focus") {
         mat.color.copy(baseCol)
         mat.emissive.setHex(0xb85a32)
@@ -285,12 +289,12 @@ export function CampusScene({ selected, hovered, focusToken, onHover, onSelect, 
         mat.emissiveIntensity = 0.28
       } else if (mode === "dim") {
         mat.color.copy(baseCol).multiplyScalar(0.58)
-        mat.emissive.copy(mat.userData._baseEmissive).multiplyScalar(0.45)
-        mat.emissiveIntensity = mat.userData._baseIntensity * 0.45
+        mat.emissive.copy(baseEm).multiplyScalar(0.45)
+        mat.emissiveIntensity = (mat.userData._baseIntensity ?? 1) * 0.45
       } else {
         mat.color.copy(baseCol)
-        mat.emissive.copy(mat.userData._baseEmissive)
-        mat.emissiveIntensity = mat.userData._baseIntensity
+        mat.emissive.copy(baseEm)
+        mat.emissiveIntensity = mat.userData._baseIntensity ?? 1
       }
     }
 
