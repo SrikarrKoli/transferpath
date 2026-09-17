@@ -7,6 +7,7 @@ import { useEffect, useState } from "react"
 import { CTA_GET_STARTED, PRODUCT_NAME, REGION_TAGLINE, TAGLINE } from "@/lib/brand"
 import { createClient } from "@/lib/supabase/client"
 import { CAMPUS_BUILDINGS, type BuildingId } from "./campus-data"
+import { campusEnterHref } from "@/lib/campus-immersion"
 
 const CampusScene = dynamic(() => import("./campus-scene").then((m) => m.CampusScene), {
   ssr: false,
@@ -34,7 +35,9 @@ export function CampusShell() {
   }
   const enterBuilding = (id: BuildingId) => {
     const b = CAMPUS_BUILDINGS.find((x) => x.id === id)
-    if (b) router.push(b.href)
+    if (!b) return
+    const session = sessionState === "member" ? "member" : "guest"
+    router.push(campusEnterHref(b, session))
   }
 
   useEffect(() => {
@@ -65,11 +68,13 @@ export function CampusShell() {
       }
       if (!selected) return
       const b = CAMPUS_BUILDINGS.find((x) => x.id === selected)
-      if (b) router.push(b.href)
+      if (!b) return
+      const session = sessionState === "member" ? "member" : "guest"
+      router.push(campusEnterHref(b, session))
     }
     window.addEventListener("keydown", onKey)
     return () => window.removeEventListener("keydown", onKey)
-  }, [selected, router])
+  }, [selected, router, sessionState])
 
   return (
     <div className="campus-root flex h-[100dvh] overflow-hidden bg-[#a8d8e6] text-[#1a2332]">
@@ -147,6 +152,18 @@ export function CampusShell() {
           )}
         </div>
 
+        {sessionState === "guest" ? (
+          <div className="pointer-events-none absolute inset-x-0 top-[4.25rem] z-20 flex justify-center px-3 lg:top-4 lg:justify-start lg:pl-4">
+            <div className="pointer-events-auto max-w-md border border-[#1a2332]/18 bg-[#f7f2e8]/96 px-3 py-2 text-sm text-[#1a2332]/80 shadow-none">
+              New here?{" "}
+              <Link href="/onboarding" className="font-semibold text-[#b85c38] underline-offset-2 hover:underline">
+                Start in Counselor Hall
+              </Link>{" "}
+              (about 2 min) — then every building unlocks.
+            </div>
+          </div>
+        ) : null}
+
         <div className="absolute inset-x-0 top-4 z-20 px-3 lg:hidden">
           <div className="mb-2 flex items-center justify-between">
             <Link href="/" className="inline-flex items-center gap-2 rounded-full bg-[#f7f2e8]/92 px-3 py-1.5">
@@ -208,10 +225,12 @@ export function CampusShell() {
               <div className="flex shrink-0 flex-col items-stretch gap-1.5 sm:items-end">
                 <div className="flex gap-2">
                   <Link
-                    href={dock.href}
+                    href={campusEnterHref(dock, sessionState === "member" ? "member" : "guest")}
                     className="border border-[#b85c38] bg-[#b85c38] px-5 py-3 text-center text-sm font-semibold text-[#f7f2e8] hover:bg-[#a34f2f]"
                   >
-                    {dock.cta}
+                    {sessionState === "member" || dock.href.startsWith("/onboarding")
+                      ? dock.cta
+                      : `Unlock ${dock.short} — start setup`}
                   </Link>
                   <button
                     type="button"

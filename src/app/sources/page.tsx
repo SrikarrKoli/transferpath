@@ -5,6 +5,7 @@ import { SourcesClient } from "@/components/sources/sources-client"
 import { buildSourcesData } from "@/lib/build-sources-data"
 import { PRODUCT_NAME } from "@/lib/brand"
 import { createClient } from "@/lib/supabase/server"
+import { createServiceRoleClient } from "@/lib/supabase/service"
 
 export const metadata = {
   title: "Sources",
@@ -12,7 +13,13 @@ export const metadata = {
 }
 
 export default async function SourcesPage() {
-  const supabase = await createClient()
+  // Prefer service role so public coverage is not blocked by RLS on anon.
+  let supabase
+  try {
+    supabase = createServiceRoleClient()
+  } catch {
+    supabase = await createClient()
+  }
   const data = await buildSourcesData(supabase)
 
   return (

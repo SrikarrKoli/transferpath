@@ -33,3 +33,40 @@ export function safeCampusReturnPath(raw: string | null | undefined): string | n
   if (bare === "/dashboard" || bare.startsWith("/dashboard/")) return bare
   return null
 }
+
+/** Guest-safe enter URL: locked halls go through Counselor setup, not a cold login wall. */
+export function campusEnterHref(
+  building: { id: BuildingId; href: string },
+  session: "guest" | "member" | "loading"
+): string {
+  if (session === "member") return building.href
+  if (building.href.startsWith("/onboarding")) return building.href
+  if (building.href.startsWith("/dashboard")) {
+    const params = new URLSearchParams()
+    params.set("intent", building.id)
+    params.set("next", building.href)
+    return `/onboarding?${params.toString()}`
+  }
+  return building.href
+}
+
+/** Plain hall name for login / onboarding copy when ?next= or ?intent= is present. */
+export function hallNameForPath(pathname: string | null | undefined): string | null {
+  if (!pathname) return null
+  const id = buildingIdForPath(pathname)
+  if (!id) return null
+  try {
+    return campusBuilding(id).name
+  } catch {
+    return null
+  }
+}
+
+export function hallNameForIntent(intent: string | null | undefined): string | null {
+  if (!intent) return null
+  try {
+    return campusBuilding(intent as BuildingId).name
+  } catch {
+    return null
+  }
+}

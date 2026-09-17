@@ -1,6 +1,7 @@
 import { createServerClient } from "@supabase/ssr"
 import { NextResponse, type NextRequest } from "next/server"
 import { hasSupabasePublicEnv, supabaseAnonKey, supabaseUrl } from "@/lib/supabase/env"
+import { buildingIdForPath } from "@/lib/campus-immersion"
 
 const publicRoutes = [
   "/",
@@ -51,9 +52,12 @@ export async function middleware(request: NextRequest) {
 
   if (!isPublic && pathname.startsWith("/dashboard") && !user) {
     const url = request.nextUrl.clone()
-    url.pathname = "/login"
+    // Guests set up in Counselor Hall first; login stays available from there.
+    url.pathname = "/onboarding"
     url.search = ""
     url.searchParams.set("next", pathname)
+    const intent = buildingIdForPath(pathname)
+    if (intent) url.searchParams.set("intent", intent)
     return NextResponse.redirect(url)
   }
 

@@ -116,19 +116,26 @@ export function SourcesClient({ data }: SourcesClientProps) {
     })
   }, [onlyWithDates, query, sortedInstitutions])
 
-  if (data.loadError) {
+  if (data.loadError && data.institutions.length === 0) {
     return (
       <div className="rounded-none border border-[color:var(--hall-rule)] bg-transparent p-6">
         <p className="text-sm text-foreground">{data.loadError}</p>
-        <Link
-          href="/sources"
-          className="mt-4 inline-block text-sm font-medium text-primary hover:underline"
-        >
-          Try again
-        </Link>
+        <div className="mt-4 flex flex-wrap gap-4">
+          <Link href="/sources" className="text-sm font-medium text-primary hover:underline">
+            Try again
+          </Link>
+          <Link href="/onboarding" className="text-sm font-medium text-primary hover:underline">
+            Start in Counselor Hall
+          </Link>
+          <Link href="/" className="text-sm font-medium text-primary hover:underline">
+            ← Campus map
+          </Link>
+        </div>
       </div>
     )
   }
+
+  const softCoverageNote = data.loadError && data.institutions.length > 0 ? data.loadError : null
 
   const openingSecondSentence = data.anyDatesConfirmed
     ? `${data.confirmedDateCount} of the ${data.totalHeldDates} dates we hold ${data.confirmedDateCount === 1 ? "has" : "have"} been confirmed against an official page. The rest are listed below with their current status.`
@@ -136,6 +143,12 @@ export function SourcesClient({ data }: SourcesClientProps) {
 
   return (
     <div className="space-y-10">
+
+      {softCoverageNote ? (
+        <p className="rounded-none border border-amber-500/30 bg-amber-500/10 px-3 py-2 text-sm text-amber-950">
+          {softCoverageNote}
+        </p>
+      ) : null}
       <section className="rounded-none border border-[color:var(--hall-rule)] bg-transparent p-6 sm:p-8">
         <p className="font-heading text-lg font-semibold leading-snug text-foreground sm:text-xl">
           We have transfer deadline data for {data.coveredSchools} of the{" "}

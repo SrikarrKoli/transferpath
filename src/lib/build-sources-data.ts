@@ -129,7 +129,9 @@ export async function buildSourcesData(
       .select("university_id, source_checked_at, source_kind, official_info_url"),
   ])
 
-  if (universitiesResult.error || deadlinesResult.error) {
+  const uniErr = universitiesResult.error
+  const dlErr = deadlinesResult.error
+  if (uniErr && dlErr) {
     return {
       totalSchools: 0,
       coveredSchools: 0,
@@ -139,12 +141,19 @@ export async function buildSourcesData(
       anyDatesConfirmed: false,
       institutions: [],
       statewide: null,
-      loadError: "We could not load source coverage just now. Try again in a moment.",
+      loadError:
+        "Coverage list is temporarily unavailable. Official school pages still apply — try again shortly, or open a hall after setup.",
     }
   }
 
   const universities = (universitiesResult.data ?? []) as UniversityRow[]
   const deadlines = (deadlinesResult.data ?? []) as DeadlineRow[]
+
+  // One query failed: still render what we can, with a soft note.
+  const softError =
+    uniErr || dlErr
+      ? "Some coverage rows could not load. What is shown below may be incomplete."
+      : null
 
   const institutions = buildInstitutionRows(universities, deadlines)
   const coveredSchools = institutions.filter((row) => row.hasDates).length
@@ -163,6 +172,6 @@ export async function buildSourcesData(
     anyDatesConfirmed: confirmedDateCount > 0,
     institutions,
     statewide: buildStatewideRow(deadlines),
-    loadError: null,
+    loadError: softError,
   }
 }

@@ -1,7 +1,7 @@
 "use client"
 
 import { useState } from "react"
-import { useRouter } from "next/navigation"
+import { useRouter, useSearchParams } from "next/navigation"
 import { OnboardingStep1 } from "@/components/onboarding/step-1"
 import { OnboardingStep2 } from "@/components/onboarding/step-2"
 import { OnboardingStep3 } from "@/components/onboarding/step-3"
@@ -12,6 +12,7 @@ import { createClient } from "@/lib/supabase/client"
 import { persistOnboardingForUser } from "@/lib/onboarding-persist"
 import type { OnboardingData } from "@/types/onboarding"
 import { PRODUCT_NAME } from "@/lib/brand"
+import { hallNameForIntent, safeCampusReturnPath } from "@/lib/campus-immersion"
 
 const steps = [
   { id: 1, label: "School" },
@@ -36,6 +37,9 @@ function isSessionMissingError(message: string): boolean {
 
 export function OnboardingClient({ existingSession, embedded = false }: OnboardingClientProps) {
   const router = useRouter()
+  const searchParams = useSearchParams()
+  const intentHall = hallNameForIntent(searchParams.get("intent"))
+  const returnNext = safeCampusReturnPath(searchParams.get("next"))
   const [currentStep, setCurrentStep] = useState(1)
   const [isLoading, setIsLoading] = useState(false)
   const [submitting, setSubmitting] = useState(false)
@@ -67,7 +71,7 @@ export function OnboardingClient({ existingSession, embedded = false }: Onboardi
     setSubmitting(false)
     setIsLoading(true)
     router.refresh()
-    window.location.assign("/dashboard")
+    window.location.assign(returnNext ?? "/dashboard")
   }
 
   async function handleSubmit() {
@@ -222,6 +226,13 @@ export function OnboardingClient({ existingSession, embedded = false }: Onboardi
 
           {embedded ? (
             <div className="hall-steps" aria-label="Onboarding steps">
+      {intentHall ? (
+        <div className="mb-4 border border-[color:var(--hall-rule)] bg-transparent px-3 py-2.5 text-sm leading-relaxed text-[color:var(--hall-ink)]/75">
+          You asked for <span className="font-semibold text-[color:var(--hall-ink)]">{intentHall}</span>.
+          Finish this Counselor setup (about 2 min) and that hall unlocks with your schools and term.
+        </div>
+      ) : null}
+
               {steps.map((step) => (
                 <span
                   key={step.id}

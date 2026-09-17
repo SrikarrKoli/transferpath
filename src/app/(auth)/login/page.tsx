@@ -7,7 +7,7 @@ import { Eye, EyeOff, Loader2, X, Check } from "lucide-react"
 import { PRODUCT_NAME, TAGLINE, TRUST_LINE } from "@/lib/brand"
 import { createClient } from "@/lib/supabase/client"
 import { hasSupabasePublicEnv, supabasePublicEnvIssue } from "@/lib/supabase/env"
-import { safeCampusReturnPath } from "@/lib/campus-immersion"
+import { hallNameForPath, safeCampusReturnPath } from "@/lib/campus-immersion"
 
 function MiniDashboardPreview() {
   return (
@@ -66,6 +66,16 @@ export default function LoginPage() {
 function LoginPageContent() {
   const router = useRouter()
   const searchParams = useSearchParams()
+  const nextPath = safeCampusReturnPath(searchParams.get("next"))
+  const destHall = hallNameForPath(nextPath)
+  const onboardingHref = (() => {
+    const params = new URLSearchParams()
+    if (nextPath) params.set("next", nextPath)
+    const intent = searchParams.get("intent")
+    if (intent) params.set("intent", intent)
+    const q = params.toString()
+    return q ? `/onboarding?${q}` : "/onboarding"
+  })()
   // Prefer the query string until the student edits the field — avoids copying
   // searchParams into useState on init (a common hydration mismatch).
   const emailFromQuery = searchParams.get("email") ?? ""
@@ -211,7 +221,9 @@ function LoginPageContent() {
               Welcome back
             </h2>
             <p className="mt-1 text-sm text-[color:var(--hall-ink)]/65">
-              Log in to open your transfer campus
+              {destHall
+                ? `Continue to ${destHall} after you log in`
+                : "Log in to open your transfer campus"}
             </p>
           </div>
 
@@ -343,14 +355,14 @@ function LoginPageContent() {
               className="flex h-10 w-full items-center justify-center gap-2 rounded-none bg-[color:var(--hall-ink)] text-sm font-medium text-[color:var(--hall-paper)] transition-colors hover:bg-[color:var(--hall-ink)]/90 disabled:opacity-70"
             >
               {loading && <Loader2 className="h-4 w-4 animate-spin" strokeWidth={1.5} />}
-              {loading ? "Logging in..." : "Log in"}
+              {loading ? "Logging in..." : destHall ? `Continue to ${destHall}` : "Log in"}
             </button>
           </form>
 
           <p className="text-center text-sm text-muted-foreground">
-            Don&apos;t have an account?{" "}
-            <Link href="/onboarding" className="font-medium text-primary hover:underline">
-              Get started for free &rarr;
+            New to {PRODUCT_NAME}?{" "}
+            <Link href={onboardingHref} className="font-medium text-primary hover:underline">
+              I&apos;m new — start setup
             </Link>
           </p>
         </div>
