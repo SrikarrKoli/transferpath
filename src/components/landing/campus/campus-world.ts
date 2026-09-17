@@ -35,20 +35,40 @@ function tag(obj: THREE.Object3D, id: BuildingId) {
   })
 }
 
-function islandShape() {
+function islandShape(scale = 1) {
+  // Soft organic plate — more control points + larger radii so the silhouette
+  // reads as foam-edged island instead of a faceted lozenge against the void.
   const s = new THREE.Shape()
-  const w = 6.85
-  const d = 6.15
-  const r = 0.38
-  s.moveTo(-w + r, -d)
-  s.lineTo(w - r, -d)
-  s.quadraticCurveTo(w, -d, w, -d + r)
-  s.lineTo(w, d - r)
-  s.quadraticCurveTo(w, d, w - r, d)
-  s.lineTo(-w + r, d)
-  s.quadraticCurveTo(-w, d, -w, d - r)
-  s.lineTo(-w, -d + r)
-  s.quadraticCurveTo(-w, -d, -w + r, -d)
+  const pts: [number, number][] = [
+    [-6.2, -5.55],
+    [-3.4, -6.05],
+    [-0.2, -5.85],
+    [3.1, -6.15],
+    [5.9, -5.35],
+    [6.85, -3.1],
+    [6.55, -0.4],
+    [6.95, 2.4],
+    [5.85, 4.85],
+    [3.0, 5.95],
+    [-0.15, 6.15],
+    [-3.35, 5.75],
+    [-5.95, 4.55],
+    [-6.95, 2.15],
+    [-6.65, -0.55],
+    [-6.85, -3.25],
+  ]
+  const scaled = pts.map(([x, z]) => [x * scale, z * scale] as [number, number])
+  const n = scaled.length
+  const mid = (i: number, j: number): [number, number] => [
+    (scaled[i][0] + scaled[j][0]) / 2,
+    (scaled[i][1] + scaled[j][1]) / 2,
+  ]
+  const m0 = mid(n - 1, 0)
+  s.moveTo(m0[0], m0[1])
+  for (let i = 0; i < n; i++) {
+    const m = mid(i, (i + 1) % n)
+    s.quadraticCurveTo(scaled[i][0], scaled[i][1], m[0], m[1])
+  }
   s.closePath()
   return s
 }
@@ -73,47 +93,86 @@ export function buildCampusWorld(root: THREE.Group, lib: KitLibrary) {
     }
   }
 
-  const grassMat = flat(0x7d896f)
-  const sandMat = flat(0xe4d8bd)
+  // Lambert on the plate so sun shadows seat instead of floating over unlit Basic mats.
+  const grassMat = lambert(0x7d896f, { emissive: new THREE.Color(0x7d896f), emissiveIntensity: 0.12 })
+  const sandMat = lambert(0xe4d8bd, { emissive: new THREE.Color(0xe4d8bd), emissiveIntensity: 0.1 })
   const waterMat = lambert(0x8db7bd, { transparent: true, opacity: 0.64 })
   const waterDeepMat = lambert(0x668e96)
-  const plinthMat = lambert(0xb9aa8c)
   const pierMat = lambert(0xc5b69b)
-  const islandMat = flat(0x737f68)
-  const plazaMat = flat(0xf2ede2)
-  const plazaAlt = flat(0xe5ddcf)
-  const walkMat = flat(0xb5aa97)
-  const roadMat = flat(0xeee9df)
-  const curbMat = flat(0x59616a)
+  const islandMat = lambert(0x6e7a62, { emissive: new THREE.Color(0x6e7a62), emissiveIntensity: 0.14 })
+  const skirtMat = lambert(0x5a6650, { emissive: new THREE.Color(0x5a6650), emissiveIntensity: 0.1 })
+  const foamMat = lambert(0x8a9680, { emissive: new THREE.Color(0x8a9680), emissiveIntensity: 0.16 })
+  const plazaMat = lambert(0xf2ede2, { emissive: new THREE.Color(0xf2ede2), emissiveIntensity: 0.14 })
+  const plazaAlt = lambert(0xe5ddcf, { emissive: new THREE.Color(0xe5ddcf), emissiveIntensity: 0.12 })
+  const walkMat = lambert(0xa89880, { emissive: new THREE.Color(0xa89880), emissiveIntensity: 0.1 })
+  const roadMat = lambert(0xd4c9b4, { emissive: new THREE.Color(0xd4c9b4), emissiveIntensity: 0.1 })
+  const curbMat = lambert(0x4a525a, { emissive: new THREE.Color(0x4a525a), emissiveIntensity: 0.08 })
   const hedgeMat = flat(0x405443)
 
   const drop = mesh(
-    new THREE.CircleGeometry(11.2, 40),
-    new THREE.MeshBasicMaterial({ color: 0x1a3040, transparent: true, opacity: 0.22, depthWrite: false }),
-    0.55,
-    -1.28,
-    0.7,
+    new THREE.CircleGeometry(12.4, 64),
+    new THREE.MeshBasicMaterial({ color: 0x1a3040, transparent: true, opacity: 0.18, depthWrite: false }),
+    0.2,
+    -1.34,
+    0.35,
     false
   )
   drop.rotation.x = -Math.PI / 2
-  drop.scale.set(1.12, 0.86, 1)
+  drop.scale.set(1.08, 0.92, 1)
   root.add(drop)
 
-  const plinth = mesh(new THREE.CylinderGeometry(12.0, 12.5, 0.42, 48), plinthMat, -0.4, -1.08, 0.35, false)
-  plinth.scale.set(1.08, 1, 0.9)
-  root.add(plinth)
+  // Unified green underplate — no leftover tan cylinder reading as unfinished seams.
+  const underplate = mesh(new THREE.CylinderGeometry(11.2, 11.6, 0.38, 96), skirtMat, 0.05, -1.12, 0.25, false)
+  underplate.scale.set(1.02, 1, 0.94)
+  root.add(underplate)
 
-  const islandGeo = new THREE.ExtrudeGeometry(islandShape(), {
-    depth: 0.55,
+  const islandGeo = new THREE.ExtrudeGeometry(islandShape(1), {
+    depth: 0.58,
     bevelEnabled: true,
-    bevelSize: 0.045,
-    bevelThickness: 0.045,
-    bevelSegments: 1,
+    bevelSize: 0.1,
+    bevelThickness: 0.09,
+    bevelSegments: 4,
+    curveSegments: 48,
   })
   islandGeo.rotateX(-Math.PI / 2)
-  root.add(mesh(islandGeo, islandMat, 0.1, -0.72, 0.2, false))
+  const island = mesh(islandGeo, islandMat, 0.05, -0.74, 0.2, false)
+  root.add(island)
 
-  const sand = mesh(new THREE.CircleGeometry(5.4, 36), sandMat, -8.2, 0.02, 2.5, false)
+  // Soft foam lip — slightly larger, paler skirt so the void edge reads continuous.
+  const lipGeo = new THREE.ExtrudeGeometry(islandShape(1.045), {
+    depth: 0.14,
+    bevelEnabled: true,
+    bevelSize: 0.06,
+    bevelThickness: 0.05,
+    bevelSegments: 3,
+    curveSegments: 48,
+  })
+  lipGeo.rotateX(-Math.PI / 2)
+  root.add(mesh(lipGeo, foamMat, 0.05, -0.78, 0.2, false))
+
+  // Feather into the void so the silhouette isn't a hard aliased cut.
+  ;[
+    [1.08, 0.28],
+    [1.14, 0.16],
+    [1.2, 0.08],
+  ].forEach(([scale, opacity]) => {
+    const soft = new THREE.Mesh(
+      new THREE.CircleGeometry(7.4 * scale, 96),
+      new THREE.MeshBasicMaterial({
+        color: 0xc5d4c0,
+        transparent: true,
+        opacity,
+        depthWrite: false,
+      }),
+    )
+    soft.rotation.x = -Math.PI / 2
+    soft.position.set(0.05, -0.82, 0.2)
+    soft.scale.set(1.05, 0.92, 1)
+    soft.renderOrder = -2
+    root.add(soft)
+  })
+
+  const sand = mesh(new THREE.CircleGeometry(5.4, 48), sandMat, -8.2, 0.02, 2.5, false)
   sand.rotation.x = -Math.PI / 2
   sand.scale.set(1.22, 0.72, 1)
   root.add(sand)
@@ -147,8 +206,8 @@ export function buildCampusWorld(root: THREE.Group, lib: KitLibrary) {
   }
 
   city.add(rbox(1.55, 0.06, 1.35, grassMat, 0, 0.09, 1.05, 0.04, false))
-  city.add(rbox(0.42, 0.09, 3.15, walkMat, 0, 0.08, 0.85, 0.02, false))
-  city.add(rbox(3.15, 0.09, 0.42, walkMat, 0, 0.08, 0.85, 0.02, false))
+  // Quiet stone pad — avoid bright + that reads as a sports crosshair on the plate.
+  city.add(rbox(1.15, 0.07, 1.15, walkMat, 0, 0.075, 0.95, 0.03, false))
 
   const lane = (x: number, z: number, w: number, d: number, mat = walkMat) => {
     city.add(rbox(w, 0.07, d, mat, x, 0.055, z, 0.02, false))
@@ -358,7 +417,7 @@ export function buildCampusWorld(root: THREE.Group, lib: KitLibrary) {
   })
 
   // Seawall + extra walk grid so leftover tan doesn't read as empty plate
-  city.add(rbox(0.42, 0.28, 8.8, flat(0x8a6a40), -6.55, 0.14, 1.4, 0.04, false))
+  city.add(rbox(0.42, 0.28, 8.8, lambert(0x6a5a40, { emissive: new THREE.Color(0x6a5a40), emissiveIntensity: 0.08 }), -6.55, 0.14, 1.4, 0.04, false))
   ;[-4, -2, 0, 2, 4].forEach((x) => lane(x, -3.15, 0.42, 1.4))
   ;[-3, -1, 1, 3].forEach((z) => lane(5.15, z, 1.5, 0.42))
 

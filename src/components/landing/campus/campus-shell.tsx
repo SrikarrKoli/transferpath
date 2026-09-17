@@ -81,19 +81,26 @@ export function CampusShell() {
     <div className="campus-root flex h-[100dvh] overflow-hidden bg-[#c5d4c0] text-[#1a2332]">
       <aside className="relative z-20 hidden w-[17.5rem] shrink-0 flex-col border-r border-[#1a2332]/10 bg-[#f4efe6] px-6 py-7 lg:flex">
         <Link href="/" className="inline-flex items-center gap-2.5">
-          <span className="size-2 rounded-[1px] bg-[#1a2332]" aria-hidden />
-          <span className="font-heading text-[1.05rem] font-semibold tracking-tight">{PRODUCT_NAME}</span>
+          <span
+            className="flex size-6 items-center justify-center border border-[#1a2332]/55 font-[family-name:var(--font-fraunces)] text-[13px] font-semibold leading-none text-[#1a2332]/80"
+            aria-hidden
+          >
+            T
+          </span>
+          <span className="font-[family-name:var(--font-fraunces)] text-[1.05rem] font-semibold tracking-tight text-[#1a2332]">
+            {PRODUCT_NAME}
+          </span>
         </Link>
 
-        <h1 className="mt-8 font-heading text-[1.55rem] font-semibold leading-[1.12] tracking-tight text-[#1a2332]">
+        <h1 className="mt-8 font-[family-name:var(--font-fraunces)] text-[1.55rem] font-semibold leading-[1.15] tracking-[-0.01em] text-[#1a2332]">
           {TAGLINE.replace(/\.$/, "")}.
         </h1>
         <p className="mt-3 max-w-[16rem] text-[13px] leading-relaxed text-[#1a2332]/55">
           {REGION_TAGLINE}
         </p>
 
-        <p className="mt-10 text-[10px] font-semibold uppercase tracking-[0.18em] text-[#1a2332]/35">
-          Directory
+        <p className="mt-10 text-[10px] font-semibold uppercase tracking-[0.2em] text-[#1a2332]/38">
+          Campus directory
         </p>
         <ul className="mt-3 -mx-1 min-h-0 flex-1 overflow-auto [scrollbar-width:thin] [scrollbar-color:rgba(26,35,50,0.25)_transparent]">
           {CAMPUS_BUILDINGS.map((b) => {
@@ -138,11 +145,11 @@ export function CampusShell() {
           onEnter={enterBuilding}
         />
 
-        <div className="pointer-events-none absolute right-4 top-4 z-30 flex gap-2">
+        <div className="pointer-events-none absolute right-4 top-4 z-30 flex items-center gap-1.5">
           {sessionState === "member" ? (
             <Link
               href="/dashboard"
-              className="pointer-events-auto border border-[#1a2332]/85 bg-[#1a2332] px-3.5 py-1.5 text-[13px] font-medium text-[#f4efe6] hover:bg-[#1a2332]/90"
+              className="pointer-events-auto border border-[#1a2332]/55 bg-[#f4efe6]/88 px-3 py-1.5 text-[12px] font-medium text-[#1a2332] backdrop-blur-sm hover:border-[#1a2332]/85"
             >
               Open campus
             </Link>
@@ -150,13 +157,13 @@ export function CampusShell() {
             <>
               <Link
                 href="/login"
-                className="pointer-events-auto border border-[#1a2332]/25 bg-[#f4efe6]/90 px-3.5 py-1.5 text-[13px] font-medium text-[#1a2332] backdrop-blur-sm hover:border-[#1a2332]/45"
+                className="pointer-events-auto px-3 py-1.5 text-[12px] font-medium text-[#1a2332]/55 hover:text-[#1a2332]"
               >
                 Log in
               </Link>
               <Link
                 href="/onboarding"
-                className="pointer-events-auto border border-[#1a2332] bg-[#1a2332] px-3.5 py-1.5 text-[13px] font-medium text-[#f4efe6] hover:bg-[#1a2332]/90"
+                className="pointer-events-auto border border-[#1a2332]/45 bg-[#f4efe6]/88 px-3 py-1.5 text-[12px] font-medium text-[#1a2332] backdrop-blur-sm hover:border-[#1a2332]/8"
               >
                 {CTA_GET_STARTED}
               </Link>
@@ -167,8 +174,13 @@ export function CampusShell() {
         <div className="absolute inset-x-0 top-4 z-20 px-3 lg:hidden">
           <div className="mb-2 flex items-center justify-between">
             <Link href="/" className="inline-flex items-center gap-2 bg-[#f4efe6]/92 px-3 py-1.5">
-              <span className="size-1.5 bg-[#1a2332]" aria-hidden />
-              <span className="font-heading text-sm font-semibold">{PRODUCT_NAME}</span>
+              <span
+                className="flex size-5 items-center justify-center border border-[#1a2332]/55 font-[family-name:var(--font-fraunces)] text-[11px] font-semibold text-[#1a2332]/80"
+                aria-hidden
+              >
+                T
+              </span>
+              <span className="font-[family-name:var(--font-fraunces)] text-sm font-semibold">{PRODUCT_NAME}</span>
             </Link>
             <Link
               href={sessionState === "member" ? "/dashboard" : "/onboarding"}
@@ -200,32 +212,39 @@ export function CampusShell() {
 
         {dock ? (
           <div className="absolute inset-x-0 bottom-0 z-30 p-3 sm:p-5">
-            <div className="mx-auto flex max-w-2xl flex-col gap-3 border border-[#1a2332]/85 bg-[#f4efe6]/97 p-4 sm:flex-row sm:items-end sm:gap-5">
-              <div className="min-w-0 flex-1">
-                <p className="text-[10px] font-semibold uppercase tracking-[0.16em] text-[#1a2332]/45">
+            <div className="mx-auto max-w-2xl border border-[#1a2332]/70 bg-[#f7f2e8]/96 shadow-[0_18px_40px_-28px_rgba(26,35,50,0.55)] backdrop-blur-[2px]">
+              <div className="flex items-center justify-between border-b border-[#1a2332]/12 px-4 py-2 sm:px-5">
+                <p className="text-[10px] font-semibold uppercase tracking-[0.2em] text-[#1a2332]/42">
+                  Campus plaque
+                </p>
+                <p className="font-[family-name:var(--font-fraunces)] text-[11px] text-[#1a2332]/45">
                   {dock.feature}
                 </p>
-                <h2 className="mt-1 font-heading text-xl font-semibold tracking-tight sm:text-[1.35rem]">
-                  {dock.name}
-                </h2>
-                <p className="mt-1 max-w-md text-[13px] leading-relaxed text-[#1a2332]/62">{dock.blurb}</p>
               </div>
-              <div className="flex shrink-0 gap-2">
-                <Link
-                  href={campusEnterHref(dock, sessionState === "member" ? "member" : "guest")}
-                  className="border border-[#1a2332] bg-[#1a2332] px-4 py-2.5 text-center text-[13px] font-medium text-[#f4efe6] hover:bg-[#1a2332]/90"
-                >
-                  {sessionState === "member" || dock.href.startsWith("/onboarding")
-                    ? dock.cta
-                    : `Enter ${dock.short}`}
-                </Link>
-                <button
-                  type="button"
-                  onClick={() => setSelected(null)}
-                  className="px-3 py-2.5 text-[13px] font-medium text-[#1a2332]/50 hover:text-[#1a2332]"
-                >
-                  Close
-                </button>
+              <div className="flex flex-col gap-3 px-4 py-4 sm:flex-row sm:items-end sm:gap-5 sm:px-5 sm:py-4">
+                <div className="min-w-0 flex-1 border-l-2 border-[#c45c3a]/70 pl-3.5">
+                  <h2 className="font-[family-name:var(--font-fraunces)] text-xl font-semibold tracking-[-0.01em] text-[#1a2332] sm:text-[1.4rem]">
+                    {dock.name}
+                  </h2>
+                  <p className="mt-1.5 max-w-md text-[13px] leading-relaxed text-[#1a2332]/62">{dock.blurb}</p>
+                </div>
+                <div className="flex shrink-0 gap-2">
+                  <Link
+                    href={campusEnterHref(dock, sessionState === "member" ? "member" : "guest")}
+                    className="border border-[#1a2332] bg-[#1a2332] px-4 py-2.5 text-center text-[13px] font-medium text-[#f4efe6] hover:bg-[#1a2332]/90"
+                  >
+                    {sessionState === "member" || dock.href.startsWith("/onboarding")
+                      ? dock.cta
+                      : `Enter ${dock.short}`}
+                  </Link>
+                  <button
+                    type="button"
+                    onClick={() => setSelected(null)}
+                    className="px-3 py-2.5 text-[13px] font-medium text-[#1a2332]/45 hover:text-[#1a2332]"
+                  >
+                    Close
+                  </button>
+                </div>
               </div>
             </div>
           </div>

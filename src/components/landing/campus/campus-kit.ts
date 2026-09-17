@@ -97,17 +97,18 @@ export function rbox(
 
 export function blobShadow(parent: THREE.Object3D, rx: number, rz: number, opacity = 0.52) {
   const blob = new THREE.Mesh(
-    new THREE.CircleGeometry(1, 22),
+    new THREE.CircleGeometry(1, 32),
     new THREE.MeshBasicMaterial({
       color: 0x1a2814,
       transparent: true,
-      opacity: opacity * 0.55,
+      opacity: opacity * 0.62,
       depthWrite: false,
     })
   )
   blob.rotation.x = -Math.PI / 2
-  blob.scale.set(rx * 1.15, rz * 1.2, 1)
-  blob.position.set(0.22, 0.012, -0.2)
+  blob.scale.set(rx * 1.12, rz * 1.16, 1)
+  // Sit flush so contact reads attached, not floating plates.
+  blob.position.set(0.12, 0.006, -0.12)
   blob.receiveShadow = false
   blob.castShadow = false
   parent.add(blob)
@@ -451,15 +452,20 @@ export function clockFaceTex() {
   return tex
 }
 
-export function clockFaces(radius = 0.28, stickOut = 0.5) {
-  const mat = new THREE.MeshLambertMaterial({ map: clockFaceTex() })
+export function clockFaces(radius = 0.44, stickOut = 0.7) {
+  // Unlit dials — landmark clocks must stay readable under Reinhard washout.
+  const mat = new THREE.MeshBasicMaterial({ map: clockFaceTex() })
+  const rim = new THREE.MeshBasicMaterial({ color: 0x1a2332 })
   const g = new THREE.Group()
   const make = (rotY: number, x: number, z: number) => {
-    const m = new THREE.Mesh(new THREE.CircleGeometry(radius, 28), mat)
-    m.rotation.y = rotY
-    m.position.set(x, 0, z)
-    m.castShadow = true
-    g.add(m)
+    const dial = new THREE.Mesh(new THREE.CircleGeometry(radius, 48), mat)
+    dial.rotation.y = rotY
+    dial.position.set(x, 0, z)
+    const bezel = new THREE.Mesh(new THREE.RingGeometry(radius * 0.98, radius * 1.14, 48), rim)
+    bezel.rotation.y = rotY
+    const n = 0.012
+    bezel.position.set(x + Math.sin(rotY) * n, 0, z + Math.cos(rotY) * n)
+    g.add(dial, bezel)
   }
   make(0, 0, stickOut)
   make(Math.PI, 0, -stickOut)

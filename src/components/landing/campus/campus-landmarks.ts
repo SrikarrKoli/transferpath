@@ -12,6 +12,7 @@ import {
   column,
   facadePlaque,
   flat,
+  lambert,
   gableRoof,
   hold,
   hipRoof,
@@ -24,9 +25,9 @@ import {
 } from "./campus-kit"
 
 export const PIN_Y: Record<BuildingId, number> = {
-  quad: 4.55,
+  quad: 5.35,
   counselor: 2.48,
-  library: 2.62,
+  library: 2.95,
   classroom: 2.28,
   registrar: 2.72,
   dorm: 2.72,
@@ -38,7 +39,7 @@ function door(mat: THREE.Material, x: number, y: number, z: number, w = 0.28, h 
   return rbox(w, h, 0.06, mat, x, y, z, 0.02, false)
 }
 
-/** 01 — sandstone campanile with clocks, navy pyramid, gold orb. */
+/** 01 — tall sandstone campanile; clock lantern must read from map distance. */
 export function buildClockTower() {
   const g = new THREE.Group()
   const stone = hold(C.sand)
@@ -48,51 +49,58 @@ export function buildClockTower() {
   const glass = flat(0x243448)
   const trim = hold(C.trim)
 
-  g.add(rbox(1.35, 0.22, 1.35, stoneDeep, 0, 0.11, 0, 0.008, false))
-  g.add(rbox(1.02, 2.55, 1.02, stone, 0, 1.5, 0, 0.006))
-  for (let i = 0; i < 4; i++) {
-    const y = 0.55 + i * 0.58
-    g.add(rbox(1.08, 0.07, 1.08, stoneDeep, 0, y, 0, 0.02, false))
+  // Broad plinth so the tower sits like a campus landmark, not a stick.
+  g.add(rbox(1.55, 0.24, 1.55, stoneDeep, 0, 0.12, 0, 0.01, false))
+  g.add(rbox(1.28, 0.14, 1.28, stone, 0, 0.28, 0, 0.008, false))
+
+  // Slender shaft — landmark proportion (taller, tighter than a hall block).
+  g.add(rbox(0.92, 3.15, 0.92, stone, 0, 1.9, 0, 0.006))
+  for (let i = 0; i < 5; i++) {
+    const y = 0.62 + i * 0.58
+    g.add(rbox(0.98, 0.06, 0.98, stoneDeep, 0, y, 0, 0.02, false))
   }
   windowGrid(g, {
-    cols: 2,
-    rows: 4,
-    wallW: 0.72,
-    wallH: 1.85,
+    cols: 1,
+    rows: 5,
+    wallW: 0.42,
+    wallH: 2.55,
     face: "south",
-    y0: 0.45,
+    y0: 0.52,
     glass,
-    inset: 0.53,
+    inset: 0.48,
   })
   windowGrid(g, {
-    cols: 2,
-    rows: 4,
-    wallW: 0.72,
-    wallH: 1.85,
+    cols: 1,
+    rows: 5,
+    wallW: 0.42,
+    wallH: 2.55,
     face: "east",
-    y0: 0.45,
+    y0: 0.52,
     glass,
-    inset: 0.53,
+    inset: 0.48,
   })
 
-  g.add(rbox(1.18, 0.95, 1.18, stone, 0, 3.22, 0, 0.006))
-  arcade(g, { bays: 3, span: 0.95, z: 0.6, y: 3.05, glass })
-  arcade(g, { bays: 3, span: 0.95, z: -0.6, y: 3.05, glass })
+  // Clock lantern — wider than the shaft so dials are the silhouette cue.
+  g.add(rbox(1.28, 1.12, 1.28, stone, 0, 3.95, 0, 0.006))
+  g.add(rbox(1.36, 0.08, 1.36, trim, 0, 3.42, 0, 0.02, false))
+  g.add(rbox(1.36, 0.08, 1.36, trim, 0, 4.48, 0, 0.02, false))
+  arcade(g, { bays: 3, span: 1.05, z: 0.66, y: 3.72, glass })
+  arcade(g, { bays: 3, span: 1.05, z: -0.66, y: 3.72, glass })
 
-  const faces = clockFaces(0.3, 0.61)
-  faces.position.y = 3.28
+  const faces = clockFaces(0.46, 0.72)
+  faces.position.y = 3.98
   g.add(faces)
 
-  const roof = mesh(new THREE.ConeGeometry(0.92, 1.05, 4), navy, 0, 4.18, 0)
+  const roof = mesh(new THREE.ConeGeometry(1.02, 1.22, 4), navy, 0, 5.15, 0)
   roof.rotation.y = Math.PI / 4
   g.add(roof)
-  g.add(mesh(new THREE.SphereGeometry(0.09, 12, 10), gold, 0, 4.78, 0))
-  g.add(mesh(new THREE.CylinderGeometry(0.018, 0.018, 0.28, 8), trim, 0, 4.95, 0, false))
+  g.add(mesh(new THREE.SphereGeometry(0.11, 14, 12), gold, 0, 5.85, 0))
+  g.add(mesh(new THREE.CylinderGeometry(0.02, 0.02, 0.34, 8), trim, 0, 6.05, 0, false))
 
-  g.add(steps(0.7, 0.42, stoneDeep, 0.82))
-  g.add(door(flat(C.navySoft), 0, 0.42, 0.54, 0.26, 0.48))
-  g.add(facadePlaque(1, 0.38, 0.72, 0.54))
-  blobShadow(g, 1.05, 1.0, 0.58)
+  g.add(steps(0.85, 0.48, stoneDeep, 0.92))
+  g.add(door(flat(C.navySoft), 0, 0.48, 0.58, 0.28, 0.52))
+  g.add(facadePlaque(1, 0.42, 0.78, 0.58))
+  blobShadow(g, 1.15, 1.1, 0.62)
   return g
 }
 
@@ -144,7 +152,7 @@ export function buildCounselorHall() {
   return g
 }
 
-/** 03 — reading hall: tall window wall, copper roof, glass wing. */
+/** 03 — colonnaded reading hall: the map silhouette must earn "Library". */
 export function buildLibrary() {
   const g = new THREE.Group()
   const body = hold(0xf0e4cc)
@@ -152,29 +160,42 @@ export function buildLibrary() {
   const trim = hold(C.trim)
   const glass = flat(0x243448)
   const navy = hold(C.navy)
+  const stone = hold(C.stone)
   const reading = hold(0x4e8fa8)
 
-  g.add(rbox(2.35, 1.72, 1.62, body, 0, 0.86, 0, 0.008))
-  g.add(gableRoof(2.48, 1.72, 0.72, copper, 1.72))
-  g.add(rbox(0.55, 0.55, 0.55, body, 0, 2.05, 0, 0.006))
-  g.add(hipRoof(0.62, 0.62, 0.28, copper, 2.32))
-  g.add(mesh(new THREE.SphereGeometry(0.1, 10, 8), flat(C.gold), 0, 2.58, 0, false))
-  g.add(rbox(1.28, 1.35, 1.35, reading, 1.62, 0.68, 0.08, 0.008))
-  g.add(rbox(1.22, 0.95, 0.08, glass, 1.62, 0.72, 0.78, 0.02, false))
-  g.add(hipRoof(1.38, 1.45, 0.36, copper, 1.36))
+  // Deep reading hall mass
+  g.add(rbox(2.85, 1.95, 1.85, body, 0, 0.98, -0.08, 0.008))
+  g.add(gableRoof(3.05, 2.0, 0.82, copper, 1.95))
+  g.add(rbox(2.95, 0.1, 1.95, trim, 0, 1.98, -0.08, 0.02, false))
 
-  for (let i = 0; i < 5; i++) {
-    const x = -0.88 + i * 0.44
-    g.add(rbox(0.2, 1.35, 0.07, glass, x, 0.92, 0.84, 0.02, false))
-    g.add(rbox(0.26, 0.07, 0.08, trim, x, 1.62, 0.85, 0.01, false))
+  // Clerestory cupola — scholarly vertical cue
+  g.add(rbox(0.72, 0.62, 0.72, body, 0, 2.35, -0.08, 0.006))
+  g.add(hipRoof(0.82, 0.82, 0.32, copper, 2.68))
+  g.add(mesh(new THREE.SphereGeometry(0.11, 12, 10), flat(C.gold), 0, 2.95, -0.08, false))
+
+  // Side reading wing with tall glass
+  g.add(rbox(1.35, 1.55, 1.55, reading, 1.85, 0.78, 0.15, 0.008))
+  g.add(rbox(1.22, 1.15, 0.08, glass, 1.85, 0.85, 0.95, 0.02, false))
+  g.add(hipRoof(1.48, 1.65, 0.4, copper, 1.58))
+
+  // Tall arched window wall behind the colonnade
+  for (let i = 0; i < 6; i++) {
+    const x = -1.15 + i * 0.46
+    g.add(rbox(0.28, 1.55, 0.07, glass, x, 1.05, 0.88, 0.02, false))
+    g.add(rbox(0.34, 0.08, 0.08, trim, x, 1.85, 0.9, 0.01, false))
   }
 
-  ;[-0.38, 0.38].forEach((x) => g.add(column(1.05, trim, x, 0.95, 0.12)))
-  g.add(rbox(1.05, 0.1, 0.42, trim, 0, 1.22, 0.95, 0.02))
-  g.add(door(navy, 0, 0.5, 0.84, 0.3, 0.55))
-  g.add(steps(1.05, 0.5, flat(C.stone), 1.18))
-  g.add(facadePlaque(3, 0.95, 0.7, 0.84))
-  blobShadow(g, 1.55, 1.2, 0.58)
+  // Full south colonnade — six columns under a pediment (earns the name).
+  const colXs = [-1.15, -0.69, -0.23, 0.23, 0.69, 1.15]
+  colXs.forEach((x) => g.add(column(1.35, trim, x, 1.12, 0.08)))
+  g.add(rbox(2.65, 0.14, 0.55, stone, 0, 1.48, 1.12, 0.02))
+  g.add(pediment(2.75, 0.55, 0.18, navy, 1.55, 1.12))
+  g.add(rbox(2.55, 0.08, 0.72, stone, 0, 0.08, 1.05, 0.02, false))
+
+  g.add(door(navy, 0, 0.55, 0.95, 0.34, 0.62))
+  g.add(steps(1.35, 0.58, stone, 1.35))
+  g.add(facadePlaque(3, 1.05, 0.78, 0.95))
+  blobShadow(g, 1.95, 1.45, 0.62)
   return g
 }
 
@@ -303,8 +324,7 @@ export function buildRecCenter() {
   const body = hold(0xc9d2c6)
   const vault = hold(0x4a5d55)
   const glass = flat(0x243448)
-  const line = hold(C.trim)
-  const court = flat(0x6a7468)
+  const court = lambert(0x6a7468, { emissive: new THREE.Color(0x6a7468), emissiveIntensity: 0.1 })
 
   g.add(rbox(2.55, 1.05, 1.72, body, 0, 0.52, 0, 0.006))
   g.add(barrelVault(2.55, 0.88, vault, 1.05, true))
@@ -313,12 +333,8 @@ export function buildRecCenter() {
   }
   g.add(door(flat(C.navy), 0, 0.38, 0.9, 0.36, 0.52))
 
-  g.add(rbox(3.15, 0.05, 2.05, court, 0, 0.03, 1.85, 0.02, false))
-  g.add(rbox(2.75, 0.02, 0.05, line, 0, 0.07, 1.85, 0.01, false))
-  g.add(rbox(0.05, 0.02, 1.75, line, 0, 0.07, 1.85, 0.01, false))
-  const centerCourt = mesh(new THREE.TorusGeometry(0.38, 0.02, 8, 22), line, 0, 0.08, 1.85, false)
-  centerCourt.rotation.x = -Math.PI / 2
-  g.add(centerCourt)
+  // Quiet turf apron only — no court lines or rings.
+  g.add(rbox(2.85, 0.05, 1.7, court, 0, 0.03, 1.75, 0.02, false))
 
   g.add(rbox(0.85, 0.35, 0.35, flat(C.creamDeep), -1.35, 0.22, 1.05, 0.04))
   g.add(rbox(0.85, 0.22, 0.35, flat(C.navySoft), -1.35, 0.48, 1.05, 0.04))

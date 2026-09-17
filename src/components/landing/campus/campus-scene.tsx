@@ -44,14 +44,14 @@ export function CampusScene({ selected, hovered, focusToken, onHover, onSelect, 
     const w0 = mount.clientWidth || 960
     const h0 = mount.clientHeight || 640
     renderer = new THREE.WebGLRenderer({ antialias: true, alpha: false, powerPreference: "high-performance" })
-    renderer.setPixelRatio(Math.min(window.devicePixelRatio || 1, 1.5))
+    renderer.setPixelRatio(Math.min(window.devicePixelRatio || 1, 2))
     renderer.setSize(w0, h0)
     renderer.setClearColor(0xc5d4c0, 1)
     renderer.shadowMap.enabled = true
-    renderer.shadowMap.type = THREE.PCFShadowMap
+    renderer.shadowMap.type = THREE.PCFSoftShadowMap
     renderer.outputColorSpace = THREE.SRGBColorSpace
     renderer.toneMapping = THREE.ReinhardToneMapping
-    renderer.toneMappingExposure = 1.12
+    renderer.toneMappingExposure = 1.1
     mount.appendChild(renderer.domElement)
 
     const scene = new THREE.Scene()
@@ -70,13 +70,14 @@ export function CampusScene({ selected, hovered, focusToken, onHover, onSelect, 
     const sun = new THREE.DirectionalLight(0xfff3dc, 1.85)
     sun.position.set(-14, 22, 12)
     sun.castShadow = true
-    sun.shadow.mapSize.set(1024, 1024)
+    sun.shadow.mapSize.set(2048, 2048)
     sun.shadow.camera.left = -16
     sun.shadow.camera.right = 16
     sun.shadow.camera.top = 16
     sun.shadow.camera.bottom = -16
-    sun.shadow.bias = -0.00018
-    sun.shadow.normalBias = 0.02
+    sun.shadow.bias = -0.00012
+    sun.shadow.normalBias = 0.035
+    sun.shadow.radius = 3.5
     scene.add(sun)
     const fill = new THREE.DirectionalLight(0xb7d4f0, 0.48)
     fill.position.set(20, 9, -14)
@@ -84,6 +85,10 @@ export function CampusScene({ selected, hovered, focusToken, onHover, onSelect, 
     const rim = new THREE.DirectionalLight(0xfff7ee, 0.55)
     rim.position.set(4, 12, 18)
     scene.add(rim)
+    // Warm uplight — follows selection so map focus is obvious without a SaaS glow stick.
+    const selectGlow = new THREE.PointLight(0xffc089, 0, 5.5, 2)
+    selectGlow.position.set(0, 0.35, 0)
+    scene.add(selectGlow)
 
     const root = new THREE.Group()
     scene.add(root)
@@ -119,17 +124,38 @@ export function CampusScene({ selected, hovered, focusToken, onHover, onSelect, 
     let lastY = 0
     let lastFocusToken = focusToken
     let meshById = new Map<BuildingId, THREE.Group>()
-    const ringMat = new THREE.MeshBasicMaterial({
-      color: 0x1a2332,
+    const selectionHalo = new THREE.Group()
+    selectionHalo.visible = false
+    const discMat = new THREE.MeshBasicMaterial({
+      color: 0xc45c3a,
       transparent: true,
-      opacity: 0.2,
+      opacity: 0.22,
       depthWrite: false,
     })
-    const selectionRing = new THREE.Mesh(new THREE.RingGeometry(0.6, 0.88, 48), ringMat)
-    selectionRing.rotation.x = -Math.PI / 2
-    selectionRing.position.y = 0.035
-    selectionRing.visible = false
-    root.add(selectionRing)
+    const outerMat = new THREE.MeshBasicMaterial({
+      color: 0x1a2332,
+      transparent: true,
+      opacity: 0.9,
+      depthWrite: false,
+    })
+    const innerMat = new THREE.MeshBasicMaterial({
+      color: 0xe8c46a,
+      transparent: true,
+      opacity: 0.95,
+      depthWrite: false,
+    })
+    // Sit above plaza/road tiles (~0.05–0.1) so the ring isn't buried / z-fighting.
+    const disc = new THREE.Mesh(new THREE.CircleGeometry(1.15, 64), discMat)
+    disc.rotation.x = -Math.PI / 2
+    disc.position.y = 0.14
+    const outerRing = new THREE.Mesh(new THREE.RingGeometry(1.0, 1.38, 72), outerMat)
+    outerRing.rotation.x = -Math.PI / 2
+    outerRing.position.y = 0.155
+    const innerRing = new THREE.Mesh(new THREE.RingGeometry(0.82, 1.0, 72), innerMat)
+    innerRing.rotation.x = -Math.PI / 2
+    innerRing.position.y = 0.165
+    selectionHalo.add(disc, outerRing, innerRing)
+    root.add(selectionHalo)
     let people: THREE.Group[] = []
     let water: THREE.Object3D | undefined
 
@@ -234,8 +260,8 @@ export function CampusScene({ selected, hovered, focusToken, onHover, onSelect, 
         mat.userData._baseIntensity = mat.emissiveIntensity
       }
       if (on) {
-        mat.emissive.setHex(0x8c4a32)
-        mat.emissiveIntensity = 0.28
+        mat.emissive.setHex(0xb85a32)
+        mat.emissiveIntensity = 0.42
       } else {
         mat.emissive.copy(mat.userData._baseEmissive)
         mat.emissiveIntensity = mat.userData._baseIntensity
@@ -265,22 +291,29 @@ export function CampusScene({ selected, hovered, focusToken, onHover, onSelect, 
         })
       }
 
-      if (selectionRing) {
+      {
         const sid = selectedRef.current
         if (sid && meshById.has(sid)) {
           const g = meshById.get(sid)!
-          selectionRing.visible = true
-          selectionRing.position.x = g.position.x
-          selectionRing.position.z = g.position.z
-          const pulse = 0.18 + Math.sin(performance.now() * 0.004) * 0.04
-          ;(selectionRing.material as THREE.MeshBasicMaterial).opacity = pulse
+          selectionHalo.visible = true
+          selectionHalo.position.x = g.position.x
+          selectionHalo.position.z = g.position.z
+          selectionHalo.position.y = 0
+          const pulse = 0.88 + Math.sin(performance.now() * 0.0032) * 0.1
+          discMat.opacity = 0.18 + pulse * 0.08
+          outerMat.opacity = pulse
+          innerMat.opacity = Math.min(1, pulse + 0.05)
+          selectGlow.intensity = 1.8 + Math.sin(performance.now() * 0.0032) * 0.35
+          selectGlow.position.set(g.position.x, 0.45 + g.position.y, g.position.z)
         } else {
-          selectionRing.visible = false
+          selectionHalo.visible = false
+          selectGlow.intensity = THREE.MathUtils.lerp(selectGlow.intensity, 0, 0.15)
         }
       }
       for (const [id, g] of meshById) {
         const on = selectedRef.current === id || hoveredRef.current === id
-        g.position.y = THREE.MathUtils.lerp(g.position.y, on ? 0.12 : 0, 0.12)
+        const lift = selectedRef.current === id ? 0.2 : on ? 0.1 : 0
+        g.position.y = THREE.MathUtils.lerp(g.position.y, lift, 0.14)
         g.traverse((c) => {
           if (c instanceof THREE.Mesh) {
             const mats = Array.isArray(c.material) ? c.material : [c.material]
