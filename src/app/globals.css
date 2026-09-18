@@ -5229,22 +5229,28 @@ nextjs-portal,
 /* Landing map: quiet directory and spatially tethered stone callout. */
 .campus-root .campus-directory-list { scrollbar-width: none; }
 .campus-root .campus-directory-list::-webkit-scrollbar { display: none; }
-.campus-tether { position: absolute; inset: 0; width: 100%; height: 100%; pointer-events: none; z-index: 25; overflow: hidden; }
-.campus-plaque { position: absolute; right: 20px; bottom: 24px; width: 288px; max-width: calc(100% - 32px); z-index: 30; background: #f3eddf; border: 1px solid #b9ad98; box-shadow: 0 8px 20px -16px #1a2332; }
-@media (max-width: 767px) {
-  .campus-plaque { right: 16px; bottom: 16px; width: 280px; }
-  .campus-plaque p { font-size: 12px; }
-}
-
 /* Landing pass 4: projected wayfinding and a grounded map frame. */
 .campus-map-stage::after { content: ""; position: absolute; inset: 0; pointer-events: none; background: radial-gradient(ellipse at 46% 48%, transparent 36%, #39443826 100%); z-index: 1; }
 .campus-map-topbar { position: absolute; inset: 0 0 auto; height: 58px; align-items: center; gap: 8px; padding: 0 20px; background: #f4efe6e8; border-bottom: 1px solid #1a233210; color: #1a23328c; z-index: 35; }
-.campus-map-label { position: absolute; visibility: hidden; transform: translate(-50%, -100%); z-index: 28; padding: 7px 11px; background: #1a2332; border: 1px solid #f4efe680; color: #f4efe6; font-size: 12px; line-height: 1.35; white-space: nowrap; cursor: pointer; box-shadow: 0 3px 10px #1a23321a; }
-.campus-map-label::after { content: ""; position: absolute; top: 100%; left: 50%; height: 12px; border-left: 1px solid #5c645e; }
-.campus-map-label:focus-visible { outline: 2px solid #f4efe6; outline-offset: 3px; }
-.campus-root .campus-plaque { position: absolute; top: 84px; bottom: auto; right: 20px; z-index: 30; }
-.campus-root .campus-tether { position: absolute; inset: 0; width: 100%; height: 100%; z-index: 24; pointer-events: none; }
-@media (max-width: 1023px) {
-  .campus-root .campus-plaque { top: auto; bottom: 16px; right: 16px; width: 260px; }
-  .campus-map-label { font-size: 9px; }
-}
+/* Pass 6: an architectural index and a paper ticket seated in the map frame. */
+.campus-root .campus-directory { width: 250px; background: #e9e3d6; padding: 26px 22px 18px; }
+.campus-root .campus-directory h1 { margin-top: 22px; font-size: 27px; line-height: 1.08; letter-spacing: -.035em; }
+.campus-root .campus-directory-list { margin-top: 8px; }
+.campus-directory-section { margin: 13px 12px 5px; color: #877659; font-size: 10px; letter-spacing: .1em; text-transform: uppercase; }
+.campus-root .campus-directory-list button { border: 0; border-left: 3px solid transparent; padding: 7px 10px; margin: 2px 0; }
+.campus-root .campus-directory-list button[aria-pressed="true"] { border-left-color: #202b30; background: #faf5e9; color: #202b30; }
+.campus-root .campus-directory-list button[aria-pressed="true"] span span:first-child { font-weight: 750; }
+.campus-root .campus-directory-list button span span:last-child { font-size: 11px; color: #74756d; margin-top: 2px; }
+.campus-root .campus-map-topbar { background: transparent; border: 0; height: 66px; padding: 0 28px; }
+.campus-frame-caption { margin-right: auto; font-family: var(--font-fraunces), Georgia, serif; font-style: italic; font-size: 14px; color: #5a5c50; }
+.campus-arrival-dock { position: absolute; z-index: 30; bottom: 0; left: 28px; right: 28px; display: flex; align-items: center; gap: 22px; padding: 22px 24px; background: #f1ebdc; border-top: 2px solid #99815b; box-shadow: inset 0 5px 0 #e5ddcd; }
+.campus-dock-number { color: #978060; font-family: var(--font-fraunces), Georgia, serif; font-size: 34px; }
+.campus-dock-copy { flex: 1; }
+.campus-dock-copy h2 { font-family: var(--font-fraunces), Georgia, serif; font-size: 24px; letter-spacing: -.025em; }
+.campus-dock-copy p { color: #686b61; font-size: 12px; margin-top: 3px; }
+.campus-dock-enter { background: #233037; color: #f6f0e2; padding: 12px 24px; font-size: 13px; }
+.campus-dock-enter span { margin-left: 20px; }
+.campus-dock-close { font-size: 24px; color: #767568; padding: 8px; }
+.campus-map-footnote { position: absolute; z-index: 2; bottom: 28px; left: 30px; right: 30px; display: flex; justify-content: space-between; color: #626456; font-size: 11px; }
+.campus-map-footnote span:first-child { font-family: var(--font-fraunces), Georgia, serif; font-size: 17px; font-style: italic; }
+@media(max-width: 767px) { .campus-arrival-dock { left: 12px; right: 12px; padding: 16px 12px; gap: 12px; } .campus-dock-number { display: none; } .campus-dock-copy h2 { font-size: 20px; } .campus-dock-enter { padding: 12px; } .campus-dock-enter span { margin-left: 4px; } .campus-map-footnote { left: 16px; right: 16px; } }

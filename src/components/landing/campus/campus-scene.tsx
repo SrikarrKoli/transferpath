@@ -4,7 +4,6 @@ import { useEffect, useRef, useState } from "react"
 import * as THREE from "three"
 import { RoomEnvironment } from "three/addons/environments/RoomEnvironment.js"
 import { CAMPUS_BUILDINGS, type BuildingId } from "./campus-data"
-import { PIN_Y } from "./campus-landmarks"
 import { loadCampusLibrary } from "./campus-models"
 import { buildCampusWorld } from "./campus-world"
 
@@ -15,26 +14,24 @@ type Props = {
   onHover: (id: BuildingId | null) => void
   onSelect: (id: BuildingId) => void
   onEnter: (id: BuildingId) => void
-  onAnchor: (x: number, y: number) => void
 }
 
-export function CampusScene({ selected, hovered, focusToken, onHover, onSelect, onEnter, onAnchor }: Props) {
+export function CampusScene({ selected, hovered, focusToken, onHover, onSelect, onEnter }: Props) {
   const mountRef = useRef<HTMLDivElement>(null)
-  const labelRefs = useRef(new Map<BuildingId, HTMLButtonElement>())
   const selectedRef = useRef(selected)
   const hoveredRef = useRef(hovered)
   const focusTokenRef = useRef(focusToken)
   const onHoverRef = useRef(onHover)
   const onSelectRef = useRef(onSelect)
   const onEnterRef = useRef(onEnter)
-  const onAnchorRef = useRef(onAnchor)
-  selectedRef.current = selected
-  hoveredRef.current = hovered
-  focusTokenRef.current = focusToken
-  onHoverRef.current = onHover
-  onSelectRef.current = onSelect
-  onEnterRef.current = onEnter
-  onAnchorRef.current = onAnchor
+  useEffect(() => {
+    selectedRef.current = selected
+    hoveredRef.current = hovered
+    focusTokenRef.current = focusToken
+    onHoverRef.current = onHover
+    onSelectRef.current = onSelect
+    onEnterRef.current = onEnter
+  }, [selected, hovered, focusToken, onHover, onSelect, onEnter])
   const [status, setStatus] = useState("Building campus…")
 
   useEffect(() => {
@@ -43,26 +40,25 @@ export function CampusScene({ selected, hovered, focusToken, onHover, onSelect, 
     const reduced = window.matchMedia("(prefers-reduced-motion: reduce)").matches
     let cancelled = false
     let raf = 0
-    let renderer: THREE.WebGLRenderer | undefined
-    let pmrem: THREE.PMREMGenerator | undefined
 
     const w0 = mount.clientWidth || 960
     const h0 = mount.clientHeight || 640
-    renderer = new THREE.WebGLRenderer({ antialias: true, alpha: false, powerPreference: "high-performance" })
+    const renderer = new THREE.WebGLRenderer({ antialias: true, alpha: false, powerPreference: "high-performance" })
     renderer.setPixelRatio(Math.min(window.devicePixelRatio || 1, 1.5))
     renderer.setSize(w0, h0)
     renderer.setClearColor(0xc4c0ab, 1)
     renderer.shadowMap.enabled = true
     renderer.shadowMap.type = THREE.PCFShadowMap
     renderer.outputColorSpace = THREE.SRGBColorSpace
-    renderer.toneMapping = THREE.ReinhardToneMapping
-    renderer.toneMappingExposure = 1.1
+    renderer.toneMapping = THREE.ACESFilmicToneMapping
+    renderer.toneMappingExposure = 0.95
     mount.appendChild(renderer.domElement)
 
     const scene = new THREE.Scene()
     scene.fog = new THREE.Fog(0xc4c0ab, 52, 90)
-    pmrem = new THREE.PMREMGenerator(renderer)
+    const pmrem = new THREE.PMREMGenerator(renderer)
     scene.environment = pmrem.fromScene(new RoomEnvironment(), 0.08).texture
+    scene.environmentIntensity = 0.25
 
     const camera = new THREE.OrthographicCamera(-1, 1, 1, -1, 0.1, 240)
     const orbit = { theta: Math.PI / 3.15, phi: 0.88, radius: 20.4 }
@@ -70,31 +66,27 @@ export function CampusScene({ selected, hovered, focusToken, onHover, onSelect, 
     const lookGoal = look.clone()
     const radiusGoal = { v: 22 }
 
-    scene.add(new THREE.AmbientLight(0xfff4e6, 0.92))
-    scene.add(new THREE.HemisphereLight(0xf4fbff, 0xd4b07a, 0.62))
-    const sun = new THREE.DirectionalLight(0xfff3dc, 1.85)
-    sun.position.set(-14, 22, 12)
+    scene.add(new THREE.AmbientLight(0xfff4e6, 0.24))
+    scene.add(new THREE.HemisphereLight(0xc9dded, 0xb49a73, 0.65))
+    const sun = new THREE.DirectionalLight(0xffe4bc, 2.4)
+    sun.position.set(-9, 15, 8)
     sun.castShadow = true
     sun.shadow.mapSize.set(1024, 1024)
-    sun.shadow.camera.left = -16
-    sun.shadow.camera.right = 16
-    sun.shadow.camera.top = 16
-    sun.shadow.camera.bottom = -16
+    sun.shadow.camera.left = -11
+    sun.shadow.camera.right = 11
+    sun.shadow.camera.top = 11
+    sun.shadow.camera.bottom = -11
     sun.shadow.bias = -0.00012
     sun.shadow.normalBias = 0.035
-    sun.shadow.radius = 3.5
+    sun.shadow.radius = 2
+    sun.shadow.camera.far = 50
     scene.add(sun)
-    const fill = new THREE.DirectionalLight(0xb7d4f0, 0.48)
+    const fill = new THREE.DirectionalLight(0xb7d4f0, 0.18)
     fill.position.set(20, 9, -14)
     scene.add(fill)
-    const rim = new THREE.DirectionalLight(0xfff7ee, 0.55)
+    const rim = new THREE.DirectionalLight(0xfff7ee, 0.1)
     rim.position.set(4, 12, 18)
     scene.add(rim)
-    // Warm uplight — follows selection so map focus is obvious without a SaaS glow stick.
-    const selectGlow = new THREE.PointLight(0xffc089, 0, 4.2, 2.2)
-    selectGlow.position.set(0, 0.35, 0)
-    scene.add(selectGlow)
-
     const root = new THREE.Group()
     scene.add(root)
 
@@ -111,18 +103,14 @@ export function CampusScene({ selected, hovered, focusToken, onHover, onSelect, 
       camera.right = f * a
       camera.top = f
       camera.bottom = -f
-      // Keep the selected landmark left of the right-hand plaque.
-      const shift = selectedRef.current && mount.clientWidth >= 768 ? 0.85 : 0
-      camera.left += shift
-      camera.right += shift
       camera.updateProjectionMatrix()
     }
 
     const focusBuilding = (id: BuildingId) => {
       const b = CAMPUS_BUILDINGS.find((x) => x.id === id)
       if (!b) return
-      lookGoal.set(b.x * 0.9, id === "quad" ? 2.0 : 1.3, b.z * 0.9)
-      radiusGoal.v = 23
+      lookGoal.set(b.x * 0.25, 0.9, b.z * 0.25 + 0.6)
+      radiusGoal.v = 21.5
     }
 
     const raycaster = new THREE.Raycaster()
@@ -133,27 +121,6 @@ export function CampusScene({ selected, hovered, focusToken, onHover, onSelect, 
     let lastY = 0
     let lastFocusToken = -1
     let meshById = new Map<BuildingId, THREE.Group>()
-    const selectionHalo = new THREE.Group()
-    selectionHalo.visible = false
-    // One architectural ground inlay, sized to each landmark's footprint.
-    const haloMat = new THREE.MeshBasicMaterial({ color: 0xf1e2bc, transparent: true, opacity: 0.7, depthWrite: false })
-    const haloShape = new THREE.Shape()
-    haloShape.moveTo(-0.5, -0.5)
-    haloShape.lineTo(0.5, -0.5)
-    haloShape.lineTo(0.5, 0.5)
-    haloShape.lineTo(-0.5, 0.5)
-    haloShape.closePath()
-    const cutout = new THREE.Path()
-    cutout.moveTo(-0.47, -0.47)
-    cutout.lineTo(-0.47, 0.47)
-    cutout.lineTo(0.47, 0.47)
-    cutout.lineTo(0.47, -0.47)
-    cutout.closePath()
-    haloShape.holes.push(cutout)
-    const inlay = new THREE.Mesh(new THREE.ShapeGeometry(haloShape), haloMat)
-    inlay.rotation.x = -Math.PI / 2
-    selectionHalo.add(inlay)
-    root.add(selectionHalo)
     let people: THREE.Group[] = []
     let water: THREE.Object3D | undefined
 
@@ -281,7 +248,7 @@ export function CampusScene({ selected, hovered, focusToken, onHover, onSelect, 
       mat.emissive.copy(mat.userData._baseEmissive)
       mat.emissiveIntensity = mat.userData._baseIntensity ?? 0
       if (mode === "dim") mat.emissiveIntensity *= 0.34
-      if (mode === "focus") { mat.emissive.setHex(0xe3d6b8); mat.emissiveIntensity = 0.18 }
+      if (mode === "focus") { mat.emissive.setHex(0xe3d6b8); mat.emissiveIntensity = 0.065 }
     }
 
     const t0 = performance.now()
@@ -313,25 +280,6 @@ export function CampusScene({ selected, hovered, focusToken, onHover, onSelect, 
         })
       }
 
-      {
-        const sid = selectedRef.current
-        if (sid && meshById.has(sid)) {
-          const g = meshById.get(sid)!
-          selectionHalo.visible = true
-          selectionHalo.position.x = g.position.x
-          selectionHalo.position.z = g.position.z
-          selectionHalo.position.y = 0.19
-          const footprint = g.userData.footprint as { x: number; z: number; width: number; depth: number }
-          selectionHalo.position.x += footprint.x
-          selectionHalo.position.z += footprint.z
-          selectionHalo.scale.set(footprint.width, 1, footprint.depth)
-          selectGlow.intensity = 0.85
-          selectGlow.position.set(g.position.x, 0.28 + g.position.y, g.position.z)
-        } else {
-          selectionHalo.visible = false
-          selectGlow.intensity = THREE.MathUtils.lerp(selectGlow.intensity, 0, 0.15)
-        }
-      }
       const hasSelection = !!selectedRef.current
       for (const [id, g] of meshById) {
         const isSelected = selectedRef.current === id
@@ -357,21 +305,6 @@ export function CampusScene({ selected, hovered, focusToken, onHover, onSelect, 
       }
 
       camera.updateMatrixWorld()
-      for (const [id, group] of meshById) {
-        const label = labelRefs.current.get(id)
-        if (!label) continue
-        group.updateWorldMatrix(true, false)
-        const point = group.localToWorld(new THREE.Vector3(0, PIN_Y[id], 0)).project(camera)
-        label.style.left = `${(point.x + 1) * mount.clientWidth / 2}px`
-        label.style.top = `${(1 - point.y) * mount.clientHeight / 2}px`
-        label.style.visibility = point.z >= -1 && point.z <= 1 ? "visible" : "hidden"
-      }
-      const selectedGroup = selectedRef.current ? meshById.get(selectedRef.current) : undefined
-      if (selectedGroup && selectedRef.current) {
-        selectedGroup.updateWorldMatrix(true, false)
-        const anchor = selectedGroup.localToWorld(new THREE.Vector3(0, PIN_Y[selectedRef.current], 0)).project(camera)
-        onAnchorRef.current((anchor.x + 1) * mount.clientWidth / 2, (1 - anchor.y) * mount.clientHeight / 2)
-      }
       renderer!.render(scene, camera)
       raf = requestAnimationFrame(tick)
     }
@@ -422,28 +355,10 @@ export function CampusScene({ selected, hovered, focusToken, onHover, onSelect, 
   }, [])
 
   return (
-    <div className="absolute inset-0">
+    <div className="absolute inset-0" data-campus-ready={!status}>
       <div ref={mountRef} className="absolute inset-0 touch-none" />
-      {!status && CAMPUS_BUILDINGS.filter((building) => building.id === (selected ?? hovered)).map((building) => (
-        <button
-          key={building.id}
-          ref={(node) => { if (node) labelRefs.current.set(building.id, node); else labelRefs.current.delete(building.id) }}
-          type="button"
-          className="campus-map-label"
-          data-selected={selected === building.id}
-          data-hovered={hovered === building.id}
-          aria-pressed={selected === building.id}
-          onClick={() => onSelect(building.id)}
-          onDoubleClick={() => onEnter(building.id)}
-          onKeyDown={(event) => { if (event.key === "Enter") { event.preventDefault(); onEnter(building.id) } }}
-          onMouseEnter={() => onHover(building.id)}
-          onMouseLeave={() => onHover(null)}
-        >
-          <span>{building.name}</span>
-        </button>
-      ))}
       {status ? (
-        <div className="pointer-events-none absolute inset-0 z-10 flex items-center justify-center bg-[#a8d8e6]">
+        <div className="pointer-events-none absolute inset-0 z-10 flex items-center justify-center bg-[#c8bea4]">
           <p className="font-heading text-lg font-semibold text-[#1a2332]">{status}</p>
         </div>
       ) : null}

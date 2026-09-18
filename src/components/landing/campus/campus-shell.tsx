@@ -3,7 +3,7 @@
 import dynamic from "next/dynamic"
 import Link from "next/link"
 import { useRouter } from "next/navigation"
-import { useEffect, useState, useRef, useCallback } from "react"
+import { useEffect, useState } from "react"
 import { CTA_GET_STARTED, PRODUCT_NAME, REGION_TAGLINE } from "@/lib/brand"
 import { createClient } from "@/lib/supabase/client"
 import { campusEnterHref } from "@/lib/campus-immersion"
@@ -18,6 +18,10 @@ const CampusScene = dynamic(() => import("./campus-scene").then((m) => m.CampusS
   ),
 })
 
+const DIRECTORY_GROUPS: Partial<Record<BuildingId, string>> = {
+  counselor: "01 / Start here", library: "02 / Academics", dorm: "03 / Campus life",
+}
+
 const LANDING_JOBS: Record<BuildingId, string> = {
   quad: "Track application dates.",
   counselor: "Set your transfer starting point.",
@@ -31,18 +35,6 @@ const LANDING_JOBS: Record<BuildingId, string> = {
 
 export function CampusShell() {
   const router = useRouter()
-  const plaqueRef = useRef<HTMLDivElement>(null)
-  const leaderRef = useRef<SVGPathElement>(null)
-  const markerRef = useRef<SVGCircleElement>(null)
-  const tetherBuilding = useCallback((x: number, y: number) => {
-    const plaque = plaqueRef.current
-    if (!plaque || !leaderRef.current || !markerRef.current) return
-    const endX = plaque.offsetLeft
-    const endY = plaque.offsetTop + 28
-    leaderRef.current.setAttribute("d", `M ${x} ${y} L ${endX - 22} ${endY} L ${endX} ${endY}`)
-    markerRef.current.setAttribute("cx", String(x))
-    markerRef.current.setAttribute("cy", String(y))
-  }, [])
   const [selected, setSelected] = useState<BuildingId | null>(null)
   const [hovered, setHovered] = useState<BuildingId | null>(null)
   const [focusToken, setFocusToken] = useState(0)
@@ -127,10 +119,11 @@ export function CampusShell() {
         </p>
         <p className="mt-1 text-[11px] text-[#1a2332]/55">New here? Start with Counselor Hall.</p>
         <ul className="campus-directory-list mt-2 -mx-1 min-h-0 flex-1 overflow-auto">
-          {CAMPUS_BUILDINGS.map((b) => {
+          {["counselor", "quad", "library", "classroom", "registrar", "dorm", "gym", "union"].map((id) => CAMPUS_BUILDINGS.find((b) => b.id === id)!).map((b) => {
             const on = selected === b.id
             return (
               <li key={b.id}>
+                {DIRECTORY_GROUPS[b.id] && <p className="campus-directory-section">{DIRECTORY_GROUPS[b.id]}</p>}
                 <button
                   type="button"
                   onClick={() => selectBuilding(b.id)}
@@ -167,11 +160,10 @@ export function CampusShell() {
           onHover={setHovered}
           onSelect={selectBuilding}
           onEnter={enterBuilding}
-          onAnchor={tetherBuilding}
         />
 
         <div className="campus-map-topbar hidden lg:flex">
-          <span className="mr-auto text-[11px] uppercase tracking-[0.13em]">TransferPath campus</span>
+          <span className="campus-frame-caption">A place for your next chapter.</span>
           {sessionState === "member" ? (
             <Link
               href="/dashboard"
@@ -239,40 +231,17 @@ export function CampusShell() {
 
 
         {dock ? (
-          <>
-            <svg className="campus-tether" aria-hidden="true">
-              <path ref={leaderRef} fill="none" stroke="#5c645e" strokeWidth="1" />
-              <circle ref={markerRef} r="4" fill="#f4efe6" stroke="#5c645e" strokeWidth="1" />
-            </svg>
-            <div ref={plaqueRef} className="campus-plaque" aria-labelledby="campus-plaque-title">
-            <div>
-              <div className="flex flex-col gap-3 px-4 py-4">
-                <div className="min-w-0 flex-1">
-                  <h2 id="campus-plaque-title" className="mt-1 font-[family-name:var(--font-fraunces)] text-xl font-semibold tracking-[-0.01em] text-[#1a2332] sm:text-[1.35rem]">
-                    {dock.name}
-                  </h2>
-                  <p className="mt-1.5 max-w-md text-[13px] leading-relaxed text-[#1a2332]/70">{LANDING_JOBS[dock.id]}</p>
-                </div>
-                <div className="flex shrink-0 gap-2">
-                  <Link
-                    href={campusEnterHref(dock, sessionState === "member" ? "member" : "guest")}
-                    className="bg-[#1a2332] px-4 py-2.5 text-center text-[13px] font-medium text-[#f4efe6] hover:bg-[#1a2332]/90"
-                  >
-                    Enter →
-                  </Link>
-                  <button
-                    type="button"
-                    onClick={() => { setSelected(null); setFocusToken((n) => n + 1) }}
-                    className="px-3 py-2.5 text-[13px] font-medium text-[#1a2332]/65 hover:text-[#1a2332]"
-                  >
-                    Close
-                  </button>
-                </div>
-              </div>
+          <section className="campus-arrival-dock" aria-labelledby="campus-plaque-title">
+            <span className="campus-dock-number" aria-hidden="true">{String(CAMPUS_BUILDINGS.indexOf(dock) + 1).padStart(2, "0")}</span>
+            <div className="campus-dock-copy">
+              <h2 id="campus-plaque-title">{dock.name}</h2>
+              <p>{LANDING_JOBS[dock.id]}</p>
             </div>
-          </div>
-          </>
-        ) : null}
+            <Link className="campus-dock-enter" href={campusEnterHref(dock, sessionState === "member" ? "member" : "guest")}>Enter <span aria-hidden="true">↗</span></Link>
+            <button className="campus-dock-close" aria-label="Return to campus overview" onClick={() => { setSelected(null); setFocusToken((n) => n + 1) }}>×</button>
+          </section>
+        ) : <div className="campus-map-footnote"><span>Explore your campus</span><span>Select a building to begin ↗</span></div>}
+
       </div>
 
       <p className="sr-only" aria-live="polite">

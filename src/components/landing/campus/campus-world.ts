@@ -62,7 +62,7 @@ export function buildCampusWorld(root: THREE.Group, lib: KitLibrary) {
   const walkMat = lambert(0xa89880, { emissive: new THREE.Color(0xa89880), emissiveIntensity: 0.1 })
   const roadMat = lambert(0xd4c9b4, { emissive: new THREE.Color(0xd4c9b4), emissiveIntensity: 0.1 })
   const curbMat = lambert(0x4a525a, { emissive: new THREE.Color(0x4a525a), emissiveIntensity: 0.08 })
-  const hedgeMat = flat(0x405443)
+  const hedgeMat = lambert(0x405443)
 
   // Continuous terrain reaches beyond the frame; no raised disc or stacked rim.
   const ground = mesh(new THREE.PlaneGeometry(180, 180), grassMat, 0, -0.04, 0, false)
@@ -70,7 +70,7 @@ export function buildCampusWorld(root: THREE.Group, lib: KitLibrary) {
   ground.receiveShadow = true
   root.add(ground)
   // A broad, continuous stone campus foundation seats the streets and buildings.
-  const plate = rbox(21, 0.06, 17, lambert(0xb6b59b), 0, -0.025, 0.8, 0.4, false)
+  const plate = rbox(21, 0.06, 17, lambert(0xc8bea4), 0, -0.025, 0.8, 0.4, false)
   plate.receiveShadow = true
   root.add(plate)
   const approach = mesh(new THREE.PlaneGeometry(16, 3.8), sandMat, -10, 0.005, 2.5, false)
@@ -145,6 +145,10 @@ export function buildCampusWorld(root: THREE.Group, lib: KitLibrary) {
     const g = new THREE.Group()
     g.position.set(meta.x, 0, meta.z)
     const hall = buildLandmark(id)
+    if (id === "library") hall.scale.set(1.04, 1.15, 1.04)
+    else if (id === "dorm") hall.scale.y = 0.8
+    else if (id === "gym") hall.scale.y = 0.8
+    else if (id !== "quad") hall.scale.y = 0.9
     g.add(hall)
     uniquifyMaterials(g)
     tag(g, id)
@@ -258,7 +262,6 @@ export function buildCampusWorld(root: THREE.Group, lib: KitLibrary) {
   })
 
   const clusters: [number, number, number][] = [
-    [-5.15, 3.35, 40],
     [4.75, -3.45, 43],
   ]
   clusters.forEach(([x, z, seed]) => {

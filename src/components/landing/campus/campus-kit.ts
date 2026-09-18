@@ -54,14 +54,30 @@ export function flat(color: number, extra?: THREE.MeshBasicMaterialParameters) {
 }
 
 /** Color-stable masonry with enough light response to preserve architectural depth. */
-export function hold(color: number, extra?: THREE.MeshLambertMaterialParameters) {
-  const c = new THREE.Color(color)
-  return new THREE.MeshLambertMaterial({
-    color: c,
-    emissive: c.clone(),
-    emissiveIntensity: 0.16,
-    ...extra,
-  })
+export function hold(color: number, extra?: THREE.MeshStandardMaterialParameters) {
+  return new THREE.MeshStandardMaterial({ color, roughness: 0.87, metalness: 0, ...extra })
+}
+
+/** Deterministic small masonry courses, kept subtle at the campus scale. */
+export function masonry(color: number, brick = false) {
+  const canvas = document.createElement("canvas")
+  canvas.width = canvas.height = 256
+  const ctx = canvas.getContext("2d")!
+  ctx.fillStyle = new THREE.Color(color).getStyle()
+  ctx.fillRect(0, 0, 256, 256)
+  for (let y = 0; y < 256; y += 32) {
+    for (let x = -64; x < 256; x += 64) {
+      const offset = (y / 32 % 2) * 32
+      ctx.fillStyle = `rgba(255,245,220,${0.025 + ((x + y + 256) % 7) * 0.008})`
+      ctx.fillRect(x + offset, y, 63, 31)
+      ctx.strokeStyle = brick ? "rgba(225,204,172,.23)" : "rgba(87,73,49,.12)"
+      ctx.lineWidth = 1
+      ctx.strokeRect(x + offset, y, 64, 32)
+    }
+  }
+  const map = new THREE.CanvasTexture(canvas)
+  map.colorSpace = THREE.SRGBColorSpace
+  return new THREE.MeshStandardMaterial({ map, roughness: brick ? 0.95 : 0.8 })
 }
 
 export function mesh(
@@ -96,22 +112,8 @@ export function rbox(
 }
 
 export function blobShadow(parent: THREE.Object3D, rx: number, rz: number, opacity = 0.52) {
-  const blob = new THREE.Mesh(
-    new THREE.CircleGeometry(1, 32),
-    new THREE.MeshBasicMaterial({
-      color: 0x1a2814,
-      transparent: true,
-      opacity: opacity * 0.62,
-      depthWrite: false,
-    })
-  )
-  blob.rotation.x = -Math.PI / 2
-  blob.scale.set(rx * 1.12, rz * 1.16, 1)
-  // Sit flush so contact reads attached, not floating plates.
-  blob.position.set(0.12, 0.006, -0.12)
-  blob.receiveShadow = false
-  blob.castShadow = false
-  parent.add(blob)
+  // Retained call signature for primitives; directional shadows supply contact.
+  void parent; void rx; void rz; void opacity
 }
 
 export type Face = "south" | "north" | "east" | "west"
@@ -313,8 +315,8 @@ export function toyTree(x: number, z: number, seed: number) {
   const g = new THREE.Group()
   const trunkMat = lambert(C.trunk)
   const greens = [C.canopyA, C.canopyB, C.canopyC, C.canopyD]
-  const canopyMat = flat(greens[seed % greens.length])
-  const accent = flat(greens[(seed + 2) % greens.length])
+  const canopyMat = lambert(greens[seed % greens.length])
+  const accent = lambert(greens[(seed + 2) % greens.length])
   const scale = 0.78 + (seed % 7) * 0.055
   const trunkH = 0.34 + (seed % 4) * 0.05
   g.add(mesh(new THREE.CylinderGeometry(0.034, 0.055, trunkH, 7), trunkMat, 0, trunkH / 2, 0, false))
@@ -515,6 +517,7 @@ export function clockFaces(radius = 0.44, stickOut = 0.7) {
 }
 
 export function numberPin(_n: number, _id?: string) {
+  void _n; void _id
   return new THREE.Group()
 }
 

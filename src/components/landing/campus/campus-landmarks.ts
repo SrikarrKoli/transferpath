@@ -13,6 +13,7 @@ import {
   facadePlaque,
   flat,
   lambert,
+  masonry,
   gableRoof,
   hold,
   hipRoof,
@@ -42,11 +43,11 @@ function door(mat: THREE.Material, x: number, y: number, z: number, w = 0.28, h 
 /** 01 — tall sandstone campanile; clock lantern must read from map distance. */
 export function buildClockTower() {
   const g = new THREE.Group()
-  const stone = hold(C.sand)
+  const stone = masonry(0x99583f, true)
   const stoneDeep = hold(C.creamDeep)
   const navy = hold(C.navy)
-  const gold = hold(C.gold)
-  const glass = flat(0x243448)
+  const gold = hold(0x9b7b43, { metalness: 0.75, roughness: 0.36 })
+  const glass = hold(0x263e48, { metalness: 0.45, roughness: 0.2 })
   const trim = hold(C.trim)
 
   // Broad plinth so the tower sits like a campus landmark, not a stick.
@@ -121,7 +122,7 @@ export function buildCounselorHall() {
   const wing = hold(0xc45a3c)
   const roof = hold(C.terracottaDeep)
   const trim = hold(C.trim)
-  const glass = flat(0x243448)
+  const glass = hold(0x263e48, { metalness: 0.45, roughness: 0.2 })
   const navy = hold(C.navy)
   const hedgeMat = flat(C.hedge)
 
@@ -165,10 +166,10 @@ export function buildCounselorHall() {
 /** 03 — colonnaded reading hall: the map silhouette must earn "Library". */
 export function buildLibrary() {
   const g = new THREE.Group()
-  const body = hold(0xf0e4cc)
-  const copper = hold(0xa34f2f)
+  const body = masonry(0xe4d8bb)
+  const copper = hold(0x384b50, { roughness: 0.68 })
   const trim = hold(C.trim)
-  const glass = flat(0x243448)
+  const glass = hold(0x263e48, { metalness: 0.45, roughness: 0.2 })
   const navy = hold(C.navy)
   const stone = hold(C.stone)
   const reading = hold(0x587c78)
@@ -210,7 +211,7 @@ export function buildLibrary() {
   const colXs = [-1.15, -0.69, -0.23, 0.23, 0.69, 1.15]
   colXs.forEach((x) => g.add(column(1.65, trim, x, 1.32, 0.08)))
   g.add(rbox(2.65, 0.14, 0.55, stone, 0, 1.78, 1.32, 0.02))
-  g.add(pediment(2.95, 0.6, 0.22, navy, 1.85, 1.32))
+  g.add(pediment(2.95, 0.6, 0.22, body, 1.85, 1.32))
   g.add(rbox(2.55, 0.08, 0.72, stone, 0, 0.08, 1.05, 0.02, false))
 
   g.add(door(navy, 0, 0.55, 0.95, 0.34, 0.62))
@@ -224,9 +225,9 @@ export function buildLibrary() {
 export function buildClassrooms() {
   const g = new THREE.Group()
   const body = hold(0xf2e6ce)
-  const brick = hold(C.brick)
+  const brick = masonry(0x96735f, true)
   const roof = hold(C.terracotta)
-  const glass = flat(0x243448)
+  const glass = hold(0x263e48, { metalness: 0.45, roughness: 0.2 })
   const frame = hold(C.trim)
   const navy = hold(C.navy)
 
@@ -269,7 +270,7 @@ export function buildRegistrar() {
   const g = new THREE.Group()
   const body = hold(0x6e8fad)
   const trim = hold(C.trim)
-  const glass = flat(0x243448)
+  const glass = hold(0x263e48, { metalness: 0.45, roughness: 0.2 })
   const navy = hold(C.navy)
   const dome = hold(0x3d7a5c)
 
@@ -304,10 +305,10 @@ export function buildRegistrar() {
 /** 06 — three-story brick U-court residence halls, not tract houses. */
 export function buildDorms() {
   const g = new THREE.Group()
-  const brick = hold(C.brick)
+  const brick = masonry(0x96735f, true)
   const brickDeep = hold(C.brickDeep)
   const roof = hold(C.navySoft)
-  const glass = flat(0x243448)
+  const glass = hold(0x263e48, { metalness: 0.45, roughness: 0.2 })
   const trim = hold(C.trim)
 
   const wing = (x: number, z: number, rotY: number, cols: number, jitter: number, hBoost = 0) => {
@@ -346,8 +347,8 @@ export function buildDorms() {
     w.rotation.y = rotY
     g.add(w)
   }
-  wing(-0.95, 0.15, 0, 4, 2, 0)
-  wing(0.95, 0.15, 0, 3, 5, 0.62)
+  wing(-0.95, 0.4, 0, 4, 2, -0.35)
+  wing(0.95, -0.15, 0, 3, 5, 0.1)
   g.add(rbox(1.15, 1.55, 0.85, brick, 0, 0.78, -0.55, 0.006))
   g.add(hipRoof(1.25, 0.95, 0.38, roof, 1.55))
   g.add(door(flat(C.navy), 0, 0.45, 0.0, 0.28, 0.5))
@@ -364,8 +365,8 @@ export function buildRecCenter() {
   const g = new THREE.Group()
   // L4: rec reads masonry/ink, not saturated game court
   const body = hold(0xc9d2c6)
-  const vault = hold(0x4a5d55)
-  const glass = flat(0x243448)
+  const vault = hold(0x738585, { metalness: 0.72, roughness: 0.38 })
+  const glass = hold(0x263e48, { metalness: 0.45, roughness: 0.2 })
   const court = lambert(0x6a7468, { emissive: new THREE.Color(0x6a7468), emissiveIntensity: 0.1 })
 
   g.add(rbox(2.55, 1.05, 1.72, body, 0, 0.52, 0, 0.006))
