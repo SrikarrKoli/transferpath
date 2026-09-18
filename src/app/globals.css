@@ -5249,3 +5249,19 @@ nextjs-portal,
 .campus-dock-enter span { margin-left: 20px; }
 .campus-map-footnote { position: absolute; z-index: 2; bottom: 28px; left: 30px; right: 30px; display: flex; justify-content: flex-end; color: #626456; font-size: 11px; }
 @media(max-width: 767px) { .campus-arrival-dock { left: 12px; right: 12px; padding: 16px 12px; gap: 12px; } .campus-dock-number { display: none; } .campus-dock-copy h2 { font-size: 20px; } .campus-dock-enter { padding: 12px; } .campus-dock-enter span { margin-left: 4px; } .campus-map-footnote { left: 16px; right: 16px; } }
+
+/* Pass 8: quiet campus legend and inset, engraved destination plaque. */
+.campus-root .campus-directory { width: 218px; padding: 26px 20px; background: #eee9de; }
+.campus-root .campus-directory h1 { font-size: 23px; line-height: 1.14; }
+.campus-root .campus-directory-list button { padding: 10px 8px; color: #62665e; }
+.campus-root .campus-directory-list button[aria-pressed="true"] { color: #253d3b; background: #dcded1; border-left-color: #8c7550; }
+.campus-root .campus-directory-list button span span { font-size: 12px; font-weight: 400; }
+.campus-directory-section { font-size: 9px; letter-spacing: .09em; margin-top: 19px; }
+.campus-arrival-dock { bottom: 24px; left: 50%; right: auto; transform: translateX(-50%); width: min(540px, calc(100% - 48px)); padding: 15px 19px; gap: 18px; border: 1px solid #aa967166; border-top: 3px solid #927449; background: #f1ebdc; box-shadow: 0 4px 0 #9b8b6a, 0 9px 18px #343e3026; }
+.campus-plaque-mark { width: 45px; height: 45px; flex-shrink: 0; color: #8c714a; }
+.campus-dock-copy h2 { font-size: 22px; line-height: 1.15; }
+.campus-dock-copy p { font-size: 11px; margin-top: 5px; }
+.campus-dock-enter { background: transparent; color: #293d3b; border-left: 1px solid #a28b6255; padding: 13px 0 13px 20px; }
+.campus-dock-enter span { margin-left: 15px; }
+.campus-map-stage::after { background: radial-gradient(ellipse at 48% 46%, transparent 55%, #39443812 100%); }
+@media(max-width: 767px) { .campus-arrival-dock { bottom: 20px; width: calc(100% - 28px); padding: 12px; gap: 10px; } .campus-plaque-mark { width: 32px; } .campus-dock-copy h2 { font-size: 20px; } .campus-dock-enter { padding-left: 12px; } }

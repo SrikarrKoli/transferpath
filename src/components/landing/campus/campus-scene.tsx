@@ -108,8 +108,8 @@ export function CampusScene({ selected, hovered, focusToken, onHover, onSelect, 
     const focusBuilding = (id: BuildingId) => {
       const b = CAMPUS_BUILDINGS.find((x) => x.id === id)
       if (!b) return
-      lookGoal.set(b.x * 0.25, 0.9, b.z * 0.25 + 0.6)
-      radiusGoal.v = 21.5
+      lookGoal.set(b.x * 0.18, 0.65, b.z * 0.18 + 0.6)
+      radiusGoal.v = 21
     }
 
     const raycaster = new THREE.Raycaster()
@@ -218,26 +218,10 @@ export function CampusScene({ selected, hovered, focusToken, onHover, onSelect, 
     const tintMaterial = (material: THREE.Material | null | undefined, mode: "idle" | "focus" | "dim" | "hover") => {
       const mat = material as THREE.MeshLambertMaterial | undefined
       if (!mat?.color?.isColor) return
-      // Exposure and sRGB encoding soften a linear color multiplier. Attenuate
-      // the final display color too, so selection reads under bright campus light.
-      if (!mat.userData.campusDim) {
-        const dim = { value: 1 }
-        mat.userData.campusDim = dim
-        mat.onBeforeCompile = (shader) => {
-          shader.uniforms.campusDim = dim
-          shader.fragmentShader = "uniform float campusDim;\n" + shader.fragmentShader.replace(
-            "#include <colorspace_fragment>",
-            "#include <colorspace_fragment>\ngl_FragColor.rgb *= campusDim;",
-          )
-        }
-        mat.customProgramCacheKey = () => "campus-selection-dim-v1"
-        mat.needsUpdate = true
-      }
-      mat.userData.campusDim.value = mode === "dim" ? 0.30 : 1
       if (!mat.userData._baseColor?.isColor) mat.userData._baseColor = mat.color.clone()
       const base = mat.userData._baseColor as THREE.Color
-      mat.color.copy(base)
-      if (mode === "focus") mat.color.offsetHSL(0, 0, 0.055)
+      mat.color.copy(base).multiplyScalar(mode === "dim" ? 0.82 : 1)
+      if (mode === "focus") mat.color.multiplyScalar(1.04)
       if (mode === "hover") mat.color.offsetHSL(0, 0, 0.035)
       if (!mat.emissive?.isColor) return
       if (!mat.userData._baseEmissive?.isColor) {
@@ -246,8 +230,8 @@ export function CampusScene({ selected, hovered, focusToken, onHover, onSelect, 
       }
       mat.emissive.copy(mat.userData._baseEmissive)
       mat.emissiveIntensity = mat.userData._baseIntensity ?? 0
-      if (mode === "dim") mat.emissiveIntensity *= 0.30
-      if (mode === "focus") { mat.emissive.setHex(0xe3d6b8); mat.emissiveIntensity = 0.14 }
+      if (mode === "dim") mat.emissiveIntensity *= 0.82
+      if (mode === "focus") { mat.emissive.setHex(0xffc77e); mat.emissiveIntensity = 0.025 }
     }
 
     const t0 = performance.now()
@@ -290,7 +274,7 @@ export function CampusScene({ selected, hovered, focusToken, onHover, onSelect, 
             : isHovered
               ? "hover"
               : "idle"
-        const lift = isSelected ? 0.18 : isHovered && !hasSelection ? 0.1 : 0
+        const lift = isSelected ? 0.06 : isHovered && !hasSelection ? 0.1 : 0
         g.position.y = THREE.MathUtils.lerp(g.position.y, lift, ease)
         if (Math.abs(g.position.y - lift) < 0.001) g.position.y = lift
         g.traverse((c) => {

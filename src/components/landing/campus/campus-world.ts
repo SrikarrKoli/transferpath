@@ -27,17 +27,38 @@ export function buildCampusWorld(root: THREE.Group) {
   root.add(ground)
   const city = new THREE.Group()
   root.add(city)
-  const inlay = (x: number, z: number, w: number, d: number, color: number) => {
-    const surface = mesh(new THREE.PlaneGeometry(w, d), lambert(color), x, 0.008, z, false)
-    surface.rotation.x = -Math.PI / 2
-    surface.receiveShadow = true
-    city.add(surface)
+  // One drawn landscape surface: aggregate, lawn courts, joined walks and plaza.
+  const canvas = document.createElement("canvas")
+  canvas.width = 1536; canvas.height = 1152
+  const ctx = canvas.getContext("2d")!
+  ctx.fillStyle = "#aaa98b"; ctx.fillRect(0, 0, 1536, 1152)
+  const rect = (x: number, z: number, w: number, d: number, color: string) => {
+    ctx.fillStyle = color
+    ctx.fillRect((x - w / 2 + 8) * 96, (z - d / 2 + 6) * 96, w * 96, d * 96)
   }
-  inlay(0, 0.8, 11.8, 0.8, 0xe3d9c3)
-  inlay(-2.5, 0.7, 0.7, 8.4, 0xe3d9c3)
-  inlay(2.5, 0.7, 0.7, 8.4, 0xe3d9c3)
-  inlay(0, 2.1, 4.4, 1.5, 0xe3d9c3)
-  inlay(0, 0.8, 2.8, 1.6, 0xa0a087)
+  rect(0, 0.8, 14.8, 1.15, "#d9cfb6")
+  rect(-2.5, 0, 0.85, 10.8, "#d9cfb6")
+  rect(2.5, 0, 0.85, 10.8, "#d9cfb6")
+  rect(0, 0.3, 3.8, 3.15, "#c6b998")
+  rect(0, 4.9, 14.8, 0.7, "#d9cfb6")
+  rect(0, -4.9, 14.8, 0.7, "#d9cfb6")
+  rect(-6.8, 0, 0.7, 10.5, "#d9cfb6")
+  rect(6.8, 0, 0.7, 10.5, "#d9cfb6")
+  ctx.strokeStyle = "#827c6240"; ctx.lineWidth = 1
+  for (let i = 0; i < 1536; i += 32) { ctx.beginPath(); ctx.moveTo(i, 0); ctx.lineTo(i, 1152); ctx.stroke() }
+  for (let i = 0; i < 1152; i += 32) { ctx.beginPath(); ctx.moveTo(0, i); ctx.lineTo(1536, i); ctx.stroke() }
+  let seed = 83
+  for (let i = 0; i < 95000; i++) {
+    seed = (seed * 16807) % 2147483647; const x = seed % 1536
+    seed = (seed * 16807) % 2147483647; const y = seed % 1152
+    ctx.fillStyle = i % 2 ? "#fff6da13" : "#494c3c12"; ctx.fillRect(x, y, 1.5, 1.5)
+  }
+  const texture = new THREE.CanvasTexture(canvas)
+  texture.colorSpace = THREE.SRGBColorSpace
+  texture.anisotropy = 8
+  const plate = mesh(new THREE.PlaneGeometry(16, 12), new THREE.MeshStandardMaterial({ map: texture, roughness: 1 }), 0, 0.01, 0, false)
+  plate.rotation.x = -Math.PI / 2
+  city.add(plate)
 
   const placeLandmark = (id: BuildingId) => {
     const meta = CAMPUS_BUILDINGS.find((b) => b.id === id)!
@@ -74,8 +95,8 @@ export function buildCampusWorld(root: THREE.Group) {
 
   CAMPUS_BUILDINGS.forEach((b) => placeLandmark(b.id))
 
-  // Sparse, pointed cypress silhouettes frame the architecture.
-  ;[[-5.4, 2.4], [-3.0, 3.5], [5.7, -2.3], [3.0, -3.1]].forEach(([x, z], i) => {
+  // Nine irregular live-oak canopies gather at courts and building edges.
+  ;[[-5.8, 2.4], [-3.0, 3.5], [5.7, -2.3], [3.0, -3.1], [-6, -3.8], [-5.4, 4.2], [0.7, -4.1], [5.9, 4.2], [-0.9, 0.9]].forEach(([x, z], i) => {
     city.add(toyTree(x, z, i * 3))
   })
   city.add(bench(lambert(C.creamDeep), -1.3, 1.45, 0))

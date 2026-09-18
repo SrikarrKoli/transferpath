@@ -311,25 +311,25 @@ export function hedge(w: number, h: number, d: number, x: number, z: number, mat
 }
 
 export function toyTree(x: number, z: number, seed: number) {
-  // Three authored silhouettes with scale/rotation jitter — no identical conical rows.
   const g = new THREE.Group()
-  const trunkMat = lambert(C.trunk)
-  const greens = [C.canopyA, C.canopyB, C.canopyC, C.canopyD]
-  const canopyMat = lambert(greens[seed % greens.length])
-  const accent = lambert(greens[(seed + 2) % greens.length])
-  const scale = 0.78 + (seed % 7) * 0.055
-  const trunkH = 0.34 + (seed % 4) * 0.05
-  g.add(mesh(new THREE.CylinderGeometry(0.034, 0.055, trunkH, 7), trunkMat, 0, trunkH / 2, 0, false))
-  const crown = mesh(new THREE.ConeGeometry(0.3, 1.18, 7), canopyMat, 0, trunkH + 0.38, 0)
-  crown.scale.set(0.85, 1.05, 0.72)
-  crown.rotation.y = seed * 0.3
-  g.add(crown)
-  g.add(mesh(new THREE.ConeGeometry(0.18, 0.72, 5), accent, 0.09, trunkH + 0.36, 0.04))
-  g.scale.setScalar(scale)
+  const bark = hold(C.trunk)
+  const greens = [0x56684a, 0x73805b, 0x465f4f, 0x87906a]
+  const trunk = mesh(new THREE.CylinderGeometry(0.045, 0.08, 1.05, 6), bark, 0, 0.52, 0)
+  trunk.rotation.z = 0.12
+  g.add(trunk)
+  for (let i = 0; i < 5; i++) {
+    const angle = i * 2.4 + seed
+    const branch = mesh(new THREE.CylinderGeometry(0.018, 0.035, 0.65, 5), bark, Math.cos(angle) * 0.16, 0.95, Math.sin(angle) * 0.16)
+    branch.rotation.z = Math.cos(angle) * 0.8
+    branch.rotation.x = Math.sin(angle) * 0.8
+    g.add(branch)
+    const crown = mesh(new THREE.IcosahedronGeometry(0.48, 1), hold(greens[(seed + i) % 4]), Math.cos(angle) * 0.36, 1.18 + (i % 3) * 0.16, Math.sin(angle) * 0.3)
+    crown.scale.set(1.1, 0.6 + i * 0.05, 0.82)
+    crown.rotation.set(i * 0.3, seed, i * 0.5)
+    g.add(crown)
+  }
+  g.scale.setScalar(0.8 + (seed % 4) * 0.09)
   g.position.set(x, 0, z)
-  g.rotation.y = seed * 0.41 + 0.15
-  g.rotation.z = ((seed % 5) - 2) * 0.015
-  blobShadow(g, 0.34, 0.28, 0.22)
   return g
 }
 

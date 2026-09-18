@@ -8,14 +8,12 @@ import {
   balcony,
   blobShadow,
   clockFaces,
-  column,
   flat,
   masonry,
   gableRoof,
   hold,
   hipRoof,
   mesh,
-  pediment,
   rbox,
   steps,
   umbrella,
@@ -99,11 +97,9 @@ export function buildClockTower() {
   g.add(mesh(new THREE.CylinderGeometry(0.16, 0.24, 0.27, 12), gold, 0, 4.84, 0))
   // Off-center stair buttress breaks the perfectly extruded shaft.
   g.add(rbox(0.33, 2.65, 0.42, stoneDeep, -0.55, 1.65, -0.23, 0.008))
-  const roof = mesh(new THREE.ConeGeometry(0.94, 0.8, 4), navy, 0, 5.47, 0)
-  roof.rotation.y = Math.PI / 4
-  g.add(roof)
-  g.add(mesh(new THREE.SphereGeometry(0.11, 14, 12), gold, 0, 5.94, 0))
-  g.add(mesh(new THREE.CylinderGeometry(0.02, 0.02, 0.34, 8), trim, 0, 6.14, 0, false))
+  // Horizontal bronze crown and exposed bell: a civic campanile, not a spire.
+  g.add(rbox(1.65, 0.12, 1.55, gold, 0.12, 5.13, 0, 0))
+  g.add(rbox(1.34, 0.08, 1.3, navy, 0.12, 5.23, 0, 0))
 
   g.add(steps(0.85, 0.48, stoneDeep, 0.92))
   g.add(door(flat(C.navySoft), 0, 0.48, 0.58, 0.28, 0.52))
@@ -142,7 +138,7 @@ export function buildCounselorHall() {
 
   g.add(rbox(1.05, 0.1, 0.62, trim, -0.2, 1.08, 0.82, 0.02, false))
   for (let i = 0; i < 5; i++) {
-    g.add(rbox(0.2, 0.08, 0.58, i % 2 ? trim : navy, -0.6 + i * 0.2, 1.14, 0.84, 0.01, false))
+    g.add(rbox(0.2, 0.08, 0.58, navy, -0.6 + i * 0.2, 1.14, 0.84, 0.01, false))
   }
   g.add(door(navy, -0.2, 0.48, 0.78, 0.3, 0.55))
   g.add(steps(1.05, 0.48, flat(C.stone), 1.12))
@@ -155,100 +151,51 @@ export function buildCounselorHall() {
 /** 03 — colonnaded reading hall: the map silhouette must earn "Library". */
 export function buildLibrary() {
   const g = new THREE.Group()
-  const body = masonry(0xe4d8bb)
-  const copper = hold(C.navySoft)
+  const stone = masonry(0xded4bb)
   const trim = hold(C.trim)
-  const glass = hold(0x263e48, { metalness: 0.45, roughness: 0.2 })
-  const navy = hold(C.navy)
-  const stone = hold(C.stone)
-  const reading = masonry(0xe4d8bb)
-
-  // Deep reading hall mass
-  g.add(rbox(2.85, 1.95, 1.85, body, 0, 0.98, -0.08, 0.008))
-  g.add(gableRoof(3.05, 2.0, 0.82, copper, 1.95))
-  g.add(rbox(2.95, 0.1, 1.95, trim, 0, 1.98, -0.08, 0.02, false))
-
-  // Side reading wing with tall glass
-  g.add(rbox(1.35, 1.55, 1.55, reading, 1.85, 0.78, 0.15, 0.008))
-  g.add(rbox(1.22, 1.15, 0.08, glass, 1.85, 0.85, 0.95, 0.02, false))
-  g.add(rbox(1.52, 0.1, 1.72, navy, 1.85, 1.61, 0.15, 0.008))
-  // A long northlight breaks the copper roof plane; offset archive chimney.
-  g.add(rbox(1.95, 0.32, 0.46, glass, -0.25, 2.65, -0.2, 0.006))
-  g.add(rbox(2.05, 0.08, 0.56, trim, -0.25, 2.85, -0.2, 0.006))
-  for (const x of [-1.05, -0.65, -0.25, 0.15, 0.55]) {
-    g.add(rbox(0.04, 0.33, 0.48, trim, x, 2.65, -0.2, 0))
+  const metal = hold(0x47645d, { metalness: 0.65, roughness: 0.38 })
+  const glass = hold(0x42656c, { metalness: 0.55, roughness: 0.16 })
+  // Offset archive tower anchors a long, glazed reading room.
+  g.add(rbox(0.85, 2.8, 1.95, stone, -1.12, 1.4, -0.12, 0))
+  g.add(rbox(0.96, 0.1, 2.07, metal, -1.12, 2.85, -0.12, 0))
+  g.add(rbox(2.7, 1.55, 1.85, stone, 0.62, 0.775, 0, 0))
+  g.add(rbox(2.55, 1.23, 0.07, glass, 0.64, 0.87, 0.95, 0))
+  for (let i = 0; i < 8; i++) {
+    g.add(rbox(0.055, 1.4, 0.16, trim, -0.55 + i * 0.34, 0.84, 1.01, 0))
+    g.add(rbox(0.23, 0.06, 0.28, metal, -0.55 + i * 0.34, 0.5, 1.02, 0))
   }
-  g.add(rbox(0.34, 1.1, 0.42, stone, -1.18, 2.53, -0.62, 0.006))
-  g.add(rbox(0.44, 0.1, 0.52, trim, -1.18, 3.12, -0.62, 0.006))
-
-  // Visible shelf rails and book spines in the glazed reading wing.
-  for (const y of [0.48, 0.83, 1.18]) {
-    g.add(rbox(1.16, 0.045, 0.07, trim, 1.85, y, 1.005, 0, false))
-    for (let i = 0; i < 9; i++) {
-      g.add(rbox(0.065, 0.21 + (i % 3) * 0.025, 0.035, i % 2 ? copper : body, 1.34 + i * 0.125, y + 0.14, 1.015, 0, false))
-    }
+  // Three rising northlight folds, continuous with the bronze roof.
+  for (let i = 0; i < 3; i++) {
+    const roof = rbox(0.96, 0.09, 2.08, metal, -0.28 + i * 0.88, 1.82, 0, 0)
+    roof.rotation.z = 0.24
+    g.add(roof)
+    g.add(rbox(0.07, 0.36, 1.9, glass, 0.16 + i * 0.88, 1.7, 0, 0))
   }
-
-  // Tall arched window wall behind the colonnade
-  for (let i = 0; i < 6; i++) {
-    const x = -1.15 + i * 0.46
-    g.add(rbox(0.28, 1.55, 0.07, glass, x, 1.05, 0.88, 0.02, false))
-    g.add(rbox(0.34, 0.08, 0.08, trim, x, 1.85, 0.9, 0.01, false))
-  }
-
-  // Full south colonnade — six columns under a pediment (earns the name).
-  const colXs = [-1.15, -0.69, -0.23, 0.23, 0.69, 1.15]
-  colXs.forEach((x) => g.add(column(1.65, trim, x, 1.32, 0.08)))
-  g.add(rbox(2.65, 0.14, 0.55, stone, 0, 1.78, 1.32, 0.02))
-  g.add(pediment(2.95, 0.6, 0.22, body, 1.85, 1.32))
-  g.add(rbox(2.55, 0.08, 0.72, stone, 0, 0.08, 1.05, 0.02, false))
-
-  g.add(door(navy, 0, 0.55, 0.95, 0.34, 0.62))
-  g.add(steps(1.35, 0.58, stone, 1.35))
-  blobShadow(g, 1.95, 1.45, 0.62)
+  g.add(rbox(0.12, 1.9, 0.06, glass, -1.18, 1.65, 0.88, 0))
+  g.add(rbox(1.15, 0.09, 0.65, metal, -0.85, 1.04, 1.12, 0))
+  g.add(door(glass, -0.9, 0.44, 0.9, 0.43, 0.86))
+  g.add(steps(1.1, 0.35, stone, 1.23))
   return g
 }
 
 /** 04 — long academic bar, brick water table, terracotta gable, bell. */
 export function buildClassrooms() {
   const g = new THREE.Group()
-  const body = hold(0xf2e6ce)
-  const brick = masonry(0x96735f, true)
-  const roof = hold(C.navySoft)
-  const glass = hold(0x263e48, { metalness: 0.45, roughness: 0.2 })
-  const frame = hold(C.trim)
-  const navy = hold(C.navy)
-
-  g.add(rbox(3.85, 1.18, 1.22, body, 0, 0.59, 0, 0.006))
-  g.add(rbox(3.92, 0.22, 1.28, brick, 0, 0.12, 0, 0.03, false))
-  g.add(gableRoof(3.95, 1.32, 0.55, roof, 1.18))
-  // Irregular bay rhythm — break the copy-paste window grid.
-  const classBays = [-1.58, -1.12, -0.58, -0.12, 0.42, 0.88, 1.28]
-  classBays.forEach((x, i) => {
-    const tall = i === 2 || i === 5
-    const pw = tall ? 0.2 : 0.16
-    const ph = tall ? 0.26 : 0.2
-    const fw = tall ? 0.26 : 0.22
-    g.add(rbox(fw, 0.28, 0.06, frame, x, 0.52, 0.64, 0.015, false))
-    g.add(rbox(pw, ph, 0.05, glass, x, 0.52, 0.67, 0.01, false))
-    if (i !== 3) {
-      // Skip one upper pane for facade irregularity.
-      g.add(rbox(fw, 0.28, 0.06, frame, x, 0.92, 0.64, 0.015, false))
-      g.add(rbox(pw, ph * 0.92, 0.05, glass, x, 0.92, 0.67, 0.01, false))
-    }
-  })
-  // Slight roof dormer so the bar isn't a flat stamp.
-  g.add(rbox(0.42, 0.28, 0.35, body, -0.85, 1.35, 0.15, 0.01))
-  g.add(gableRoof(0.48, 0.4, 0.22, roof, 1.48))
-
-  g.add(rbox(1.15, 1.15, 1.35, brick, 1.55, 0.58, 0.85, 0.006))
-  g.add(gableRoof(1.22, 1.42, 0.42, navy, 1.15))
-  g.add(mesh(new THREE.CylinderGeometry(0.16, 0.18, 0.28, 12), brick, 1.55, 1.48, 0.85, false))
-  g.add(mesh(new THREE.SphereGeometry(0.2, 12, 10), navy, 1.55, 1.72, 0.85))
-  g.add(mesh(new THREE.CylinderGeometry(0.03, 0.03, 0.18, 8), flat(C.gold), 1.55, 1.92, 0.85, false))
-  g.add(door(navy, 1.55, 0.42, 1.54, 0.26, 0.48))
-  g.add(steps(0.7, 0.35, flat(C.stone), 1.72))
-  blobShadow(g, 2.35, 1.15, 0.4)
+  const brick = masonry(0x9d6049, true)
+  const stone = masonry(0xded4bb)
+  const roof = hold(0x47645d, { metalness: 0.6, roughness: 0.4 })
+  const glass = hold(0x42656c, { metalness: 0.5, roughness: 0.2 })
+  // Long teaching bar with a single sloped roof and a solid lecture end wall.
+  g.add(rbox(3.75, 1.3, 1.35, brick, 0, 0.65, 0, 0))
+  const canopy = rbox(4.04, 0.1, 1.65, roof, 0, 1.57, 0, 0)
+  canopy.rotation.x = -0.2
+  g.add(canopy)
+  g.add(rbox(0.65, 1.95, 1.55, stone, -1.6, 0.975, 0, 0))
+  for (let i = 0; i < 7; i++) {
+    g.add(rbox(0.31, 0.8, 0.05, glass, -1.03 + i * 0.44, 0.81, 0.7, 0))
+    g.add(rbox(0.065, 1.25, 0.25, stone, -1.25 + i * 0.44, 0.65, 0.76, 0))
+  }
+  g.add(rbox(1.2, 0.08, 0.6, roof, 0.9, 1.05, 1, 0))
   return g
 }
 
@@ -297,7 +244,8 @@ export function buildDorms() {
     const w = new THREE.Group()
     const h = 2.15 + hBoost
     w.add(rbox(1.55, h, 1.05, brick, 0, h / 2, 0, 0.006))
-    w.add(gableRoof(1.65, 1.15, 0.48, roof, h))
+    w.add(rbox(1.65, 0.13, 1.15, roof, 0, h + 0.06, 0, 0))
+    w.add(rbox(0.4, 0.38, 0.65, brick, -0.5, h + 0.2, -0.15, 0))
     w.add(rbox(1.58, 0.08, 1.08, brickDeep, 0, 0.78, 0, 0.02, false))
     w.add(rbox(1.58, 0.08, 1.08, brickDeep, 0, 1.48, 0, 0.02, false))
     windowGrid(w, {
@@ -329,10 +277,10 @@ export function buildDorms() {
     w.rotation.y = rotY
     g.add(w)
   }
-  wing(-0.95, 0.4, 0, 4, 2, -0.35)
+  wing(-0.95, 0.4, 0, 4, 2, 0.65)
   wing(0.95, -0.15, 0, 3, 5, 0.1)
   g.add(rbox(1.15, 1.55, 0.85, brick, 0, 0.78, -0.55, 0.006))
-  g.add(hipRoof(1.25, 0.95, 0.38, roof, 1.55))
+  g.add(rbox(1.25, 0.12, 0.95, roof, 0, 1.6, -0.55, 0))
   g.add(door(flat(C.navy), 0, 0.45, 0.0, 0.28, 0.5))
   g.add(rbox(1.35, 0.08, 1.15, flat(C.stone), 0, 0.04, 0.55, 0.03, false))
   g.add(rbox(0.85, 0.42, 0.18, flat(C.hedge), 0, 0.22, 0.85, 0.06, false))
@@ -370,7 +318,6 @@ export function buildUnion() {
   const body = masonry(0x96735f, true)
   const cream = hold(C.cream)
   const roof = hold(C.navySoft)
-  const stripeA = hold(C.trim)
   const stripeB = hold(C.navy)
 
   g.add(rbox(2.25, 1.28, 1.65, body, 0, 0.64, 0, 0.008))
@@ -388,7 +335,7 @@ export function buildUnion() {
 
 
   for (let i = 0; i < 6; i++) {
-    g.add(rbox(0.3, 0.1, 0.68, i % 2 ? stripeA : stripeB, -0.75 + i * 0.3, 1.08, 0.92, 0.01, false))
+    g.add(rbox(0.3, 0.1, 0.68, stripeB, -0.75 + i * 0.3, 1.08, 0.92, 0.01, false))
   }
 
   g.add(rbox(0.28, 0.72, 0.28, flat(C.navy), -0.85, 1.72, -0.15, 0.02))
