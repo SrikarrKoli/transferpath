@@ -56,6 +56,24 @@ export function buildCampusWorld(root: THREE.Group) {
   const texture = new THREE.CanvasTexture(canvas)
   texture.colorSpace = THREE.SRGBColorSpace
   texture.anisotropy = 8
+  // Continue the paving texture beyond the campus court to every viewport edge.
+  const paving = document.createElement("canvas")
+  paving.width = paving.height = 512
+  const pavingContext = paving.getContext("2d")!
+  pavingContext.fillStyle = "#b6b29b"
+  pavingContext.fillRect(0, 0, 512, 512)
+  pavingContext.strokeStyle = "#8b86682b"
+  pavingContext.lineWidth = 1
+  for (let i = 0; i <= 512; i += 32) {
+    pavingContext.beginPath(); pavingContext.moveTo(i, 0); pavingContext.lineTo(i, 512); pavingContext.stroke()
+    pavingContext.beginPath(); pavingContext.moveTo(0, i); pavingContext.lineTo(512, i); pavingContext.stroke()
+  }
+  const surrounding = new THREE.CanvasTexture(paving)
+  surrounding.colorSpace = THREE.SRGBColorSpace
+  surrounding.anisotropy = 8
+  surrounding.wrapS = surrounding.wrapT = THREE.RepeatWrapping
+  surrounding.repeat.set(33.75, 33.75)
+  ground.material = new THREE.MeshStandardMaterial({ map: surrounding, color: 0xd0c8b5, roughness: 1 })
   const plate = mesh(new THREE.PlaneGeometry(16, 12), new THREE.MeshStandardMaterial({ map: texture, roughness: 1 }), 0, 0.01, 0, false)
   plate.rotation.x = -Math.PI / 2
   city.add(plate)
@@ -65,7 +83,7 @@ export function buildCampusWorld(root: THREE.Group) {
     const g = new THREE.Group()
     g.position.set(meta.x, 0, meta.z)
     const hall = buildLandmark(id)
-    if (id === "library") hall.scale.set(1.04, 1.15, 1.04)
+    if (id === "library") hall.scale.set(1, 1, 1)
     else if (id === "dorm") hall.scale.y = 0.8
     else if (id === "gym") hall.scale.y = 0.8
     else if (id !== "quad") hall.scale.y = 0.9
@@ -85,6 +103,19 @@ export function buildCampusWorld(root: THREE.Group) {
     )
     hit.position.copy(center)
     g.userData.footprint = { x: center.x, z: center.z, width: size.x + 0.45, depth: size.z + 0.45 }
+    const footprint = g.userData.footprint
+    const halo = new THREE.Group()
+    const bronze = new THREE.MeshBasicMaterial({ color: 0xb48b47, transparent: true, opacity: 0.95 })
+    const w = footprint.width, d = footprint.depth
+    for (const z of [-d / 2, d / 2]) halo.add(mesh(new THREE.BoxGeometry(w, 0.025, 0.065), bronze, 0, 0, z, false))
+    for (const x of [-w / 2, w / 2]) halo.add(mesh(new THREE.BoxGeometry(0.065, 0.025, d), bronze, x, 0, 0, false))
+    const wash = mesh(new THREE.PlaneGeometry(w, d), new THREE.MeshBasicMaterial({ color: 0xffcf77, transparent: true, opacity: 0.20, depthWrite: false }), 0, -0.01, 0, false)
+    wash.rotation.x = -Math.PI / 2
+    halo.add(wash)
+    halo.position.set(meta.x + center.x, 0.045, meta.z + center.z)
+    halo.visible = false
+    city.add(halo)
+    g.userData.halo = halo
     hit.userData.buildingId = id
     hit.userData.isHitVolume = true
     g.add(hit)
@@ -95,9 +126,9 @@ export function buildCampusWorld(root: THREE.Group) {
 
   CAMPUS_BUILDINGS.forEach((b) => placeLandmark(b.id))
 
-  // Nine irregular live-oak canopies gather at courts and building edges.
-  ;[[-5.8, 2.4], [-3.0, 3.5], [5.7, -2.3], [3.0, -3.1], [-6, -3.8], [-5.4, 4.2], [0.7, -4.1], [5.9, 4.2], [-0.9, 0.9]].forEach(([x, z], i) => {
-    city.add(toyTree(x, z, i * 3))
+  // Seven individually varied angular live oaks.
+  ;[[-5.8, 2.8], [-3.0, 3.8], [5.7, -2.3], [-6, -3.8], [-0.3, -4.6], [5.9, 4.2], [3.1, -3.8]].forEach(([x, z], i) => {
+    city.add(toyTree(x, z, i))
   })
   city.add(bench(lambert(C.creamDeep), -1.3, 1.45, 0))
   city.add(bench(lambert(C.creamDeep), 1.3, 1.45, 0))

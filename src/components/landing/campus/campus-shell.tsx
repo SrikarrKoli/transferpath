@@ -117,7 +117,7 @@ export function CampusShell() {
         <p className="mt-7 text-[10px] font-medium uppercase tracking-[0.14em] text-[#1a2332]/36">
           Directory
         </p>
-        <p className="mt-1 text-[11px] text-[#1a2332]/55">New here? Start with Counselor Hall.</p>
+
         <ul className="campus-directory-list mt-2 -mx-1 min-h-0 flex-1 overflow-auto">
           {["counselor", "quad", "library", "classroom", "registrar", "dorm", "gym", "union"].map((id) => CAMPUS_BUILDINGS.find((b) => b.id === id)!).map((b) => {
             const on = selected === b.id
@@ -243,7 +243,7 @@ export function CampusShell() {
             <Link className="campus-dock-enter" href={campusEnterHref(dock, sessionState === "member" ? "member" : "guest")}>Enter <span aria-hidden="true">↗</span></Link>
 
           </section>
-        ) : <div className="campus-map-footnote"><span>Select a building to begin ↗</span></div>}
+        ) : <div className="campus-map-footnote"><span>Choose a building. Find your next step. ↗</span></div>}
 
       </div>
 

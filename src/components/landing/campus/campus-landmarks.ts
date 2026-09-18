@@ -4,7 +4,6 @@ import * as THREE from "three"
 import type { BuildingId } from "./campus-data"
 import {
   C,
-  arcade,
   balcony,
   blobShadow,
   clockFaces,
@@ -45,65 +44,28 @@ export function buildClockTower() {
   const glass = hold(0x263e48, { metalness: 0.45, roughness: 0.2 })
   const trim = hold(C.trim)
 
-  // Broad plinth so the tower sits like a campus landmark, not a stick.
-  g.add(rbox(1.55, 0.24, 1.55, stoneDeep, 0, 0.12, 0, 0.01, false))
-  g.add(rbox(1.28, 0.14, 1.28, stone, 0, 0.28, 0, 0.008, false))
-
-  // Slender shaft — landmark proportion (taller, tighter than a hall block).
-  g.add(rbox(0.92, 3.15, 0.92, stone, 0, 1.9, 0, 0.006))
-  for (let i = 0; i < 5; i++) {
-    const y = 0.62 + i * 0.58
-    g.add(rbox(0.98, 0.06, 0.98, stoneDeep, 0, y, 0, 0.02, false))
+  // A narrow brick campanile with continuous vertical reveals and an open bell loggia.
+  g.add(rbox(1.12, 0.16, 1.12, stoneDeep, 0, 0.08, 0, 0))
+  g.add(rbox(0.74, 3.85, 0.74, stone, 0, 2.04, 0, 0))
+  for (const x of [-0.31, 0.31]) {
+    g.add(rbox(0.065, 3.8, 0.055, stoneDeep, x, 2.05, 0.39, 0))
+    g.add(rbox(0.055, 3.8, 0.065, stoneDeep, 0.39, 2.05, x, 0))
   }
-  windowGrid(g, {
-    cols: 1,
-    rows: 5,
-    wallW: 0.42,
-    wallH: 2.55,
-    face: "south",
-    y0: 0.52,
-    glass,
-    inset: 0.48,
-    jitter: 1,
-  })
-  windowGrid(g, {
-    cols: 1,
-    rows: 5,
-    wallW: 0.42,
-    wallH: 2.55,
-    face: "east",
-    y0: 0.52,
-    glass,
-    inset: 0.48,
-    jitter: 4,
-  })
-
-  // Clock lantern — wider than the shaft so dials are the silhouette cue.
-  g.add(rbox(1.42, 1.12, 1.42, stone, 0, 3.95, 0, 0.006))
-  g.add(rbox(1.36, 0.08, 1.36, trim, 0, 3.42, 0, 0.02, false))
-  g.add(rbox(1.36, 0.08, 1.36, trim, 0, 4.48, 0, 0.02, false))
-  arcade(g, { bays: 3, span: 1.05, z: 0.66, y: 3.72, glass })
-  arcade(g, { bays: 3, span: 1.05, z: -0.66, y: 3.72, glass })
-
-  const faces = clockFaces(0.54, 0.75)
-  faces.position.y = 3.98
+  g.add(rbox(0.13, 2.25, 0.03, glass, 0, 2.1, 0.385, 0))
+  g.add(rbox(0.03, 2.25, 0.13, glass, 0.385, 2.1, 0, 0))
+  g.add(rbox(0.95, 0.94, 0.95, stoneDeep, 0, 4.2, 0, 0))
+  const faces = clockFaces(0.39, 0.486)
+  faces.position.y = 4.22
   g.add(faces)
-
-  // Open bronze belfry between the pale dial box and slate cap.
-  g.add(rbox(1.16, 0.12, 1.16, navy, 0, 4.58, 0, 0.01))
-  for (const x of [-0.48, 0.48]) for (const z of [-0.48, 0.48]) {
-    g.add(rbox(0.09, 0.48, 0.09, gold, x, 4.83, z, 0))
+  g.add(rbox(1.02, 0.075, 1.02, trim, 0, 4.7, 0, 0))
+  for (const x of [-0.36, 0.36]) for (const z of [-0.36, 0.36]) {
+    g.add(rbox(0.10, 0.66, 0.10, stone, x, 5.04, z, 0))
   }
-  g.add(mesh(new THREE.CylinderGeometry(0.16, 0.24, 0.27, 12), gold, 0, 4.84, 0))
-  // Off-center stair buttress breaks the perfectly extruded shaft.
-  g.add(rbox(0.33, 2.65, 0.42, stoneDeep, -0.55, 1.65, -0.23, 0.008))
-  // Horizontal bronze crown and exposed bell: a civic campanile, not a spire.
-  g.add(rbox(1.65, 0.12, 1.55, gold, 0.12, 5.13, 0, 0))
-  g.add(rbox(1.34, 0.08, 1.3, navy, 0.12, 5.23, 0, 0))
-
-  g.add(steps(0.85, 0.48, stoneDeep, 0.92))
-  g.add(door(flat(C.navySoft), 0, 0.48, 0.58, 0.28, 0.52))
-  blobShadow(g, 1.15, 1.1, 0.62)
+  g.add(mesh(new THREE.CylinderGeometry(0.12, 0.22, 0.29, 12), gold, 0, 4.99, 0))
+  g.add(rbox(1.08, 0.10, 1.08, navy, 0, 5.4, 0, 0))
+  g.add(rbox(0.95, 0.035, 0.95, gold, 0, 5.47, 0, 0))
+  g.add(door(navy, 0, 0.44, 0.385, 0.25, 0.56))
+  g.add(steps(0.72, 0.42, stoneDeep, 0.64))
   return g
 }
 
@@ -148,33 +110,35 @@ export function buildCounselorHall() {
   return g
 }
 
-/** 03 — colonnaded reading hall: the map silhouette must earn "Library". */
+/** 03 — limestone reading hall, raised clerestory and offset archive wing. */
 export function buildLibrary() {
   const g = new THREE.Group()
   const stone = masonry(0xded4bb)
   const trim = hold(C.trim)
-  const metal = hold(0x47645d, { metalness: 0.65, roughness: 0.38 })
-  const glass = hold(0x42656c, { metalness: 0.55, roughness: 0.16 })
-  // Offset archive tower anchors a long, glazed reading room.
-  g.add(rbox(0.85, 2.8, 1.95, stone, -1.12, 1.4, -0.12, 0))
-  g.add(rbox(0.96, 0.1, 2.07, metal, -1.12, 2.85, -0.12, 0))
-  g.add(rbox(2.7, 1.55, 1.85, stone, 0.62, 0.775, 0, 0))
-  g.add(rbox(2.55, 1.23, 0.07, glass, 0.64, 0.87, 0.95, 0))
-  for (let i = 0; i < 8; i++) {
-    g.add(rbox(0.055, 1.4, 0.16, trim, -0.55 + i * 0.34, 0.84, 1.01, 0))
-    g.add(rbox(0.23, 0.06, 0.28, metal, -0.55 + i * 0.34, 0.5, 1.02, 0))
-  }
-  // Three rising northlight folds, continuous with the bronze roof.
-  for (let i = 0; i < 3; i++) {
-    const roof = rbox(0.96, 0.09, 2.08, metal, -0.28 + i * 0.88, 1.82, 0, 0)
-    roof.rotation.z = 0.24
-    g.add(roof)
-    g.add(rbox(0.07, 0.36, 1.9, glass, 0.16 + i * 0.88, 1.7, 0, 0))
-  }
-  g.add(rbox(0.12, 1.9, 0.06, glass, -1.18, 1.65, 0.88, 0))
-  g.add(rbox(1.15, 0.09, 0.65, metal, -0.85, 1.04, 1.12, 0))
-  g.add(door(glass, -0.9, 0.44, 0.9, 0.43, 0.86))
-  g.add(steps(1.1, 0.35, stone, 1.23))
+  const roof = hold(0x41565a)
+  const glass = hold(0x42616a, { metalness: 0.25, roughness: 0.4 })
+  // Low horizontal reading room; glazing is inset, without a temple colonnade.
+  g.add(rbox(3.8, 0.95, 1.55, stone, 0, 0.475, 0, 0))
+  g.add(rbox(3.25, 0.53, 0.04, glass, 0.1, 0.60, 0.79, 0))
+  for (let i = 0; i < 10; i++)
+    g.add(rbox(0.025, 0.53, 0.045, trim, -1.48 + i * 0.35, 0.60, 0.815, 0))
+  g.add(rbox(4.02, 0.10, 1.76, roof, 0, 1.01, 0, 0))
+  // A single long clerestory floats above the broad slate eaves.
+  g.add(rbox(2.95, 0.37, 0.72, glass, 0.2, 1.22, -0.15, 0))
+  for (let i = 0; i < 9; i++)
+    g.add(rbox(0.035, 0.37, 0.76, trim, -1.2 + i * 0.35, 1.22, -0.15, 0))
+  g.add(rbox(3.18, 0.08, 0.96, roof, 0.2, 1.44, -0.15, 0))
+  // Asymmetric solid archive wing projects into the rear court.
+  g.add(rbox(0.98, 1.85, 2.2, stone, -1.48, 0.925, -0.63, 0))
+  g.add(rbox(1.08, 0.08, 2.3, roof, -1.48, 1.89, -0.63, 0))
+  g.add(rbox(0.48, 0.07, 1.55, trim, -1.48, 1.96, -0.63, 0))
+  for (const x of [-1.72, -1.38])
+    g.add(rbox(0.095, 1.06, 0.035, glass, x, 1.16, 0.49, 0))
+  g.add(rbox(0.66, 0.72, 0.05, glass, 1.38, 0.40, 0.81, 0))
+  g.add(rbox(1.05, 0.065, 0.52, roof, 1.38, 0.89, 1, 0))
+  const entrySteps = steps(1.05, 0.46, stone, 1.1)
+  entrySteps.position.x = 1.35
+  g.add(entrySteps)
   return g
 }
 
@@ -183,7 +147,7 @@ export function buildClassrooms() {
   const g = new THREE.Group()
   const brick = masonry(0x9d6049, true)
   const stone = masonry(0xded4bb)
-  const roof = hold(0x47645d, { metalness: 0.6, roughness: 0.4 })
+  const roof = hold(C.navySoft)
   const glass = hold(0x42656c, { metalness: 0.5, roughness: 0.2 })
   // Long teaching bar with a single sloped roof and a solid lecture end wall.
   g.add(rbox(3.75, 1.3, 1.35, brick, 0, 0.65, 0, 0))

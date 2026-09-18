@@ -313,22 +313,45 @@ export function hedge(w: number, h: number, d: number, x: number, z: number, mat
 export function toyTree(x: number, z: number, seed: number) {
   const g = new THREE.Group()
   const bark = hold(C.trunk)
-  const greens = [0x56684a, 0x73805b, 0x465f4f, 0x87906a]
-  const trunk = mesh(new THREE.CylinderGeometry(0.045, 0.08, 1.05, 6), bark, 0, 0.52, 0)
-  trunk.rotation.z = 0.12
+  const variants = [
+    [[-0.82,-0.24],[-0.48,-0.57],[0.14,-0.48],[0.66,-0.16],[0.81,0.21],[0.26,0.48],[-0.39,0.35]],
+    [[-0.48,-0.31],[-0.15,-0.61],[0.33,-0.35],[0.51,0.14],[0.14,0.6],[-0.33,0.29]],
+    [[-0.74,-0.16],[-0.2,-0.42],[0.41,-0.5],[0.69,0.02],[0.35,0.38],[-0.1,0.28],[-0.64,0.45]],
+  ]
+  const outline = variants[seed % 3]
+  const trunk = mesh(new THREE.CylinderGeometry(0.035, 0.075, 1.25, 5), bark, 0, 0.62, 0)
+  trunk.rotation.z = -0.15
   g.add(trunk)
-  for (let i = 0; i < 5; i++) {
-    const angle = i * 2.4 + seed
-    const branch = mesh(new THREE.CylinderGeometry(0.018, 0.035, 0.65, 5), bark, Math.cos(angle) * 0.16, 0.95, Math.sin(angle) * 0.16)
-    branch.rotation.z = Math.cos(angle) * 0.8
-    branch.rotation.x = Math.sin(angle) * 0.8
+  // Hand-drawn angular canopy: broad folded planes, never spheres or sphere clusters.
+  const vertices: number[] = []
+  const top = [0.12, 1.92 + (seed % 3) * 0.12, -0.08]
+  const bottom = [-0.08, 1.16, 0.06]
+  outline.forEach(([px, pz], i) => {
+    const next = outline[(i + 1) % outline.length]
+    const y = 1.48 + (i % 3) * 0.12
+    const ny = 1.48 + ((i + 1) % outline.length % 3) * 0.12
+    vertices.push(...top, px, y, pz, next[0], ny, next[1])
+    vertices.push(...bottom, next[0], ny, next[1], px, y, pz)
+  })
+  const geo = new THREE.BufferGeometry()
+  geo.setAttribute("position", new THREE.Float32BufferAttribute(vertices, 3))
+  geo.computeVertexNormals()
+  const canopy = mesh(geo, hold([0x65764b, 0x7b8150, 0x526b56][seed % 3], { side: THREE.DoubleSide, flatShading: true }), 0, 0, 0)
+  g.add(canopy)
+  const sideCrown = new THREE.Mesh(geo, hold([0x718058, 0x85865d, 0x607558][seed % 3], { side: THREE.DoubleSide, flatShading: true }))
+  sideCrown.scale.set(0.72, 0.68, 0.8)
+  sideCrown.rotation.y = 1.4
+  sideCrown.position.set(-0.42, 0.34, 0.12)
+  sideCrown.castShadow = true
+  sideCrown.receiveShadow = true
+  g.add(sideCrown)
+  for (const direction of [-1, 1]) {
+    const branch = mesh(new THREE.CylinderGeometry(0.022, 0.045, 0.68, 5), bark, direction * 0.18, 1.1, 0.04)
+    branch.rotation.z = direction * -0.65
     g.add(branch)
-    const crown = mesh(new THREE.IcosahedronGeometry(0.48, 1), hold(greens[(seed + i) % 4]), Math.cos(angle) * 0.36, 1.18 + (i % 3) * 0.16, Math.sin(angle) * 0.3)
-    crown.scale.set(1.1, 0.6 + i * 0.05, 0.82)
-    crown.rotation.set(i * 0.3, seed, i * 0.5)
-    g.add(crown)
   }
-  g.scale.setScalar(0.8 + (seed % 4) * 0.09)
+  g.rotation.y = seed * 1.7
+  g.scale.setScalar(0.83 + (seed % 4) * 0.08)
   g.position.set(x, 0, z)
   return g
 }

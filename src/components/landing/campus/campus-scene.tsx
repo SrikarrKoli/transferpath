@@ -86,6 +86,8 @@ export function CampusScene({ selected, hovered, focusToken, onHover, onSelect, 
     const rim = new THREE.DirectionalLight(0xfff7ee, 0.1)
     rim.position.set(4, 12, 18)
     scene.add(rim)
+    const selectionLight = new THREE.SpotLight(0xffd59c, 75, 16, 0.40, 0.75, 2)
+    scene.add(selectionLight, selectionLight.target)
     const root = new THREE.Group()
     scene.add(root)
 
@@ -108,8 +110,8 @@ export function CampusScene({ selected, hovered, focusToken, onHover, onSelect, 
     const focusBuilding = (id: BuildingId) => {
       const b = CAMPUS_BUILDINGS.find((x) => x.id === id)
       if (!b) return
-      lookGoal.set(b.x * 0.18, 0.65, b.z * 0.18 + 0.6)
-      radiusGoal.v = 21
+      lookGoal.set(b.x * 0.64, 0.9, b.z * 0.64 + 0.25)
+      radiusGoal.v = 18.4
     }
 
     const raycaster = new THREE.Raycaster()
@@ -220,7 +222,7 @@ export function CampusScene({ selected, hovered, focusToken, onHover, onSelect, 
       if (!mat?.color?.isColor) return
       if (!mat.userData._baseColor?.isColor) mat.userData._baseColor = mat.color.clone()
       const base = mat.userData._baseColor as THREE.Color
-      mat.color.copy(base).multiplyScalar(mode === "dim" ? 0.82 : 1)
+      mat.color.copy(base).multiplyScalar(mode === "dim" ? 0.72 : 1)
       if (mode === "focus") mat.color.multiplyScalar(1.04)
       if (mode === "hover") mat.color.offsetHSL(0, 0, 0.035)
       if (!mat.emissive?.isColor) return
@@ -230,7 +232,7 @@ export function CampusScene({ selected, hovered, focusToken, onHover, onSelect, 
       }
       mat.emissive.copy(mat.userData._baseEmissive)
       mat.emissiveIntensity = mat.userData._baseIntensity ?? 0
-      if (mode === "dim") mat.emissiveIntensity *= 0.82
+      if (mode === "dim") mat.emissiveIntensity *= 0.72
       if (mode === "focus") { mat.emissive.setHex(0xffc77e); mat.emissiveIntensity = 0.025 }
     }
 
@@ -264,6 +266,12 @@ export function CampusScene({ selected, hovered, focusToken, onHover, onSelect, 
       }
 
       const hasSelection = !!selectedRef.current
+      selectionLight.visible = hasSelection
+      const active = CAMPUS_BUILDINGS.find((b) => b.id === selectedRef.current)
+      if (active) {
+        selectionLight.position.set(active.x - 2, 8, active.z + 3)
+        selectionLight.target.position.set(active.x, 1, active.z)
+      }
       for (const [id, g] of meshById) {
         const isSelected = selectedRef.current === id
         const isHovered = hoveredRef.current === id
@@ -274,7 +282,8 @@ export function CampusScene({ selected, hovered, focusToken, onHover, onSelect, 
             : isHovered
               ? "hover"
               : "idle"
-        const lift = isSelected ? 0.06 : isHovered && !hasSelection ? 0.1 : 0
+        const lift = isSelected ? 0.48 : isHovered && !hasSelection ? 0.1 : 0
+        ;(g.userData.halo as THREE.Group).visible = isSelected
         g.position.y = THREE.MathUtils.lerp(g.position.y, lift, ease)
         if (Math.abs(g.position.y - lift) < 0.001) g.position.y = lift
         g.traverse((c) => {
