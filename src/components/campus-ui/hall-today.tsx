@@ -125,14 +125,7 @@ export function HallToday({ data, userId }: { data: OverviewData; userId: string
                     </span>
                   ) : null}
                 </p>
-              ) : (
-                <p className="hall-hero-date">
-                  Now
-                  <span className="mt-2 block text-[0.28em] font-normal tracking-normal text-[color:var(--hall-stone)]">
-                    Up next
-                  </span>
-                </p>
-              )}
+              ) : null}
               <h2 className="hall-hero-title">{next.title}</h2>
               {next.dueDetail ? (
                 <p className="hall-urgent mt-3 text-[0.95rem]">{next.dueDetail}</p>
