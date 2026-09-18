@@ -30,7 +30,7 @@ export const PIN_Y: Record<BuildingId, number> = {
   library: 3.35,
   classroom: 2.28,
   registrar: 2.72,
-  dorm: 2.72,
+  dorm: 3.35,
   gym: 2.18,
   union: 2.32,
 }
@@ -93,11 +93,19 @@ export function buildClockTower() {
   faces.position.y = 3.98
   g.add(faces)
 
-  const roof = mesh(new THREE.ConeGeometry(1.02, 1.22, 4), navy, 0, 5.15, 0)
+  // Open bronze belfry between the pale dial box and slate cap.
+  g.add(rbox(1.16, 0.12, 1.16, navy, 0, 4.58, 0, 0.01))
+  for (const x of [-0.48, 0.48]) for (const z of [-0.48, 0.48]) {
+    g.add(rbox(0.09, 0.48, 0.09, gold, x, 4.83, z, 0))
+  }
+  g.add(mesh(new THREE.CylinderGeometry(0.16, 0.24, 0.27, 12), gold, 0, 4.84, 0))
+  // Off-center stair buttress breaks the perfectly extruded shaft.
+  g.add(rbox(0.33, 2.65, 0.42, stoneDeep, -0.55, 1.65, -0.23, 0.008))
+  const roof = mesh(new THREE.ConeGeometry(0.94, 0.8, 4), navy, 0, 5.47, 0)
   roof.rotation.y = Math.PI / 4
   g.add(roof)
-  g.add(mesh(new THREE.SphereGeometry(0.11, 14, 12), gold, 0, 5.85, 0))
-  g.add(mesh(new THREE.CylinderGeometry(0.02, 0.02, 0.34, 8), trim, 0, 6.05, 0, false))
+  g.add(mesh(new THREE.SphereGeometry(0.11, 14, 12), gold, 0, 5.94, 0))
+  g.add(mesh(new THREE.CylinderGeometry(0.02, 0.02, 0.34, 8), trim, 0, 6.14, 0, false))
 
   g.add(steps(0.85, 0.48, stoneDeep, 0.92))
   g.add(door(flat(C.navySoft), 0, 0.48, 0.58, 0.28, 0.52))
@@ -163,22 +171,25 @@ export function buildLibrary() {
   const glass = flat(0x243448)
   const navy = hold(C.navy)
   const stone = hold(C.stone)
-  const reading = hold(0x4e8fa8)
+  const reading = hold(0x587c78)
 
   // Deep reading hall mass
   g.add(rbox(2.85, 1.95, 1.85, body, 0, 0.98, -0.08, 0.008))
   g.add(gableRoof(3.05, 2.0, 0.82, copper, 1.95))
   g.add(rbox(2.95, 0.1, 1.95, trim, 0, 1.98, -0.08, 0.02, false))
 
-  // Clerestory cupola — scholarly vertical cue
-  g.add(rbox(0.72, 0.62, 0.72, body, 0, 2.35, -0.08, 0.006))
-  g.add(hipRoof(0.82, 0.82, 0.32, copper, 2.68))
-  g.add(mesh(new THREE.SphereGeometry(0.11, 12, 10), flat(C.gold), 0, 2.95, -0.08, false))
-
   // Side reading wing with tall glass
   g.add(rbox(1.35, 1.55, 1.55, reading, 1.85, 0.78, 0.15, 0.008))
   g.add(rbox(1.22, 1.15, 0.08, glass, 1.85, 0.85, 0.95, 0.02, false))
-  g.add(hipRoof(1.48, 1.65, 0.4, copper, 1.58))
+  g.add(rbox(1.52, 0.1, 1.72, navy, 1.85, 1.61, 0.15, 0.008))
+  // A long northlight breaks the copper roof plane; offset archive chimney.
+  g.add(rbox(1.95, 0.32, 0.46, glass, -0.25, 2.65, -0.2, 0.006))
+  g.add(rbox(2.05, 0.08, 0.56, trim, -0.25, 2.85, -0.2, 0.006))
+  for (const x of [-1.05, -0.65, -0.25, 0.15, 0.55]) {
+    g.add(rbox(0.04, 0.33, 0.48, trim, x, 2.65, -0.2, 0))
+  }
+  g.add(rbox(0.34, 1.1, 0.42, stone, -1.18, 2.53, -0.62, 0.006))
+  g.add(rbox(0.44, 0.1, 0.52, trim, -1.18, 3.12, -0.62, 0.006))
 
   // Visible shelf rails and book spines in the glazed reading wing.
   for (const y of [0.48, 0.83, 1.18]) {
@@ -278,9 +289,11 @@ export function buildRegistrar() {
   g.add(mesh(new THREE.CylinderGeometry(0.04, 0.04, 0.22, 8), navy, 0, 2.32, 0, false))
   g.add(mesh(new THREE.SphereGeometry(0.07, 10, 8), flat(C.gold), 0, 2.46, 0, false))
 
-  ;[-0.55, -0.18, 0.18, 0.55].forEach((x) => g.add(column(1.22, trim, x, 0.98, 0.12)))
-  g.add(rbox(1.55, 0.12, 0.55, trim, 0, 1.42, 0.98, 0.02))
-  g.add(pediment(1.62, 0.52, 0.16, navy, 1.48, 1.18))
+  // Civic canopy and stone fins instead of a second temple facade.
+  g.add(rbox(1.65, 0.12, 0.65, navy, 0, 1.25, 1.02, 0.008))
+  for (const x of [-0.72, 0.72]) g.add(rbox(0.16, 1.2, 0.32, trim, x, 0.6, 1.06, 0.006))
+  g.add(rbox(0.62, 1.95, 1.2, trim, 1.22, 0.98, -0.22, 0.006))
+  g.add(rbox(0.66, 0.09, 1.24, navy, 1.22, 2, -0.22, 0.006))
   g.add(door(navy, 0, 0.5, 0.8, 0.3, 0.55))
   g.add(steps(1.2, 0.5, flat(C.stone), 1.18))
   g.add(facadePlaque(5, 0.78, 0.82, 0.8))
@@ -334,7 +347,7 @@ export function buildDorms() {
     g.add(w)
   }
   wing(-0.95, 0.15, 0, 4, 2, 0)
-  wing(0.95, 0.15, 0, 3, 5, 0.12)
+  wing(0.95, 0.15, 0, 3, 5, 0.62)
   g.add(rbox(1.15, 1.55, 0.85, brick, 0, 0.78, -0.55, 0.006))
   g.add(hipRoof(1.25, 0.95, 0.38, roof, 1.55))
   g.add(door(flat(C.navy), 0, 0.45, 0.0, 0.28, 0.5))
@@ -357,6 +370,12 @@ export function buildRecCenter() {
 
   g.add(rbox(2.55, 1.05, 1.72, body, 0, 0.52, 0, 0.006))
   g.add(barrelVault(2.55, 0.88, vault, 1.05, true))
+  // Exposed pale ribs articulate the long-span roof from the map camera.
+  for (const x of [-1.15, -0.57, 0, 0.57, 1.15]) {
+    const rib = mesh(new THREE.TorusGeometry(0.89, 0.025, 5, 24, Math.PI), hold(C.creamDeep), x, 1.05, 0)
+    rib.rotation.y = Math.PI / 2
+    g.add(rib)
+  }
   for (let i = 0; i < 3; i++) {
     g.add(rbox(0.62, 0.72, 0.07, glass, -0.72 + i * 0.72, 0.58, 0.88, 0.02, false))
   }
@@ -407,7 +426,6 @@ export function buildUnion() {
   g.add(hipRoof(0.7, 0.7, 0.3, flat(C.terracottaDeep), 0.78))
   g.add(umbrella(0.55, 1.55, 0xf7f2e8, 1.05))
   g.add(umbrella(-0.15, 1.75, 0x2c3d55, 1.0))
-  g.add(umbrella(0.95, 1.85, 0xc45c3a, 0.95))
   g.add(facadePlaque(8, -0.88, 0.58, 0.86))
   blobShadow(g, 1.65, 1.55, 0.4)
   return g

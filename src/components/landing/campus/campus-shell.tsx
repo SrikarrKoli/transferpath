@@ -18,6 +18,17 @@ const CampusScene = dynamic(() => import("./campus-scene").then((m) => m.CampusS
   ),
 })
 
+const LANDING_JOBS: Record<BuildingId, string> = {
+  quad: "Track application dates.",
+  counselor: "Set your transfer starting point.",
+  library: "Draft your transfer essays.",
+  classroom: "Plan courses term by term.",
+  registrar: "Review credits and GPA requirements.",
+  dorm: "Keep personal tasks in order.",
+  gym: "Review your path readiness.",
+  union: "See progress and next actions.",
+}
+
 export function CampusShell() {
   const router = useRouter()
   const plaqueRef = useRef<HTMLDivElement>(null)
@@ -146,11 +157,6 @@ export function CampusShell() {
           })}
         </ul>
 
-        <p className="pt-4 text-[11.5px] leading-snug text-[#1a2332]/55">
-          {sessionState === "member"
-            ? "Signed in — pick a building to continue."
-            : "Click to select. Double-click or press Enter to go inside."}
-        </p>
       </aside>
 
       <div className="campus-map-stage relative min-w-0 flex-1">
@@ -165,7 +171,7 @@ export function CampusShell() {
         />
 
         <div className="campus-map-topbar hidden lg:flex">
-          <span className="mr-auto text-[11px] uppercase tracking-[0.13em]">Campus directory <span className="ml-4 normal-case tracking-normal opacity-55">Eight places. One transfer path.</span></span>
+          <span className="mr-auto text-[11px] uppercase tracking-[0.13em]">TransferPath campus</span>
           {sessionState === "member" ? (
             <Link
               href="/dashboard"
@@ -235,28 +241,24 @@ export function CampusShell() {
         {dock ? (
           <>
             <svg className="campus-tether" aria-hidden="true">
-              <path ref={leaderRef} fill="none" stroke="#86694c" strokeWidth="1.5" />
-              <circle ref={markerRef} r="4" fill="#f4efe6" stroke="#86694c" strokeWidth="1.5" />
+              <path ref={leaderRef} fill="none" stroke="#5c645e" strokeWidth="1" />
+              <circle ref={markerRef} r="4" fill="#f4efe6" stroke="#5c645e" strokeWidth="1" />
             </svg>
             <div ref={plaqueRef} className="campus-plaque" aria-labelledby="campus-plaque-title">
             <div>
-              <div className="h-[2px] bg-[#95734e]" aria-hidden />
               <div className="flex flex-col gap-3 px-4 py-4">
                 <div className="min-w-0 flex-1">
-                  <p className="text-[11px] font-medium text-[#1a2332]/45">
-                    {dock.feature}
-                  </p>
                   <h2 id="campus-plaque-title" className="mt-1 font-[family-name:var(--font-fraunces)] text-xl font-semibold tracking-[-0.01em] text-[#1a2332] sm:text-[1.35rem]">
                     {dock.name}
                   </h2>
-                  <p className="mt-1.5 max-w-md text-[13px] leading-relaxed text-[#1a2332]/70">{dock.blurb}</p>
+                  <p className="mt-1.5 max-w-md text-[13px] leading-relaxed text-[#1a2332]/70">{LANDING_JOBS[dock.id]}</p>
                 </div>
                 <div className="flex shrink-0 gap-2">
                   <Link
                     href={campusEnterHref(dock, sessionState === "member" ? "member" : "guest")}
                     className="bg-[#1a2332] px-4 py-2.5 text-center text-[13px] font-medium text-[#f4efe6] hover:bg-[#1a2332]/90"
                   >
-                    {dock.cta}
+                    Enter →
                   </Link>
                   <button
                     type="button"

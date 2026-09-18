@@ -51,7 +51,7 @@ export function CampusScene({ selected, hovered, focusToken, onHover, onSelect, 
     renderer = new THREE.WebGLRenderer({ antialias: true, alpha: false, powerPreference: "high-performance" })
     renderer.setPixelRatio(Math.min(window.devicePixelRatio || 1, 1.5))
     renderer.setSize(w0, h0)
-    renderer.setClearColor(0xc5d4c0, 1)
+    renderer.setClearColor(0xc4c0ab, 1)
     renderer.shadowMap.enabled = true
     renderer.shadowMap.type = THREE.PCFShadowMap
     renderer.outputColorSpace = THREE.SRGBColorSpace
@@ -60,7 +60,7 @@ export function CampusScene({ selected, hovered, focusToken, onHover, onSelect, 
     mount.appendChild(renderer.domElement)
 
     const scene = new THREE.Scene()
-    scene.fog = new THREE.Fog(0xc5d4c0, 52, 90)
+    scene.fog = new THREE.Fog(0xc4c0ab, 52, 90)
     pmrem = new THREE.PMREMGenerator(renderer)
     scene.environment = pmrem.fromScene(new RoomEnvironment(), 0.08).texture
 
@@ -135,35 +135,24 @@ export function CampusScene({ selected, hovered, focusToken, onHover, onSelect, 
     let meshById = new Map<BuildingId, THREE.Group>()
     const selectionHalo = new THREE.Group()
     selectionHalo.visible = false
-    // Ground-embedded ink+gold mark — reads as plaza inlay, not floating UI glow.
-    const discMat = new THREE.MeshBasicMaterial({
-      color: 0x1a2332,
-      transparent: true,
-      opacity: 0.28,
-      depthWrite: false,
-    })
-    const outerMat = new THREE.MeshBasicMaterial({
-      color: 0x1a2332,
-      transparent: true,
-      opacity: 0.92,
-      depthWrite: false,
-    })
-    const innerMat = new THREE.MeshBasicMaterial({
-      color: 0xe8c46a,
-      transparent: true,
-      opacity: 0.88,
-      depthWrite: false,
-    })
-    const disc = new THREE.Mesh(new THREE.CircleGeometry(1.05, 64), discMat)
-    disc.rotation.x = -Math.PI / 2
-    disc.position.y = 0.048
-    const outerRing = new THREE.Mesh(new THREE.RingGeometry(0.92, 1.18, 64), outerMat)
-    outerRing.rotation.x = -Math.PI / 2
-    outerRing.position.y = 0.055
-    const innerRing = new THREE.Mesh(new THREE.RingGeometry(0.78, 0.92, 64), innerMat)
-    innerRing.rotation.x = -Math.PI / 2
-    innerRing.position.y = 0.062
-    selectionHalo.add(disc, outerRing, innerRing)
+    // One architectural ground inlay, sized to each landmark's footprint.
+    const haloMat = new THREE.MeshBasicMaterial({ color: 0xf1e2bc, transparent: true, opacity: 0.7, depthWrite: false })
+    const haloShape = new THREE.Shape()
+    haloShape.moveTo(-0.5, -0.5)
+    haloShape.lineTo(0.5, -0.5)
+    haloShape.lineTo(0.5, 0.5)
+    haloShape.lineTo(-0.5, 0.5)
+    haloShape.closePath()
+    const cutout = new THREE.Path()
+    cutout.moveTo(-0.47, -0.47)
+    cutout.lineTo(-0.47, 0.47)
+    cutout.lineTo(0.47, 0.47)
+    cutout.lineTo(0.47, -0.47)
+    cutout.closePath()
+    haloShape.holes.push(cutout)
+    const inlay = new THREE.Mesh(new THREE.ShapeGeometry(haloShape), haloMat)
+    inlay.rotation.x = -Math.PI / 2
+    selectionHalo.add(inlay)
     root.add(selectionHalo)
     let people: THREE.Group[] = []
     let water: THREE.Object3D | undefined
@@ -248,8 +237,10 @@ export function CampusScene({ selected, hovered, focusToken, onHover, onSelect, 
       const id = pick()
       if (id) onEnterRef.current(id)
     }
+    const onLeave = () => onHoverRef.current(null)
     const onContext = (e: Event) => e.preventDefault()
 
+    mount.addEventListener("pointerleave", onLeave)
     mount.addEventListener("pointermove", onMove)
     mount.addEventListener("pointerdown", onDown)
     mount.addEventListener("pointerup", onUp)
@@ -276,11 +267,10 @@ export function CampusScene({ selected, hovered, focusToken, onHover, onSelect, 
         mat.customProgramCacheKey = () => "campus-selection-dim-v1"
         mat.needsUpdate = true
       }
-      mat.userData.campusDim.value = mode === "dim" ? 0.55 : 1
+      mat.userData.campusDim.value = mode === "dim" ? 0.34 : 1
       if (!mat.userData._baseColor?.isColor) mat.userData._baseColor = mat.color.clone()
       const base = mat.userData._baseColor as THREE.Color
       mat.color.copy(base)
-      if (mode === "dim") mat.color.multiplyScalar(0.34)
       if (mode === "focus") mat.color.offsetHSL(0, 0, 0.055)
       if (mode === "hover") mat.color.offsetHSL(0, 0, 0.035)
       if (!mat.emissive?.isColor) return
@@ -334,13 +324,8 @@ export function CampusScene({ selected, hovered, focusToken, onHover, onSelect, 
           const footprint = g.userData.footprint as { x: number; z: number; width: number; depth: number }
           selectionHalo.position.x += footprint.x
           selectionHalo.position.z += footprint.z
-          selectionHalo.scale.set(footprint.width / 1.8, 1, footprint.depth / 1.8)
-          // Quiet pulse — mark stays ground-seated.
-          const pulse = 0.92 + Math.sin(performance.now() * 0.0024) * 0.05
-          discMat.opacity = 0.22 + pulse * 0.06
-          outerMat.opacity = 0.75 + pulse * 0.15
-          innerMat.opacity = 0.8 + pulse * 0.1
-          selectGlow.intensity = 0.85 + Math.sin(performance.now() * 0.0024) * 0.15
+          selectionHalo.scale.set(footprint.width, 1, footprint.depth)
+          selectGlow.intensity = 0.85
           selectGlow.position.set(g.position.x, 0.28 + g.position.y, g.position.z)
         } else {
           selectionHalo.visible = false
@@ -367,18 +352,7 @@ export function CampusScene({ selected, hovered, focusToken, onHover, onSelect, 
             const mats = Array.isArray(material) ? material : [material]
             mats.forEach((m) => tintMaterial(m, mode))
           }
-          if (c.userData.isPinSprite && c instanceof THREE.Sprite) {
-            const mat = c.material as THREE.SpriteMaterial
-            const on = isSelected || isHovered
-            const next = on ? c.userData.texActive : c.userData.texIdle
-            if (next && mat.map !== next) {
-              mat.map = next
-              mat.needsUpdate = true
-            }
-            c.scale.set(on ? 0.48 : 0.36, on ? 0.28 : 0.22, 1)
-            mat.opacity = on ? 0.98 : 0.0
-            c.visible = on
-          }
+
         })
       }
 
@@ -434,6 +408,7 @@ export function CampusScene({ selected, hovered, focusToken, onHover, onSelect, 
       cancelled = true
       cancelAnimationFrame(raf)
       window.removeEventListener("resize", onResize)
+      mount.removeEventListener("pointerleave", onLeave)
       mount.removeEventListener("pointermove", onMove)
       mount.removeEventListener("pointerdown", onDown)
       mount.removeEventListener("pointerup", onUp)
@@ -449,14 +424,13 @@ export function CampusScene({ selected, hovered, focusToken, onHover, onSelect, 
   return (
     <div className="absolute inset-0">
       <div ref={mountRef} className="absolute inset-0 touch-none" />
-      {!status && CAMPUS_BUILDINGS.map((building, index) => (
+      {!status && CAMPUS_BUILDINGS.filter((building) => building.id === (selected ?? hovered)).map((building) => (
         <button
           key={building.id}
           ref={(node) => { if (node) labelRefs.current.set(building.id, node); else labelRefs.current.delete(building.id) }}
           type="button"
           className="campus-map-label"
           data-selected={selected === building.id}
-          data-muted={!!selected && selected !== building.id}
           data-hovered={hovered === building.id}
           aria-pressed={selected === building.id}
           onClick={() => onSelect(building.id)}
@@ -465,8 +439,7 @@ export function CampusScene({ selected, hovered, focusToken, onHover, onSelect, 
           onMouseEnter={() => onHover(building.id)}
           onMouseLeave={() => onHover(null)}
         >
-          <span>{String(index + 1).padStart(2, "0")} · {building.name}</span>
-          {selected === building.id && <small>{building.feature}</small>}
+          <span>{building.name}</span>
         </button>
       ))}
       {status ? (

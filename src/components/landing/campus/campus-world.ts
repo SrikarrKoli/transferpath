@@ -7,7 +7,7 @@
 
 import * as THREE from "three"
 import { CAMPUS_BUILDINGS, type BuildingId } from "./campus-data"
-import { buildLandmark, PIN_Y } from "./campus-landmarks"
+import { buildLandmark } from "./campus-landmarks"
 import {
   C,
   bench,
@@ -17,7 +17,6 @@ import {
   kiosk,
   lambert,
   mesh,
-  numberPin,
   rbox,
   toyTree,
 } from "./campus-kit"
@@ -55,7 +54,7 @@ export function buildCampusWorld(root: THREE.Group, lib: KitLibrary) {
   }
 
   // Lambert on the plate so sun shadows seat instead of floating over unlit Basic mats.
-  const grassMat = lambert(0x7d896f, { emissive: new THREE.Color(0x7d896f), emissiveIntensity: 0.12 })
+  const grassMat = lambert(0xa3a38b, { emissive: new THREE.Color(0xa3a38b), emissiveIntensity: 0.12 })
   const sandMat = lambert(0xe4d8bd, { emissive: new THREE.Color(0xe4d8bd), emissiveIntensity: 0.1 })
   const pierMat = lambert(0xc5b69b)
   const plazaMat = lambert(0xf2ede2, { emissive: new THREE.Color(0xf2ede2), emissiveIntensity: 0.14 })
@@ -71,7 +70,7 @@ export function buildCampusWorld(root: THREE.Group, lib: KitLibrary) {
   ground.receiveShadow = true
   root.add(ground)
   // A broad, continuous stone campus foundation seats the streets and buildings.
-  const plate = rbox(14.4, 0.09, 11.4, lambert(0xb6b59b), 0, -0.025, 0.8, 0.4, false)
+  const plate = rbox(21, 0.06, 17, lambert(0xb6b59b), 0, -0.025, 0.8, 0.4, false)
   plate.receiveShadow = true
   root.add(plate)
   const approach = mesh(new THREE.PlaneGeometry(16, 3.8), sandMat, -10, 0.005, 2.5, false)
@@ -165,10 +164,6 @@ export function buildCampusWorld(root: THREE.Group, lib: KitLibrary) {
     hit.userData.buildingId = id
     hit.userData.isHitVolume = true
     g.add(hit)
-    const index = CAMPUS_BUILDINGS.findIndex((b) => b.id === id)
-    const pin = numberPin(index + 1, id)
-    pin.position.set(0, PIN_Y[id], 0)
-    g.add(pin)
     city.add(g)
     meshById.set(id, g)
     occupyBox(g)
@@ -252,9 +247,8 @@ export function buildCampusWorld(root: THREE.Group, lib: KitLibrary) {
     [-2.95, -1.65, 13],
     [5.45, 2.75, 11],
     [-5.45, 2.25, 3],
-    [-4.95, 0.05, 21],
     [5.05, -3.15, 15],
-    [-2.85, 3.25, 20],
+    [-2.85, 3.25, 19],
   ]
   trees.forEach(([x, z, seed]) => {
     if (occupied.has(keyOf(x, z))) return
@@ -264,8 +258,8 @@ export function buildCampusWorld(root: THREE.Group, lib: KitLibrary) {
   })
 
   const clusters: [number, number, number][] = [
-    [-5.15, 3.35, 41],
-    [4.75, -3.45, 44],
+    [-5.15, 3.35, 40],
+    [4.75, -3.45, 43],
   ]
   clusters.forEach(([x, z, seed]) => {
     if (occupied.has(keyOf(x, z)) || reserved.has(keyOf(x, z))) return
@@ -309,8 +303,6 @@ export function buildCampusWorld(root: THREE.Group, lib: KitLibrary) {
     [-3.55, 1.65],
     [-4.15, 1.75],
     [-3.75, 2.05],
-    [-4.45, 1.45],
-    [-3.35, 1.35],
   ].forEach(([x, z]) => cafeTable(x, z))
 
   const garden = (x: number, z: number, w: number, d: number) => {
@@ -377,20 +369,6 @@ export function buildCampusWorld(root: THREE.Group, lib: KitLibrary) {
     p.userData.phase = i * 0.55
     city.add(p)
     people.push(p)
-  })
-
-  const pawnColors = [0x2c3d55, 0xc45c3a, 0xf4ead6, 0x5a8f78, 0xb86b52, 0x3d516c]
-  walk.forEach((w, i) => {
-    if (i % 4 !== 0) return
-    const pawn = new THREE.Group()
-    const shirt = lambert(pawnColors[i % pawnColors.length])
-    pawn.add(mesh(new THREE.CylinderGeometry(0.14, 0.16, 0.44, 8), shirt, 0, 0.3, 0))
-    pawn.add(mesh(new THREE.SphereGeometry(0.13, 10, 8), flat(0xf0d2b4), 0, 0.6, 0))
-    pawn.position.set(w.x + 0.35, 0, w.z - 0.2)
-    pawn.userData.home = { x: w.x + 0.35, z: w.z - 0.2 }
-    pawn.userData.phase = i * 0.7 + 1
-    city.add(pawn)
-    people.push(pawn)
   })
 
   return { meshById, people }
