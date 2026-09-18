@@ -4,7 +4,6 @@ import { useEffect, useRef, useState } from "react"
 import * as THREE from "three"
 import { RoomEnvironment } from "three/addons/environments/RoomEnvironment.js"
 import { CAMPUS_BUILDINGS, type BuildingId } from "./campus-data"
-import { loadCampusLibrary } from "./campus-models"
 import { buildCampusWorld } from "./campus-world"
 
 type Props = {
@@ -71,13 +70,13 @@ export function CampusScene({ selected, hovered, focusToken, onHover, onSelect, 
     const sun = new THREE.DirectionalLight(0xffe4bc, 2.4)
     sun.position.set(-9, 15, 8)
     sun.castShadow = true
-    sun.shadow.mapSize.set(1024, 1024)
+    sun.shadow.mapSize.set(2048, 2048)
     sun.shadow.camera.left = -11
     sun.shadow.camera.right = 11
     sun.shadow.camera.top = 11
     sun.shadow.camera.bottom = -11
     sun.shadow.bias = -0.00012
-    sun.shadow.normalBias = 0.035
+    sun.shadow.normalBias = 0.018
     sun.shadow.radius = 2
     sun.shadow.camera.far = 50
     scene.add(sun)
@@ -234,7 +233,7 @@ export function CampusScene({ selected, hovered, focusToken, onHover, onSelect, 
         mat.customProgramCacheKey = () => "campus-selection-dim-v1"
         mat.needsUpdate = true
       }
-      mat.userData.campusDim.value = mode === "dim" ? 0.34 : 1
+      mat.userData.campusDim.value = mode === "dim" ? 0.30 : 1
       if (!mat.userData._baseColor?.isColor) mat.userData._baseColor = mat.color.clone()
       const base = mat.userData._baseColor as THREE.Color
       mat.color.copy(base)
@@ -247,8 +246,8 @@ export function CampusScene({ selected, hovered, focusToken, onHover, onSelect, 
       }
       mat.emissive.copy(mat.userData._baseEmissive)
       mat.emissiveIntensity = mat.userData._baseIntensity ?? 0
-      if (mode === "dim") mat.emissiveIntensity *= 0.34
-      if (mode === "focus") { mat.emissive.setHex(0xe3d6b8); mat.emissiveIntensity = 0.065 }
+      if (mode === "dim") mat.emissiveIntensity *= 0.30
+      if (mode === "focus") { mat.emissive.setHex(0xe3d6b8); mat.emissiveIntensity = 0.14 }
     }
 
     const t0 = performance.now()
@@ -291,7 +290,7 @@ export function CampusScene({ selected, hovered, focusToken, onHover, onSelect, 
             : isHovered
               ? "hover"
               : "idle"
-        const lift = isSelected ? 0.12 : isHovered && !hasSelection ? 0.1 : 0
+        const lift = isSelected ? 0.18 : isHovered && !hasSelection ? 0.1 : 0
         g.position.y = THREE.MathUtils.lerp(g.position.y, lift, ease)
         if (Math.abs(g.position.y - lift) < 0.001) g.position.y = lift
         g.traverse((c) => {
@@ -317,11 +316,7 @@ export function CampusScene({ selected, hovered, focusToken, onHover, onSelect, 
 
     ;(async () => {
       try {
-        const lib = await loadCampusLibrary((done, total) => {
-          if (!cancelled) setStatus(`Loading city ${done}/${total}`)
-        })
-        if (cancelled) return
-        const built = buildCampusWorld(root, lib)
+        const built = buildCampusWorld(root)
         meshById = built.meshById
         for (const building of CAMPUS_BUILDINGS) {
           if (!meshById.has(building.id)) throw new Error(`Missing campus landmark: ${building.id}`)

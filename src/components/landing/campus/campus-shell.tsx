@@ -45,7 +45,7 @@ export function CampusShell() {
   const dock = CAMPUS_BUILDINGS.find((b) => b.id === selected)
 
   const selectBuilding = (id: BuildingId) => {
-    setSelected(id)
+    setSelected((current) => current === id ? null : id)
     setFocusToken((n) => n + 1)
   }
 
@@ -132,7 +132,7 @@ export function CampusShell() {
                   onKeyDown={(event) => { if (event.key === "Enter") { event.preventDefault(); enterBuilding(b.id) } }}
                   onMouseEnter={() => setHovered(b.id)}
                   onMouseLeave={() => setHovered(null)}
-                  className={`flex w-full items-baseline gap-2 border-b border-[#1a2332]/08 py-2 pl-2.5 pr-1 text-left transition-colors ${
+                  className={`flex w-full items-baseline gap-2 py-2 pl-2.5 pr-1 text-left transition-colors ${
                     on
                       ? "border-l-2 border-l-[#1a2332] bg-[rgba(26,35,50,0.03)] pl-2 font-semibold text-[#1a2332]"
                       : "border-l-2 border-l-transparent text-[#1a2332]/72 hover:bg-[rgba(26,35,50,0.025)]"
@@ -142,7 +142,7 @@ export function CampusShell() {
                     <span className={`block text-[13.5px] leading-tight ${on ? "font-semibold" : "font-medium"}`}>
                       {b.name}
                     </span>
-                    <span className="block text-[11.5px] font-normal text-[#1a2332]/42">{b.feature}</span>
+
                   </span>
                 </button>
               </li>
@@ -163,7 +163,7 @@ export function CampusShell() {
         />
 
         <div className="campus-map-topbar hidden lg:flex">
-          <span className="campus-frame-caption">A place for your next chapter.</span>
+
           {sessionState === "member" ? (
             <Link
               href="/dashboard"
@@ -222,7 +222,7 @@ export function CampusShell() {
                     on ? "bg-[#1a2332] text-[#f4efe6]" : "bg-[#f4efe6]/90 text-[#1a2332]/80"
                   }`}
                 >
-                  {b.short}
+                  {b.name}
                 </button>
               )
             })}
@@ -232,15 +232,15 @@ export function CampusShell() {
 
         {dock ? (
           <section className="campus-arrival-dock" aria-labelledby="campus-plaque-title">
-            <span className="campus-dock-number" aria-hidden="true">{String(CAMPUS_BUILDINGS.indexOf(dock) + 1).padStart(2, "0")}</span>
+
             <div className="campus-dock-copy">
               <h2 id="campus-plaque-title">{dock.name}</h2>
               <p>{LANDING_JOBS[dock.id]}</p>
             </div>
             <Link className="campus-dock-enter" href={campusEnterHref(dock, sessionState === "member" ? "member" : "guest")}>Enter <span aria-hidden="true">↗</span></Link>
-            <button className="campus-dock-close" aria-label="Return to campus overview" onClick={() => { setSelected(null); setFocusToken((n) => n + 1) }}>×</button>
+
           </section>
-        ) : <div className="campus-map-footnote"><span>Explore your campus</span><span>Select a building to begin ↗</span></div>}
+        ) : <div className="campus-map-footnote"><span>Select a building to begin ↗</span></div>}
 
       </div>
 

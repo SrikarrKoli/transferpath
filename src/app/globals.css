@@ -5237,20 +5237,15 @@ nextjs-portal,
 .campus-root .campus-directory h1 { margin-top: 22px; font-size: 27px; line-height: 1.08; letter-spacing: -.035em; }
 .campus-root .campus-directory-list { margin-top: 8px; }
 .campus-directory-section { margin: 13px 12px 5px; color: #877659; font-size: 10px; letter-spacing: .1em; text-transform: uppercase; }
-.campus-root .campus-directory-list button { border: 0; border-left: 3px solid transparent; padding: 7px 10px; margin: 2px 0; }
-.campus-root .campus-directory-list button[aria-pressed="true"] { border-left-color: #202b30; background: #faf5e9; color: #202b30; }
+.campus-root .campus-directory-list button { border: 0; border-left: 3px solid transparent; padding: 12px 10px; margin: 3px 0; }
+.campus-root .campus-directory-list button[aria-pressed="true"] { border-left-color: #202b30; background: #233037; color: #faf5e9; }
 .campus-root .campus-directory-list button[aria-pressed="true"] span span:first-child { font-weight: 750; }
-.campus-root .campus-directory-list button span span:last-child { font-size: 11px; color: #74756d; margin-top: 2px; }
-.campus-root .campus-map-topbar { background: transparent; border: 0; height: 66px; padding: 0 28px; }
-.campus-frame-caption { margin-right: auto; font-family: var(--font-fraunces), Georgia, serif; font-style: italic; font-size: 14px; color: #5a5c50; }
-.campus-arrival-dock { position: absolute; z-index: 30; bottom: 0; left: 28px; right: 28px; display: flex; align-items: center; gap: 22px; padding: 22px 24px; background: #f1ebdc; border-top: 2px solid #99815b; box-shadow: inset 0 5px 0 #e5ddcd; }
-.campus-dock-number { color: #978060; font-family: var(--font-fraunces), Georgia, serif; font-size: 34px; }
+.campus-root .campus-map-topbar { background: transparent; border: 0; height: 66px; padding: 0 28px; justify-content: flex-end; }
+.campus-arrival-dock { position: absolute; z-index: 30; bottom: 0; left: 28px; right: 28px; display: flex; align-items: center; gap: 22px; padding: 22px 24px; background: #f1ebdc; border-top: 2px solid #99815b;  }
 .campus-dock-copy { flex: 1; }
 .campus-dock-copy h2 { font-family: var(--font-fraunces), Georgia, serif; font-size: 24px; letter-spacing: -.025em; }
 .campus-dock-copy p { color: #686b61; font-size: 12px; margin-top: 3px; }
 .campus-dock-enter { background: #233037; color: #f6f0e2; padding: 12px 24px; font-size: 13px; }
 .campus-dock-enter span { margin-left: 20px; }
-.campus-dock-close { font-size: 24px; color: #767568; padding: 8px; }
-.campus-map-footnote { position: absolute; z-index: 2; bottom: 28px; left: 30px; right: 30px; display: flex; justify-content: space-between; color: #626456; font-size: 11px; }
-.campus-map-footnote span:first-child { font-family: var(--font-fraunces), Georgia, serif; font-size: 17px; font-style: italic; }
+.campus-map-footnote { position: absolute; z-index: 2; bottom: 28px; left: 30px; right: 30px; display: flex; justify-content: flex-end; color: #626456; font-size: 11px; }
 @media(max-width: 767px) { .campus-arrival-dock { left: 12px; right: 12px; padding: 16px 12px; gap: 12px; } .campus-dock-number { display: none; } .campus-dock-copy h2 { font-size: 20px; } .campus-dock-enter { padding: 12px; } .campus-dock-enter span { margin-left: 4px; } .campus-map-footnote { left: 16px; right: 16px; } }

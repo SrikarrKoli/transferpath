@@ -6,13 +6,10 @@ import {
   C,
   arcade,
   balcony,
-  barrelVault,
   blobShadow,
   clockFaces,
   column,
-  facadePlaque,
   flat,
-  lambert,
   masonry,
   gableRoof,
   hold,
@@ -110,17 +107,16 @@ export function buildClockTower() {
 
   g.add(steps(0.85, 0.48, stoneDeep, 0.92))
   g.add(door(flat(C.navySoft), 0, 0.48, 0.58, 0.28, 0.52))
-  g.add(facadePlaque(1, 0.42, 0.78, 0.58))
   blobShadow(g, 1.15, 1.1, 0.62)
   return g
 }
 
-/** 02 — salmon L-villa with corner turret. Not a temple, not a cream box. */
+/** 02 — brick L-plan hall with slate hipped roofs. */
 export function buildCounselorHall() {
   const g = new THREE.Group()
-  const body = hold(0xe07050)
-  const wing = hold(0xc45a3c)
-  const roof = hold(C.terracottaDeep)
+  const body = masonry(0x96735f, true)
+  const wing = masonry(0x96735f, true)
+  const roof = hold(C.navySoft)
   const trim = hold(C.trim)
   const glass = hold(0x263e48, { metalness: 0.45, roughness: 0.2 })
   const navy = hold(C.navy)
@@ -131,16 +127,10 @@ export function buildCounselorHall() {
   g.add(rbox(2.62, 0.07, 1.55, trim, -0.2, 1.3, 0, 0.02, false))
 
   g.add(rbox(1.18, 1.08, 2.05, wing, 1.28, 0.54, 0.28, 0.008))
-  g.add(hipRoof(1.32, 2.18, 0.48, roof, 1.08))
-
-  const turret = mesh(new THREE.CylinderGeometry(0.42, 0.46, 1.62, 14), body, 1.05, 0.81, -0.55)
-  g.add(turret)
-  g.add(mesh(new THREE.ConeGeometry(0.52, 0.62, 14), navy, 1.05, 1.92, -0.55))
-  g.add(mesh(new THREE.SphereGeometry(0.07, 10, 8), flat(C.gold), 1.05, 2.28, -0.55, false))
-  ;[0.55, 1.05].forEach((y) => {
-    const pane = mesh(new THREE.BoxGeometry(0.16, 0.22, 0.06), glass, 1.05, y, -0.12, false)
-    g.add(pane)
-  })
+  const wingRoof = hipRoof(1.32, 2.18, 0.48, roof, 1.08)
+  wingRoof.position.x = 1.28
+  wingRoof.position.z = 0.28
+  g.add(wingRoof)
 
   g.add(rbox(0.24, 0.62, 0.24, navy, -0.95, 1.72, -0.22, 0.02))
   g.add(rbox(0.3, 0.08, 0.3, trim, -0.95, 2.06, -0.22, 0.02, false))
@@ -158,7 +148,6 @@ export function buildCounselorHall() {
   g.add(steps(1.05, 0.48, flat(C.stone), 1.12))
   g.add(rbox(0.85, 0.22, 0.42, hedgeMat, 1.55, 0.12, 1.15, 0.06, false))
   g.add(rbox(0.55, 0.18, 0.55, hedgeMat, -1.15, 0.1, 0.85, 0.06, false))
-  g.add(facadePlaque(2, 1.28, 0.72, 1.32))
   blobShadow(g, 2.05, 1.35, 0.58)
   return g
 }
@@ -167,12 +156,12 @@ export function buildCounselorHall() {
 export function buildLibrary() {
   const g = new THREE.Group()
   const body = masonry(0xe4d8bb)
-  const copper = hold(0x384b50, { roughness: 0.68 })
+  const copper = hold(C.navySoft)
   const trim = hold(C.trim)
   const glass = hold(0x263e48, { metalness: 0.45, roughness: 0.2 })
   const navy = hold(C.navy)
   const stone = hold(C.stone)
-  const reading = hold(0x587c78)
+  const reading = masonry(0xe4d8bb)
 
   // Deep reading hall mass
   g.add(rbox(2.85, 1.95, 1.85, body, 0, 0.98, -0.08, 0.008))
@@ -216,7 +205,6 @@ export function buildLibrary() {
 
   g.add(door(navy, 0, 0.55, 0.95, 0.34, 0.62))
   g.add(steps(1.35, 0.58, stone, 1.35))
-  g.add(facadePlaque(3, 1.05, 0.78, 0.95))
   blobShadow(g, 1.95, 1.45, 0.62)
   return g
 }
@@ -226,7 +214,7 @@ export function buildClassrooms() {
   const g = new THREE.Group()
   const body = hold(0xf2e6ce)
   const brick = masonry(0x96735f, true)
-  const roof = hold(C.terracotta)
+  const roof = hold(C.navySoft)
   const glass = hold(0x263e48, { metalness: 0.45, roughness: 0.2 })
   const frame = hold(C.trim)
   const navy = hold(C.navy)
@@ -260,19 +248,17 @@ export function buildClassrooms() {
   g.add(mesh(new THREE.CylinderGeometry(0.03, 0.03, 0.18, 8), flat(C.gold), 1.55, 1.92, 0.85, false))
   g.add(door(navy, 1.55, 0.42, 1.54, 0.26, 0.48))
   g.add(steps(0.7, 0.35, flat(C.stone), 1.72))
-  g.add(facadePlaque(4, -1.7, 0.72, 0.64))
   blobShadow(g, 2.35, 1.15, 0.4)
   return g
 }
 
-/** 05 — civic records hall: steel-blue body, temple front, copper dome. */
+/** 05 — civic records hall: brick records hall with limestone fins and a slate roof. */
 export function buildRegistrar() {
   const g = new THREE.Group()
-  const body = hold(0x6e8fad)
+  const body = masonry(0x96735f, true)
   const trim = hold(C.trim)
   const glass = hold(0x263e48, { metalness: 0.45, roughness: 0.2 })
   const navy = hold(C.navy)
-  const dome = hold(0x3d7a5c)
 
   g.add(rbox(2.05, 1.58, 1.72, body, 0, 0.79, 0, 0.006))
   g.add(rbox(2.12, 0.1, 1.78, trim, 0, 1.6, 0, 0.02, false))
@@ -285,10 +271,7 @@ export function buildRegistrar() {
     g.add(rbox(i === 1 ? 0.28 : 0.22, 0.06, 0.07, trim, x, 0.55 + h + 0.04, 0.89, 0.01, false))
   })
 
-  g.add(mesh(new THREE.CylinderGeometry(0.42, 0.46, 0.32, 16), trim, 0, 1.82, 0, false))
-  g.add(mesh(new THREE.SphereGeometry(0.48, 16, 12, 0, Math.PI * 2, 0, Math.PI / 2), dome, 0, 1.98, 0))
-  g.add(mesh(new THREE.CylinderGeometry(0.04, 0.04, 0.22, 8), navy, 0, 2.32, 0, false))
-  g.add(mesh(new THREE.SphereGeometry(0.07, 10, 8), flat(C.gold), 0, 2.46, 0, false))
+  g.add(hipRoof(2.25, 1.9, 0.48, navy, 1.65))
 
   // Civic canopy and stone fins instead of a second temple facade.
   g.add(rbox(1.65, 0.12, 0.65, navy, 0, 1.25, 1.02, 0.008))
@@ -297,7 +280,6 @@ export function buildRegistrar() {
   g.add(rbox(0.66, 0.09, 1.24, navy, 1.22, 2, -0.22, 0.006))
   g.add(door(navy, 0, 0.5, 0.8, 0.3, 0.55))
   g.add(steps(1.2, 0.5, flat(C.stone), 1.18))
-  g.add(facadePlaque(5, 0.78, 0.82, 0.8))
   blobShadow(g, 1.35, 1.15, 0.4)
   return g
 }
@@ -355,39 +337,29 @@ export function buildDorms() {
   g.add(rbox(1.35, 0.08, 1.15, flat(C.stone), 0, 0.04, 0.55, 0.03, false))
   g.add(rbox(0.85, 0.42, 0.18, flat(C.hedge), 0, 0.22, 0.85, 0.06, false))
   g.add(rbox(0.22, 0.12, 0.22, trim, 0, 1.62, -0.55, 0.02))
-  g.add(facadePlaque(6, 0, 1.05, 0.02))
   blobShadow(g, 1.85, 1.25, 0.58)
   return g
 }
 
-/** 07 — gymnasium with barrel vault + marked court. */
+/** 07 — low masonry gymnasium with a slate gable. */
 export function buildRecCenter() {
   const g = new THREE.Group()
   // L4: rec reads masonry/ink, not saturated game court
-  const body = hold(0xc9d2c6)
-  const vault = hold(0x738585, { metalness: 0.72, roughness: 0.38 })
+  const body = masonry(0x96735f, true)
+  const vault = hold(C.navySoft)
   const glass = hold(0x263e48, { metalness: 0.45, roughness: 0.2 })
-  const court = lambert(0x6a7468, { emissive: new THREE.Color(0x6a7468), emissiveIntensity: 0.1 })
 
   g.add(rbox(2.55, 1.05, 1.72, body, 0, 0.52, 0, 0.006))
-  g.add(barrelVault(2.55, 0.88, vault, 1.05, true))
-  // Exposed pale ribs articulate the long-span roof from the map camera.
-  for (const x of [-1.15, -0.57, 0, 0.57, 1.15]) {
-    const rib = mesh(new THREE.TorusGeometry(0.89, 0.025, 5, 24, Math.PI), hold(C.creamDeep), x, 1.05, 0)
-    rib.rotation.y = Math.PI / 2
-    g.add(rib)
-  }
+  g.add(gableRoof(2.75, 1.9, 0.55, vault, 1.05))
   for (let i = 0; i < 3; i++) {
     g.add(rbox(0.62, 0.72, 0.07, glass, -0.72 + i * 0.72, 0.58, 0.88, 0.02, false))
   }
   g.add(door(flat(C.navy), 0, 0.38, 0.9, 0.36, 0.52))
 
   // Quiet turf apron only — no court lines or rings.
-  g.add(rbox(2.85, 0.05, 1.7, court, 0, 0.03, 1.75, 0.02, false))
 
   g.add(rbox(0.85, 0.35, 0.35, flat(C.creamDeep), -1.35, 0.22, 1.05, 0.04))
   g.add(rbox(0.85, 0.22, 0.35, flat(C.navySoft), -1.35, 0.48, 1.05, 0.04))
-  g.add(facadePlaque(7, 1.05, 0.72, 0.88))
   blobShadow(g, 1.7, 1.7, 0.4)
   return g
 }
@@ -395,7 +367,7 @@ export function buildRecCenter() {
 /** 08 — terracotta union cafe with terrace, round windows, awning. */
 export function buildUnion() {
   const g = new THREE.Group()
-  const body = hold(C.terracotta)
+  const body = masonry(0x96735f, true)
   const cream = hold(C.cream)
   const roof = hold(C.navySoft)
   const stripeA = hold(C.trim)
@@ -414,7 +386,7 @@ export function buildUnion() {
   }
   g.add(door(flat(C.navy), 0, 0.45, 0.86, 0.32, 0.52))
 
-  g.add(rbox(2.55, 0.1, 2.05, flat(C.stone), 0.15, 0.05, 1.62, 0.03, false))
+
   for (let i = 0; i < 6; i++) {
     g.add(rbox(0.3, 0.1, 0.68, i % 2 ? stripeA : stripeB, -0.75 + i * 0.3, 1.08, 0.92, 0.01, false))
   }
@@ -427,7 +399,6 @@ export function buildUnion() {
   g.add(hipRoof(0.7, 0.7, 0.3, flat(C.terracottaDeep), 0.78))
   g.add(umbrella(0.55, 1.55, 0xf7f2e8, 1.05))
   g.add(umbrella(-0.15, 1.75, 0x2c3d55, 1.0))
-  g.add(facadePlaque(8, -0.88, 0.58, 0.86))
   blobShadow(g, 1.65, 1.55, 0.4)
   return g
 }

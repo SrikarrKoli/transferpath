@@ -320,40 +320,11 @@ export function toyTree(x: number, z: number, seed: number) {
   const scale = 0.78 + (seed % 7) * 0.055
   const trunkH = 0.34 + (seed % 4) * 0.05
   g.add(mesh(new THREE.CylinderGeometry(0.034, 0.055, trunkH, 7), trunkMat, 0, trunkH / 2, 0, false))
-  const kind = seed % 3
-  if (kind === 0) {
-    // Layered pine — two offset cones, not a perfect stamp.
-    const pine = mesh(new THREE.ConeGeometry(0.24, 0.72, 6), canopyMat, 0, trunkH + 0.26, 0)
-    pine.scale.set(1.02 + (seed % 3) * 0.04, 0.95 + (seed % 2) * 0.08, 0.88 + (seed % 4) * 0.03)
-    pine.rotation.y = seed * 0.2
-    g.add(pine)
-    const tip = mesh(new THREE.ConeGeometry(0.15, 0.36, 5), accent, 0.03, trunkH + 0.52, -0.02)
-    tip.scale.set(0.95, 1.05, 0.9)
-    g.add(tip)
-  } else if (kind === 1) {
-    // Broad deciduous cluster.
-    const y0 = trunkH + 0.1
-    const lobes: [number, number, number, number, boolean][] = [
-      [0.3, 0, y0, 0, false],
-      [0.2, 0.16, y0 + 0.1, -0.05, true],
-      [0.18, -0.14, y0 + 0.08, 0.1, false],
-      [0.15, 0.04, y0 + 0.22, 0.06, seed % 2 === 0],
-    ]
-    for (const [r, ox, oy, oz, useAccent] of lobes) {
-      const mat = useAccent ? accent : canopyMat
-      const lobe = mesh(new THREE.SphereGeometry(r, 8, 6), mat, ox, oy, oz)
-      lobe.scale.set(1.08 + (seed % 3) * 0.05, 0.68 + (seed % 2) * 0.1, 0.92 + (seed % 4) * 0.03)
-      g.add(lobe)
-    }
-  } else {
-    // Slender upright crown contrasts with spreading oaks and pointed pines.
-    const crown = mesh(new THREE.SphereGeometry(0.32, 9, 7), canopyMat, 0, trunkH + 0.22, 0)
-    crown.scale.set(0.58, 1.65 + (seed % 2) * 0.16, 0.62)
-    g.add(crown)
-    const bump = mesh(new THREE.SphereGeometry(0.16, 7, 6), accent, 0.1, trunkH + 0.32, -0.06)
-    bump.scale.set(0.65, 1.2, 0.7)
-    g.add(bump)
-  }
+  const crown = mesh(new THREE.ConeGeometry(0.3, 1.18, 7), canopyMat, 0, trunkH + 0.38, 0)
+  crown.scale.set(0.85, 1.05, 0.72)
+  crown.rotation.y = seed * 0.3
+  g.add(crown)
+  g.add(mesh(new THREE.ConeGeometry(0.18, 0.72, 5), accent, 0.09, trunkH + 0.36, 0.04))
   g.scale.setScalar(scale)
   g.position.set(x, 0, z)
   g.rotation.y = seed * 0.41 + 0.15
