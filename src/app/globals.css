@@ -5308,3 +5308,26 @@ nextjs-portal,
 .campus-root .campus-mobile-nav a, .campus-root .campus-mobile-nav button { border: 1px solid var(--campus-rule); background: var(--campus-selection-paper); color: var(--campus-selection-ink); }
 .campus-root .campus-mobile-nav button[aria-pressed="true"] { background: var(--campus-selection-ink); color: var(--campus-selection-paper); }
 @media (max-width: 700px) { .campus-root .campus-map-footnote { left: 24px; bottom: 32px; } }
+
+/* Landing pass 14: engraved paper actions and a campus invitation cartouche. */
+.campus-root .campus-action-mark { width: 22px; height: 28px; flex: none; stroke: var(--campus-bronze); stroke-width: 1.5; }
+.campus-root .campus-map-topbar { gap: 14px; height: 78px; }
+.campus-root .campus-map-topbar a { display: inline-flex; align-items: center; gap: 12px; padding: 7px 16px; font-family: var(--font-fraunces), Georgia, serif; font-size: 15px; border: 1px solid var(--campus-rule); border-bottom: 2px solid var(--campus-bronze); }
+.campus-root .campus-map-topbar a:last-child { background: var(--campus-selection-paper); color: var(--campus-selection-ink); border-color: var(--campus-bronze); }
+.campus-root .campus-map-topbar a:first-child { background: transparent; border: 0; border-bottom: 1px solid var(--campus-rule); }
+.campus-root .campus-map-topbar a:first-child .campus-action-mark { width: 16px; height: 22px; }
+.campus-root .campus-dock-enter { font: 500 17px var(--font-fraunces), Georgia, serif; padding-top: 8px; }
+.campus-root .campus-dock-enter .campus-action-mark { width: 20px; height: 25px; transform: rotate(90deg); }
+.campus-root .campus-arrival-dock { width: min(320px, calc(100% - 32px)); border-bottom: 2px solid var(--campus-bronze); }
+.campus-root .campus-map-footnote { left: 7%; bottom: 8%; width: 430px; max-width: calc(100% - 48px); padding: 19px 24px; gap: 20px; background: #f7f0dfed; border: 1px solid var(--campus-rule); border-bottom: 2px solid var(--campus-bronze); }
+.campus-root .campus-map-footnote > .campus-action-mark { width: 38px; height: 48px; }
+.campus-root .campus-map-footnote small { display: block; font: 600 10px/1.5 var(--font-inter), sans-serif; letter-spacing: .16em; color: var(--campus-bronze); margin-bottom: 7px; }
+.campus-root .campus-map-footnote strong { font-size: 28px; }
+.campus-root .campus-map-footnote div > span { max-width: 290px; font-size: 13px; line-height: 1.5; }
+@media (max-width: 700px) {
+  .campus-root .campus-map-footnote { left: 24px; bottom: 28px; padding: 14px 16px; gap: 14px; }
+  .campus-root .campus-map-footnote strong { font-size: 24px; }
+}
+
+.campus-root .campus-mobile-nav a { display: inline-flex; align-items: center; gap: 7px; }
+.campus-root .campus-mobile-nav .campus-action-mark { width: 15px; height: 20px; }

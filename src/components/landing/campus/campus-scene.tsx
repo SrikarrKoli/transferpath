@@ -122,6 +122,7 @@ export function CampusScene({ selected, hovered, focusToken, onHover, onSelect, 
     let lastFocusToken = -1
     let meshById = new Map<BuildingId, THREE.Group>()
     let people: THREE.Group[] = []
+    let obstacles: THREE.Object3D[] = []
     let water: THREE.Object3D | undefined
 
     const setPointer = (e: PointerEvent) => {
@@ -224,7 +225,7 @@ export function CampusScene({ selected, hovered, focusToken, onHover, onSelect, 
       mat.color.copy(base)
       // Preserve warm roof and limestone detail while the selected landmark lifts.
       if (mode === "dim") mat.color.convertLinearToSRGB().multiplyScalar(0.80).convertSRGBToLinear()
-      if (mode === "focus") mat.color.multiplyScalar(1.12)
+      if (mode === "focus") mat.color.multiplyScalar(1.25)
       if (mode === "hover") mat.color.offsetHSL(0, 0, 0.035)
       if (!mat.emissive?.isColor) return
       if (!mat.userData._baseEmissive?.isColor) {
@@ -234,7 +235,7 @@ export function CampusScene({ selected, hovered, focusToken, onHover, onSelect, 
       mat.emissive.copy(mat.userData._baseEmissive)
       mat.emissiveIntensity = mat.userData._baseIntensity ?? 0
       if (mode === "dim") mat.emissiveIntensity *= 0.72
-      if (mode === "focus") { mat.emissive.setHex(0xf4e7d1); mat.emissiveIntensity = 0.045 }
+      if (mode === "focus") { mat.emissive.setHex(0xf4e7d1); mat.emissiveIntensity = 0.075 }
     }
 
     const t0 = performance.now()
@@ -279,7 +280,7 @@ export function CampusScene({ selected, hovered, focusToken, onHover, onSelect, 
             : isHovered
               ? "hover"
               : "idle"
-        const lift = isSelected ? 0.56 : isHovered && !hasSelection ? 0.1 : 0
+        const lift = isSelected ? 0.84 : isHovered && !hasSelection ? 0.1 : 0
         g.position.y = THREE.MathUtils.lerp(g.position.y, lift, ease)
         if (Math.abs(g.position.y - lift) < 0.001) g.position.y = lift
         if (g.userData.selectionMode !== mode) g.traverse((c) => {
@@ -309,76 +310,66 @@ export function CampusScene({ selected, hovered, focusToken, onHover, onSelect, 
           const p = v.project(camera)
           return { x: (p.x * 0.5 + 0.5) * width, y: (-p.y * 0.5 + 0.5) * height }
         }
-        const rects = [...meshById.values()].map((group) => {
-          const box = group.userData.bounds as THREE.Box3
+        const rects = [...meshById.values(), ...obstacles].map((group) => {
+          const local = group.userData.bounds as THREE.Box3 | undefined
+          const box = local ? local.clone().translate(group.position) : new THREE.Box3().setFromObject(group)
           const points = []
-          for (const x of [box.min.x, box.max.x]) for (const y of [box.min.y, box.max.y]) for (const z of [box.min.z, box.max.z]) {
-            points.push(project(new THREE.Vector3(x, y, z).add(group.position)))
-          }
+          for (const x of [box.min.x, box.max.x]) for (const y of [box.min.y, box.max.y]) for (const z of [box.min.z, box.max.z]) points.push(project(new THREE.Vector3(x, y, z)))
           return { group, left: Math.min(...points.map(p => p.x)), right: Math.max(...points.map(p => p.x)), top: Math.min(...points.map(p => p.y)), bottom: Math.max(...points.map(p => p.y)) }
         })
         const box = activeGroup.userData.bounds as THREE.Box3
-        // The front facade is part of the selected mass, even when lifted off its footprint.
-        const fallback = project(new THREE.Vector3((box.min.x + box.max.x) / 2, box.max.y * 0.38, box.max.z - 0.16).add(activeGroup.position))
-        const activeRect = rects.find(r => r.group === activeGroup)!
-        const anchors: { x: number; y: number }[] = []
-        // Sample real, visible surfaces so a rear hall's tether never starts on
-        // an intervening tower, or on empty space inside its bounding rectangle.
-        for (const u of [0.08, 0.2, 0.35, 0.5, 0.65, 0.8, 0.92]) for (const v of [0.88, 0.75, 0.6, 0.4, 0.2]) {
-          const x = THREE.MathUtils.lerp(activeRect.left, activeRect.right, u)
-          const y = THREE.MathUtils.lerp(activeRect.top, activeRect.bottom, v)
-          raycaster.setFromCamera(new THREE.Vector2(x / width * 2 - 1, 1 - y / height * 2), camera)
-          const visible = raycaster.intersectObjects(root.children, true).find(hit => !hit.object.userData.isHitVolume)
-          if (visible?.object.userData.buildingId === selectedRef.current) anchors.push({ x, y })
-        }
-        if (!anchors.length) anchors.push(fallback)
-        const anchor = anchors[0]
+        // Every leader ends at the base of the front facade; never sample upper surfaces.
+        // Center-first anchors make the entire long reading hall legible.
+        const anchors = [0.5, 0.35, 0.65].map(u => project(new THREE.Vector3(
+          THREE.MathUtils.lerp(box.min.x, box.max.x, u), 0.12, box.max.z - 0.12
+        ).add(activeGroup.position)))
         const sw = sign.offsetWidth, sh = sign.offsetHeight
-        const lawnInset = width >= 900 ? 48 : 20
-        const clampX = (x: number) => THREE.MathUtils.clamp(x, lawnInset, Math.max(lawnInset, width - sw - lawnInset))
-        const topInset = window.innerWidth >= 1024 ? 78 : 126
-        const clampY = (y: number) => THREE.MathUtils.clamp(y, topInset, Math.max(topInset, height - sh - 24))
-        let best = { x: clampX(anchor.x - sw / 2), y: clampY(anchor.y + 44), ex: anchor.x, ey: anchor.y + 44, ax: anchor.x, ay: anchor.y, score: Infinity }
-        const candidates: typeof best[] = []
-        // Search the open lawn around the silhouette, including side placements for tall landmarks.
-        for (const anchor of anchors) for (let angle = 0; angle < 4; angle++) for (const distance of [36, 56, 80, 112, 152, 200]) for (const align of [-0.4, 0, 0.4]) {
-          const radians = angle * Math.PI / 2
-          const x = clampX(anchor.x + Math.cos(radians) * (distance + sw / 2) - sw / 2)
-          const y = clampY(anchor.y + Math.sin(radians) * (distance + sh / 2) - sh / 2 + (angle % 2 ? 0 : align * sh))
-          const ex = THREE.MathUtils.clamp(anchor.x, x, x + sw)
-          const ey = THREE.MathUtils.clamp(anchor.y, y, y + sh)
-          let score = Math.hypot(ex - anchor.x, ey - anchor.y) * 2 + (angle % 2 ? 35 : 0) + Math.abs(align) * 10
-          for (const r of rects) {
-            const overlap = Math.max(0, Math.min(x + sw + 18, r.right) - Math.max(x - 18, r.left)) * Math.max(0, Math.min(y + sh + 18, r.bottom) - Math.max(y - 18, r.top))
-            score += overlap * 25
+        const inset = width >= 900 ? 40 : 16
+        const topInset = window.innerWidth >= 1024 ? 84 : 136
+        const maxX = width - sw - inset, maxY = height - sh - 28
+        let best: { x: number; y: number; ex: number; ey: number; ax: number; ay: number; score: number } | undefined
+        // Search the whole lawn, not just a ring around the selected roof.
+        // Architecture AND botanical bounds are hard exclusions, including padding.
+        for (let y = Math.max(topInset, Math.floor(height * 0.58)); y <= maxY; y += 16) for (let x = inset; x <= maxX; x += 16) {
+          if (rects.some(r => x + sw + 16 > r.left && x - 16 < r.right && y + sh + 16 > r.top && y - 16 < r.bottom)) continue
+          for (const [index, anchor] of anchors.entries()) {
+            const ex = THREE.MathUtils.clamp(anchor.x, x, x + sw)
+            const ey = THREE.MathUtils.clamp(anchor.y, y, y + sh)
+            const distance = Math.hypot(ex - anchor.x, ey - anchor.y)
+            // A lower lawn plaque counterbalances the lifted architecture.
+            let crossings = 0
+            for (const r of rects) {
+              if (r.group === activeGroup) continue
+              let lo = 0, hi = 1
+              for (const [start, end, min, max] of [[anchor.x, ex, r.left, r.right], [anchor.y, ey, r.top, r.bottom]]) {
+                const delta = end - start
+                if (Math.abs(delta) < 0.001) { if (start < min || start > max) hi = -1 }
+                else {
+                  const a = (min - start) / delta, b = (max - start) / delta
+                  lo = Math.max(lo, Math.min(a, b)); hi = Math.min(hi, Math.max(a, b))
+                }
+              }
+              if (lo < hi) crossings++
+            }
+            const score = distance + Math.abs(y + sh / 2 - height * 0.79) * 2.5 + index * 24 + crossings * 90
+            if (!best || score < best.score) best = { x, y, ex, ey, ax: anchor.x, ay: anchor.y, score }
           }
-          candidates.push({ x, y, ex, ey, ax: anchor.x, ay: anchor.y, score })
         }
-        // Bounding rectangles reserve room for the plaque. Actual visible surfaces
-        // judge its leader: a rear hall can overlap a tower's box without being hidden.
-        for (const candidate of candidates.sort((a, b) => a.score - b.score).slice(0, 80)) {
-          let score = candidate.score
-          for (let step = 1; step < 12; step++) {
-            const x = THREE.MathUtils.lerp(candidate.ax, candidate.ex, step / 12)
-            const y = THREE.MathUtils.lerp(candidate.ay, candidate.ey, step / 12)
-            const possible = rects.filter(r => x > r.left && x < r.right && y > r.top && y < r.bottom).map(r => r.group.children[0])
-            if (!possible.length) continue
-            raycaster.setFromCamera(new THREE.Vector2(x / width * 2 - 1, 1 - y / height * 2), camera)
-            const hit = raycaster.intersectObjects(possible, true)[0]
-            if (hit && hit.object.userData.buildingId !== selectedRef.current) score += 2400
-          }
-          if (score < best.score) best = { ...candidate, score }
+        // A tightly zoomed/panned view may contain no lawn cell. Keep art unobscured.
+        if (!best) {
+          sign.style.visibility = "hidden"; tether.style.visibility = "hidden"
+        } else {
+          sign.style.left = `${best.x}px`; sign.style.top = `${best.y}px`
+          sign.style.visibility = "visible"
+          tether.setAttribute("viewBox", `0 0 ${width} ${height}`)
+          tether.querySelectorAll("line").forEach(line => {
+            line.setAttribute("x1", `${best.ax}`); line.setAttribute("y1", `${best.ay}`)
+            line.setAttribute("x2", `${best.ex}`); line.setAttribute("y2", `${best.ey}`)
+          })
+          const dot = tether.querySelector("circle")!
+          dot.setAttribute("cx", `${best.ax}`); dot.setAttribute("cy", `${best.ay}`)
+          tether.style.visibility = "visible"
         }
-        sign.style.left = `${best.x}px`; sign.style.top = `${best.y}px`
-        sign.style.visibility = "visible"
-        tether.setAttribute("viewBox", `0 0 ${width} ${height}`)
-        tether.querySelectorAll("line").forEach(line => {
-          line.setAttribute("x1", `${best.ax}`); line.setAttribute("y1", `${best.ay}`)
-          line.setAttribute("x2", `${best.ex}`); line.setAttribute("y2", `${best.ey}`)
-        })
-        const dot = tether.querySelector("circle")!
-        dot.setAttribute("cx", `${best.ax}`); dot.setAttribute("cy", `${best.ay}`)
-        tether.style.visibility = "visible"
       }
       // This authored map has no idle animation; preserve a settled frame instead
       // of continuously redrawing thousands of static architectural surfaces.
@@ -404,6 +395,7 @@ export function CampusScene({ selected, hovered, focusToken, onHover, onSelect, 
           if (!meshById.has(building.id)) throw new Error(`Missing campus landmark: ${building.id}`)
         }
         people = built.people
+        obstacles = built.obstacles
 
         setStatus("")
         applyCam()

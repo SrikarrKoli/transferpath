@@ -116,5 +116,5 @@ export function buildCampusWorld(root: THREE.Group) {
   })
   city.add(bench(lambert(C.creamDeep), -1.3, 1.45, 0))
   city.add(bench(lambert(C.creamDeep), 1.3, 1.45, 0))
-  return { meshById, people: [] as THREE.Group[] }
+  return { meshById, obstacles: city.children.filter(child => !child.userData.buildingId), people: [] as THREE.Group[] }
 }

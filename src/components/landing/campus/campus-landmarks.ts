@@ -68,18 +68,29 @@ export function buildClockTower() {
   return g
 }
 export function buildLibrary() {
-  const g = hall(4.35, 1.35, 1.4, 9, 1, 0.12), p = palette()
-  // An asymmetric archive wing and a continuous glazed monitor identify the reading hall.
-  const archive = hall(1.0, 2.25, 2.65, 2, 3)
-  archive.position.set(-1.67, 0, -0.48); g.add(archive)
-  const monitor = new THREE.Group()
-  monitor.add(rbox(2.85, 0.78, 0.58, p.glass, 0, 0.39, 0, 0))
-  for (let x = -1.42; x <= 1.43; x += 0.285) {
-    monitor.add(rbox(0.055, 0.8, 0.68, p.trim, x, 0.4, 0, 0))
+  const g = hall(4.35, 1.55, 1.35, 9, 1, 0.1), p = palette()
+  // A continuous glass lantern, not a second tiled hall: visible across the campus.
+  const lantern = new THREE.Group()
+  lantern.add(rbox(3.65, 0.66, 0.86, p.glass, 0, 0.33, 0, 0))
+  lantern.add(gableRoof(3.8, 1.02, 0.42, hold(0x698e83), 0.66))
+  for (let x = -1.8; x <= 1.81; x += 0.3) {
+    lantern.add(rbox(0.045, 0.7, 0.94, p.trim, x, 0.33, 0, 0))
+    for (const side of [-1, 1]) {
+      const rib = rbox(0.035, 0.035, 0.67, p.trim, x, 0.88, side * 0.255, 0)
+      rib.rotation.x = side * Math.atan2(0.42, 0.51)
+      lantern.add(rib)
+    }
   }
-  monitor.add(rbox(2.98, 0.07, 0.7, p.trim, 0, 0.02, 0, 0), roof(2.98, 0.7, 0.8, p, 0.12))
-  monitor.position.set(0.32, 1.5, 0); g.add(monitor)
-  g.add(steps(3.8, 0.42, p.trim, 1.0)); return g
+  lantern.add(rbox(3.88, 0.065, 0.08, p.bronze, 0, 1.1, 0, 0))
+  lantern.add(rbox(3.85, 0.09, 1.0, p.trim, 0, 0, 0, 0))
+  lantern.position.set(0.15, 1.51, 0); g.add(lantern)
+  // Squared archive stack breaks the long lantern's symmetry without another gable.
+  const archive = hall(0.92, 1.85, 2.35, 2, 3)
+  archive.remove(archive.children[archive.children.length - 1])
+  archive.add(rbox(1.08, 0.16, 2.01, p.trim, 0, 2.38, 0, 0))
+  archive.add(rbox(0.84, 0.08, 1.77, p.bronze, 0, 2.48, 0, 0))
+  archive.position.set(-1.72, 0, -0.65); g.add(archive)
+  g.add(steps(4.15, 0.42, p.trim, 1.1)); return g
 }
 
 export function buildCounselorHall() {
@@ -107,11 +118,13 @@ export function buildDorms() {
   const link = hall(0.7, 0.7, 1.5, 1); link.position.z = -0.55; g.add(link); return g
 }
 export function buildRecCenter() {
-  const g = hall(2.6, 1.85, 0.9, 4, 1, 0.04), p = palette()
-  // Low gymnasium roof with two broad daylight strips.
-  for (const x of [-0.65, 0.65]) {
-    g.add(rbox(0.38, 0.065, 1.12, p.glass, x, 1.0, 0, 0.015))
-    g.add(rbox(0.44, 0.035, 1.18, p.trim, x, 0.97, 0, 0.01))
+  const g = hall(2.7, 1.95, 0.82, 5, 1, 0.02), p = palette()
+  // Three broad northlight sheds give the low recreation hall a sawtooth skyline.
+  for (const z of [-0.62, 0, 0.62]) {
+    const panel = rbox(2.78, 0.065, 0.66, p.roof, 0, 1.06, z, 0)
+    panel.rotation.x = -0.32; g.add(panel)
+    g.add(rbox(2.6, 0.24, 0.04, hold(0x73958a), 0, 0.99, z + 0.3, 0))
+    for (const x of [-1.3, -0.65, 0, 0.65, 1.3]) g.add(rbox(0.04, 0.26, 0.06, p.trim, x, 1, z + 0.32, 0))
   }
   return g
 }

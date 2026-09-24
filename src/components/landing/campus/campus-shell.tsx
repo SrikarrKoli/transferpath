@@ -33,6 +33,10 @@ const LANDING_JOBS: Record<BuildingId, string> = {
   union: "See progress and next actions.",
 }
 
+function CampusWaymark() {
+  return <svg className="campus-action-mark" viewBox="0 0 32 38" fill="none" aria-hidden="true"><path d="M3 6h26M16 6v25M8 32l8-8 8 8M23 6v10h-7M3 2v8M29 2v8" /></svg>
+}
+
 export function CampusShell() {
   const router = useRouter()
   const [selected, setSelected] = useState<BuildingId | null>(null)
@@ -166,7 +170,7 @@ export function CampusShell() {
               href="/dashboard"
               className="pointer-events-auto border border-[#1a2332]/55 bg-[#f4efe6]/88 px-3 py-1.5 text-[12px] font-medium text-[#1a2332] backdrop-blur-sm hover:border-[#1a2332]/85"
             >
-              Open campus
+              <CampusWaymark /> Open campus
             </Link>
           ) : (
             <>
@@ -174,13 +178,13 @@ export function CampusShell() {
                 href="/login"
                 className="pointer-events-auto px-3 py-1.5 text-[12px] font-medium text-[#1a2332]/65 hover:text-[#1a2332]"
               >
-                Log in
+                <CampusWaymark /> Log in
               </Link>
               <Link
                 href="/onboarding"
                 className="pointer-events-auto bg-[#1a2332] px-3.5 py-1.5 text-[12px] font-medium text-[#f4efe6] shadow-[0_1px_0_rgba(26,35,50,0.25)] hover:bg-[#1a2332]/92"
               >
-                {CTA_GET_STARTED}
+                <CampusWaymark /> {CTA_GET_STARTED}
               </Link>
             </>
           )}
@@ -198,7 +202,7 @@ export function CampusShell() {
               href={sessionState === "member" ? "/dashboard" : "/onboarding"}
               className="bg-[#1a2332] px-3 py-1.5 text-xs font-medium text-[#f4efe6]"
             >
-              {sessionState === "member" ? "Open campus" : CTA_GET_STARTED}
+              <CampusWaymark /> {sessionState === "member" ? "Open campus" : CTA_GET_STARTED}
             </Link>
           </div>
           <div className="flex gap-1.5 overflow-x-auto pb-1">
@@ -234,11 +238,11 @@ export function CampusShell() {
               <h2 id="campus-plaque-title">{dock.name}</h2>
               <p>{LANDING_JOBS[dock.id]}</p>
             </div>
-            <Link className="campus-dock-enter" href={campusEnterHref(dock, sessionState === "member" ? "member" : "guest")}>Enter <span aria-hidden="true">→</span></Link>
+            <Link className="campus-dock-enter" href={campusEnterHref(dock, sessionState === "member" ? "member" : "guest")}>Enter <CampusWaymark /></Link>
 
           </section>
           </>
-        ) : <div className="campus-map-footnote"><div><strong>Choose a building.</strong>{" "}<span>Find your next step.</span></div></div>}
+        ) : <div className="campus-map-footnote"><CampusWaymark /><div><small>YOUR CAMPUS · 08 DESTINATIONS</small><strong>Choose a building.</strong>{" "}<span>Find your next step. Select a hall on the map or in the directory.</span></div></div>}
 
       </div>
 
