@@ -186,7 +186,7 @@ export function CampusShell() {
           )}
         </div>
 
-        <div className="absolute inset-x-0 top-4 z-20 px-3 lg:hidden">
+        <div className="campus-mobile-nav absolute inset-x-0 top-4 z-20 px-3 lg:hidden">
           <div className="mb-2 flex items-center justify-between">
             <Link href="/" className="inline-flex items-center gap-2 bg-[#f4efe6]/92 px-3 py-1.5">
               <svg className="campus-brand-mark" viewBox="0 0 32 38" fill="none" aria-hidden="true">
@@ -234,11 +234,11 @@ export function CampusShell() {
               <h2 id="campus-plaque-title">{dock.name}</h2>
               <p>{LANDING_JOBS[dock.id]}</p>
             </div>
-            <Link className="campus-dock-enter" href={campusEnterHref(dock, sessionState === "member" ? "member" : "guest")}>Enter <span aria-hidden="true">↗</span></Link>
+            <Link className="campus-dock-enter" href={campusEnterHref(dock, sessionState === "member" ? "member" : "guest")}>Enter <span aria-hidden="true">→</span></Link>
 
           </section>
           </>
-        ) : <div className="campus-map-footnote"><span className="campus-invitation-arrow" aria-hidden="true">↗</span><div><strong>Choose a building.</strong><span>Find your next step.</span></div></div>}
+        ) : <div className="campus-map-footnote"><div><strong>Choose a building.</strong>{" "}<span>Find your next step.</span></div></div>}
 
       </div>
 

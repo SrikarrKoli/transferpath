@@ -222,10 +222,9 @@ export function CampusScene({ selected, hovered, focusToken, onHover, onSelect, 
       if (!mat.userData._baseColor?.isColor) mat.userData._baseColor = mat.color.clone()
       const base = mat.userData._baseColor as THREE.Color
       mat.color.copy(base)
-      // Apply the 0.62 dim in perceptual color space: linear-light multiplication
-      // was largely undone by tone mapping and left neighbors equally prominent.
-      if (mode === "dim") mat.color.convertLinearToSRGB().multiplyScalar(0.62).convertSRGBToLinear()
-      if (mode === "focus") mat.color.multiplyScalar(1.04)
+      // Preserve warm roof and limestone detail while the selected landmark lifts.
+      if (mode === "dim") mat.color.convertLinearToSRGB().multiplyScalar(0.80).convertSRGBToLinear()
+      if (mode === "focus") mat.color.multiplyScalar(1.12)
       if (mode === "hover") mat.color.offsetHSL(0, 0, 0.035)
       if (!mat.emissive?.isColor) return
       if (!mat.userData._baseEmissive?.isColor) {
@@ -235,7 +234,7 @@ export function CampusScene({ selected, hovered, focusToken, onHover, onSelect, 
       mat.emissive.copy(mat.userData._baseEmissive)
       mat.emissiveIntensity = mat.userData._baseIntensity ?? 0
       if (mode === "dim") mat.emissiveIntensity *= 0.72
-      if (mode === "focus") { mat.emissive.setHex(0xf4e7d1); mat.emissiveIntensity = 0.025 }
+      if (mode === "focus") { mat.emissive.setHex(0xf4e7d1); mat.emissiveIntensity = 0.045 }
     }
 
     const t0 = performance.now()
@@ -280,7 +279,7 @@ export function CampusScene({ selected, hovered, focusToken, onHover, onSelect, 
             : isHovered
               ? "hover"
               : "idle"
-        const lift = isSelected ? 0.48 : isHovered && !hasSelection ? 0.1 : 0
+        const lift = isSelected ? 0.56 : isHovered && !hasSelection ? 0.1 : 0
         g.position.y = THREE.MathUtils.lerp(g.position.y, lift, ease)
         if (Math.abs(g.position.y - lift) < 0.001) g.position.y = lift
         if (g.userData.selectionMode !== mode) g.traverse((c) => {
@@ -325,7 +324,7 @@ export function CampusScene({ selected, hovered, focusToken, onHover, onSelect, 
         const anchors: { x: number; y: number }[] = []
         // Sample real, visible surfaces so a rear hall's tether never starts on
         // an intervening tower, or on empty space inside its bounding rectangle.
-        for (const [u, v] of [[0.12, 0.78], [0.88, 0.78], [0.2, 0.88], [0.8, 0.88], [0.15, 0.5], [0.85, 0.5], [0.25, 0.7], [0.75, 0.7], [0.5, 0.2], [0.5, 0.65]]) {
+        for (const u of [0.08, 0.2, 0.35, 0.5, 0.65, 0.8, 0.92]) for (const v of [0.88, 0.75, 0.6, 0.4, 0.2]) {
           const x = THREE.MathUtils.lerp(activeRect.left, activeRect.right, u)
           const y = THREE.MathUtils.lerp(activeRect.top, activeRect.bottom, v)
           raycaster.setFromCamera(new THREE.Vector2(x / width * 2 - 1, 1 - y / height * 2), camera)
@@ -335,13 +334,14 @@ export function CampusScene({ selected, hovered, focusToken, onHover, onSelect, 
         if (!anchors.length) anchors.push(fallback)
         const anchor = anchors[0]
         const sw = sign.offsetWidth, sh = sign.offsetHeight
-        const clampX = (x: number) => THREE.MathUtils.clamp(x, 16, Math.max(16, width - sw - 16))
+        const lawnInset = width >= 900 ? 48 : 20
+        const clampX = (x: number) => THREE.MathUtils.clamp(x, lawnInset, Math.max(lawnInset, width - sw - lawnInset))
         const topInset = window.innerWidth >= 1024 ? 78 : 126
         const clampY = (y: number) => THREE.MathUtils.clamp(y, topInset, Math.max(topInset, height - sh - 24))
         let best = { x: clampX(anchor.x - sw / 2), y: clampY(anchor.y + 44), ex: anchor.x, ey: anchor.y + 44, ax: anchor.x, ay: anchor.y, score: Infinity }
         const candidates: typeof best[] = []
         // Search the open lawn around the silhouette, including side placements for tall landmarks.
-        for (const anchor of anchors) for (let angle = 0; angle < 4; angle++) for (const distance of [24, 40, 64, 96, 140, 200]) for (const align of [-0.4, 0, 0.4]) {
+        for (const anchor of anchors) for (let angle = 0; angle < 4; angle++) for (const distance of [36, 56, 80, 112, 152, 200]) for (const align of [-0.4, 0, 0.4]) {
           const radians = angle * Math.PI / 2
           const x = clampX(anchor.x + Math.cos(radians) * (distance + sw / 2) - sw / 2)
           const y = clampY(anchor.y + Math.sin(radians) * (distance + sh / 2) - sh / 2 + (angle % 2 ? 0 : align * sh))
@@ -349,14 +349,14 @@ export function CampusScene({ selected, hovered, focusToken, onHover, onSelect, 
           const ey = THREE.MathUtils.clamp(anchor.y, y, y + sh)
           let score = Math.hypot(ex - anchor.x, ey - anchor.y) * 2 + (angle % 2 ? 35 : 0) + Math.abs(align) * 10
           for (const r of rects) {
-            const overlap = Math.max(0, Math.min(x + sw + 12, r.right) - Math.max(x - 12, r.left)) * Math.max(0, Math.min(y + sh + 12, r.bottom) - Math.max(y - 12, r.top))
+            const overlap = Math.max(0, Math.min(x + sw + 18, r.right) - Math.max(x - 18, r.left)) * Math.max(0, Math.min(y + sh + 18, r.bottom) - Math.max(y - 18, r.top))
             score += overlap * 25
           }
           candidates.push({ x, y, ex, ey, ax: anchor.x, ay: anchor.y, score })
         }
         // Bounding rectangles reserve room for the plaque. Actual visible surfaces
         // judge its leader: a rear hall can overlap a tower's box without being hidden.
-        for (const candidate of candidates.sort((a, b) => a.score - b.score).slice(0, 24)) {
+        for (const candidate of candidates.sort((a, b) => a.score - b.score).slice(0, 80)) {
           let score = candidate.score
           for (let step = 1; step < 12; step++) {
             const x = THREE.MathUtils.lerp(candidate.ax, candidate.ex, step / 12)
@@ -365,7 +365,7 @@ export function CampusScene({ selected, hovered, focusToken, onHover, onSelect, 
             if (!possible.length) continue
             raycaster.setFromCamera(new THREE.Vector2(x / width * 2 - 1, 1 - y / height * 2), camera)
             const hit = raycaster.intersectObjects(possible, true)[0]
-            if (hit && hit.object.userData.buildingId !== selectedRef.current) score += 240
+            if (hit && hit.object.userData.buildingId !== selectedRef.current) score += 2400
           }
           if (score < best.score) best = { ...candidate, score }
         }

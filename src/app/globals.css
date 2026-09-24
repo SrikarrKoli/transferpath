@@ -5285,3 +5285,26 @@ nextjs-portal,
   .campus-root .campus-map-footnote { left: 24px; bottom: 40px; }
   .campus-root .campus-arrival-dock { width: min(280px, calc(100% - 32px)); }
 }
+
+/* Landing wayfinding finish: one paper sign system, from index to destination. */
+.campus-root { --campus-rule: #78634d66; }
+.campus-root .campus-directory-list button { border: 1px solid transparent; gap: 0; padding: 0; align-items: stretch; }
+.campus-root .campus-directory-list button > .campus-legend-number { width: 32px; padding: 9px 0; text-align: center; border-right: 1px solid transparent; }
+.campus-root .campus-directory-list button > .min-w-0 { padding: 9px 7px; }
+.campus-root .campus-directory-list button[aria-pressed="true"] { border-color: var(--campus-rule); background: var(--campus-selection-paper); }
+.campus-root .campus-directory-list button[aria-pressed="true"] > .campus-legend-number { border-color: var(--campus-rule); }
+.campus-root .campus-directory-list button[aria-pressed="true"] span span { text-decoration: none; }
+.campus-root .campus-arrival-dock { border-color: var(--campus-rule); border-radius: 0; background: var(--campus-selection-paper); }
+.campus-root .campus-sign-index { border-color: var(--campus-rule); color: var(--campus-bronze); }
+.campus-root .campus-dock-enter { border-color: var(--campus-rule); color: var(--campus-selection-ink); }
+.campus-root .campus-map-topbar a { border: 1px solid var(--campus-rule); background: var(--campus-selection-paper); color: var(--campus-selection-ink); padding: 8px 16px; box-shadow: none; }
+.campus-root .campus-map-topbar a:last-child { background: var(--campus-selection-ink); color: var(--campus-selection-paper); border-color: var(--campus-selection-ink); }
+.campus-root .campus-map-topbar a:hover, .campus-root .campus-dock-enter:hover { color: var(--campus-bronze); }
+.campus-root .campus-brand-mark { width: 31px; height: 42px; stroke: var(--campus-bronze); stroke-width: 1.6; }
+.campus-root .campus-wordmark { font-size: 21px; letter-spacing: -1px; }
+.campus-root .campus-directory > a { gap: 7px; margin-left: -3px; }
+.campus-root .campus-map-footnote { left: 64px; bottom: 44px; padding-left: 18px; border-left: 1px solid var(--campus-bronze); color: var(--campus-selection-ink); }
+.campus-root .campus-map-footnote strong { font-size: 25px; }
+.campus-root .campus-mobile-nav a, .campus-root .campus-mobile-nav button { border: 1px solid var(--campus-rule); background: var(--campus-selection-paper); color: var(--campus-selection-ink); }
+.campus-root .campus-mobile-nav button[aria-pressed="true"] { background: var(--campus-selection-ink); color: var(--campus-selection-paper); }
+@media (max-width: 700px) { .campus-root .campus-map-footnote { left: 24px; bottom: 32px; } }
