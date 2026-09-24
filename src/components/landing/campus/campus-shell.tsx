@@ -232,6 +232,8 @@ export function CampusShell() {
 
 
         {dock ? (
+          <>
+          <svg className="campus-sign-tether" aria-hidden="true"><line className="campus-tether-paper" /><line className="campus-tether-ink" /><circle r="4" /></svg>
           <section data-building={dock.id} className="campus-arrival-dock" aria-labelledby="campus-plaque-title">
 
             <span className="campus-sign-index" aria-hidden="true">{String(CAMPUS_BUILDINGS.findIndex((b) => b.id === dock.id) + 1).padStart(2, "0")}</span>
@@ -242,6 +244,7 @@ export function CampusShell() {
             <Link className="campus-dock-enter" href={campusEnterHref(dock, sessionState === "member" ? "member" : "guest")}>Enter <span aria-hidden="true">↗</span></Link>
 
           </section>
+          </>
         ) : <div className="campus-map-footnote"><span>Choose a building. Find your next step. ↗</span></div>}
 
       </div>

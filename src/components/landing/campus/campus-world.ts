@@ -59,7 +59,32 @@ export function buildCampusWorld(root: THREE.Group) {
   const beyond = mesh(new THREE.PlaneGeometry(180, 180), lambert(0xb6c9ac), 0, -0.015, 0, false)
   beyond.rotation.x = -Math.PI / 2; root.add(beyond)
   for (const [x, z, w] of [[-4.3, -4.1, 2.9], [4.5, -2.4, 2.4], [-4.1, 2.55, 1.7], [0, 5.6, 3.4]]) {
-    city.add(mesh(new THREE.BoxGeometry(w, 0.24, 0.23), lambert(0x66845b), x, 0.12, z))
+    // Low scalloped planting beds, with individual tapered leaf fans.
+    const bed = new THREE.Shape()
+    bed.moveTo(-w / 2 + 0.25, -0.25)
+    bed.lineTo(w / 2 - 0.25, -0.25)
+    bed.absarc(w / 2 - 0.25, 0, 0.25, -Math.PI / 2, Math.PI / 2, false)
+    bed.lineTo(-w / 2 + 0.25, 0.25)
+    bed.absarc(-w / 2 + 0.25, 0, 0.25, Math.PI / 2, Math.PI * 1.5, false)
+    const soil = mesh(new THREE.ExtrudeGeometry(bed, { depth: 0.045, bevelEnabled: false, curveSegments: 16 }), lambert(0x938b70), x, 0.01, z, false)
+    soil.rotation.x = -Math.PI / 2; city.add(soil)
+    for (let i = 0; i < Math.floor(w / 0.23); i++) {
+      const px = x - w / 2 + 0.18 + i * 0.23
+      const plant = new THREE.Group()
+      const leafShape = new THREE.Shape()
+      leafShape.moveTo(0, 0)
+      leafShape.quadraticCurveTo(-0.12, 0.17, 0, 0.4)
+      leafShape.quadraticCurveTo(0.09, 0.15, 0, 0)
+      const leafGeometry = new THREE.ShapeGeometry(leafShape, 8)
+      for (let leaf = 0; leaf < 7; leaf++) {
+        const blade = mesh(leafGeometry, lambert(leaf % 3 ? 0x637b53 : 0x8d9b72, { side: THREE.DoubleSide }), 0, 0, 0, false)
+        blade.rotation.set(0.35 + leaf % 3 * 0.3, leaf * 2.4 + i, 0.15)
+        blade.scale.setScalar(1.0 + (i + leaf) % 4 * 0.15)
+        plant.add(blade)
+      }
+      plant.position.set(px, 0.07, z + Math.sin(i * 2.4) * 0.11)
+      city.add(plant)
+    }
   }
 
   const placeLandmark = (id: BuildingId) => {
@@ -71,12 +96,12 @@ export function buildCampusWorld(root: THREE.Group) {
     else if (id === "dorm") hall.scale.y = 0.8
     else if (id === "gym") hall.scale.y = 0.8
     else if (id !== "quad") hall.scale.y = 0.9
+    const box = new THREE.Box3().setFromObject(hall)
     g.add(hall)
     uniquifyMaterials(g)
     tag(g, id)
 
     // Invisible pick volume — keeps directory/map lockstep honest when props crowd the facade.
-    const box = new THREE.Box3().setFromObject(hall)
     const size = new THREE.Vector3()
     const center = new THREE.Vector3()
     box.getSize(size)
@@ -86,6 +111,7 @@ export function buildCampusWorld(root: THREE.Group) {
       new THREE.MeshBasicMaterial({ visible: false, transparent: true, opacity: 0, depthWrite: false }),
     )
     hit.position.copy(center)
+    g.userData.bounds = box.clone()
     g.userData.footprint = { x: center.x, z: center.z, width: size.x + 0.45, depth: size.z + 0.45 }
     hit.userData.buildingId = id
     hit.userData.isHitVolume = true
@@ -98,7 +124,7 @@ export function buildCampusWorld(root: THREE.Group) {
   CAMPUS_BUILDINGS.forEach((b) => placeLandmark(b.id))
 
   // Cypress, live oak, and pecan silhouettes placed at irregular court edges.
-  ;[[-5.8, 2.8], [-3.0, 3.8], [5.7, -2.3], [-6, -3.8], [-0.3, -4.6], [5.9, 4.2], [3.1, -3.8]].forEach(([x, z], i) => {
+  ;[[-5.8, 2.8], [-3.5, 3.65], [5.25, -2.45], [-5.5, -3.5], [-0.3, -4.6], [5.5, 4.1], [3.1, -3.8]].forEach(([x, z], i) => {
     city.add(toyTree(x, z, i))
   })
   city.add(bench(lambert(C.creamDeep), -1.3, 1.45, 0))

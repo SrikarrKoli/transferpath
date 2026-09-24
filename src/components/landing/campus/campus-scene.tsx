@@ -47,7 +47,7 @@ export function CampusScene({ selected, hovered, focusToken, onHover, onSelect, 
     renderer.setSize(w0, h0)
     renderer.setClearColor(0xc5d4c0, 1)
     renderer.shadowMap.enabled = true
-    renderer.shadowMap.type = THREE.PCFShadowMap
+    renderer.shadowMap.type = THREE.VSMShadowMap
     renderer.outputColorSpace = THREE.SRGBColorSpace
     renderer.toneMapping = THREE.ACESFilmicToneMapping
     renderer.toneMappingExposure = 0.95
@@ -60,15 +60,15 @@ export function CampusScene({ selected, hovered, focusToken, onHover, onSelect, 
     scene.environmentIntensity = 0.25
 
     const camera = new THREE.OrthographicCamera(-1, 1, 1, -1, 0.1, 240)
-    const orbit = { theta: Math.PI / 3.15, phi: 0.88, radius: 20.4 }
+    const orbit = { theta: Math.PI / 3.15, phi: 0.88, radius: 24.5 }
     const look = new THREE.Vector3(0.15, 0.55, 0.55)
     const lookGoal = look.clone()
-    const radiusGoal = { v: 20.4 }
+    const radiusGoal = { v: 24.5 }
 
     scene.add(new THREE.AmbientLight(0xfff4e6, 0.24))
     scene.add(new THREE.HemisphereLight(0xc9dded, 0x789178, 0.65))
     const sun = new THREE.DirectionalLight(0xfff5e5, 2.8)
-    sun.position.set(-9, 15, 8)
+    sun.position.set(-7, 22, 6)
     sun.castShadow = true
     sun.shadow.mapSize.set(2048, 2048)
     sun.shadow.camera.left = -11
@@ -77,7 +77,8 @@ export function CampusScene({ selected, hovered, focusToken, onHover, onSelect, 
     sun.shadow.camera.bottom = -11
     sun.shadow.bias = -0.00012
     sun.shadow.normalBias = 0.018
-    sun.shadow.radius = 2
+    sun.shadow.radius = 4
+    sun.shadow.blurSamples = 8
     sun.shadow.camera.far = 50
     scene.add(sun)
     const fill = new THREE.DirectionalLight(0xb7d4f0, 0.18)
@@ -97,7 +98,7 @@ export function CampusScene({ selected, hovered, focusToken, onHover, onSelect, 
       )
       camera.lookAt(look)
       const a = mount.clientWidth / Math.max(1, mount.clientHeight)
-      const f = orbit.radius * 0.3 * Math.max(1, 0.95 / a)
+      const f = orbit.radius * 0.3 * Math.max(1, 1.15 / a)
       camera.left = -f * a
       camera.right = f * a
       camera.top = f
@@ -108,8 +109,8 @@ export function CampusScene({ selected, hovered, focusToken, onHover, onSelect, 
     const focusBuilding = (id: BuildingId) => {
       const b = CAMPUS_BUILDINGS.find((x) => x.id === id)
       if (!b) return
-      lookGoal.set(b.x * 0.64, 0.9, b.z * 0.64 + 0.25)
-      radiusGoal.v = 18.4
+      lookGoal.set(b.x * 0.2, 0.7, b.z * 0.2 + 0.4)
+      radiusGoal.v = 24.5
     }
 
     const raycaster = new THREE.Raycaster()
@@ -220,7 +221,10 @@ export function CampusScene({ selected, hovered, focusToken, onHover, onSelect, 
       if (!mat?.color?.isColor) return
       if (!mat.userData._baseColor?.isColor) mat.userData._baseColor = mat.color.clone()
       const base = mat.userData._baseColor as THREE.Color
-      mat.color.copy(base).multiplyScalar(mode === "dim" ? 0.8 : 1)
+      mat.color.copy(base)
+      // Apply the 0.62 dim in perceptual color space: linear-light multiplication
+      // was largely undone by tone mapping and left neighbors equally prominent.
+      if (mode === "dim") mat.color.convertLinearToSRGB().multiplyScalar(0.62).convertSRGBToLinear()
       if (mode === "focus") mat.color.multiplyScalar(1.04)
       if (mode === "hover") mat.color.offsetHSL(0, 0, 0.035)
       if (!mat.emissive?.isColor) return
@@ -236,6 +240,8 @@ export function CampusScene({ selected, hovered, focusToken, onHover, onSelect, 
 
     const t0 = performance.now()
     let previousFrame = t0
+    let lastRenderedFrame = ""
+    let lastSignFrame = ""
     const tick = (now: number) => {
       const ease = reduced ? 1 : 1 - Math.exp(-5 * Math.min((now - previousFrame) / 1000, 0.25))
       previousFrame = now
@@ -243,7 +249,7 @@ export function CampusScene({ selected, hovered, focusToken, onHover, onSelect, 
       if (focusTokenRef.current !== lastFocusToken) {
         lastFocusToken = focusTokenRef.current
         if (selectedRef.current) focusBuilding(selectedRef.current)
-        else { lookGoal.set(0.15, 0.55, 0.55); radiusGoal.v = 20.4 }
+        else { lookGoal.set(0.15, 0.55, 0.55); radiusGoal.v = 24.5 }
       }
       look.lerp(lookGoal, ease)
       if (look.distanceToSquared(lookGoal) < 0.000004) look.copy(lookGoal)
@@ -274,10 +280,10 @@ export function CampusScene({ selected, hovered, focusToken, onHover, onSelect, 
             : isHovered
               ? "hover"
               : "idle"
-        const lift = isSelected ? 0.32 : isHovered && !hasSelection ? 0.1 : 0
+        const lift = isSelected ? 0.42 : isHovered && !hasSelection ? 0.1 : 0
         g.position.y = THREE.MathUtils.lerp(g.position.y, lift, ease)
         if (Math.abs(g.position.y - lift) < 0.001) g.position.y = lift
-        g.traverse((c) => {
+        if (g.userData.selectionMode !== mode) g.traverse((c) => {
           if ((c as THREE.Mesh).isMesh && !c.userData.isHitVolume) {
             const material = (c as THREE.Mesh).material
             const mats = Array.isArray(material) ? material : [material]
@@ -285,31 +291,108 @@ export function CampusScene({ selected, hovered, focusToken, onHover, onSelect, 
           }
 
         })
+        g.userData.selectionMode = mode
       }
 
       camera.updateMatrixWorld()
-      // Project the selected footprint into the same DOM coordinate space as the sign.
-      const sign = mount.parentElement?.parentElement?.querySelector<HTMLElement>(".campus-arrival-dock")
+      root.updateMatrixWorld(true)
+      const frame = [selectedRef.current, hoveredRef.current, look.x, look.y, look.z, orbit.radius, orbit.theta, orbit.phi, mount.clientWidth, mount.clientHeight, ...[...meshById.values()].map(g => g.position.y)].join(":")
+      // All destinations use the same projected bounds and collision-aware sign placement.
+      const stage = mount.parentElement?.parentElement
+      const sign = stage?.querySelector<HTMLElement>(".campus-arrival-dock")
+      const tether = stage?.querySelector<SVGSVGElement>(".campus-sign-tether")
       const activeGroup = selectedRef.current ? meshById.get(selectedRef.current) : undefined
-      if (sign && activeGroup) {
-        const fp = activeGroup.userData.footprint
-        const point = new THREE.Vector3(activeGroup.position.x + fp.x, 0.12, activeGroup.position.z + fp.z + fp.depth / 2).project(camera)
-        const px = (point.x * 0.5 + 0.5) * mount.clientWidth
-        const py = (-point.y * 0.5 + 0.5) * mount.clientHeight
-        const half = Math.min(170, (mount.clientWidth - 24) / 2)
-        const sx = THREE.MathUtils.clamp(px, half + 12, mount.clientWidth - half - 12)
-        const sy = THREE.MathUtils.clamp(py + 38, 150, mount.clientHeight - 100)
-        sign.style.left = `${sx}px`; sign.style.top = `${sy}px`
-        sign.style.setProperty("--tether-x", `${px - sx + half}px`)
-        sign.style.setProperty("--tether-height", `${Math.max(18, sy - py)}px`)
+      const signFrame = `${frame}:${sign?.offsetWidth}:${sign?.offsetHeight}`
+      if (sign && tether && activeGroup && (signFrame !== lastSignFrame || sign.style.visibility !== "visible")) {
+        lastSignFrame = signFrame
+        const width = mount.clientWidth, height = mount.clientHeight
+        const project = (v: THREE.Vector3) => {
+          const p = v.project(camera)
+          return { x: (p.x * 0.5 + 0.5) * width, y: (-p.y * 0.5 + 0.5) * height }
+        }
+        const rects = [...meshById.values()].map((group) => {
+          const box = group.userData.bounds as THREE.Box3
+          const points = []
+          for (const x of [box.min.x, box.max.x]) for (const y of [box.min.y, box.max.y]) for (const z of [box.min.z, box.max.z]) {
+            points.push(project(new THREE.Vector3(x, y, z).add(group.position)))
+          }
+          return { group, left: Math.min(...points.map(p => p.x)), right: Math.max(...points.map(p => p.x)), top: Math.min(...points.map(p => p.y)), bottom: Math.max(...points.map(p => p.y)) }
+        })
+        const box = activeGroup.userData.bounds as THREE.Box3
+        // The front facade is part of the selected mass, even when lifted off its footprint.
+        const fallback = project(new THREE.Vector3((box.min.x + box.max.x) / 2, box.max.y * 0.38, box.max.z - 0.16).add(activeGroup.position))
+        const activeRect = rects.find(r => r.group === activeGroup)!
+        const anchors: { x: number; y: number }[] = []
+        // Sample real, visible surfaces so a rear hall's tether never starts on
+        // an intervening tower, or on empty space inside its bounding rectangle.
+        for (const [u, v] of [[0.5, 0.65], [0.5, 0.4], [0.3, 0.35], [0.7, 0.35], [0.3, 0.65], [0.7, 0.65], [0.5, 0.2]]) {
+          const x = THREE.MathUtils.lerp(activeRect.left, activeRect.right, u)
+          const y = THREE.MathUtils.lerp(activeRect.top, activeRect.bottom, v)
+          raycaster.setFromCamera(new THREE.Vector2(x / width * 2 - 1, 1 - y / height * 2), camera)
+          const visible = raycaster.intersectObjects(root.children, true).find(hit => !hit.object.userData.isHitVolume)
+          if (visible?.object.userData.buildingId === selectedRef.current) anchors.push({ x, y })
+        }
+        if (!anchors.length) anchors.push(fallback)
+        const anchor = anchors[0]
+        const sw = sign.offsetWidth, sh = sign.offsetHeight
+        const clampX = (x: number) => THREE.MathUtils.clamp(x, 16, Math.max(16, width - sw - 16))
+        const topInset = window.innerWidth >= 1024 ? 78 : 126
+        const clampY = (y: number) => THREE.MathUtils.clamp(y, topInset, Math.max(topInset, height - sh - 24))
+        let best = { x: clampX(anchor.x - sw / 2), y: clampY(anchor.y + 44), ex: anchor.x, ey: anchor.y + 44, ax: anchor.x, ay: anchor.y, score: Infinity }
+        const candidates: typeof best[] = []
+        // Search the open lawn around the silhouette, including side placements for tall landmarks.
+        for (const anchor of anchors) for (let angle = 0; angle < 16; angle++) for (const distance of [90, 150, 220, 300, 390]) {
+          const radians = angle * Math.PI / 8
+          const x = clampX(anchor.x + Math.cos(radians) * (distance + sw / 2) - sw / 2)
+          const y = clampY(anchor.y + Math.sin(radians) * (distance + sh / 2) - sh / 2)
+          const ex = THREE.MathUtils.clamp(anchor.x, x, x + sw)
+          const ey = THREE.MathUtils.clamp(anchor.y, y, y + sh)
+          let score = Math.hypot(ex - anchor.x, ey - anchor.y)
+          for (const r of rects) {
+            const overlap = Math.max(0, Math.min(x + sw + 12, r.right) - Math.max(x - 12, r.left)) * Math.max(0, Math.min(y + sh + 12, r.bottom) - Math.max(y - 12, r.top))
+            score += overlap * 25
+          }
+          candidates.push({ x, y, ex, ey, ax: anchor.x, ay: anchor.y, score })
+        }
+        // Bounding rectangles reserve room for the plaque. Actual visible surfaces
+        // judge its leader: a rear hall can overlap a tower's box without being hidden.
+        for (const candidate of candidates.sort((a, b) => a.score - b.score).slice(0, 24)) {
+          let score = candidate.score
+          for (let step = 1; step < 12; step++) {
+            const x = THREE.MathUtils.lerp(candidate.ax, candidate.ex, step / 12)
+            const y = THREE.MathUtils.lerp(candidate.ay, candidate.ey, step / 12)
+            const possible = rects.filter(r => x > r.left && x < r.right && y > r.top && y < r.bottom).map(r => r.group.children[0])
+            if (!possible.length) continue
+            raycaster.setFromCamera(new THREE.Vector2(x / width * 2 - 1, 1 - y / height * 2), camera)
+            const hit = raycaster.intersectObjects(possible, true)[0]
+            if (hit && hit.object.userData.buildingId !== selectedRef.current) score += 240
+          }
+          if (score < best.score) best = { ...candidate, score }
+        }
+        sign.style.left = `${best.x}px`; sign.style.top = `${best.y}px`
+        sign.style.visibility = "visible"
+        tether.setAttribute("viewBox", `0 0 ${width} ${height}`)
+        tether.querySelectorAll("line").forEach(line => {
+          line.setAttribute("x1", `${best.ax}`); line.setAttribute("y1", `${best.ay}`)
+          line.setAttribute("x2", `${best.ex}`); line.setAttribute("y2", `${best.ey}`)
+        })
+        const dot = tether.querySelector("circle")!
+        dot.setAttribute("cx", `${best.ax}`); dot.setAttribute("cy", `${best.ay}`)
+        tether.style.visibility = "visible"
       }
-      renderer!.render(scene, camera)
+      // This authored map has no idle animation; preserve a settled frame instead
+      // of continuously redrawing thousands of static architectural surfaces.
+      if (frame !== lastRenderedFrame) {
+        renderer.render(scene, camera)
+        lastRenderedFrame = frame
+      }
       raf = requestAnimationFrame(tick)
     }
 
     const onResize = () => {
       applyCam()
       renderer!.setSize(mount.clientWidth, mount.clientHeight)
+      lastRenderedFrame = ""
     }
     window.addEventListener("resize", onResize)
 
