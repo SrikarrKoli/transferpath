@@ -5226,108 +5226,66 @@ nextjs-portal,
 }
 
 
-/* Landing campus legend and shared destination plaque. */
-/* Landing campus guide — the same numbering and bronze rules as the map signs. */
-.campus-root { --campus-selection-paper: #f7f0df; --campus-selection-ink: #263b35; --campus-bronze: #78634d; background: #c5d4c0; }
-.campus-root .campus-directory { width: 218px; padding: 30px 22px; background: #f2eddf; }
-.campus-root .campus-directory h1 { margin-top: 30px; font-size: 25px; line-height: 1.12; letter-spacing: -.035em; font-weight: 500; }
-.campus-legend-heading { margin-top: 30px; padding-top: 14px; border-top: 1px solid #78634d55; font: italic 17px Georgia, serif; color: #536051; }
+/* Landing campus: one engraved map key, from directory to roof to cartouche. */
+.campus-root { --campus-selection-paper: #f7f0df; --campus-selection-ink: #263b35; --campus-bronze: #78634d; --campus-rule: #263b3555; background: #c5d4c0; }
+.campus-root .campus-directory { width: 218px; padding: 30px 20px 22px; background: #f2eddf; }
+.campus-root .campus-directory > a { gap: 7px; }
+.campus-root .campus-directory h1 { margin-top: 32px; font-size: 25px; line-height: 1.12; letter-spacing: -.035em; font-weight: 500; }
+.campus-root .campus-intro { color: #586353; font-size: 14px; line-height: 1.55; }
+.campus-brand-mark { width: 28px; height: 28px; flex: none; stroke: #263b35; stroke-width: 1.8; color: #263b35; }
+.campus-wordmark { font: 600 21px var(--font-fraunces), Georgia, serif; letter-spacing: -1px; }
+.campus-wordmark > span { color: #536b51; font-style: italic; }
+.campus-legend-heading { margin-top: 30px; padding-top: 14px; border-top: 1px solid var(--campus-rule); font: 18px var(--font-fraunces), Georgia, serif; color: #354b3e; }
 .campus-root .campus-directory-list { margin-top: 6px; scrollbar-width: none; }
 .campus-root .campus-directory-list::-webkit-scrollbar { display: none; }
-.campus-directory-section { margin: 20px 8px 6px; color: #655840; font: italic 15px Georgia, serif; }
-.campus-root .campus-directory-list button { border: 0; padding: 9px 8px; margin: 2px 0; color: #526052; gap: 10px; }
-.campus-legend-number { font: 12px Georgia, serif; color: #6f5d43; width: 17px; flex-shrink: 0; }
+.campus-directory-section { margin: 24px 8px 8px; font: 600 10px/1.4 var(--font-inter), sans-serif; text-transform: uppercase; letter-spacing: .14em; color: #685c48; }
+.campus-root .campus-directory-list button { border: 0; border-left: 2px solid transparent; padding: 8px 6px; margin: 2px 0; color: #526052; gap: 9px; align-items: center; background: transparent; }
+.campus-roundel, .campus-legend-number { display: inline-flex; align-items: center; justify-content: center; flex: none; width: 22px; height: 22px; border: 1px solid #263b35; border-radius: 50%; background: #f7f0df; color: #263b35; font: 600 11px/1 var(--font-inter), Arial, sans-serif; font-variant-numeric: lining-nums tabular-nums; }
+.campus-legend-number { width: 22px; height: 22px; }
 .campus-root .campus-directory-list button span span { font-size: 13px; font-weight: 450; }
-.campus-root .campus-directory-list button[aria-pressed="true"] { color: #263b35; background: #fff9eb; }
-.campus-root .campus-directory-list button[aria-pressed="true"] span span { text-decoration: underline; text-underline-offset: 5px; text-decoration-thickness: 1px; }
+.campus-root .campus-directory-list button[aria-pressed="true"] { border-left-color: #263b35; color: #263b35; }
+.campus-root .campus-directory-list button[aria-pressed="true"] span span { font-weight: 650; }
+.campus-root .campus-directory-list button[aria-pressed="true"] .campus-legend-number, .campus-roundel.is-selected { color: #f7f0df; background: #263b35; }
+.campus-directory-footer { padding-top: 15px; border-top: 1px solid var(--campus-rule); color: #586353; font-size: 10px; line-height: 1.6; }
+.campus-directory-footer p { display: flex; align-items: center; gap: 5px; }
+.campus-directory-footer .campus-roundel { width: 14px; height: 14px; }
+.campus-directory-footer .campus-roundel + .campus-roundel { margin-left: 5px; }
 .campus-root button:focus-visible, .campus-root a:focus-visible { outline: 2px solid #263b35; outline-offset: 3px; }
-.campus-map-topbar { position: absolute; inset: 0 0 auto; height: 66px; align-items: center; justify-content: flex-end; gap: 8px; padding: 0 28px; color: #263b35; z-index: 35; }
-.campus-arrival-dock { position: absolute; z-index: 30; top: 70%; left: 50%; visibility: hidden; width: min(330px, calc(100% - 24px)); display: flex; align-items: center; gap: 12px; padding: 14px 15px; border: 0; border-bottom: 2px solid #78634d; background: #f7f0df; box-shadow: none; }
-.campus-sign-tether { position: absolute; inset: 0; width: 100%; height: 100%; z-index: 29; pointer-events: none; visibility: hidden; overflow: visible; }
-.campus-tether-paper { stroke: #f7f0df; stroke-width: 4; }
-.campus-tether-ink { stroke: #78634d; stroke-width: 1.5; }
-.campus-sign-tether circle { fill: #f7f0df; stroke: #78634d; stroke-width: 1.5; }
-.campus-sign-index { color: #78634d; font: 13px Georgia, serif; align-self: flex-start; margin-top: 4px; }
-.campus-dock-copy { flex: 1; }
-.campus-dock-copy h2 { font-family: var(--font-fraunces), Georgia, serif; font-size: 21px; line-height: 1.15; letter-spacing: -.025em; }
-.campus-dock-copy p { color: #495b4e; font-size: 12px; line-height: 1.5; margin-top: 5px; }
-.campus-dock-enter { color: #334a40; padding: 8px 0 8px 10px; font-size: 12px; white-space: nowrap; }
-.campus-dock-enter span { margin-left: 6px; }
-.campus-map-footnote { position: absolute; z-index: 2; bottom: 25px; left: 28px; color: #344d3d; font: italic 17px Georgia, serif; padding: 10px 14px; background: #f2eddfeb; border-bottom: 1px solid #78634d66; }
-
-/* Landing wayfinding: engraved indices, branching route mark, garden signs. */
-.campus-brand-mark { width: 29px; height: 36px; flex: none; stroke: #415b49; stroke-width: 2; }
-.campus-wordmark { font-family: var(--font-fraunces), Georgia, serif; font-size: 18px; font-weight: 600; letter-spacing: -.7px; }
-.campus-wordmark > span { color: #536b51; font-style: italic; }
-.campus-root .campus-intro { color: #586353; font-size: 14px; line-height: 1.55; }
-.campus-root .campus-legend-heading { font-style: normal; font-size: 18px; color: #354b3e; }
-.campus-root .campus-directory-section { font: 600 11px/1.4 var(--font-inter), sans-serif; text-transform: uppercase; letter-spacing: .11em; color: #685c48; margin-top: 24px; }
-.campus-root .campus-legend-number { font-size: 14px; color: #776047; }
-.campus-root .campus-directory-list button span span { font-size: 13.5px; font-weight: 500; }
-.campus-root .campus-map-topbar a { font-size: 13px; color: #334b3e; font-weight: 550; }
-.campus-root .campus-map-topbar a:last-child { color: #f4efe6; }
-.campus-root .campus-arrival-dock { width: min(304px, calc(100% - 32px)); padding: 0; display: grid; grid-template-columns: 38px 1fr; gap: 0; border: 1px solid #8a795c55; border-radius: 2px; background: #f5efdf; }
-.campus-root .campus-sign-index { grid-row: 1 / 3; align-self: stretch; display: flex; align-items: flex-start; justify-content: center; margin: 0; padding-top: 16px; font-size: 15px; color: #705b40; border-right: 1px solid #8a795c40; }
-.campus-root .campus-dock-copy { padding: 13px 14px 10px; }
-.campus-root .campus-dock-copy h2 { font-size: 22px; font-weight: 500; line-height: 1.12; }
-.campus-root .campus-dock-copy p { font-size: 13px; line-height: 1.4; color: #405342; margin-top: 7px; }
-.campus-root .campus-dock-enter { display: flex; justify-content: space-between; align-items: center; margin: 0 14px 11px; padding: 7px 0 0; border-top: 1px solid #8a795c45; font-size: 14px; font-weight: 600; color: #2c493a; }
-.campus-root .campus-dock-enter span { font-size: 20px; line-height: 1; }
-.campus-root .campus-dock-enter:hover { color: #8a4d36; }
-.campus-root .campus-tether-paper { stroke-width: 3; }
-.campus-root .campus-tether-ink { stroke-width: 1; }
-.campus-root .campus-sign-tether circle { stroke-width: 1; }
-.campus-root .campus-map-footnote { left: 9%; bottom: 12%; display: flex; align-items: center; gap: 16px; padding: 0; border: 0; background: none; font-style: normal; }
-.campus-invitation-arrow { width: 46px; height: 46px; display: grid; place-items: center; border: 1px solid #63745780; border-radius: 50%; font: 28px Georgia, serif; }
-.campus-map-footnote strong { display: block; font: 500 23px/1.2 var(--font-fraunces), Georgia, serif; letter-spacing: -.025em; }
-.campus-map-footnote div > span { display: block; margin-top: 5px; font: 14px/1.4 sans-serif; color: #52654e; }
-@media (max-width: 700px) {
-  .campus-root .campus-map-footnote { left: 24px; bottom: 40px; }
-  .campus-root .campus-arrival-dock { width: min(280px, calc(100% - 32px)); }
-}
-
-/* Landing wayfinding finish: one paper sign system, from index to destination. */
-.campus-root { --campus-rule: #78634d66; }
-.campus-root .campus-directory-list button { border: 1px solid transparent; gap: 0; padding: 0; align-items: stretch; }
-.campus-root .campus-directory-list button > .campus-legend-number { width: 32px; padding: 9px 0; text-align: center; border-right: 1px solid transparent; }
-.campus-root .campus-directory-list button > .min-w-0 { padding: 9px 7px; }
-.campus-root .campus-directory-list button[aria-pressed="true"] { border-color: var(--campus-rule); background: var(--campus-selection-paper); }
-.campus-root .campus-directory-list button[aria-pressed="true"] > .campus-legend-number { border-color: var(--campus-rule); }
-.campus-root .campus-directory-list button[aria-pressed="true"] span span { text-decoration: none; }
-.campus-root .campus-arrival-dock { border-color: var(--campus-rule); border-radius: 0; background: var(--campus-selection-paper); }
-.campus-root .campus-sign-index { border-color: var(--campus-rule); color: var(--campus-bronze); }
-.campus-root .campus-dock-enter { border-color: var(--campus-rule); color: var(--campus-selection-ink); }
-.campus-root .campus-map-topbar a { border: 1px solid var(--campus-rule); background: var(--campus-selection-paper); color: var(--campus-selection-ink); padding: 8px 16px; box-shadow: none; }
-.campus-root .campus-map-topbar a:last-child { background: var(--campus-selection-ink); color: var(--campus-selection-paper); border-color: var(--campus-selection-ink); }
-.campus-root .campus-map-topbar a:hover, .campus-root .campus-dock-enter:hover { color: var(--campus-bronze); }
-.campus-root .campus-brand-mark { width: 31px; height: 42px; stroke: var(--campus-bronze); stroke-width: 1.6; }
-.campus-root .campus-wordmark { font-size: 21px; letter-spacing: -1px; }
-.campus-root .campus-directory > a { gap: 7px; margin-left: -3px; }
-.campus-root .campus-map-footnote { left: 64px; bottom: 44px; padding-left: 18px; border-left: 1px solid var(--campus-bronze); color: var(--campus-selection-ink); }
-.campus-root .campus-map-footnote strong { font-size: 25px; }
-.campus-root .campus-mobile-nav a, .campus-root .campus-mobile-nav button { border: 1px solid var(--campus-rule); background: var(--campus-selection-paper); color: var(--campus-selection-ink); }
-.campus-root .campus-mobile-nav button[aria-pressed="true"] { background: var(--campus-selection-ink); color: var(--campus-selection-paper); }
-@media (max-width: 700px) { .campus-root .campus-map-footnote { left: 24px; bottom: 32px; } }
-
-/* Landing pass 14: engraved paper actions and a campus invitation cartouche. */
-.campus-root .campus-action-mark { width: 22px; height: 28px; flex: none; stroke: var(--campus-bronze); stroke-width: 1.5; }
-.campus-root .campus-map-topbar { gap: 14px; height: 78px; }
-.campus-root .campus-map-topbar a { display: inline-flex; align-items: center; gap: 12px; padding: 7px 16px; font-family: var(--font-fraunces), Georgia, serif; font-size: 15px; border: 1px solid var(--campus-rule); border-bottom: 2px solid var(--campus-bronze); }
-.campus-root .campus-map-topbar a:last-child { background: var(--campus-selection-paper); color: var(--campus-selection-ink); border-color: var(--campus-bronze); }
-.campus-root .campus-map-topbar a:first-child { background: transparent; border: 0; border-bottom: 1px solid var(--campus-rule); }
-.campus-root .campus-map-topbar a:first-child .campus-action-mark { width: 16px; height: 22px; }
-.campus-root .campus-dock-enter { font: 500 17px var(--font-fraunces), Georgia, serif; padding-top: 8px; }
-.campus-root .campus-dock-enter .campus-action-mark { width: 20px; height: 25px; transform: rotate(90deg); }
-.campus-root .campus-arrival-dock { width: min(320px, calc(100% - 32px)); border-bottom: 2px solid var(--campus-bronze); }
-.campus-root .campus-map-footnote { left: 7%; bottom: 8%; width: 430px; max-width: calc(100% - 48px); padding: 19px 24px; gap: 20px; background: #f7f0dfed; border: 1px solid var(--campus-rule); border-bottom: 2px solid var(--campus-bronze); }
-.campus-root .campus-map-footnote > .campus-action-mark { width: 38px; height: 48px; }
-.campus-root .campus-map-footnote small { display: block; font: 600 10px/1.5 var(--font-inter), sans-serif; letter-spacing: .16em; color: var(--campus-bronze); margin-bottom: 7px; }
-.campus-root .campus-map-footnote strong { font-size: 28px; }
-.campus-root .campus-map-footnote div > span { max-width: 290px; font-size: 13px; line-height: 1.5; }
-@media (max-width: 700px) {
-  .campus-root .campus-map-footnote { left: 24px; bottom: 28px; padding: 14px 16px; gap: 14px; }
-  .campus-root .campus-map-footnote strong { font-size: 24px; }
-}
-
+.campus-map-topbar { position: absolute; inset: 0 0 auto; height: 78px; align-items: center; justify-content: flex-end; gap: 20px; padding: 0 28px; color: #263b35; z-index: 35; }
+.campus-root .campus-map-topbar a { display: inline-flex; align-items: center; gap: 12px; padding: 9px 16px; font: 550 15px var(--font-fraunces), Georgia, serif; border: 1px solid #263b35; border-bottom-width: 2px; background: #f7f0df; color: #263b35; box-shadow: none; }
+.campus-root .campus-map-topbar a[href="/login"] { padding: 8px 2px; background: transparent; border: 0; border-bottom: 1px solid var(--campus-rule); }
+.campus-root .campus-map-topbar a[href="/login"] .campus-action-mark { display: none; }
+.campus-action-mark { width: 24px; height: 24px; flex: none; stroke: currentColor; stroke-width: 1.8; }
+.campus-arrival-dock { position: absolute; z-index: 30; left: 3%; bottom: 3%; width: 430px; height: 194px; max-width: calc(100% - 32px); display: grid; grid-template-columns: 36px 1fr; grid-template-rows: 1fr 36px; column-gap: 17px; padding: 22px 24px 16px; border: 1px solid #263b3577; border-bottom: 2px solid #78634d; background: #f7f0df; color: #263b35; }
+.campus-cartouche-seal { padding-top: 20px; }
+.campus-cartouche-seal .campus-brand-mark, .campus-cartouche-seal .campus-roundel { width: 34px; height: 34px; font-size: 16px; }
+.campus-dock-copy small { display: block; font: 600 10px/1.5 var(--font-inter), sans-serif; text-transform: uppercase; letter-spacing: .14em; color: #78634d; margin-bottom: 6px; }
+.campus-dock-copy h2 { font: 500 29px/1.12 var(--font-fraunces), Georgia, serif; letter-spacing: -.035em; }
+.campus-dock-copy p { color: #495b4e; font-size: 12px; line-height: 1.5; margin-top: 7px; }
+.campus-dock-enter, .campus-numeral-key { grid-column: 2; border-top: 1px solid var(--campus-rule); display: flex; align-items: center; justify-content: space-between; padding-top: 10px; }
+.campus-dock-enter { color: #263b35; font: 500 18px var(--font-fraunces), Georgia, serif; }
+.campus-numeral-key .campus-roundel { width: 22px; height: 22px; }
+.campus-dock-tasks { display: flex; gap: 6px; margin-top: 9px; color: #586353; font-size: 11px; }
+.campus-dock-tasks a:hover { text-decoration: underline; }
+.campus-dock-tasks a + a::before { content: "·"; margin-right: 6px; }
+.campus-map-markers { position: absolute; inset: 0; pointer-events: none; z-index: 12; overflow: hidden; }
+.campus-map-marker { position: absolute; display: flex; align-items: center; transform: translate(-12px, -50%); pointer-events: auto; cursor: pointer; white-space: nowrap; height: 30px; background: transparent; border: 0; padding: 0; transition: opacity .2s; }
+.campus-map-marker::after { content: ""; position: absolute; top: calc(50% + 12px); left: 11px; width: 1px; height: var(--campus-stem, 12px); background: #263b3577; z-index: -1; }
+.campus-map-marker .campus-roundel { width: 24px; height: 24px; border-width: 1.25px; box-shadow: 0 0 0 1px #f7f0df; }
+.campus-map-marker[data-muted="true"] { opacity: .55; }
+.campus-map-marker[data-selected="true"] { z-index: 2; transform: translate(-15px, -50%); }
+.campus-map-marker[data-selected="true"]::after { left: 14px; top: calc(50% + 15px); height: 8px; }
+.campus-map-marker[data-selected="true"] .campus-roundel { width: 30px; height: 30px; font-size: 14px; background: #263b35; color: #f7f0df; }
+.campus-map-marker[data-hovered="true"] .campus-roundel { background: #263b35; color: #f7f0df; }
+.campus-marker-flag { display: block; padding: 4px 10px 4px 15px; margin-left: -7px; border: 1px solid #263b35; border-left: 0; background: #f7f0df; font: 16px/1.2 var(--font-fraunces), Georgia, serif; color: #263b35; position: relative; z-index: -1; }
+.campus-root .campus-mobile-nav a, .campus-root .campus-mobile-nav button { border: 1px solid var(--campus-rule); background: #f7f0df; color: #263b35; }
 .campus-root .campus-mobile-nav a { display: inline-flex; align-items: center; gap: 7px; }
-.campus-root .campus-mobile-nav .campus-action-mark { width: 15px; height: 20px; }
+.campus-root .campus-mobile-nav button[aria-pressed="true"] { background: #263b35; color: #f7f0df; }
+.campus-root .campus-mobile-nav .campus-action-mark { width: 18px; height: 18px; }
+@media (max-width: 700px) {
+  .campus-arrival-dock { left: 16px; bottom: 20px; width: 390px; height: 180px; padding: 16px; column-gap: 12px; }
+  .campus-dock-copy h2 { font-size: 25px; }
+  .campus-marker-flag { font-size: 13px; }
+}
+
+.campus-map-marker[data-side="left"] .campus-marker-flag { position: absolute; right: 23px; margin-left: 0; padding: 4px 15px 4px 10px; border: 1px solid #263b35; border-right: 0; }

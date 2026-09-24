@@ -19,7 +19,7 @@ const CampusScene = dynamic(() => import("./campus-scene").then((m) => m.CampusS
 })
 
 const DIRECTORY_GROUPS: Partial<Record<BuildingId, string>> = {
-  counselor: "Start here", library: "Academics", dorm: "Campus life",
+  quad: "Start here", library: "Academics", dorm: "Campus life",
 }
 
 const LANDING_JOBS: Record<BuildingId, string> = {
@@ -34,7 +34,13 @@ const LANDING_JOBS: Record<BuildingId, string> = {
 }
 
 function CampusWaymark() {
-  return <svg className="campus-action-mark" viewBox="0 0 32 38" fill="none" aria-hidden="true"><path d="M3 6h26M16 6v25M8 32l8-8 8 8M23 6v10h-7M3 2v8M29 2v8" /></svg>
+  return <svg className="campus-action-mark" viewBox="0 0 32 32" fill="none" aria-hidden="true"><path d="M5 16h21m-7-7 7 7-7 7M5 11v10" /></svg>
+}
+function CampusSeal() {
+  return <svg className="campus-brand-mark" viewBox="0 0 32 32" aria-hidden="true"><circle cx="16" cy="16" r="14" fill="#f7f0df" /><path d="M8 9h16v5h-2l-1-3h-3v12h3v2H11v-2h3V11h-3l-1 3H8z" fill="currentColor" stroke="none" /><path d="M19 16h9m-3-3 3 3-3 3" fill="none" /></svg>
+}
+function directoryGroup(id: BuildingId) {
+  return id === "quad" || id === "counselor" ? "Start here" : ["library", "classroom", "registrar"].includes(id) ? "Academics" : "Campus life"
 }
 
 export function CampusShell() {
@@ -100,10 +106,7 @@ export function CampusShell() {
     <div className="campus-root flex h-[100dvh] overflow-hidden bg-[#c5d4c0] text-[#1a2332]">
       <aside className="campus-directory relative z-20 hidden w-[14.5rem] shrink-0 flex-col border-r border-[#1a2332]/10 bg-[#f4efe6] px-5 py-5 lg:flex">
         <Link href="/" className="inline-flex items-center gap-2.5">
-          <svg className="campus-brand-mark" viewBox="0 0 32 38" fill="none" aria-hidden="true">
-            <path d="M3 6h26M16 6v25M8 32l8-8 8 8M23 6v10h-7" />
-            <path d="M3 2v8M29 2v8" />
-          </svg>
+          <CampusSeal />
           <span className="campus-wordmark">Transfer<span>Path</span></span>
         </Link>
 
@@ -119,7 +122,7 @@ export function CampusShell() {
         </p>
 
         <ul className="campus-directory-list mt-2 -mx-1 min-h-0 flex-1 overflow-auto">
-          {["counselor", "quad", "library", "classroom", "registrar", "dorm", "gym", "union"].map((id) => CAMPUS_BUILDINGS.find((b) => b.id === id)!).map((b) => {
+          {["quad", "counselor", "library", "classroom", "registrar", "dorm", "gym", "union"].map((id) => CAMPUS_BUILDINGS.find((b) => b.id === id)!).map((b) => {
             const on = selected === b.id
             return (
               <li key={b.id}>
@@ -151,6 +154,7 @@ export function CampusShell() {
           })}
         </ul>
 
+        <footer className="campus-directory-footer"><p><span className="campus-roundel is-selected" aria-hidden="true" /> Selected <span className="campus-roundel" aria-hidden="true" /> Destination</p></footer>
       </aside>
 
       <div className="campus-map-stage relative min-w-0 flex-1">
@@ -182,7 +186,7 @@ export function CampusShell() {
               </Link>
               <Link
                 href="/onboarding"
-                className="pointer-events-auto bg-[#1a2332] px-3.5 py-1.5 text-[12px] font-medium text-[#f4efe6] shadow-[0_1px_0_rgba(26,35,50,0.25)] hover:bg-[#1a2332]/92"
+                className="campus-start-link"
               >
                 <CampusWaymark /> {CTA_GET_STARTED}
               </Link>
@@ -193,9 +197,7 @@ export function CampusShell() {
         <div className="campus-mobile-nav absolute inset-x-0 top-4 z-20 px-3 lg:hidden">
           <div className="mb-2 flex items-center justify-between">
             <Link href="/" className="inline-flex items-center gap-2 bg-[#f4efe6]/92 px-3 py-1.5">
-              <svg className="campus-brand-mark" viewBox="0 0 32 38" fill="none" aria-hidden="true">
-                <path d="M3 6h26M16 6v25M8 32l8-8 8 8M23 6v10h-7M3 2v8M29 2v8" />
-              </svg>
+              <CampusSeal />
               <span className="campus-wordmark">Transfer<span>Path</span></span>
             </Link>
             <Link
@@ -228,21 +230,16 @@ export function CampusShell() {
         </div>
 
 
-        {dock ? (
-          <>
-          <svg className="campus-sign-tether" aria-hidden="true"><line className="campus-tether-paper" /><line className="campus-tether-ink" /><circle r="4" /></svg>
-          <section data-building={dock.id} className="campus-arrival-dock" aria-labelledby="campus-plaque-title">
-
-            <span className="campus-sign-index" aria-hidden="true">{String(CAMPUS_BUILDINGS.findIndex((b) => b.id === dock.id) + 1).padStart(2, "0")}</span>
-            <div className="campus-dock-copy">
-              <h2 id="campus-plaque-title">{dock.name}</h2>
-              <p>{LANDING_JOBS[dock.id]}</p>
-            </div>
-            <Link className="campus-dock-enter" href={campusEnterHref(dock, sessionState === "member" ? "member" : "guest")}>Enter <CampusWaymark /></Link>
-
-          </section>
-          </>
-        ) : <div className="campus-map-footnote"><CampusWaymark /><div><small>YOUR CAMPUS · 08 DESTINATIONS</small><strong>Choose a building.</strong>{" "}<span>Find your next step. Select a hall on the map or in the directory.</span></div></div>}
+        <section data-building={dock?.id} className="campus-arrival-dock" aria-labelledby="campus-plaque-title">
+          <div className="campus-cartouche-seal">{dock ? <span className="campus-roundel is-selected">{String(CAMPUS_BUILDINGS.findIndex(b => b.id === dock.id) + 1).padStart(2, "0")}</span> : <CampusSeal />}</div>
+          <div className="campus-dock-copy">
+            <small>{dock ? directoryGroup(dock.id) : "The campus · 8 destinations"}</small>
+            <h2 id="campus-plaque-title">{dock ? dock.name : "Choose a building."}</h2>
+            <p>{dock ? LANDING_JOBS[dock.id] : "Find your next step. Select a hall on the map or in the directory."}</p>
+            {dock && <nav className="campus-dock-tasks" aria-label={`${dock.name} tasks`}>{dock.tasks.map(task => <Link key={task.href} href={campusEnterHref({ id: dock.id, href: task.href }, sessionState === "member" ? "member" : "guest")}>{task.label}</Link>)}</nav>}
+          </div>
+          {dock ? <Link className="campus-dock-enter" href={campusEnterHref(dock, sessionState === "member" ? "member" : "guest")}>Enter <CampusWaymark /></Link> : <div className="campus-numeral-key" aria-label="Eight campus destinations">{CAMPUS_BUILDINGS.map((b, i) => <span className="campus-roundel" key={b.id}>{String(i + 1).padStart(2, "0")}</span>)}</div>}
+        </section>
 
       </div>
 

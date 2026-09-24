@@ -89,6 +89,20 @@ export function CampusScene({ selected, hovered, focusToken, onHover, onSelect, 
     scene.add(rim)
     const root = new THREE.Group()
     scene.add(root)
+    // Depth-tested ground ink: architecture occludes the map outline naturally.
+    const footprint = new THREE.Group()
+    const footprintGeometry = new THREE.BufferGeometry().setFromPoints([
+      new THREE.Vector3(-.5, .04, -.5), new THREE.Vector3(.5, .04, -.5),
+      new THREE.Vector3(.5, .04, .5), new THREE.Vector3(-.5, .04, .5),
+    ])
+    footprint.add(new THREE.LineLoop(footprintGeometry, new THREE.LineBasicMaterial({ color: 0x263b35, transparent: true, opacity: .55 })))
+    const paper = new THREE.MeshBasicMaterial({ color: 0xf7f0df, transparent: true, opacity: .7, side: THREE.DoubleSide, depthWrite: false })
+    for (const [x, z, w, d] of [[0, -.5, 1, .006], [0, .5, 1, .006], [-.5, 0, .006, 1], [.5, 0, .006, 1]]) {
+      const edge = new THREE.Mesh(new THREE.PlaneGeometry(w, d), paper)
+      edge.rotation.x = -Math.PI / 2; edge.position.set(x, .03, z); footprint.add(edge)
+    }
+    footprint.visible = false
+    scene.add(footprint)
 
     const applyCam = () => {
       camera.position.set(
@@ -106,13 +120,6 @@ export function CampusScene({ selected, hovered, focusToken, onHover, onSelect, 
       camera.updateProjectionMatrix()
     }
 
-    const focusBuilding = (id: BuildingId) => {
-      const b = CAMPUS_BUILDINGS.find((x) => x.id === id)
-      if (!b) return
-      lookGoal.set(b.x * 0.2, 0.7, b.z * 0.2 + 0.4)
-      radiusGoal.v = 24.5
-    }
-
     const raycaster = new THREE.Raycaster()
     const pointer = new THREE.Vector2()
     let dragging = false
@@ -122,7 +129,6 @@ export function CampusScene({ selected, hovered, focusToken, onHover, onSelect, 
     let lastFocusToken = -1
     let meshById = new Map<BuildingId, THREE.Group>()
     let people: THREE.Group[] = []
-    let obstacles: THREE.Object3D[] = []
     let water: THREE.Object3D | undefined
 
     const setPointer = (e: PointerEvent) => {
@@ -225,7 +231,7 @@ export function CampusScene({ selected, hovered, focusToken, onHover, onSelect, 
       mat.color.copy(base)
       // Preserve warm roof and limestone detail while the selected landmark lifts.
       if (mode === "dim") mat.color.convertLinearToSRGB().multiplyScalar(0.80).convertSRGBToLinear()
-      if (mode === "focus") mat.color.multiplyScalar(1.25)
+      if (mode === "focus") mat.color.multiply(new THREE.Color(0xffeed8)).multiplyScalar(1.08)
       if (mode === "hover") mat.color.offsetHSL(0, 0, 0.035)
       if (!mat.emissive?.isColor) return
       if (!mat.userData._baseEmissive?.isColor) {
@@ -235,21 +241,19 @@ export function CampusScene({ selected, hovered, focusToken, onHover, onSelect, 
       mat.emissive.copy(mat.userData._baseEmissive)
       mat.emissiveIntensity = mat.userData._baseIntensity ?? 0
       if (mode === "dim") mat.emissiveIntensity *= 0.72
-      if (mode === "focus") { mat.emissive.setHex(0xf4e7d1); mat.emissiveIntensity = 0.075 }
+      if (mode === "focus") { mat.emissive.setHex(0xf4e7d1); mat.emissiveIntensity = 0.025 }
     }
 
     const t0 = performance.now()
     let previousFrame = t0
     let lastRenderedFrame = ""
-    let lastSignFrame = ""
     const tick = (now: number) => {
       const ease = reduced ? 1 : 1 - Math.exp(-5 * Math.min((now - previousFrame) / 1000, 0.25))
       previousFrame = now
       const t = (now - t0) / 1000
       if (focusTokenRef.current !== lastFocusToken) {
         lastFocusToken = focusTokenRef.current
-        if (selectedRef.current) focusBuilding(selectedRef.current)
-        else { lookGoal.set(0.15, 0.55, 0.55); radiusGoal.v = 24.5 }
+        lookGoal.set(0.15, 0.55, 0.55); radiusGoal.v = 24.5
       }
       look.lerp(lookGoal, ease)
       if (look.distanceToSquared(lookGoal) < 0.000004) look.copy(lookGoal)
@@ -297,79 +301,55 @@ export function CampusScene({ selected, hovered, focusToken, onHover, onSelect, 
       camera.updateMatrixWorld()
       root.updateMatrixWorld(true)
       const frame = [selectedRef.current, hoveredRef.current, look.x, look.y, look.z, orbit.radius, orbit.theta, orbit.phi, mount.clientWidth, mount.clientHeight, ...[...meshById.values()].map(g => g.position.y)].join(":")
-      // All destinations use the same projected bounds and collision-aware sign placement.
-      const stage = mount.parentElement?.parentElement
-      const sign = stage?.querySelector<HTMLElement>(".campus-arrival-dock")
-      const tether = stage?.querySelector<SVGSVGElement>(".campus-sign-tether")
-      const activeGroup = selectedRef.current ? meshById.get(selectedRef.current) : undefined
-      const signFrame = `${frame}:${sign?.offsetWidth}:${sign?.offsetHeight}`
-      if (sign && tether && activeGroup && (signFrame !== lastSignFrame || sign.style.visibility !== "visible")) {
-        lastSignFrame = signFrame
-        const width = mount.clientWidth, height = mount.clientHeight
-        const project = (v: THREE.Vector3) => {
-          const p = v.project(camera)
-          return { x: (p.x * 0.5 + 0.5) * width, y: (-p.y * 0.5 + 0.5) * height }
-        }
-        const rects = [...meshById.values(), ...obstacles].map((group) => {
-          const local = group.userData.bounds as THREE.Box3 | undefined
-          const box = local ? local.clone().translate(group.position) : new THREE.Box3().setFromObject(group)
-          const points = []
-          for (const x of [box.min.x, box.max.x]) for (const y of [box.min.y, box.max.y]) for (const z of [box.min.z, box.max.z]) points.push(project(new THREE.Vector3(x, y, z)))
-          return { group, left: Math.min(...points.map(p => p.x)), right: Math.max(...points.map(p => p.x)), top: Math.min(...points.map(p => p.y)), bottom: Math.max(...points.map(p => p.y)) }
-        })
-        const box = activeGroup.userData.bounds as THREE.Box3
-        // Every leader ends at the base of the front facade; never sample upper surfaces.
-        // Center-first anchors make the entire long reading hall legible.
-        const anchors = [0.5, 0.35, 0.65].map(u => project(new THREE.Vector3(
-          THREE.MathUtils.lerp(box.min.x, box.max.x, u), 0.12, box.max.z - 0.12
-        ).add(activeGroup.position)))
-        const sw = sign.offsetWidth, sh = sign.offsetHeight
-        const inset = width >= 900 ? 40 : 16
-        const topInset = window.innerWidth >= 1024 ? 84 : 136
-        const maxX = width - sw - inset, maxY = height - sh - 28
-        let best: { x: number; y: number; ex: number; ey: number; ax: number; ay: number; score: number } | undefined
-        // Search the whole lawn, not just a ring around the selected roof.
-        // Architecture AND botanical bounds are hard exclusions, including padding.
-        for (let y = Math.max(topInset, Math.floor(height * 0.58)); y <= maxY; y += 16) for (let x = inset; x <= maxX; x += 16) {
-          if (rects.some(r => x + sw + 16 > r.left && x - 16 < r.right && y + sh + 16 > r.top && y - 16 < r.bottom)) continue
-          for (const [index, anchor] of anchors.entries()) {
-            const ex = THREE.MathUtils.clamp(anchor.x, x, x + sw)
-            const ey = THREE.MathUtils.clamp(anchor.y, y, y + sh)
-            const distance = Math.hypot(ex - anchor.x, ey - anchor.y)
-            // A lower lawn plaque counterbalances the lifted architecture.
-            let crossings = 0
-            for (const r of rects) {
-              if (r.group === activeGroup) continue
-              let lo = 0, hi = 1
-              for (const [start, end, min, max] of [[anchor.x, ex, r.left, r.right], [anchor.y, ey, r.top, r.bottom]]) {
-                const delta = end - start
-                if (Math.abs(delta) < 0.001) { if (start < min || start > max) hi = -1 }
-                else {
-                  const a = (min - start) / delta, b = (max - start) / delta
-                  lo = Math.max(lo, Math.min(a, b)); hi = Math.min(hi, Math.max(a, b))
-                }
+      const project = (v: THREE.Vector3) => {
+        const p = v.project(camera)
+        return { x: (p.x * .5 + .5) * mount.clientWidth, y: (-p.y * .5 + .5) * mount.clientHeight }
+      }
+      const markers = [...meshById].map(([id, group]) => {
+        const anchor = project((group.userData.pin as THREE.Vector3).clone().add(group.position))
+        return { id, x: anchor.x, y: anchor.y - 25, selected: id === selectedRef.current }
+      }).sort((a, b) => Number(b.selected) - Number(a.selected) || a.y - b.y)
+      const placed: { x: number; y: number; width: number }[] = []
+      for (const marker of markers) {
+        const el = mount.parentElement?.querySelector<HTMLElement>(`[data-marker="${marker.id}"]`)
+        if (!el) continue
+        const flagWidth = el.querySelector<HTMLElement>(".campus-marker-flag")?.offsetWidth ?? 0
+        if (marker.selected && (!el.dataset.side || (meshById.get(marker.id)?.position.y === .84 && el.dataset.placed !== frame))) {
+          // Sample the actual scene under either flag, including trees and roofs.
+          const obstruction = (side: number) => {
+            let score = 0
+            for (let dx = 22; dx < flagWidth + 20; dx += 12) for (const dy of [-10, 0, 10]) {
+              const x = marker.x + side * dx, y = marker.y + dy
+              if (x < 8 || x > mount.clientWidth - 8) { score += 4; continue }
+              raycaster.setFromCamera(new THREE.Vector2(x / mount.clientWidth * 2 - 1, 1 - y / mount.clientHeight * 2), camera)
+              const hit = raycaster.intersectObjects(root.children, true).find(hit => !hit.object.userData.isHitVolume)
+              if (hit && hit.point.y > .3) {
+                let object: THREE.Object3D | null = hit.object
+                let buildingId: BuildingId | undefined
+                while (object && !buildingId) { buildingId = object.userData.buildingId; object = object.parent }
+                score += buildingId === marker.id ? .15 : 3
               }
-              if (lo < hi) crossings++
             }
-            const score = distance + Math.abs(y + sh / 2 - height * 0.79) * 2.5 + index * 24 + crossings * 90
-            if (!best || score < best.score) best = { x, y, ex, ey, ax: anchor.x, ay: anchor.y, score }
+            return score
           }
+          el.dataset.side = obstruction(-1) < obstruction(1) ? "left" : "right"
+          el.dataset.placed = frame
+        } else if (!marker.selected) delete el.dataset.side
+        const width = marker.selected ? flagWidth + 23 : 24
+        const originalY = marker.y
+        for (const other of placed) {
+          if (marker.x - 15 < other.x + other.width - 11 && marker.x + width - 11 > other.x - 15 && Math.abs(marker.y - other.y) < 32) marker.y = other.y - 32
         }
-        // A tightly zoomed/panned view may contain no lawn cell. Keep art unobscured.
-        if (!best) {
-          sign.style.visibility = "hidden"; tether.style.visibility = "hidden"
-        } else {
-          sign.style.left = `${best.x}px`; sign.style.top = `${best.y}px`
-          sign.style.visibility = "visible"
-          tether.setAttribute("viewBox", `0 0 ${width} ${height}`)
-          tether.querySelectorAll("line").forEach(line => {
-            line.setAttribute("x1", `${best.ax}`); line.setAttribute("y1", `${best.ay}`)
-            line.setAttribute("x2", `${best.ex}`); line.setAttribute("y2", `${best.ey}`)
-          })
-          const dot = tether.querySelector("circle")!
-          dot.setAttribute("cx", `${best.ax}`); dot.setAttribute("cy", `${best.ay}`)
-          tether.style.visibility = "visible"
-        }
+        el.style.left = `${marker.x}px`; el.style.top = `${marker.y}px`
+        el.style.setProperty("--campus-stem", `${Math.min(18, 12 + originalY - marker.y)}px`)
+        placed.push({ x: el.dataset.side === "left" ? marker.x - flagWidth + 7 : marker.x, y: marker.y, width })
+      }
+      const active = selectedRef.current ? meshById.get(selectedRef.current) : undefined
+      footprint.visible = !!active
+      if (active) {
+        const f = active.userData.footprint as { x: number; z: number; width: number; depth: number }
+        footprint.position.set(active.position.x + f.x, 0, active.position.z + f.z)
+        footprint.scale.set(f.width, 1, f.depth)
       }
       // This authored map has no idle animation; preserve a settled frame instead
       // of continuously redrawing thousands of static architectural surfaces.
@@ -395,7 +375,6 @@ export function CampusScene({ selected, hovered, focusToken, onHover, onSelect, 
           if (!meshById.has(building.id)) throw new Error(`Missing campus landmark: ${building.id}`)
         }
         people = built.people
-        obstacles = built.obstacles
 
         setStatus("")
         applyCam()
@@ -417,6 +396,13 @@ export function CampusScene({ selected, hovered, focusToken, onHover, onSelect, 
       mount.removeEventListener("wheel", onWheel)
       mount.removeEventListener("contextmenu", onContext)
       mount.removeEventListener("dblclick", onDoubleClick)
+      footprintGeometry.dispose()
+      footprint.traverse(obj => {
+        const drawable = obj as THREE.Mesh
+        drawable.geometry?.dispose()
+        const materials = drawable.material ? (Array.isArray(drawable.material) ? drawable.material : [drawable.material]) : []
+        materials.forEach(material => material.dispose())
+      })
       pmrem?.dispose()
       renderer?.dispose()
       mount.replaceChildren()
@@ -426,6 +412,7 @@ export function CampusScene({ selected, hovered, focusToken, onHover, onSelect, 
   return (
     <div className="absolute inset-0" data-campus-ready={!status}>
       <div ref={mountRef} className="absolute inset-0 touch-none" />
+      <div className="campus-map-markers">{CAMPUS_BUILDINGS.map((b, i) => <button key={b.id} data-marker={b.id} className="campus-map-marker" data-selected={selected === b.id} data-muted={!!selected && selected !== b.id} data-hovered={!selected && hovered === b.id} aria-label={b.name} aria-pressed={selected === b.id} onClick={() => onSelect(b.id)} onMouseEnter={() => onHover(b.id)} onMouseLeave={() => onHover(null)}><span className="campus-roundel">{String(i + 1).padStart(2, "0")}</span>{selected === b.id && <span className="campus-marker-flag">{b.name}</span>}</button>)}</div>
       {status ? (
         <div className="pointer-events-none absolute inset-0 z-10 flex items-center justify-center bg-[#c8bea4]">
           <p className="font-heading text-lg font-semibold text-[#1a2332]">{status}</p>

@@ -7,7 +7,7 @@
 
 import * as THREE from "three"
 import { CAMPUS_BUILDINGS, type BuildingId } from "./campus-data"
-import { buildLandmark } from "./campus-landmarks"
+import { buildLandmark, PIN_Y } from "./campus-landmarks"
 import { C, bench, lambert, mesh, toyTree } from "./campus-kit"
 import { uniquifyMaterials } from "./campus-models"
 
@@ -98,6 +98,7 @@ export function buildCampusWorld(root: THREE.Group) {
       new THREE.MeshBasicMaterial({ visible: false, transparent: true, opacity: 0, depthWrite: false }),
     )
     hit.position.copy(center)
+    g.userData.pin = new THREE.Vector3(id === "dorm" ? .79 : id === "library" ? .15 : 0, PIN_Y[id] * hall.scale.y, 0)
     g.userData.bounds = box.clone()
     g.userData.footprint = { x: center.x, z: center.z, width: size.x + 0.45, depth: size.z + 0.45 }
     hit.userData.buildingId = id
