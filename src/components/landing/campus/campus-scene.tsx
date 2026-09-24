@@ -45,7 +45,7 @@ export function CampusScene({ selected, hovered, focusToken, onHover, onSelect, 
     const renderer = new THREE.WebGLRenderer({ antialias: true, alpha: false, powerPreference: "high-performance" })
     renderer.setPixelRatio(Math.min(window.devicePixelRatio || 1, 1.5))
     renderer.setSize(w0, h0)
-    renderer.setClearColor(0xc4c0ab, 1)
+    renderer.setClearColor(0xc5d4c0, 1)
     renderer.shadowMap.enabled = true
     renderer.shadowMap.type = THREE.PCFShadowMap
     renderer.outputColorSpace = THREE.SRGBColorSpace
@@ -54,7 +54,7 @@ export function CampusScene({ selected, hovered, focusToken, onHover, onSelect, 
     mount.appendChild(renderer.domElement)
 
     const scene = new THREE.Scene()
-    scene.fog = new THREE.Fog(0xc4c0ab, 52, 90)
+    scene.fog = new THREE.Fog(0xc5d4c0, 52, 90)
     const pmrem = new THREE.PMREMGenerator(renderer)
     scene.environment = pmrem.fromScene(new RoomEnvironment(), 0.08).texture
     scene.environmentIntensity = 0.25
@@ -63,11 +63,11 @@ export function CampusScene({ selected, hovered, focusToken, onHover, onSelect, 
     const orbit = { theta: Math.PI / 3.15, phi: 0.88, radius: 20.4 }
     const look = new THREE.Vector3(0.15, 0.55, 0.55)
     const lookGoal = look.clone()
-    const radiusGoal = { v: 22 }
+    const radiusGoal = { v: 20.4 }
 
     scene.add(new THREE.AmbientLight(0xfff4e6, 0.24))
-    scene.add(new THREE.HemisphereLight(0xc9dded, 0xb49a73, 0.65))
-    const sun = new THREE.DirectionalLight(0xffe4bc, 2.4)
+    scene.add(new THREE.HemisphereLight(0xc9dded, 0x789178, 0.65))
+    const sun = new THREE.DirectionalLight(0xfff5e5, 2.8)
     sun.position.set(-9, 15, 8)
     sun.castShadow = true
     sun.shadow.mapSize.set(2048, 2048)
@@ -86,8 +86,6 @@ export function CampusScene({ selected, hovered, focusToken, onHover, onSelect, 
     const rim = new THREE.DirectionalLight(0xfff7ee, 0.1)
     rim.position.set(4, 12, 18)
     scene.add(rim)
-    const selectionLight = new THREE.SpotLight(0xffd59c, 75, 16, 0.40, 0.75, 2)
-    scene.add(selectionLight, selectionLight.target)
     const root = new THREE.Group()
     scene.add(root)
 
@@ -99,7 +97,7 @@ export function CampusScene({ selected, hovered, focusToken, onHover, onSelect, 
       )
       camera.lookAt(look)
       const a = mount.clientWidth / Math.max(1, mount.clientHeight)
-      const f = orbit.radius * 0.3
+      const f = orbit.radius * 0.3 * Math.max(1, 0.95 / a)
       camera.left = -f * a
       camera.right = f * a
       camera.top = f
@@ -222,7 +220,7 @@ export function CampusScene({ selected, hovered, focusToken, onHover, onSelect, 
       if (!mat?.color?.isColor) return
       if (!mat.userData._baseColor?.isColor) mat.userData._baseColor = mat.color.clone()
       const base = mat.userData._baseColor as THREE.Color
-      mat.color.copy(base).multiplyScalar(mode === "dim" ? 0.72 : 1)
+      mat.color.copy(base).multiplyScalar(mode === "dim" ? 0.8 : 1)
       if (mode === "focus") mat.color.multiplyScalar(1.04)
       if (mode === "hover") mat.color.offsetHSL(0, 0, 0.035)
       if (!mat.emissive?.isColor) return
@@ -233,7 +231,7 @@ export function CampusScene({ selected, hovered, focusToken, onHover, onSelect, 
       mat.emissive.copy(mat.userData._baseEmissive)
       mat.emissiveIntensity = mat.userData._baseIntensity ?? 0
       if (mode === "dim") mat.emissiveIntensity *= 0.72
-      if (mode === "focus") { mat.emissive.setHex(0xffc77e); mat.emissiveIntensity = 0.025 }
+      if (mode === "focus") { mat.emissive.setHex(0xf4e7d1); mat.emissiveIntensity = 0.025 }
     }
 
     const t0 = performance.now()
@@ -245,7 +243,7 @@ export function CampusScene({ selected, hovered, focusToken, onHover, onSelect, 
       if (focusTokenRef.current !== lastFocusToken) {
         lastFocusToken = focusTokenRef.current
         if (selectedRef.current) focusBuilding(selectedRef.current)
-        else { lookGoal.set(0.15, 0.55, 0.55); radiusGoal.v = 22 }
+        else { lookGoal.set(0.15, 0.55, 0.55); radiusGoal.v = 20.4 }
       }
       look.lerp(lookGoal, ease)
       if (look.distanceToSquared(lookGoal) < 0.000004) look.copy(lookGoal)
@@ -266,12 +264,6 @@ export function CampusScene({ selected, hovered, focusToken, onHover, onSelect, 
       }
 
       const hasSelection = !!selectedRef.current
-      selectionLight.visible = hasSelection
-      const active = CAMPUS_BUILDINGS.find((b) => b.id === selectedRef.current)
-      if (active) {
-        selectionLight.position.set(active.x - 2, 8, active.z + 3)
-        selectionLight.target.position.set(active.x, 1, active.z)
-      }
       for (const [id, g] of meshById) {
         const isSelected = selectedRef.current === id
         const isHovered = hoveredRef.current === id
@@ -282,8 +274,7 @@ export function CampusScene({ selected, hovered, focusToken, onHover, onSelect, 
             : isHovered
               ? "hover"
               : "idle"
-        const lift = isSelected ? 0.48 : isHovered && !hasSelection ? 0.1 : 0
-        ;(g.userData.halo as THREE.Group).visible = isSelected
+        const lift = isSelected ? 0.32 : isHovered && !hasSelection ? 0.1 : 0
         g.position.y = THREE.MathUtils.lerp(g.position.y, lift, ease)
         if (Math.abs(g.position.y - lift) < 0.001) g.position.y = lift
         g.traverse((c) => {
@@ -297,6 +288,21 @@ export function CampusScene({ selected, hovered, focusToken, onHover, onSelect, 
       }
 
       camera.updateMatrixWorld()
+      // Project the selected footprint into the same DOM coordinate space as the sign.
+      const sign = mount.parentElement?.parentElement?.querySelector<HTMLElement>(".campus-arrival-dock")
+      const activeGroup = selectedRef.current ? meshById.get(selectedRef.current) : undefined
+      if (sign && activeGroup) {
+        const fp = activeGroup.userData.footprint
+        const point = new THREE.Vector3(activeGroup.position.x + fp.x, 0.12, activeGroup.position.z + fp.z + fp.depth / 2).project(camera)
+        const px = (point.x * 0.5 + 0.5) * mount.clientWidth
+        const py = (-point.y * 0.5 + 0.5) * mount.clientHeight
+        const half = Math.min(170, (mount.clientWidth - 24) / 2)
+        const sx = THREE.MathUtils.clamp(px, half + 12, mount.clientWidth - half - 12)
+        const sy = THREE.MathUtils.clamp(py + 38, 150, mount.clientHeight - 100)
+        sign.style.left = `${sx}px`; sign.style.top = `${sy}px`
+        sign.style.setProperty("--tether-x", `${px - sx + half}px`)
+        sign.style.setProperty("--tether-height", `${Math.max(18, sy - py)}px`)
+      }
       renderer!.render(scene, camera)
       raf = requestAnimationFrame(tick)
     }

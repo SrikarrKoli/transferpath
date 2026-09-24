@@ -310,48 +310,43 @@ export function hedge(w: number, h: number, d: number, x: number, z: number, mat
   return rbox(w, h, d, mat, x, h / 2, z, 0.06, false)
 }
 
+/** Botanical silhouettes: layered cypress sprays, spreading oak, open pecan. */
 export function toyTree(x: number, z: number, seed: number) {
-  const g = new THREE.Group()
-  const bark = hold(C.trunk)
-  const variants = [
-    [[-0.82,-0.24],[-0.48,-0.57],[0.14,-0.48],[0.66,-0.16],[0.81,0.21],[0.26,0.48],[-0.39,0.35]],
-    [[-0.48,-0.31],[-0.15,-0.61],[0.33,-0.35],[0.51,0.14],[0.14,0.6],[-0.33,0.29]],
-    [[-0.74,-0.16],[-0.2,-0.42],[0.41,-0.5],[0.69,0.02],[0.35,0.38],[-0.1,0.28],[-0.64,0.45]],
-  ]
-  const outline = variants[seed % 3]
-  const trunk = mesh(new THREE.CylinderGeometry(0.035, 0.075, 1.25, 5), bark, 0, 0.62, 0)
-  trunk.rotation.z = -0.15
-  g.add(trunk)
-  // Hand-drawn angular canopy: broad folded planes, never spheres or sphere clusters.
-  const vertices: number[] = []
-  const top = [0.12, 1.92 + (seed % 3) * 0.12, -0.08]
-  const bottom = [-0.08, 1.16, 0.06]
-  outline.forEach(([px, pz], i) => {
-    const next = outline[(i + 1) % outline.length]
-    const y = 1.48 + (i % 3) * 0.12
-    const ny = 1.48 + ((i + 1) % outline.length % 3) * 0.12
-    vertices.push(...top, px, y, pz, next[0], ny, next[1])
-    vertices.push(...bottom, next[0], ny, next[1], px, y, pz)
-  })
-  const geo = new THREE.BufferGeometry()
-  geo.setAttribute("position", new THREE.Float32BufferAttribute(vertices, 3))
-  geo.computeVertexNormals()
-  const canopy = mesh(geo, hold([0x65764b, 0x7b8150, 0x526b56][seed % 3], { side: THREE.DoubleSide, flatShading: true }), 0, 0, 0)
-  g.add(canopy)
-  const sideCrown = new THREE.Mesh(geo, hold([0x718058, 0x85865d, 0x607558][seed % 3], { side: THREE.DoubleSide, flatShading: true }))
-  sideCrown.scale.set(0.72, 0.68, 0.8)
-  sideCrown.rotation.y = 1.4
-  sideCrown.position.set(-0.42, 0.34, 0.12)
-  sideCrown.castShadow = true
-  sideCrown.receiveShadow = true
-  g.add(sideCrown)
-  for (const direction of [-1, 1]) {
-    const branch = mesh(new THREE.CylinderGeometry(0.022, 0.045, 0.68, 5), bark, direction * 0.18, 1.1, 0.04)
-    branch.rotation.z = direction * -0.65
-    g.add(branch)
+  const g = new THREE.Group(), bark = hold(0x716450)
+  const species = seed % 3
+  const foliage = [0x426c59, 0x63815c, 0x789061][species]
+  const branch = (a: THREE.Vector3, b: THREE.Vector3, radius: number) => {
+    const limb = mesh(new THREE.CylinderGeometry(radius * 0.45, radius, a.distanceTo(b), 7), bark)
+    limb.position.copy(a).add(b).multiplyScalar(0.5)
+    limb.quaternion.setFromUnitVectors(new THREE.Vector3(0, 1, 0), b.clone().sub(a).normalize()); g.add(limb)
   }
-  g.rotation.y = seed * 1.7
-  g.scale.setScalar(0.83 + (seed % 4) * 0.08)
+  const height = species === 0 ? 2.65 : 1.95 + (seed % 4) * 0.13
+  branch(new THREE.Vector3(), new THREE.Vector3(0.12, height * 0.85, 0), 0.065)
+  // Irregular radial leaf sprays, built from tapered rings rather than spheres.
+  const spray = (cx: number, cy: number, cz: number, radius: number, tall: number, phase: number) => {
+    const points: THREE.Vector2[] = []
+    for (const [r, y] of [[0.18, 0], [0.84, 0.18], [1, 0.38], [0.74, 0.68], [0.08, 1]]) points.push(new THREE.Vector2(r * radius, y * tall))
+    const geo = new THREE.LatheGeometry(points, 11)
+    const pos = geo.getAttribute("position")
+    for (let i = 0; i < pos.count; i++) { const k = 1 + 0.13 * Math.sin(i * 7.3 + phase); pos.setXYZ(i, pos.getX(i) * k, pos.getY(i), pos.getZ(i) * k) }
+    geo.computeVertexNormals()
+    const crown = mesh(geo, hold(foliage + (Math.floor(phase) % 3) * 0x030302, { side: THREE.DoubleSide }), cx, cy, cz)
+    g.add(crown)
+  }
+  if (species === 0) {
+    for (let i = 0; i < 6; i++) spray(0.08, 0.6 + i * 0.33, 0, 0.46 - i * 0.055, 0.82, seed + i)
+  } else {
+    const count = species === 1 ? 8 : 6
+    for (let i = 0; i < count; i++) {
+      const angle = i * 2.4 + seed, reach = (species === 1 ? 0.68 : 0.53) * (0.65 + i % 3 * 0.16)
+      const end = new THREE.Vector3(Math.cos(angle) * reach, height * (0.54 + i % 3 * 0.12), Math.sin(angle) * reach)
+      branch(new THREE.Vector3(0.04, 0.6 + i * 0.07, 0), end, 0.033)
+      spray(end.x, end.y - 0.12, end.z, species === 1 ? 0.54 : 0.36, species === 1 ? 0.52 : 0.83, seed + i)
+    }
+  }
+  g.rotation.z = (seed % 3 - 1) * 0.055
+  g.rotation.y = seed * 1.71
+  g.scale.setScalar(0.86 + seed % 4 * 0.07)
   g.position.set(x, 0, z)
   return g
 }

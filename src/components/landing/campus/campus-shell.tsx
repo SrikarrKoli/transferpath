@@ -114,7 +114,7 @@ export function CampusShell() {
           {REGION_TAGLINE}
         </p>
 
-        <p className="mt-7 text-[10px] font-medium uppercase tracking-[0.14em] text-[#1a2332]/36">
+        <p className="campus-legend-heading">
           Directory
         </p>
 
@@ -134,10 +134,11 @@ export function CampusShell() {
                   onMouseLeave={() => setHovered(null)}
                   className={`flex w-full items-baseline gap-2 py-2 pl-2.5 pr-1 text-left transition-colors ${
                     on
-                      ? "border-l-2 border-l-[#1a2332] bg-[rgba(26,35,50,0.03)] pl-2 font-semibold text-[#1a2332]"
-                      : "border-l-2 border-l-transparent text-[#1a2332]/72 hover:bg-[rgba(26,35,50,0.025)]"
+                      ? "bg-[rgba(26,35,50,0.03)] pl-2 font-semibold text-[#1a2332]"
+                      : "text-[#1a2332]/72 hover:bg-[rgba(26,35,50,0.025)]"
                   }`}
                 >
+                  <span className="campus-legend-number" aria-hidden="true">{String(CAMPUS_BUILDINGS.findIndex((item) => item.id === b.id) + 1).padStart(2, "0")}</span>
                   <span className="min-w-0">
                     <span className={`block text-[13.5px] leading-tight ${on ? "font-semibold" : "font-medium"}`}>
                       {b.name}
@@ -233,9 +234,7 @@ export function CampusShell() {
         {dock ? (
           <section data-building={dock.id} className="campus-arrival-dock" aria-labelledby="campus-plaque-title">
 
-            <svg className="campus-plaque-mark" viewBox="0 0 48 48" fill="none" stroke="currentColor" strokeWidth="1.2" aria-hidden="true">
-              {dock.id === "quad" ? <><path d="M15 42V15h18v27M11 10h26M18 10V5h12v5"/><circle cx="24" cy="24" r="7"/><path d="M24 19v5l4 2"/></> : dock.id === "library" ? <><path d="M5 40V13h9v27M14 20l10-5v25M24 20l10-5v25M34 20l9-5v25M5 40h38M8 17h3"/><path d="M18 27v9m10-9v9m10-9v9"/></> : <><path d="M5 40h38M9 40V18l15-7 15 7v22M15 23v10m9-10v10m9-10v10M6 16l18-9 18 9"/></>}
-            </svg>
+            <span className="campus-sign-index" aria-hidden="true">{String(CAMPUS_BUILDINGS.findIndex((b) => b.id === dock.id) + 1).padStart(2, "0")}</span>
             <div className="campus-dock-copy">
               <h2 id="campus-plaque-title">{dock.name}</h2>
               <p>{LANDING_JOBS[dock.id]}</p>
