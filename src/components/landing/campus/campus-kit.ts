@@ -326,22 +326,22 @@ export function toyTree(x: number, z: number, seed: number) {
   const spray = (cx: number, cy: number, cz: number, radius: number, tall: number, phase: number) => {
     const points: THREE.Vector2[] = []
     for (const [r, y] of [[0.18, 0], [0.84, 0.18], [1, 0.38], [0.74, 0.68], [0.08, 1]]) points.push(new THREE.Vector2(r * radius, y * tall))
-    const geo = new THREE.LatheGeometry(new THREE.SplineCurve(points).getPoints(18), 24)
+    const geo = new THREE.LatheGeometry(points, 7 + Math.floor(phase) % 3)
     const pos = geo.getAttribute("position")
     for (let i = 0; i < pos.count; i++) { const angle = Math.atan2(pos.getZ(i), pos.getX(i)); const k = 1 + 0.075 * Math.sin(angle * 5 + phase) + 0.035 * Math.cos(angle * 3 + pos.getY(i) * 4); pos.setXYZ(i, pos.getX(i) * k, pos.getY(i), pos.getZ(i) * k) }
     geo.computeVertexNormals()
-    const crown = mesh(geo, hold(foliage + (Math.floor(phase) % 3) * 0x030302, { side: THREE.DoubleSide }), cx, cy, cz)
+    const crown = mesh(geo, hold(foliage + (Math.floor(phase) % 3) * 0x030302, { side: THREE.DoubleSide, flatShading: true }), cx, cy, cz)
     g.add(crown)
   }
   if (species === 0) {
-    for (let i = 0; i < 6; i++) spray(0.08, 0.6 + i * 0.33, 0, 0.46 - i * 0.055, 0.82, seed + i)
+    for (let i = 0; i < 5; i++) spray(0.08 + Math.sin(i + seed) * 0.035, 0.6 + i * 0.4, 0, 0.43 - i * 0.06, 0.88, seed + i)
   } else {
     const count = species === 1 ? 5 : 4
     for (let i = 0; i < count; i++) {
       const angle = i * 2.4 + seed, reach = (species === 1 ? 0.68 : 0.53) * (0.65 + i % 3 * 0.16)
       const end = new THREE.Vector3(Math.cos(angle) * reach, height * (0.48 + i * 0.105), Math.sin(angle) * reach)
       branch(new THREE.Vector3(0.04, 0.6 + i * 0.07, 0), end, 0.033)
-      spray(end.x, end.y - 0.12, end.z, species === 1 ? 0.57 : 0.38, species === 1 ? 0.67 : 0.94, seed + i)
+      spray(end.x, end.y - 0.12, end.z, species === 1 ? 0.49 : 0.32, species === 1 ? 0.58 : 0.88, seed + i)
     }
   }
   g.rotation.z = (seed % 3 - 1) * 0.055

@@ -11,6 +11,10 @@ import { buildLandmark } from "./campus-landmarks"
 import { C, bench, lambert, mesh, toyTree } from "./campus-kit"
 import { uniquifyMaterials } from "./campus-models"
 
+function holdPlant(i: number) {
+  return lambert([0x607451, 0x72805b, 0x4d674e][i % 3], { flatShading: true })
+}
+
 function tag(obj: THREE.Object3D, id: BuildingId) {
   obj.userData.buildingId = id
   obj.traverse((c) => {
@@ -32,18 +36,16 @@ export function buildCampusWorld(root: THREE.Group) {
     ctx.fillStyle = color
     ctx.fillRect(origin + (x - w / 2) * scale, origin + (z - d / 2) * scale, w * scale, d * scale)
   }
-  // Long walks continue beyond the built court, rooting the campus in a landscape.
-  rect(0, 0.8, 32, 0.85, "#eee4cb")
-  rect(-2.5, 0, 0.72, 32, "#eee4cb")
-  rect(2.5, 0, 0.72, 32, "#eee4cb")
-  rect(0, 4.95, 32, 0.65, "#eee4cb")
-  rect(0, -4.8, 32, 0.65, "#eee4cb")
-  rect(-6.6, 0, 0.65, 32, "#eee4cb")
-  rect(6.6, 0, 0.65, 32, "#eee4cb")
+  // Bounded garden walks connect the court; open lawn frames the architecture.
+  rect(0, 0.8, 10.6, 0.32, "#d2d0b7")
+  rect(-2.5, 0.1, 0.28, 9.7, "#d2d0b7")
+  rect(2.5, 0.1, 0.28, 9.7, "#d2d0b7")
+  rect(0, 4.95, 10.6, 0.3, "#d2d0b7")
+  rect(0, -4.8, 10.6, 0.3, "#d2d0b7")
   // Clock court is a limestone oval, not a selection surface.
-  ctx.fillStyle = "#e5d9bd"
-  ctx.beginPath(); ctx.ellipse(origin, origin - 0.2 * scale, 1.65 * scale, 1.8 * scale, 0, 0, Math.PI * 2); ctx.fill()
-  for (const b of CAMPUS_BUILDINGS) rect(b.x, b.z + 0.4, b.id === "library" ? 4.5 : 2.8, 2.5, "#e9dfc6")
+  ctx.fillStyle = "#d9d3b9"
+  ctx.beginPath(); ctx.ellipse(origin, origin - 0.2 * scale, 1.35 * scale, 1.5 * scale, 0, 0, Math.PI * 2); ctx.fill()
+  for (const b of CAMPUS_BUILDINGS) rect(b.x, b.z + 0.4, b.id === "library" ? 4.5 : 2.8, 2.5, "#d9d3b9")
   let seed = 83
   for (let i = 0; i < 125000; i++) {
     seed = (seed * 16807) % 2147483647; const x = seed % 2048
@@ -59,31 +61,16 @@ export function buildCampusWorld(root: THREE.Group) {
   const beyond = mesh(new THREE.PlaneGeometry(180, 180), lambert(0xb6c9ac), 0, -0.015, 0, false)
   beyond.rotation.x = -Math.PI / 2; root.add(beyond)
   for (const [x, z, w] of [[-4.3, -4.1, 2.9], [4.5, -2.4, 2.4], [-4.1, 2.55, 1.7], [0, 5.6, 3.4]]) {
-    // Low scalloped planting beds, with individual tapered leaf fans.
-    const bed = new THREE.Shape()
-    bed.moveTo(-w / 2 + 0.25, -0.25)
-    bed.lineTo(w / 2 - 0.25, -0.25)
-    bed.absarc(w / 2 - 0.25, 0, 0.25, -Math.PI / 2, Math.PI / 2, false)
-    bed.lineTo(-w / 2 + 0.25, 0.25)
-    bed.absarc(-w / 2 + 0.25, 0, 0.25, Math.PI / 2, Math.PI * 1.5, false)
-    const soil = mesh(new THREE.ExtrudeGeometry(bed, { depth: 0.045, bevelEnabled: false, curveSegments: 16 }), lambert(0x938b70), x, 0.01, z, false)
-    soil.rotation.x = -Math.PI / 2; city.add(soil)
-    for (let i = 0; i < Math.floor(w / 0.23); i++) {
-      const px = x - w / 2 + 0.18 + i * 0.23
-      const plant = new THREE.Group()
-      const leafShape = new THREE.Shape()
-      leafShape.moveTo(0, 0)
-      leafShape.quadraticCurveTo(-0.12, 0.17, 0, 0.4)
-      leafShape.quadraticCurveTo(0.09, 0.15, 0, 0)
-      const leafGeometry = new THREE.ShapeGeometry(leafShape, 8)
-      for (let leaf = 0; leaf < 7; leaf++) {
-        const blade = mesh(leafGeometry, lambert(leaf % 3 ? 0x637b53 : 0x8d9b72, { side: THREE.DoubleSide }), 0, 0, 0, false)
-        blade.rotation.set(0.35 + leaf % 3 * 0.3, leaf * 2.4 + i, 0.15)
-        blade.scale.setScalar(1.0 + (i + leaf) % 4 * 0.15)
-        plant.add(blade)
-      }
-      plant.position.set(px, 0.07, z + Math.sin(i * 2.4) * 0.11)
-      city.add(plant)
+    // Limestone-edged beds echo the stepped building plinths.
+    city.add(mesh(new THREE.BoxGeometry(w, 0.075, 0.48), lambert(C.creamDeep), x, 0.04, z, false))
+    city.add(mesh(new THREE.BoxGeometry(w - 0.12, 0.035, 0.34), lambert(0x777a5b), x, 0.09, z, false))
+    for (let i = 0; i < Math.floor(w / 0.39); i++) {
+      const px = x - w / 2 + 0.24 + i * 0.39
+      const h = 0.19 + (i % 3) * 0.065
+      const shrub = mesh(new THREE.DodecahedronGeometry(0.23, 0), holdPlant(i), px, 0.13 + h / 2, z + Math.sin(i * 2.4) * 0.045)
+      shrub.scale.set(1.1, h / 0.3, 0.72)
+      shrub.rotation.y = i * 0.73
+      city.add(shrub)
     }
   }
 

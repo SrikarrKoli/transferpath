@@ -280,7 +280,7 @@ export function CampusScene({ selected, hovered, focusToken, onHover, onSelect, 
             : isHovered
               ? "hover"
               : "idle"
-        const lift = isSelected ? 0.42 : isHovered && !hasSelection ? 0.1 : 0
+        const lift = isSelected ? 0.48 : isHovered && !hasSelection ? 0.1 : 0
         g.position.y = THREE.MathUtils.lerp(g.position.y, lift, ease)
         if (Math.abs(g.position.y - lift) < 0.001) g.position.y = lift
         if (g.userData.selectionMode !== mode) g.traverse((c) => {
@@ -325,7 +325,7 @@ export function CampusScene({ selected, hovered, focusToken, onHover, onSelect, 
         const anchors: { x: number; y: number }[] = []
         // Sample real, visible surfaces so a rear hall's tether never starts on
         // an intervening tower, or on empty space inside its bounding rectangle.
-        for (const [u, v] of [[0.5, 0.65], [0.5, 0.4], [0.3, 0.35], [0.7, 0.35], [0.3, 0.65], [0.7, 0.65], [0.5, 0.2]]) {
+        for (const [u, v] of [[0.12, 0.78], [0.88, 0.78], [0.2, 0.88], [0.8, 0.88], [0.15, 0.5], [0.85, 0.5], [0.25, 0.7], [0.75, 0.7], [0.5, 0.2], [0.5, 0.65]]) {
           const x = THREE.MathUtils.lerp(activeRect.left, activeRect.right, u)
           const y = THREE.MathUtils.lerp(activeRect.top, activeRect.bottom, v)
           raycaster.setFromCamera(new THREE.Vector2(x / width * 2 - 1, 1 - y / height * 2), camera)
@@ -341,13 +341,13 @@ export function CampusScene({ selected, hovered, focusToken, onHover, onSelect, 
         let best = { x: clampX(anchor.x - sw / 2), y: clampY(anchor.y + 44), ex: anchor.x, ey: anchor.y + 44, ax: anchor.x, ay: anchor.y, score: Infinity }
         const candidates: typeof best[] = []
         // Search the open lawn around the silhouette, including side placements for tall landmarks.
-        for (const anchor of anchors) for (let angle = 0; angle < 16; angle++) for (const distance of [90, 150, 220, 300, 390]) {
-          const radians = angle * Math.PI / 8
+        for (const anchor of anchors) for (let angle = 0; angle < 4; angle++) for (const distance of [24, 40, 64, 96, 140, 200]) for (const align of [-0.4, 0, 0.4]) {
+          const radians = angle * Math.PI / 2
           const x = clampX(anchor.x + Math.cos(radians) * (distance + sw / 2) - sw / 2)
-          const y = clampY(anchor.y + Math.sin(radians) * (distance + sh / 2) - sh / 2)
+          const y = clampY(anchor.y + Math.sin(radians) * (distance + sh / 2) - sh / 2 + (angle % 2 ? 0 : align * sh))
           const ex = THREE.MathUtils.clamp(anchor.x, x, x + sw)
           const ey = THREE.MathUtils.clamp(anchor.y, y, y + sh)
-          let score = Math.hypot(ex - anchor.x, ey - anchor.y)
+          let score = Math.hypot(ex - anchor.x, ey - anchor.y) * 2 + (angle % 2 ? 35 : 0) + Math.abs(align) * 10
           for (const r of rects) {
             const overlap = Math.max(0, Math.min(x + sw + 12, r.right) - Math.max(x - 12, r.left)) * Math.max(0, Math.min(y + sh + 12, r.bottom) - Math.max(y - 12, r.top))
             score += overlap * 25

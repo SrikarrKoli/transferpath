@@ -96,21 +96,17 @@ export function CampusShell() {
     <div className="campus-root flex h-[100dvh] overflow-hidden bg-[#c5d4c0] text-[#1a2332]">
       <aside className="campus-directory relative z-20 hidden w-[14.5rem] shrink-0 flex-col border-r border-[#1a2332]/10 bg-[#f4efe6] px-5 py-5 lg:flex">
         <Link href="/" className="inline-flex items-center gap-2.5">
-          <span
-            className="flex size-6 items-center justify-center border border-[#1a2332]/55 font-[family-name:var(--font-fraunces)] text-[13px] font-semibold leading-none text-[#1a2332]/80"
-            aria-hidden
-          >
-            T
-          </span>
-          <span className="font-[family-name:var(--font-fraunces)] text-[1.02rem] font-semibold tracking-tight text-[#1a2332]">
-            {PRODUCT_NAME}
-          </span>
+          <svg className="campus-brand-mark" viewBox="0 0 32 38" fill="none" aria-hidden="true">
+            <path d="M3 6h26M16 6v25M8 32l8-8 8 8M23 6v10h-7" />
+            <path d="M3 2v8M29 2v8" />
+          </svg>
+          <span className="campus-wordmark">Transfer<span>Path</span></span>
         </Link>
 
         <h1 className="mt-5 font-[family-name:var(--font-fraunces)] text-[1.35rem] font-semibold leading-[1.18] tracking-[-0.01em] text-[#1a2332]">
           Your transfer, mapped clearly.
         </h1>
-        <p className="mt-2 max-w-[14.5rem] text-[12.5px] leading-relaxed text-[#1a2332]/52">
+        <p className="campus-intro mt-2 max-w-[14.5rem]">
           {REGION_TAGLINE}
         </p>
 
@@ -193,13 +189,10 @@ export function CampusShell() {
         <div className="absolute inset-x-0 top-4 z-20 px-3 lg:hidden">
           <div className="mb-2 flex items-center justify-between">
             <Link href="/" className="inline-flex items-center gap-2 bg-[#f4efe6]/92 px-3 py-1.5">
-              <span
-                className="flex size-5 items-center justify-center border border-[#1a2332]/55 font-[family-name:var(--font-fraunces)] text-[11px] font-semibold text-[#1a2332]/80"
-                aria-hidden
-              >
-                T
-              </span>
-              <span className="font-[family-name:var(--font-fraunces)] text-sm font-semibold">{PRODUCT_NAME}</span>
+              <svg className="campus-brand-mark" viewBox="0 0 32 38" fill="none" aria-hidden="true">
+                <path d="M3 6h26M16 6v25M8 32l8-8 8 8M23 6v10h-7M3 2v8M29 2v8" />
+              </svg>
+              <span className="campus-wordmark">Transfer<span>Path</span></span>
             </Link>
             <Link
               href={sessionState === "member" ? "/dashboard" : "/onboarding"}
@@ -245,7 +238,7 @@ export function CampusShell() {
 
           </section>
           </>
-        ) : <div className="campus-map-footnote"><span>Choose a building. Find your next step. ↗</span></div>}
+        ) : <div className="campus-map-footnote"><span className="campus-invitation-arrow" aria-hidden="true">↗</span><div><strong>Choose a building.</strong><span>Find your next step.</span></div></div>}
 
       </div>
 
