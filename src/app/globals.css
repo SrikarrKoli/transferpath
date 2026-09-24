@@ -5289,3 +5289,18 @@ nextjs-portal,
 }
 
 .campus-map-marker[data-side="left"] .campus-marker-flag { position: absolute; right: 23px; margin-left: 0; padding: 4px 15px 4px 10px; border: 1px solid #263b35; border-right: 0; }
+
+/* Pass 16: engraved map typography and a compact arrival card. */
+.campus-directory-section, .campus-directory-footer, .campus-dock-copy small { font-size: 11.5px; color: #4d594c; }
+.campus-arrival-dock { height: auto; grid-template-rows: auto auto; row-gap: 15px; padding: 18px 22px 16px; border-color: #263b35; border-bottom-color: #78634d; }
+.campus-cartouche-seal { padding-top: 21px; }
+.campus-dock-copy p { font-size: 13px; color: #3f5348; }
+.campus-dock-enter { grid-column: 1 / -1; padding: 10px 14px; background: #263b35; color: #f7f0df; border: 1px solid #263b35; font-size: 17px; }
+.campus-dock-enter:hover { background: #364e43; }
+.campus-interaction-hint { grid-column: 1 / -1; display: flex; gap: 12px; border-top: 1px solid #263b3555; padding-top: 12px; color: #46584b; font-size: 11.5px; }
+.campus-map-marker .campus-roundel { width: 26px; height: 26px; font-size: 12px; }
+.campus-map-marker { transform: translate(-13px, -50%); }
+.campus-map-marker::after { left: 12px; }
+.campus-ground-labels { position: absolute; inset: 0; pointer-events: none; overflow: hidden; z-index: 11; }
+.campus-ground-label { position: absolute; transform: translate(-50%, -50%); white-space: nowrap; font: 600 12px/1.2 var(--font-inter), sans-serif; letter-spacing: .1em; text-transform: uppercase; color: #263b35; opacity: .65; }
+.campus-ground-label[data-selected="true"] { opacity: 1; }

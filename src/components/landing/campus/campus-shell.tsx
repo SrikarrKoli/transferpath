@@ -236,9 +236,9 @@ export function CampusShell() {
             <small>{dock ? directoryGroup(dock.id) : "The campus · 8 destinations"}</small>
             <h2 id="campus-plaque-title">{dock ? dock.name : "Choose a building."}</h2>
             <p>{dock ? LANDING_JOBS[dock.id] : "Find your next step. Select a hall on the map or in the directory."}</p>
-            {dock && <nav className="campus-dock-tasks" aria-label={`${dock.name} tasks`}>{dock.tasks.map(task => <Link key={task.href} href={campusEnterHref({ id: dock.id, href: task.href }, sessionState === "member" ? "member" : "guest")}>{task.label}</Link>)}</nav>}
+
           </div>
-          {dock ? <Link className="campus-dock-enter" href={campusEnterHref(dock, sessionState === "member" ? "member" : "guest")}>Enter <CampusWaymark /></Link> : <div className="campus-numeral-key" aria-label="Eight campus destinations">{CAMPUS_BUILDINGS.map((b, i) => <span className="campus-roundel" key={b.id}>{String(i + 1).padStart(2, "0")}</span>)}</div>}
+          {dock ? <Link className="campus-dock-enter" href={campusEnterHref(dock, sessionState === "member" ? "member" : "guest")}>{dock.cta} <CampusWaymark /></Link> : <div className="campus-interaction-hint">Click to preview <span>·</span> Double-click to enter</div>}
         </section>
 
       </div>

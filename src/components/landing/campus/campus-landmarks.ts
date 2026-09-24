@@ -82,12 +82,15 @@ function craftedHip(w: number, d: number, h: number, y: number, slate = false) {
   g.position.y = y
   return g
 }
-function hall(w: number, d: number, h: number, bays: number, floors = 1, roofPitch = 0.28) {
+function hall(w: number, d: number, h: number, bays: number, floors = 1, roofPitch = 0.28, vocabulary: "arch" | "square" | "strip" | "punched" = floors > 1 ? "square" : "arch") {
   const p = palette(), g = new THREE.Group()
   g.add(rbox(w, h, d, p.stone, 0, h / 2, 0, 0))
   g.add(rbox(w + 0.12, 0.18, d + 0.12, p.brick, 0, 0.09, 0, 0))
   for (const y of [h - 0.12, h - 0.23]) g.add(rbox(w + 0.06, 0.055, d + 0.06, p.brick, 0, y, 0, 0))
-  const opening = floors > 1 ? residentialBay : bay
+  const opening = vocabulary === "arch" ? bay : (parent: THREE.Group, x: number, y: number, z: number, bw: number, bh: number, colors: ReturnType<typeof palette>) => {
+    if (vocabulary === "strip") { parent.add(rbox(bw*1.5, .18, .05, colors.glass, x, y+bh*.8,z+.03,0)); return }
+    residentialBay(parent,x,y,z,bw,vocabulary === "punched" ? bh*.65 : Math.min(bh,bw*1.4),colors)
+  }
   for (let level = 0; level < floors; level++) {
     for (let i = 0; i < bays; i++) opening(g, -w / 2 + (i + 0.5) * w / bays, 0.25 + level * (h - 0.3) / floors, d / 2, w / bays * 0.57, (h - 0.4) / floors * 0.84, p)
     const side = new THREE.Group()
@@ -164,7 +167,7 @@ export function buildClassrooms() {
   return g
 }
 export function buildRegistrar() {
-  const p = palette(), g = hall(1.9, 1.45, 1.65, 3)
+  const p = palette(), g = hall(1.9, 1.45, 1.65, 3, 1, .28, "square")
   flatTop(g, 1.9, 1.45, 1.65, p)
   const loggia = hall(2.15, .65, 1.1, 5)
   flatTop(loggia, 2.15, .65, 1.1, p); loggia.position.z = .98; g.add(loggia)
@@ -176,7 +179,7 @@ export function buildDorms() {
   const g = new THREE.Group()
   const p = palette()
   for (const x of [-0.79, 0.79]) {
-    const wing = hall(1.05, 1.5, 2.65, 3, 3)
+    const wing = hall(1.05, 1.5, 2.65, 2, 3, .28, "punched")
     flatTop(wing, 1.05, 1.5, 2.65, p, true)
     wing.add(rbox(0.2, 0.55, 0.22, p.brick, -0.25, 2.72, -0.25, 0))
     flatTop(wing, 1.05, 1.5, 2.65, p, true)
@@ -186,7 +189,7 @@ export function buildDorms() {
   const link = hall(0.7, 0.7, 1.5, 1); flatTop(link, .7, .7, 1.5, p, true); link.position.z = -0.55; g.add(link); return g
 }
 export function buildRecCenter() {
-  const g = hall(2.7, 1.95, 0.82, 5, 1, 0.02), p = palette()
+  const g = hall(2.7, 1.95, 0.82, 5, 1, 0.02, "strip"), p = palette()
   g.remove(g.children[g.children.length - 1])
   // Three broad northlight sheds give the low recreation hall a sawtooth skyline.
   for (const z of [-0.62, 0, 0.62]) {

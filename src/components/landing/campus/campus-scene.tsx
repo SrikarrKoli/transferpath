@@ -96,10 +96,13 @@ export function CampusScene({ selected, hovered, focusToken, onHover, onSelect, 
       new THREE.Vector3(.5, .04, .5), new THREE.Vector3(-.5, .04, .5),
     ])
     footprint.add(new THREE.LineLoop(footprintGeometry, new THREE.LineBasicMaterial({ color: 0x263b35, transparent: true, opacity: .55 })))
-    const paper = new THREE.MeshBasicMaterial({ color: 0xf7f0df, transparent: true, opacity: .7, side: THREE.DoubleSide, depthWrite: false })
-    for (const [x, z, w, d] of [[0, -.5, 1, .006], [0, .5, 1, .006], [-.5, 0, .006, 1], [.5, 0, .006, 1]]) {
-      const edge = new THREE.Mesh(new THREE.PlaneGeometry(w, d), paper)
-      edge.rotation.x = -Math.PI / 2; edge.position.set(x, .03, z); footprint.add(edge)
+    const plate = new THREE.Mesh(new THREE.BoxGeometry(1, .28, 1), new THREE.MeshStandardMaterial({ color: 0xe4dec9, roughness: 1 }))
+    plate.position.y = .14; plate.receiveShadow = true; footprint.add(plate)
+    // Hairline border and short, depth-tested survey ticks stay on the stone.
+    footprint.children[0].position.y = .245
+    for (const x of [-.5, .5]) for (const z of [-.5, .5]) {
+      const points = [new THREE.Vector3(x - Math.sign(x)*.07, .287, z), new THREE.Vector3(x, .287, z), new THREE.Vector3(x, .287, z-Math.sign(z)*.1)]
+      footprint.add(new THREE.Line(new THREE.BufferGeometry().setFromPoints(points), new THREE.LineBasicMaterial({ color: 0x263b35 })))
     }
     footprint.visible = false
     scene.add(footprint)
@@ -284,7 +287,7 @@ export function CampusScene({ selected, hovered, focusToken, onHover, onSelect, 
             : isHovered
               ? "hover"
               : "idle"
-        const lift = isSelected ? 0.84 : isHovered && !hasSelection ? 0.1 : 0
+        const lift = isSelected ? 0.3 : isHovered && !hasSelection ? 0.1 : 0
         g.position.y = THREE.MathUtils.lerp(g.position.y, lift, ease)
         if (Math.abs(g.position.y - lift) < 0.001) g.position.y = lift
         if (g.userData.selectionMode !== mode) g.traverse((c) => {
@@ -314,27 +317,7 @@ export function CampusScene({ selected, hovered, focusToken, onHover, onSelect, 
         const el = mount.parentElement?.querySelector<HTMLElement>(`[data-marker="${marker.id}"]`)
         if (!el) continue
         const flagWidth = el.querySelector<HTMLElement>(".campus-marker-flag")?.offsetWidth ?? 0
-        if (marker.selected && (!el.dataset.side || (meshById.get(marker.id)?.position.y === .84 && el.dataset.placed !== frame))) {
-          // Sample the actual scene under either flag, including trees and roofs.
-          const obstruction = (side: number) => {
-            let score = 0
-            for (let dx = 22; dx < flagWidth + 20; dx += 12) for (const dy of [-10, 0, 10]) {
-              const x = marker.x + side * dx, y = marker.y + dy
-              if (x < 8 || x > mount.clientWidth - 8) { score += 4; continue }
-              raycaster.setFromCamera(new THREE.Vector2(x / mount.clientWidth * 2 - 1, 1 - y / mount.clientHeight * 2), camera)
-              const hit = raycaster.intersectObjects(root.children, true).find(hit => !hit.object.userData.isHitVolume)
-              if (hit && hit.point.y > .3) {
-                let object: THREE.Object3D | null = hit.object
-                let buildingId: BuildingId | undefined
-                while (object && !buildingId) { buildingId = object.userData.buildingId; object = object.parent }
-                score += buildingId === marker.id ? .15 : 3
-              }
-            }
-            return score
-          }
-          el.dataset.side = obstruction(-1) < obstruction(1) ? "left" : "right"
-          el.dataset.placed = frame
-        } else if (!marker.selected) delete el.dataset.side
+        el.dataset.side = marker.selected && marker.x + flagWidth + 30 > mount.clientWidth - 12 ? "left" : "right"
         const width = marker.selected ? flagWidth + 23 : 24
         const originalY = marker.y
         for (const other of placed) {
@@ -343,6 +326,12 @@ export function CampusScene({ selected, hovered, focusToken, onHover, onSelect, 
         el.style.left = `${marker.x}px`; el.style.top = `${marker.y}px`
         el.style.setProperty("--campus-stem", `${Math.min(18, 12 + originalY - marker.y)}px`)
         placed.push({ x: el.dataset.side === "left" ? marker.x - flagWidth + 7 : marker.x, y: marker.y, width })
+      }
+      for (const [id, group] of meshById) {
+        const label = mount.parentElement?.querySelector<HTMLElement>(`[data-ground-label="${id}"]`)
+        if (!label) continue
+        const anchor = project((group.userData.label as THREE.Vector3).clone())
+        label.style.left = `${anchor.x}px`; label.style.top = `${anchor.y}px`
       }
       const active = selectedRef.current ? meshById.get(selectedRef.current) : undefined
       footprint.visible = !!active
@@ -412,6 +401,7 @@ export function CampusScene({ selected, hovered, focusToken, onHover, onSelect, 
   return (
     <div className="absolute inset-0" data-campus-ready={!status}>
       <div ref={mountRef} className="absolute inset-0 touch-none" />
+      <div className="campus-ground-labels" aria-hidden="true">{CAMPUS_BUILDINGS.map((b, i) => <span key={b.id} className="campus-ground-label" data-ground-label={b.id} data-selected={selected === b.id}>{String(i + 1).padStart(2, "0")} · {b.id === "classroom" ? "Classrooms" : b.name}</span>)}</div>
       <div className="campus-map-markers">{CAMPUS_BUILDINGS.map((b, i) => <button key={b.id} data-marker={b.id} className="campus-map-marker" data-selected={selected === b.id} data-muted={!!selected && selected !== b.id} data-hovered={!selected && hovered === b.id} aria-label={b.name} aria-pressed={selected === b.id} onClick={() => onSelect(b.id)} onMouseEnter={() => onHover(b.id)} onMouseLeave={() => onHover(null)}><span className="campus-roundel">{String(i + 1).padStart(2, "0")}</span>{selected === b.id && <span className="campus-marker-flag">{b.name}</span>}</button>)}</div>
       {status ? (
         <div className="pointer-events-none absolute inset-0 z-10 flex items-center justify-center bg-[#c8bea4]">

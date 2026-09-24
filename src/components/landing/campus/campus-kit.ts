@@ -534,3 +534,37 @@ export function facadePlaque(n: number, x: number, y: number, z: number) {
   g.add(plate, label)
   return g
 }
+
+/** The sidebar seal, engraved on the south gateway's limestone lintel. */
+export function campusGate() {
+  const g = new THREE.Group(), stone = hold(0xe4d8bc), trim = hold(0xf5e7cb)
+  for (const x of [-.8,.8]) {
+    g.add(rbox(.28,1.2,.32,stone,x,.6,0,0), rbox(.4,.12,.44,trim,x,.08,0,0), rbox(.38,.1,.42,trim,x,1.18,0,0))
+  }
+  g.add(rbox(1.95,.36,.34,trim,0,1.37,0,0), rbox(2.08,.09,.44,stone,0,1.59,0,0))
+  const canvas = document.createElement("canvas"); canvas.width = canvas.height = 256
+  const ctx = canvas.getContext("2d")!; ctx.scale(8,8)
+  ctx.fillStyle = "#f7f0df"; ctx.beginPath(); ctx.arc(16,16,16,0,Math.PI*2); ctx.fill()
+  ctx.strokeStyle = "#263b35"; ctx.lineWidth = 1.8; ctx.beginPath(); ctx.arc(16,16,14,0,Math.PI*2); ctx.stroke()
+  ctx.fillStyle = "#263b35"; ctx.fill(new Path2D("M8 9h16v5h-2l-1-3h-3v12h3v2H11v-2h3V11h-3l-1 3H8z"))
+  ctx.stroke(new Path2D("M19 16h9m-3-3 3 3-3 3"))
+  const map = new THREE.CanvasTexture(canvas); map.colorSpace = THREE.SRGBColorSpace
+  g.add(mesh(new THREE.CylinderGeometry(.27,.27,.06,32),trim,0,1.38,.2,false))
+  g.children[g.children.length - 1].rotation.x = Math.PI / 2
+  g.add(mesh(new THREE.PlaneGeometry(.49,.49),new THREE.MeshBasicMaterial({map, transparent: true}),0,1.38,.235,false))
+  return g
+}
+export function reflectingBasin() {
+  const g = new THREE.Group()
+  g.add(mesh(new THREE.CylinderGeometry(.56,.61,.16,32),hold(0xe4d8bc),0,.08,0))
+  const rim = mesh(new THREE.TorusGeometry(.5,.065,6,32),hold(0x527f71),0,.2,0); rim.rotation.x = Math.PI/2; g.add(rim)
+  g.add(mesh(new THREE.CylinderGeometry(.45,.45,.025,32),hold(0x6e9890,{roughness:.24}),0,.16,0,false))
+  return g
+}
+export function bannerLamp(x: number, z: number, index: number) {
+  const g = new THREE.Group(), bronze = hold(0x655744)
+  g.add(mesh(new THREE.CylinderGeometry(.025,.035,1.35,8),bronze,0,.675,0),rbox(.14,.08,.14,bronze,0,.04,0,0))
+  g.add(rbox(.4,.035,.04,bronze,.15,1.16,0,0),rbox(.23,.49,.035,hold(index%2 ? 0xad6a54 : 0x527f71),.19,.88,0,0))
+  g.add(rbox(.13,.18,.13,hold(0xf3e7cb),0,1.4,0,0),hipRoof(.22,.22,.12,bronze,1.49))
+  g.position.set(x,0,z); return g
+}

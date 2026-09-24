@@ -8,7 +8,7 @@
 import * as THREE from "three"
 import { CAMPUS_BUILDINGS, type BuildingId } from "./campus-data"
 import { buildLandmark, PIN_Y } from "./campus-landmarks"
-import { C, bench, lambert, mesh, toyTree } from "./campus-kit"
+import { C, bench, lambert, mesh, toyTree, campusGate, bannerLamp, reflectingBasin, hold } from "./campus-kit"
 import { uniquifyMaterials } from "./campus-models"
 
 function holdPlant(i: number) {
@@ -23,6 +23,9 @@ function tag(obj: THREE.Object3D, id: BuildingId) {
 }
 
 export function buildCampusWorld(root: THREE.Group) {
+  // Open the courts enough for a readable engraved apron in front of each hall.
+  const positions: Record<BuildingId, [number, number]> = { quad: [0,-.9], counselor: [4.8,-1.6], library: [-.6,3.65], classroom: [-2.3,-3], registrar: [5.1,2], dorm: [-5.3,-3.4], gym: [3.5,4.8], union: [-5.2,.9] }
+  const buildings = CAMPUS_BUILDINGS.map(b => ({...b, x: positions[b.id][0], z: positions[b.id][1]}))
   const meshById = new Map<BuildingId, THREE.Group>()
   const city = new THREE.Group()
   root.add(city)
@@ -42,10 +45,11 @@ export function buildCampusWorld(root: THREE.Group) {
   rect(2.5, 0.1, 0.28, 9.7, "#d2d0b7")
   rect(0, 4.95, 10.6, 0.3, "#d2d0b7")
   rect(0, -4.8, 10.6, 0.3, "#d2d0b7")
+  rect(6.5, 6.7, .4, 2.6, "#d2d0b7")
   // Clock court is a limestone oval, not a selection surface.
   ctx.fillStyle = "#d9d3b9"
   ctx.beginPath(); ctx.ellipse(origin, origin - 0.2 * scale, 1.35 * scale, 1.5 * scale, 0, 0, Math.PI * 2); ctx.fill()
-  for (const b of CAMPUS_BUILDINGS) rect(b.x, b.z + 0.4, b.id === "library" ? 4.5 : 2.8, 2.5, "#d9d3b9")
+  for (const b of buildings) rect(b.x, b.z + 0.4, b.id === "library" ? 4.5 : 2.8, 2.5, "#d9d3b9")
   let seed = 83
   for (let i = 0; i < 125000; i++) {
     seed = (seed * 16807) % 2147483647; const x = seed % 2048
@@ -58,9 +62,9 @@ export function buildCampusWorld(root: THREE.Group) {
   const ground = mesh(new THREE.PlaneGeometry(32, 32), new THREE.MeshStandardMaterial({ map: texture, roughness: 1 }), 0, 0, 0, false)
   ground.rotation.x = -Math.PI / 2
   root.add(ground)
-  const beyond = mesh(new THREE.PlaneGeometry(180, 180), lambert(0xb6c9ac), 0, -0.015, 0, false)
+  const beyond = mesh(new THREE.PlaneGeometry(180, 180), hold(0xb6c9ac), 0, -0.015, 0, false)
   beyond.rotation.x = -Math.PI / 2; root.add(beyond)
-  for (const [x, z, w] of [[-4.3, -4.1, 2.9], [4.5, -2.4, 2.4], [-4.1, 2.55, 1.7], [0, 5.6, 3.4]]) {
+  for (const [x, z, w] of [[-4.3, -4.1, 2.9], [4.5, -2.4, 2.4], [-6.2, 2.55, 1.7], [-2.7, 6.5, 2.1]]) {
     // Limestone-edged beds echo the stepped building plinths.
     city.add(mesh(new THREE.BoxGeometry(w, 0.075, 0.48), lambert(C.creamDeep), x, 0.04, z, false))
     city.add(mesh(new THREE.BoxGeometry(w - 0.12, 0.035, 0.34), lambert(0x777a5b), x, 0.09, z, false))
@@ -75,7 +79,7 @@ export function buildCampusWorld(root: THREE.Group) {
   }
 
   const placeLandmark = (id: BuildingId) => {
-    const meta = CAMPUS_BUILDINGS.find((b) => b.id === id)!
+    const meta = buildings.find((b) => b.id === id)!
     const g = new THREE.Group()
     g.position.set(meta.x, 0, meta.z)
     const hall = buildLandmark(id)
@@ -99,8 +103,23 @@ export function buildCampusWorld(root: THREE.Group) {
     )
     hit.position.copy(center)
     g.userData.pin = new THREE.Vector3(id === "dorm" ? .79 : id === "library" ? .15 : 0, PIN_Y[id] * hall.scale.y, 0)
+    if (id === "classroom") g.userData.pin.set(-.65, 2.35, 0)
+    if (id === "registrar") g.userData.pin.set(.1, 2.55, .1)
+    g.userData.label = new THREE.Vector3(meta.x + center.x, .02, meta.z + box.max.z + .38)
+    const labelOffsets: Partial<Record<BuildingId, [number, number]>> = { quad: [1.15,-1.1], counselor: [1.65,-1.25], classroom: [-.3,.3], library: [-.25,.25], registrar: [1.75,.4], union: [.3,1.25] }
+    const offset = labelOffsets[id]
+    if (offset) { g.userData.label.x += offset[0]; g.userData.label.z += offset[1] }
     g.userData.bounds = box.clone()
-    g.userData.footprint = { x: center.x, z: center.z, width: size.x + 0.45, depth: size.z + 0.45 }
+    // Measure the base, excluding roofs and other elevated overhangs.
+    const base = new THREE.Box3()
+    hall.traverse(child => {
+      if (!(child instanceof THREE.Mesh)) return
+      const bounds = new THREE.Box3().setFromObject(child, true)
+      if (bounds.min.y < .25) base.union(bounds)
+    })
+    const baseSize = base.getSize(new THREE.Vector3())
+    const baseCenter = base.getCenter(new THREE.Vector3())
+    g.userData.footprint = { x: baseCenter.x, z: baseCenter.z, width: baseSize.x + .2, depth: baseSize.z + .2 }
     hit.userData.buildingId = id
     hit.userData.isHitVolume = true
     g.add(hit)
@@ -112,9 +131,16 @@ export function buildCampusWorld(root: THREE.Group) {
   CAMPUS_BUILDINGS.forEach((b) => placeLandmark(b.id))
 
   // Cypress, live oak, and pecan silhouettes placed at irregular court edges.
-  ;[[-5.8, 2.8], [-3.5, 3.65], [5.25, -2.45], [-5.5, -3.5], [-0.3, -4.6], [5.5, 4.1], [3.1, -3.8]].forEach(([x, z], i) => {
+  ;[[-5.8, 2.8], [-6.2, 4.1], [5.25, -2.45], [-5.5, -3.5], [-0.3, -4.6], [6.9, 3.1], [3.1, -3.8]].forEach(([x, z], i) => {
     city.add(toyTree(x, z, i))
   })
+  const gate = campusGate(); gate.position.set(6.5, 0, 7.6); gate.rotation.y = .45; city.add(gate)
+  const basin = reflectingBasin(); basin.position.set(1.35, 0, .95); city.add(basin)
+  ;[[-2.6, -3.8], [2.5, -2.8], [2.5, 1.5]].forEach(([x,z], i) => city.add(bannerLamp(x,z,i)))
+  for (const [x,z] of [[2.9, 6.2], [6.4, 1.7], [-4.9, 3.3]]) {
+    city.add(mesh(new THREE.BoxGeometry(.75,.08,.36), hold(C.creamDeep),x,.04,z,false))
+    for(let i=0;i<9;i++) city.add(mesh(new THREE.DodecahedronGeometry(.07,0),hold([0xb7796e,0xd4b8a0,0x9d655b][i%3]),x-.3+(i%5)*.14,.16+(i%2)*.04,z+(i>4?.1:-.08)))
+  }
   city.add(bench(lambert(C.creamDeep), -1.3, 1.45, 0))
   city.add(bench(lambert(C.creamDeep), 1.3, 1.45, 0))
   return { meshById, obstacles: city.children.filter(child => !child.userData.buildingId), people: [] as THREE.Group[] }
