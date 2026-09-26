@@ -215,8 +215,8 @@ export function CampusScene({ selected, hovered, focusToken, onHover, onSelect, 
       const base = mat.userData._baseColor as THREE.Color
       mat.color.copy(base)
       // Preserve warm roof and limestone detail while the selected landmark lifts.
-      if (mode === "dim") mat.color.convertLinearToSRGB().multiplyScalar(0.80).convertSRGBToLinear()
-      if (mode === "focus") mat.color.multiply(new THREE.Color(0xffeed8)).multiplyScalar(1.08)
+      if (mode === "dim") mat.color.convertLinearToSRGB().multiplyScalar(0.82).convertSRGBToLinear()
+      if (mode === "focus") mat.color.multiply(new THREE.Color(0xffe9cf)).offsetHSL(0, 0.06, 0.025).multiplyScalar(1.12)
       if (mode === "hover") mat.color.offsetHSL(0, 0, 0.035)
       if (!mat.emissive?.isColor) return
       if (!mat.userData._baseEmissive?.isColor) {
@@ -269,7 +269,7 @@ export function CampusScene({ selected, hovered, focusToken, onHover, onSelect, 
             : isHovered
               ? "hover"
               : "idle"
-        const lift = isSelected ? 0.3 : isHovered && !hasSelection ? 0.1 : 0
+        const lift = isSelected ? 0.42 : isHovered && !hasSelection ? 0.1 : 0
         g.position.y = THREE.MathUtils.lerp(g.position.y, lift, ease)
         if (Math.abs(g.position.y - lift) < 0.001) g.position.y = lift
         if (g.userData.selectionMode !== mode) g.traverse((c) => {

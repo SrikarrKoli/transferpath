@@ -135,7 +135,7 @@ export function CampusShell() {
                   onKeyDown={(event) => { if (event.key === "Enter") { event.preventDefault(); enterBuilding(b.id) } }}
                   onMouseEnter={() => setHovered(b.id)}
                   onMouseLeave={() => setHovered(null)}
-                  className={`flex w-full items-baseline gap-2 py-2 pl-2.5 pr-1 text-left transition-colors ${
+                  className={`flex w-full items-center gap-2 py-2 pl-2.5 pr-1 text-left transition-colors ${
                     on
                       ? "bg-[rgba(26,35,50,0.03)] pl-2 font-semibold text-[#1a2332]"
                       : "text-[#1a2332]/72 hover:bg-[rgba(26,35,50,0.025)]"
@@ -146,6 +146,7 @@ export function CampusShell() {
                     <span className={`block text-[13.5px] leading-tight ${on ? "font-semibold" : "font-medium"}`}>
                       {b.name}
                     </span>
+                    <span className="campus-directory-purpose">{b.short}</span>
                   </span>
                 </button>
               </li>
@@ -234,10 +235,10 @@ export function CampusShell() {
           <div className="campus-dock-copy">
             <small>{dock ? directoryGroup(dock.id) : "The campus · 8 destinations"}</small>
             <h2 id="campus-plaque-title">{dock ? dock.name : "Choose a building."}</h2>
-            <p>{dock ? LANDING_JOBS[dock.id] : "Find your next step on campus."}</p>
+            <p>{dock ? LANDING_JOBS[dock.id] : "Find your next step."}</p>
 
           </div>
-          {dock ? <Link className="campus-dock-enter" href={campusEnterHref(dock, sessionState === "member" ? "member" : "guest")}>{dock.cta} <CampusWaymark /></Link> : <div className="campus-interaction-hint">Click to preview · Double-click or Enter to go in</div>}
+          {dock ? <Link className="campus-dock-enter" href={campusEnterHref(dock, sessionState === "member" ? "member" : "guest")}>{dock.cta} <CampusWaymark /></Link> : <div className="campus-interaction-hint">Click to preview · Enter to go in</div>}
         </section>
 
       </div>

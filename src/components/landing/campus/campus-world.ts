@@ -24,7 +24,7 @@ function tag(obj: THREE.Object3D, id: BuildingId) {
 
 export function buildCampusWorld(root: THREE.Group) {
   // Open the courts enough for a readable engraved apron in front of each hall.
-  const positions: Record<BuildingId, [number, number]> = { quad: [.5,-2.3], counselor: [2.8,-6.7], library: [.3,4], classroom: [-9.5,-2.5], registrar: [8.4,-.2], dorm: [-6.35,-3.8], gym: [6.2,4], union: [-4.9,5.6] }
+  const positions: Record<BuildingId, [number, number]> = { quad: [.5,-2.3], counselor: [2.8,-6.7], library: [.3,4], classroom: [-9.5,-2.5], registrar: [7.2,-1.8], dorm: [-6.35,-3.8], gym: [4.2,4.8], union: [-4.9,5.6] }
   const buildings = CAMPUS_BUILDINGS.map(b => ({...b, x: positions[b.id][0], z: positions[b.id][1]}))
   const meshById = new Map<BuildingId, THREE.Group>()
   const city = new THREE.Group()
@@ -44,7 +44,7 @@ export function buildCampusWorld(root: THREE.Group) {
   rect(-2, .1, .24, 10.4, "#d2d0b7")
   rect(3, .8, .24, 11.8, "#d2d0b7")
   rect(.5, -6.1, 15.2, .24, "#d2d0b7")
-  rect(6.25, 3.8, 6.5, .24, "#d2d0b7")
+  rect(5.8, 4.8, 5.6, .24, "#d2d0b7")
   for (const b of buildings) {
     const edge = b.x < 0 ? -2 : 3
     rect((b.x + edge) / 2, b.z, Math.abs(b.x - edge), .24, "#d2d0b7")
@@ -124,13 +124,13 @@ export function buildCampusWorld(root: THREE.Group) {
   CAMPUS_BUILDINGS.forEach((b) => placeLandmark(b.id))
 
   // Cypress, live oak, and pecan silhouettes placed at irregular court edges.
-  ;[[-5.5, 7.5], [-5.9, 8.8], [3.25, -7.55], [-6.55, -3.9], [-4.8, -3.5], [9.9, -.1], [1.1, -8.9]].forEach(([x, z], i) => {
+  ;[[-5.5, 7.5], [-5.9, 8.8], [3.25, -7.55], [-6.55, -3.9], [-4.8, -3.5], [8.7, -1.7], [1.1, -8.9]].forEach(([x, z], i) => {
     city.add(toyTree(x, z, i))
   })
-  const gate = campusGate(); gate.position.set(9.5, 0, 3.8); gate.rotation.y = .45; city.add(gate)
+  const gate = campusGate(); gate.position.set(8.6, 0, 4.8); gate.rotation.y = .45; city.add(gate)
   const basin = reflectingBasin(); basin.position.set(2, 0, .2); city.add(basin)
   ;[[-3.8, -1.7], [5.1, -4.1], [4, .9]].forEach(([x,z], i) => city.add(bannerLamp(x,z,i)))
-  for (const [x,z] of [[7.6, 5], [9.7, -.5], [-4.6, 8]]) {
+  for (const [x,z] of [[5.6, 5.8], [8.5, -2.1], [-4.6, 8]]) {
     city.add(mesh(new THREE.BoxGeometry(.75,.08,.36), hold(C.creamDeep),x,.04,z,false))
     for(let i=0;i<9;i++) city.add(mesh(new THREE.DodecahedronGeometry(.07,0),hold([0xb7796e,0xd4b8a0,0x9d655b][i%3]),x-.3+(i%5)*.14,.16+(i%2)*.04,z+(i>4?.1:-.08)))
   }
