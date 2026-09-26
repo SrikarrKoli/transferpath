@@ -123,7 +123,7 @@ export function buildChecklistWorkspaceData(input: {
       }
       if (task.task_key === "attend_info_session") result.link = {
         label: "Find sessions",
-        href: `https://www.google.com/search?q=${encodeURIComponent(`${tgt} transfer admissions information sessions`)}`,
+        href: "/dashboard/requirements",
       }
       if (task.task_key === "request_transcript") result.hint = "Order with time for delivery and receipt before your application deadline"
       result.meta = task.task_key === "request_transcript" ? cur : tgt

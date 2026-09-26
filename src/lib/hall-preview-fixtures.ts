@@ -282,7 +282,7 @@ export const previewChecklist: ChecklistWorkspaceData = {
         { id: "research_housing", doneWhen: logisticsDoneWhen.research_housing, title: "Research housing options", meta: "UT Austin · Arrival planning",
           hint: "Compare on-campus and off-campus options", link: { label: "Open housing", href: "https://housing.utexas.edu/" } },
         { id: "attend_info_session", doneWhen: logisticsDoneWhen.attend_info_session, title: "Attend a transfer information session", meta: "UT Austin · Admissions",
-          link: { label: "Find sessions", href: "https://www.google.com/search?q=UT+Austin+transfer+admissions+information+sessions" } },
+          link: { label: "Find sessions", href: "/dashboard/requirements" } },
         { id: "plan_first_semester", doneWhen: logisticsDoneWhen.plan_first_semester, title: "Sketch your first-semester plan", meta: "Computer Science · Fall 2027",
           hint: "Build a tentative schedule to discuss with an advisor", link: { label: "Open Plan", href: "/dashboard/plan" } },
       ],

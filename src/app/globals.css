@@ -1140,7 +1140,6 @@ nextjs-portal,
 .hall-dorm-timing { display: flex; align-items: center; gap: 1rem; margin-top: 0.65rem; }
 .hall-dorm .hall-hero-date { font-size: 1.45rem; line-height: 1.1; letter-spacing: -0.02em; white-space: nowrap; }
 .hall-dorm .hall-hero-date span { display: block; font-size: 0.8rem; line-height: 1.4; letter-spacing: 0.03em; color: var(--hall-stone); }
-.hall-dorm-countdown { color: var(--hall-clay); font-size: 0.875rem; font-weight: 600; }
 .hall-dorm-context { display: block; color: var(--hall-stone); font-size: 0.8rem; }
 .hall-dorm-why { margin: 0.4rem 0 0.7rem; font-size: 0.875rem; color: var(--hall-ink); }
 .hall-dorm .union-step-actions { margin-top: 0.65rem; }
@@ -1187,7 +1186,6 @@ nextjs-portal,
 .hall-dorm .hall-dorm-category h3 { font-size: 0.8rem; }
 .hall-dorm .hall-dorm-category h3 span { letter-spacing: 0.02em; }
 .hall-dorm .hall-dorm-due { font-size: 0.85rem; }
-.hall-dorm-done-when { margin-top: 0.35rem; font-size: 0.875rem; line-height: 1.5; color: color-mix(in srgb, var(--hall-ink) 80%, var(--hall-paper)); }
 .hall-dorm .hall-check-row { padding-block: 0.8rem; scroll-margin-top: 1.5rem; }
 .hall-dorm .hall-dorm-subjects { margin-top: 0; padding-top: 0.3rem; border-top: 1px solid var(--hall-rule); }
 .hall-dorm-filter-note { margin-block: 0.55rem 0.7rem; }
@@ -5461,3 +5459,43 @@ nextjs-portal,
 .campus-cartouche-seal { padding-top: 17px; }
 .campus-interaction-hint { display: block; font-size: 12px; white-space: nowrap; }
 @media (max-width: 700px) { .campus-arrival-dock { bottom: 20px; } }
+
+/* Dorms: a milestone rail above a full-width working ledger. */
+.campus-entered[data-building="dorm"] .hall-feature {
+  font-size: 1.35rem;
+  font-weight: 600;
+  letter-spacing: -0.02em;
+  color: var(--hall-ink);
+}
+.campus-entered[data-building="dorm"] .hall-directory-link[href="/dashboard/checklist"] {
+  background: var(--hall-ink);
+  border-color: var(--hall-ink);
+  color: var(--hall-paper);
+  font-weight: 600;
+}
+.hall-dorm-main { display: contents; }
+.hall-dorm-ledger { grid-column: 1 / -1; min-width: 0; }
+.hall-dorm { row-gap: 0.5rem; }
+.hall-dorm > .hall-margin { grid-column: 2; grid-row: 1; }
+.hall-dorm-timing {
+  border-left: 3px solid var(--hall-ink);
+  padding: 0.65rem 1rem;
+  margin-block: 1rem;
+  gap: 1.25rem;
+  background: color-mix(in srgb, var(--hall-ink) 4%, var(--hall-paper));
+}
+.hall-dorm .hall-hero-date { font-size: 1.9rem; }
+.hall-dorm-timing .hall-caption { color: var(--hall-ink); font-size: 0.7rem; }
+.hall-dorm-milestone { font-size: 1rem; font-weight: 600; color: var(--hall-ink); }
+.hall-dorm .hall-dorm-context { margin-top: 0.2rem; }
+.hall-dorm .hall-dorm-category h3 { font-size: 0.85rem; letter-spacing: 0.025em; }
+.hall-dorm .hall-dorm-subjects { color: var(--hall-ink); }
+.hall-dorm .hall-ledger-link { font-size: 0.875rem; }
+.hall-dorm .hall-dorm-progress { margin-top: 0.75rem; padding-top: 0.65rem; }
+.hall-dorm .hall-dorm-moves { margin-top: 0.3rem; }
+.hall-dorm .hall-dorm-moves li { padding-block: 0.3rem; }
+.hall-dorm-resources { display: flex; flex-wrap: wrap; gap: 0.4rem 1rem; margin-top: 0.85rem; }
+@media (max-width: 959px) {
+  .hall-dorm > .hall-margin { grid-column: 1; grid-row: auto; }
+  .hall-dorm-ledger { grid-row: 2; }
+}
