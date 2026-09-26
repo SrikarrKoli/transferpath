@@ -89,24 +89,6 @@ export function CampusScene({ selected, hovered, focusToken, onHover, onSelect, 
     scene.add(rim)
     const root = new THREE.Group()
     scene.add(root)
-    // Depth-tested ground ink: architecture occludes the map outline naturally.
-    const footprint = new THREE.Group()
-    const footprintGeometry = new THREE.BufferGeometry().setFromPoints([
-      new THREE.Vector3(-.5, .04, -.5), new THREE.Vector3(.5, .04, -.5),
-      new THREE.Vector3(.5, .04, .5), new THREE.Vector3(-.5, .04, .5),
-    ])
-    footprint.add(new THREE.LineLoop(footprintGeometry, new THREE.LineBasicMaterial({ color: 0x263b35, transparent: true, opacity: .55 })))
-    const plate = new THREE.Mesh(new THREE.BoxGeometry(1, .28, 1), new THREE.MeshStandardMaterial({ color: 0xe4dec9, roughness: 1 }))
-    plate.position.y = .14; plate.receiveShadow = true; footprint.add(plate)
-    // Hairline border and short, depth-tested survey ticks stay on the stone.
-    footprint.children[0].position.y = .245
-    for (const x of [-.5, .5]) for (const z of [-.5, .5]) {
-      const points = [new THREE.Vector3(x - Math.sign(x)*.07, .287, z), new THREE.Vector3(x, .287, z), new THREE.Vector3(x, .287, z-Math.sign(z)*.1)]
-      footprint.add(new THREE.Line(new THREE.BufferGeometry().setFromPoints(points), new THREE.LineBasicMaterial({ color: 0x263b35 })))
-    }
-    footprint.visible = false
-    scene.add(footprint)
-
     const applyCam = () => {
       camera.position.set(
         look.x + orbit.radius * Math.sin(orbit.phi) * Math.cos(orbit.theta),
@@ -331,13 +313,6 @@ export function CampusScene({ selected, hovered, focusToken, onHover, onSelect, 
         const anchor = project((group.userData.label as THREE.Vector3).clone())
         label.style.left = `${anchor.x}px`; label.style.top = `${anchor.y}px`
       }
-      const active = selectedRef.current ? meshById.get(selectedRef.current) : undefined
-      footprint.visible = !!active
-      if (active) {
-        const f = active.userData.footprint as { x: number; z: number; width: number; depth: number }
-        footprint.position.set(active.position.x + f.x, 0, active.position.z + f.z)
-        footprint.scale.set(f.width, 1, f.depth)
-      }
       // This authored map has no idle animation; preserve a settled frame instead
       // of continuously redrawing thousands of static architectural surfaces.
       if (frame !== lastRenderedFrame) {
@@ -383,13 +358,6 @@ export function CampusScene({ selected, hovered, focusToken, onHover, onSelect, 
       mount.removeEventListener("wheel", onWheel)
       mount.removeEventListener("contextmenu", onContext)
       mount.removeEventListener("dblclick", onDoubleClick)
-      footprintGeometry.dispose()
-      footprint.traverse(obj => {
-        const drawable = obj as THREE.Mesh
-        drawable.geometry?.dispose()
-        const materials = drawable.material ? (Array.isArray(drawable.material) ? drawable.material : [drawable.material]) : []
-        materials.forEach(material => material.dispose())
-      })
       pmrem?.dispose()
       renderer?.dispose()
       mount.replaceChildren()
@@ -399,7 +367,7 @@ export function CampusScene({ selected, hovered, focusToken, onHover, onSelect, 
   return (
     <div className="absolute inset-0" data-campus-ready={!status}>
       <div ref={mountRef} className="absolute inset-0 touch-none" />
-      <div className="campus-ground-labels" aria-hidden="true">{CAMPUS_BUILDINGS.map((b) => <span key={b.id} className="campus-ground-label" data-ground-label={b.id} data-selected={selected === b.id} data-muted={!!selected && selected !== b.id}><em>{b.short}</em></span>)}</div>
+      <div className="campus-ground-labels" aria-hidden="true">{CAMPUS_BUILDINGS.map((b) => <span key={b.id} className="campus-ground-label" data-ground-label={b.id} data-selected={selected === b.id} data-muted={!!selected && selected !== b.id}><em>{b.short}</em><span className="campus-ground-name">{b.name}</span></span>)}</div>
       <div className="campus-map-markers">{CAMPUS_BUILDINGS.map((b, i) => <button key={b.id} data-marker={b.id} className="campus-map-marker" data-selected={selected === b.id} data-muted={!!selected && selected !== b.id} data-hovered={!selected && hovered === b.id} aria-label={b.name} aria-pressed={selected === b.id} onClick={() => onSelect(b.id)} onMouseEnter={() => onHover(b.id)} onMouseLeave={() => onHover(null)}><span className="campus-roundel">{String(i + 1).padStart(2, "0")}</span></button>)}</div>
       {status ? (
         <div className="pointer-events-none absolute inset-0 z-10 flex items-center justify-center bg-[#c8bea4]">

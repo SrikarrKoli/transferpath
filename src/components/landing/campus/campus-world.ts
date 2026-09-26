@@ -24,7 +24,7 @@ function tag(obj: THREE.Object3D, id: BuildingId) {
 
 export function buildCampusWorld(root: THREE.Group) {
   // Open the courts enough for a readable engraved apron in front of each hall.
-  const positions: Record<BuildingId, [number, number]> = { quad: [.5,-2.3], counselor: [2.8,-6.7], library: [.3,4], classroom: [-9.5,-2.5], registrar: [8.1,-1.2], dorm: [-6.35,-3.8], gym: [5,3.2], union: [-4.9,5.6] }
+  const positions: Record<BuildingId, [number, number]> = { quad: [.5,-2.3], counselor: [2.8,-6.7], library: [.3,4], classroom: [-9.5,-2.5], registrar: [8.4,-.2], dorm: [-6.35,-3.8], gym: [6.2,4], union: [-4.9,5.6] }
   const buildings = CAMPUS_BUILDINGS.map(b => ({...b, x: positions[b.id][0], z: positions[b.id][1]}))
   const meshById = new Map<BuildingId, THREE.Group>()
   const city = new THREE.Group()
@@ -44,7 +44,7 @@ export function buildCampusWorld(root: THREE.Group) {
   rect(-2, .1, .24, 10.4, "#d2d0b7")
   rect(3, .8, .24, 11.8, "#d2d0b7")
   rect(.5, -6.1, 15.2, .24, "#d2d0b7")
-  rect(5.5, 1.8, 5, .24, "#d2d0b7")
+  rect(6.25, 3.8, 6.5, .24, "#d2d0b7")
   for (const b of buildings) {
     const edge = b.x < 0 ? -2 : 3
     rect((b.x + edge) / 2, b.z, Math.abs(b.x - edge), .24, "#d2d0b7")
@@ -113,16 +113,6 @@ export function buildCampusWorld(root: THREE.Group) {
     const offset = labelOffsets[id]
     if (offset) { g.userData.label.x += offset[0]; g.userData.label.z += offset[1] }
     g.userData.bounds = box.clone()
-    // Measure the base, excluding roofs and other elevated overhangs.
-    const base = new THREE.Box3()
-    hall.traverse(child => {
-      if (!(child instanceof THREE.Mesh)) return
-      const bounds = new THREE.Box3().setFromObject(child, true)
-      if (bounds.min.y < .25) base.union(bounds)
-    })
-    const baseSize = base.getSize(new THREE.Vector3())
-    const baseCenter = base.getCenter(new THREE.Vector3())
-    g.userData.footprint = { x: baseCenter.x, z: baseCenter.z, width: baseSize.x + .2, depth: baseSize.z + .2 }
     hit.userData.buildingId = id
     hit.userData.isHitVolume = true
     g.add(hit)
@@ -137,10 +127,10 @@ export function buildCampusWorld(root: THREE.Group) {
   ;[[-5.5, 7.5], [-5.9, 8.8], [3.25, -7.55], [-6.55, -3.9], [-4.8, -3.5], [9.9, -.1], [1.1, -8.9]].forEach(([x, z], i) => {
     city.add(toyTree(x, z, i))
   })
-  const gate = campusGate(); gate.position.set(8, 0, 1.8); gate.rotation.y = .45; city.add(gate)
+  const gate = campusGate(); gate.position.set(9.5, 0, 3.8); gate.rotation.y = .45; city.add(gate)
   const basin = reflectingBasin(); basin.position.set(2, 0, .2); city.add(basin)
   ;[[-3.8, -1.7], [5.1, -4.1], [4, .9]].forEach(([x,z], i) => city.add(bannerLamp(x,z,i)))
-  for (const [x,z] of [[6.4, 4.2], [9.4, -1.5], [-4.6, 8]]) {
+  for (const [x,z] of [[7.6, 5], [9.7, -.5], [-4.6, 8]]) {
     city.add(mesh(new THREE.BoxGeometry(.75,.08,.36), hold(C.creamDeep),x,.04,z,false))
     for(let i=0;i<9;i++) city.add(mesh(new THREE.DodecahedronGeometry(.07,0),hold([0xb7796e,0xd4b8a0,0x9d655b][i%3]),x-.3+(i%5)*.14,.16+(i%2)*.04,z+(i>4?.1:-.08)))
   }

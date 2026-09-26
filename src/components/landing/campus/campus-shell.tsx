@@ -146,8 +146,6 @@ export function CampusShell() {
                     <span className={`block text-[13.5px] leading-tight ${on ? "font-semibold" : "font-medium"}`}>
                       {b.name}
                     </span>
-                    <span className="campus-directory-job">{LANDING_JOBS[b.id]}</span>
-
                   </span>
                 </button>
               </li>
@@ -236,10 +234,10 @@ export function CampusShell() {
           <div className="campus-dock-copy">
             <small>{dock ? directoryGroup(dock.id) : "The campus · 8 destinations"}</small>
             <h2 id="campus-plaque-title">{dock ? dock.name : "Choose a building."}</h2>
-            <p>{dock ? LANDING_JOBS[dock.id] : "Find your next step. Select a hall on the map or in the directory."}</p>
+            <p>{dock ? LANDING_JOBS[dock.id] : "Find your next step on campus."}</p>
 
           </div>
-          {dock ? <Link className="campus-dock-enter" href={campusEnterHref(dock, sessionState === "member" ? "member" : "guest")}>{dock.cta} <CampusWaymark /></Link> : <div className="campus-interaction-hint"><span><span className="campus-roundel" aria-hidden="true">·</span>Click a hall to preview</span><span><CampusWaymark />Double-click to enter</span></div>}
+          {dock ? <Link className="campus-dock-enter" href={campusEnterHref(dock, sessionState === "member" ? "member" : "guest")}>{dock.cta} <CampusWaymark /></Link> : <div className="campus-interaction-hint">Click to preview · Double-click or Enter to go in</div>}
         </section>
 
       </div>
