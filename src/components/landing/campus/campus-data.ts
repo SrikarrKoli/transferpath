@@ -136,7 +136,7 @@ export const CAMPUS_BUILDINGS: CampusBuilding[] = [
     id: "dorm",
     name: "Dorms",
     short: "Checklist",
-    feature: "Personal checklist",
+    feature: "Application logistics",
     blurb: "Residence halls for transcripts, rec letters, and personal tasks that don’t live in a syllabus.",
     href: "/dashboard/checklist",
     cta: "Enter Dorms",

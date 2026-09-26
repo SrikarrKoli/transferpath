@@ -7,6 +7,7 @@ export type ChecklistWorkspaceTask = {
   dueContext?: string
   countdownLabel?: string
   meta?: string
+  doneWhen?: string
   hint?: string
   done?: boolean
   urgent?: boolean

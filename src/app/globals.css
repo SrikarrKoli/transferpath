@@ -1173,6 +1173,30 @@ nextjs-portal,
 .hall-dorm-progress dt { color: var(--hall-ink); }
 .hall-dorm-progress dd { color: var(--hall-stone); font-variant-numeric: tabular-nums; white-space: nowrap; }
 .hall-dorm-focus { margin-top: 1rem; color: var(--hall-ink); line-height: 1.5; }
+/* Dorms: readable instructions and a compact, task-oriented margin. */
+.hall-dorm { align-items: start; }
+.hall-dorm .hall-margin { align-self: start; color: color-mix(in srgb, var(--hall-ink) 78%, var(--hall-paper)); }
+.hall-dorm .hall-date-meta,
+.hall-dorm .hall-dorm-context,
+.hall-dorm .hall-hero-date span,
+.hall-dorm .hall-dorm-category h3 span,
+.hall-dorm .hall-index button span {
+  color: color-mix(in srgb, var(--hall-ink) 74%, var(--hall-paper));
+  font-size: 0.85rem;
+}
+.hall-dorm .hall-dorm-category h3 { font-size: 0.8rem; }
+.hall-dorm .hall-dorm-category h3 span { letter-spacing: 0.02em; }
+.hall-dorm .hall-dorm-due { font-size: 0.85rem; }
+.hall-dorm-done-when { margin-top: 0.35rem; font-size: 0.875rem; line-height: 1.5; color: color-mix(in srgb, var(--hall-ink) 80%, var(--hall-paper)); }
+.hall-dorm .hall-check-row { padding-block: 0.8rem; scroll-margin-top: 1.5rem; }
+.hall-dorm .hall-dorm-subjects { margin-top: 0; padding-top: 0.3rem; border-top: 1px solid var(--hall-rule); }
+.hall-dorm-filter-note { margin-block: 0.55rem 0.7rem; }
+.hall-dorm-moves { padding-left: 1.25rem; list-style: decimal; margin-top: 0.65rem; }
+.hall-dorm-moves li { padding: 0.5rem 0 0.5rem 0.2rem; line-height: 1.5; border-bottom: 1px solid var(--hall-rule); }
+.hall-dorm .union-primary-cta,
+.hall-dorm .union-primary-cta:hover { background: var(--hall-ink); color: var(--hall-paper); }
+.hall-dorm .union-primary-cta:hover { text-decoration: underline; text-underline-offset: 0.2em; }
+
 .hall-dorm button:focus-visible { outline: 2px solid var(--hall-ink); outline-offset: 4px; }
 @media (max-width: 600px) {
   .hall-dorm .hall-check-row { grid-template-columns: 1.15rem minmax(0, 1fr); gap: 0.4rem 0.75rem; }

@@ -1,3 +1,4 @@
+import { logisticsDoneWhen } from "@/lib/build-checklist-workspace-data"
 import type { TasksDeadlinesData } from "@/types/tasks-deadlines"
 import type { OverviewData } from "@/types/overview"
 import type { RequirementsWorkspaceData } from "@/types/requirements-workspace"
@@ -228,7 +229,7 @@ export const previewChecklist: ChecklistWorkspaceData = {
     {
       id: "transcripts", label: "Transcripts",
       tasks: [
-        { id: "request_transcript", title: "Request official ACC transcript", urgent: true,
+        { id: "request_transcript", doneWhen: logisticsDoneWhen.request_transcript, title: "Request official ACC transcript", urgent: true,
           dueLabel: "1 Nov 2026", dueContext: "Priority application", countdownLabel: "51 days",
           meta: "ACC · Student records", hint: "Allow time for delivery and receipt",
           link: { label: "How to request", href: "/dashboard/settings?tab=help#request-transcript" } },
@@ -237,30 +238,30 @@ export const previewChecklist: ChecklistWorkspaceData = {
     {
       id: "credits", label: "Credits",
       tasks: [
-        { id: "review_credit_equiv", title: "Review transfer credit equivalencies", meta: "ACC → UT Austin",
+        { id: "review_credit_equiv", doneWhen: logisticsDoneWhen.review_credit_equiv, title: "Review transfer credit equivalencies", meta: "ACC → UT Austin",
           hint: "Compare completed courses with your intended program", link: { label: "Review requirements", href: "/dashboard/requirements" } },
       ],
     },
     {
       id: "accounts", label: "Apply & aid",
       tasks: [
-        { id: "create_applytexas", title: "Create ApplyTexas account", done: true, meta: "UT Austin · ApplyTexas",
+        { id: "create_applytexas", doneWhen: logisticsDoneWhen.create_applytexas, title: "Create ApplyTexas account", done: true, meta: "UT Austin · ApplyTexas",
           link: { label: "Open ApplyTexas", href: "https://www.goapplytexas.org" } },
-        { id: "confirm_financial_aid", title: "Confirm financial aid / FAFSA", meta: "Statewide · Aid",
+        { id: "confirm_financial_aid", doneWhen: logisticsDoneWhen.confirm_financial_aid, title: "Confirm financial aid / FAFSA", meta: "Statewide · Aid",
           dueLabel: "15 Jan 2027", dueContext: "Aid milestone", countdownLabel: "126 days",
           link: { label: "Open FAFSA", href: "https://studentaid.gov/h/apply-for-aid/fafsa" } },
-        { id: "pay_application_fee", title: "Review application fee or waiver", meta: "UT Austin · ApplyTexas",
+        { id: "pay_application_fee", doneWhen: logisticsDoneWhen.pay_application_fee, title: "Review application fee or waiver", meta: "UT Austin · ApplyTexas",
           hint: "Confirm the amount and waiver eligibility before paying", link: { label: "Open ApplyTexas", href: "https://www.goapplytexas.org" } },
-        { id: "check_tsi", title: "Check TSI assessment completion", done: true, meta: "ACC · Academic record" },
+        { id: "check_tsi", doneWhen: logisticsDoneWhen.check_tsi, title: "Check TSI assessment completion", done: true, meta: "ACC · Academic record" },
       ],
     },
     {
       id: "materials", label: "Materials",
       tasks: [
-        { id: "write_essay_part1", title: "Draft your transfer essay", meta: "UT Austin · Essay workspace",
+        { id: "write_essay_part1", doneWhen: logisticsDoneWhen.write_essay_part1, title: "Draft your transfer essay", meta: "UT Austin · Essay workspace",
           dueLabel: "1 Nov 2026", dueContext: "Priority application", countdownLabel: "51 days",
           link: { label: "Open Essays", href: "/dashboard/essay" } },
-        { id: "request_rec_letter_1", title: "Request a faculty recommendation", meta: "Application materials",
+        { id: "request_rec_letter_1", doneWhen: logisticsDoneWhen.request_rec_letter_1, title: "Request a faculty recommendation", meta: "Application materials",
           hint: "First confirm whether your program accepts or requires one",
           link: { label: "See who to ask", href: "/dashboard/settings?tab=help#rec-letters" } },
       ],
@@ -268,9 +269,9 @@ export const previewChecklist: ChecklistWorkspaceData = {
     {
       id: "submit", label: "Submit prep",
       tasks: [
-        { id: "research_requirements", title: "Review Computer Science transfer requirements", done: true,
+        { id: "research_requirements", doneWhen: logisticsDoneWhen.research_requirements, title: "Review Computer Science transfer requirements", done: true,
           meta: "UT Austin · Fall 2027", link: { label: "Review requirements", href: "/dashboard/requirements" } },
-        { id: "submit_application", title: "Review and submit your transfer application", meta: "UT Austin · ApplyTexas",
+        { id: "submit_application", doneWhen: logisticsDoneWhen.submit_application, title: "Review and submit your transfer application", meta: "UT Austin · ApplyTexas",
           dueLabel: "1 Nov 2026", dueContext: "Priority application", countdownLabel: "51 days",
           hint: "Check materials and receipt status before submitting", link: { label: "Open Deadlines", href: "/dashboard/deadlines" } },
       ],
@@ -278,11 +279,11 @@ export const previewChecklist: ChecklistWorkspaceData = {
     {
       id: "arrival", label: "Housing & arrival",
       tasks: [
-        { id: "research_housing", title: "Research housing options", meta: "UT Austin · Arrival planning",
-          hint: "Compare on-campus and off-campus options", link: { label: "Open Housing", href: "https://housing.utexas.edu/" } },
-        { id: "attend_info_session", title: "Find a transfer information session", meta: "UT Austin · Admissions",
-          link: { label: "Review requirements", href: "/dashboard/requirements" } },
-        { id: "plan_first_semester", title: "Sketch your first-semester plan", meta: "Computer Science · Fall 2027",
+        { id: "research_housing", doneWhen: logisticsDoneWhen.research_housing, title: "Research housing options", meta: "UT Austin · Arrival planning",
+          hint: "Compare on-campus and off-campus options", link: { label: "Open housing", href: "https://housing.utexas.edu/" } },
+        { id: "attend_info_session", doneWhen: logisticsDoneWhen.attend_info_session, title: "Attend a transfer information session", meta: "UT Austin · Admissions",
+          link: { label: "Find sessions", href: "https://www.google.com/search?q=UT+Austin+transfer+admissions+information+sessions" } },
+        { id: "plan_first_semester", doneWhen: logisticsDoneWhen.plan_first_semester, title: "Sketch your first-semester plan", meta: "Computer Science · Fall 2027",
           hint: "Build a tentative schedule to discuss with an advisor", link: { label: "Open Plan", href: "/dashboard/plan" } },
       ],
     },

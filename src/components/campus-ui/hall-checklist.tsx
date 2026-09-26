@@ -24,6 +24,14 @@ function priority(a: ChecklistWorkspaceTask, b: ChecklistWorkspaceTask) {
     || (timingOrder(a) - timingOrder(b) || 0)
 }
 
+function stage(task: ChecklistWorkspaceTask) {
+  if (task.id === "request_transcript") return "Order now"
+  if (task.id.startsWith("write_essay")) return "Draft & review"
+  if (task.id === "submit_application") return "Submit after review"
+  if (task.id.includes("financial_aid")) return "Prepare aid application"
+  return "Review & prepare"
+}
+
 export function HallChecklist({ data, tasks, onToggle }: {
   data: ChecklistWorkspaceData
   tasks: Record<string, boolean>
@@ -36,14 +44,14 @@ export function HallChecklist({ data, tasks, onToggle }: {
   const done = all.filter(isDone)
   const logistics = open.filter((t) => t.categoryId !== "academic")
   const next = [...logistics].sort(priority)[0] || [...open].sort(priority)[0]
-  const dueSoon = open.filter(hasTiming)
+  const dueSoon = open.filter((t) => t.urgent || timingOrder(t) <= 60).sort((a, b) => (timingOrder(a) - timingOrder(b) || 0))
   const date = splitHallDate(next?.dueLabel || "Now")
   const filters = [
     { id: "open", label: "Open", count: open.length },
     { id: "soon", label: "Due soon", count: dueSoon.length },
-    ...data.categories.map((c) => ({ id: c.id, label: c.label, count: open.filter((t) => t.categoryId === c.id).length })),
     { id: "done", label: "Done", count: done.length },
   ]
+  const subjects = data.categories.map((c) => ({ id: c.id, label: c.label, count: open.filter((t) => t.categoryId === c.id).length }))
   const visible = filter === "done" ? done : filter === "open" ? open : filter === "soon" ? dueSoon : open.filter((t) => t.categoryId === filter)
 
   return (
@@ -63,12 +71,8 @@ export function HallChecklist({ data, tasks, onToggle }: {
               {next.dueLabel ? <p className="hall-hero-date">{date.primary}{date.year ? <> <span>{date.year}</span></> : null}</p> : null}
               <p><span className="hall-dorm-countdown">{next.countdownLabel || (next.urgent ? "Priority task" : "")}</span>{next.dueContext ? <span className="hall-dorm-context">{next.dueContext}</span> : null}</p>
             </div> : null}
-            <p className="hall-date-meta">{[next.category, next.meta].filter(Boolean).join(" · ")}</p>
-            <p className="hall-dorm-why">{next.hint
-              ? `${next.dueContext && next.countdownLabel ? `${next.dueContext} · ${next.countdownLabel} — ` : ""}${next.hint.replace(/[.!]$/, "")}.`
-              : next.dueContext && next.countdownLabel
-                ? `${next.dueContext} · ${next.countdownLabel} — prepare this item before that milestone.`
-                : next.urgent ? "This item is marked urgent — review its next step now." : `Next open item in ${next.category.toLowerCase()}.`}</p>
+            <p className="hall-date-meta">{[next.category, next.meta, hasTiming(next) ? `Stage · ${stage(next)}` : undefined].filter(Boolean).join(" · ")}</p>
+            <p className="hall-dorm-why">Mark done when {next.doneWhen || "you have completed this task and checked the result."}</p>
             <div className="union-step-actions">
               {next.link ? <Link href={next.link.href} className="union-primary-cta">{next.link.label}</Link>
                 : <button type="button" className="union-primary-cta" onClick={() => onToggle(next.id)}>Mark done</button>}
@@ -85,27 +89,34 @@ export function HallChecklist({ data, tasks, onToggle }: {
           </>}
         </section>
 
-        <nav className="hall-index" aria-label="Checklist filters">
+        <nav className="hall-index" aria-label="Checklist status">
           {filters.map((item) => <button key={item.id} type="button" data-on={filter === item.id} aria-pressed={filter === item.id} onClick={() => setFilter(item.id)}>
             {item.label} <span className="tabular-nums">{item.count}</span>
           </button>)}
         </nav>
+        <nav className="hall-index hall-dorm-subjects" aria-label="Checklist subjects">
+          {subjects.map((item) => <button key={item.id} type="button" data-on={filter === item.id} aria-pressed={filter === item.id} onClick={() => setFilter(filter === item.id ? "open" : item.id)}>
+            {item.label} <span className="tabular-nums">{item.count}</span>
+          </button>)}
+        </nav>
+        <p className="hall-date-meta hall-dorm-filter-note">{filter === "soon" ? "Due within 60 days or marked urgent · soonest first" : filter === "done" ? "Completed tasks across all subjects" : "Open tasks · Due soon means within 60 days or marked urgent"}</p>
         <div className="hall-dorm-columns" aria-hidden="true"><span /><span>{filter === "done" ? "Completed logistics" : "Application logistics"}</span><span>Next move</span></div>
         {filter === "done" ? <p className="hall-date-meta mt-4">Completed work stays here. Uncheck an item to reopen it.</p> : null}
-        {data.categories.map((category) => {
-          const rows = visible.filter((t) => t.categoryId === category.id).sort(priority)
+        {(filter === "soon" ? [{ id: "soon", label: "Due soon", tasks: dueSoon }] : data.categories).map((category) => {
+          const rows = filter === "soon" ? dueSoon : visible.filter((t) => t.categoryId === category.id).sort(priority)
           if (!rows.length) return null
-          const remaining = open.filter((t) => t.categoryId === category.id).length
+          const remaining = filter === "soon" ? dueSoon.length : open.filter((t) => t.categoryId === category.id).length
           const completed = category.tasks.length - remaining
           return <section className="hall-dorm-category" key={category.id} aria-labelledby={`checklist-${category.id}`}>
             <h3 className="hall-caption" id={`checklist-${category.id}`}>{category.label} <span>· {remaining} open · {completed} done</span></h3>
             <ul className="hall-checks">
-              {rows.map((task) => <li key={task.id} className="hall-check-row">
+              {rows.map((task) => <li key={task.id} id={`task-${task.id}`} className="hall-check-row">
                 <button type="button" className="hall-box" aria-pressed={isDone(task)} aria-label={`Mark ${task.title} ${isDone(task) ? "open" : "done"}`} onClick={() => onToggle(task.id)} />
                 <div>
                   <p className={isDone(task) ? "hall-dorm-completed" : undefined}>{task.title}</p>
                   <p className="hall-date-meta">{[isDone(task) ? "Done" : undefined, task.meta, task.hint].filter(Boolean).join(" · ")}</p>
-                  {!isDone(task) && (task.dueLabel || task.countdownLabel) ? <p className="hall-dorm-due">{[task.dueContext, task.dueLabel, task.countdownLabel].filter(Boolean).join(" · ")}</p> : null}
+                  {!isDone(task) && (task.dueLabel || task.countdownLabel) ? <p className="hall-dorm-due">{[`Stage · ${stage(task)}`, task.dueContext, task.dueLabel, task.countdownLabel].filter(Boolean).join(" · ")}</p> : null}
+                  {!isDone(task) ? <p className="hall-dorm-done-when">Mark done when {task.doneWhen || "you have completed this task and checked the result."}</p> : null}
                 </div>
                 {task.link ? <Link href={task.link.href} className="hall-ledger-link">{task.link.label}</Link> : <span />}
               </li>)}
@@ -116,17 +127,14 @@ export function HallChecklist({ data, tasks, onToggle }: {
       </div>
       <aside className="hall-margin">
         <p className="hall-caption">Your transfer</p>
-        <p className="mt-2"><span className="text-[color:var(--hall-stone)]">{data.header.fromInstitution}</span> → <strong>{data.header.toInstitution}</strong></p>
-        <p className="mt-1 text-sm text-[color:var(--hall-stone)]">{data.header.program} · {data.header.term}</p>
-        <section className="hall-dorm-progress" aria-label="Logistics progress">
-          <h3 className="hall-caption">Application logistics</h3>
-          <p className="hall-dorm-total">{open.length} open <span>· {done.length} done</span></p>
-          <dl>{data.categories.map((category) => {
-            const remaining = open.filter((task) => task.categoryId === category.id).length
-            return <div key={category.id}><dt>{category.label}</dt><dd>{remaining} / {category.tasks.length - remaining}</dd></div>
-          })}</dl>
-          <p className="hall-date-meta">Open / done by category</p>
-          {data.header.readinessMessage ? <p className="hall-dorm-focus">{data.header.readinessMessage}</p> : null}
+        <p className="mt-2"><span className="hall-dorm-transfer-school">{data.header.fromInstitution}</span> → <strong>{data.header.toInstitution}</strong></p>
+        <p className="mt-1 text-sm">{data.header.program} · {data.header.term}</p>
+        <section className="hall-dorm-progress" aria-label="Next three moves">
+          <h3 className="hall-caption">Next three moves</h3>
+          <ol className="hall-dorm-moves">{[...logistics].sort(priority).slice(0, 3).map((task) => <li key={task.id}>
+            <a href={`#task-${task.id}`} className="hall-ledger-link" onClick={() => setFilter("open")}>{task.title}</a>
+          </li>)}</ol>
+          <p className="hall-dorm-focus">{logistics.length ? "Start with records and drafts. Before submitting, review your application and check each school’s receipt requirements." : "Logistics complete. Check your school’s portal for receipt of supporting materials."}</p>
         </section>
         <div className="mt-6 flex flex-col items-start gap-2">
           <Link href="/dashboard/deadlines" className="hall-ledger-link">Open Deadlines</Link>

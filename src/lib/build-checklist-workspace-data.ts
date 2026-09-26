@@ -2,6 +2,26 @@ import type { ChecklistTaskDef, ChecklistSectionDef } from "@/lib/checklist-task
 import type { ChecklistProfileSummary } from "@/lib/checklist-task-definitions"
 import type { ChecklistWorkspaceData, ChecklistWorkspaceTask } from "@/types/checklist-workspace"
 
+export const logisticsDoneWhen: Record<string, string> = {
+  "request_transcript": "the registrar confirms your official transcript was sent to your target school.",
+  "review_credit_equiv": "you have compared your completed courses with the transfer equivalency guide.",
+  "create_applytexas": "you can sign in to your application account.",
+  "pay_application_fee": "the portal confirms payment or an approved fee waiver.",
+  "confirm_financial_aid": "you have submitted your aid application and listed your target school.",
+  "review_financial_aid": "you have reviewed how transferring affects your aid and noted any questions for the aid office.",
+  "check_tsi": "you have verified your TSI completion or exemption in your academic record.",
+  "write_essay_part1": "your essay draft is saved and ready for review.",
+  "write_essay_part2": "your revised essay is ready to include in the application.",
+  "request_rec_letter_1": "a recommender agrees to write and has the submission instructions, or you confirm no letter is needed.",
+  "request_rec_letter_2": "a second recommender agrees and has the submission instructions, or you confirm no second letter is needed.",
+  "research_requirements": "you have reviewed your program’s transfer requirements and identified any remaining gaps.",
+  "submit_application": "the application portal confirms your submission. Track receipt of supporting materials separately.",
+  "research_housing": "you have a shortlist of housing options with costs and application dates.",
+  "attend_info_session": "you have attended a transfer information session and noted your next steps.",
+  "connect_peer_mentor": "you have connected with a current student and discussed your transfer questions.",
+  "plan_first_semester": "you have saved a tentative course plan to discuss with an advisor."
+}
+
 const LOGISTICS = [
   { id: "transcripts", label: "Transcripts", keys: ["request_transcript"] },
   { id: "credits", label: "Credits", keys: ["review_credit_equiv"] },
@@ -58,6 +78,7 @@ function taskToWorkspaceTask(task: ChecklistTaskDef): ChecklistWorkspaceTask {
   return {
     id: task.task_key,
     title: task.text,
+    doneWhen: logisticsDoneWhen[task.task_key] || "you have verified this requirement against your academic record.",
     hint,
     done: task.status === "done",
     urgent: task.status === "urgent",
@@ -95,14 +116,18 @@ export function buildChecklistWorkspaceData(input: {
           research_requirements: "Review requirements", pay_application_fee: "Open ApplyTexas",
           confirm_financial_aid: "Open FAFSA", review_financial_aid: "Open aid guide",
           request_rec_letter_1: "See who to ask", request_rec_letter_2: "See who to ask",
-          attend_info_session: "Review requirements", connect_peer_mentor: "Review requirements",
+          attend_info_session: "Find sessions", connect_peer_mentor: "Review requirements",
           check_tsi: "Review TSI",
         }
         result.link.label = labels[task.task_key] || result.link.label
       }
+      if (task.task_key === "attend_info_session") result.link = {
+        label: "Find sessions",
+        href: `https://www.google.com/search?q=${encodeURIComponent(`${tgt} transfer admissions information sessions`)}`,
+      }
       if (task.task_key === "request_transcript") result.hint = "Order with time for delivery and receipt before your application deadline"
       result.meta = task.task_key === "request_transcript" ? cur : tgt
-      if (["request_transcript", "write_essay_part1", "write_essay_part2", "submit_application", "confirm_financial_aid"].includes(task.task_key)) {
+      if (["request_transcript", "write_essay_part1", "write_essay_part2", "submit_application"].includes(task.task_key)) {
         result.countdownLabel = countdown
         result.dueContext = "Check your dates in Clock Tower"
       }
