@@ -52,7 +52,6 @@ export function HallChecklist({ data, tasks, onToggle }: {
   const logistics = open.filter((t) => t.categoryId !== "academic")
   const next = [...logistics].sort(priority)[0] || [...open].sort(priority)[0]
   const dueSoon = open.filter(isDueSoon).sort((a, b) => (timingOrder(a) - timingOrder(b) || 0))
-  const date = splitHallDate(next?.dueLabel || "Now")
   const filters = [
     { id: "open", label: "Open", count: open.length },
     { id: "soon", label: "Due soon", count: dueSoon.length },
@@ -74,16 +73,15 @@ export function HallChecklist({ data, tasks, onToggle }: {
             </div>
           </> : next ? <>
             <div className="hall-dorm-feature">
-              {next.dueLabel ? <p className="hall-hero-date">{date.primary}{date.year ? <span>{date.year}</span> : null}</p> : null}
-              <div>
-                <h2 className="hall-hero-title" id="checklist-next-heading">{next.title}</h2>
-                <p className="hall-dorm-context">{[
-                  next.dueContext === "Priority application" ? "Before priority application" : next.dueContext,
-                  next.countdownLabel || (next.urgent ? "Due soon" : undefined),
+              <h2 className="hall-hero-title" id="checklist-next-heading">{next.title}</h2>
+              <p className="hall-dorm-context">
+                {next.countdownLabel || next.urgent ? <><span className={isDueSoon(next) ? "hall-dorm-due" : undefined}>{next.countdownLabel || "Due soon"}</span>{" · "}</> : null}
+                {[
+                  next.dueContext?.toLowerCase() === "priority application" ? "before priority application" : next.dueContext,
+                  next.dueLabel,
                   next.category,
-                  next.meta?.split(" · ")[0],
-                ].filter(Boolean).join(" · ")}</p>
-              </div>
+                ].filter(Boolean).join(" · ")}
+              </p>
             </div>
             <p className="hall-dorm-why">Mark done when {next.doneWhen || "you have completed this task and checked the result."}</p>
             <div className="union-step-actions">
@@ -103,6 +101,7 @@ export function HallChecklist({ data, tasks, onToggle }: {
         </section>
 
         <div className="hall-dorm-ledger">
+          <p className="hall-dorm-finish" aria-live="polite">{done.length} of {all.length} finished{dueSoon.length > 0 ? ` · ${dueSoon.length} due soon` : ""}</p>
           <nav className="hall-index" aria-label="Checklist status">
             {filters.map((item) => <button key={item.id} type="button" data-on={filter === item.id} aria-pressed={filter === item.id} onClick={() => setFilter(item.id)}>
               {item.label} <span className="tabular-nums">{item.count}</span>
@@ -113,7 +112,7 @@ export function HallChecklist({ data, tasks, onToggle }: {
               {item.label} <span className="tabular-nums">{item.count}</span>
             </button>)}
           </nav> : null}
-          {filter === "soon" ? <p className="hall-date-meta hall-dorm-filter-note">Due within 60 days or marked urgent</p> : null}
+          {filter !== "done" ? <p className="hall-date-meta hall-dorm-filter-note">{filter === "soon" ? "Due within 60 days or marked urgent" : "Due soon = within 60 days or marked urgent"}</p> : null}
           {(filter === "soon" ? [{ id: "soon", label: "Due soon", tasks: dueSoon }] : data.categories).map((category) => {
             const rows = filter === "soon" ? dueSoon : visible.filter((t) => t.categoryId === category.id).sort(priority)
             if (!rows.length) return null
@@ -124,13 +123,15 @@ export function HallChecklist({ data, tasks, onToggle }: {
               <ul className="hall-checks">
                 {rows.map((task) => <li key={task.id} id={`task-${task.id}`} className="hall-check-row">
                   <button type="button" className="hall-box" aria-pressed={isDone(task)} aria-label={`Mark ${task.title} ${isDone(task) ? "open" : "done"}`} onClick={() => onToggle(task.id)} />
-                  <div>
-                    <p className={isDone(task) ? "hall-dorm-completed" : undefined}>{task.title}</p>
-                    <p className="hall-date-meta">{[task.meta, !hasTiming(task) ? task.hint : undefined].filter(Boolean).join(" · ")}</p>
-                    {!isDone(task) && hasTiming(task) ? <p className={isDueSoon(task) ? "hall-dorm-due" : "hall-date-meta"}>{milestoneCopy(task)}</p> : null}
-                    {task.link || (!isDone(task) && task.id === next?.id) ? <div className="hall-dorm-row-action">
-                      {!isDone(task) && task.id === next?.id ? <span className="hall-dorm-now">Now</span> : null}
-                      {task.link ? <Link href={task.link.href} className="hall-ledger-link">{task.link.label}</Link> : null}
+                  <div className="hall-dorm-row-copy">
+                    <div className="hall-dorm-row-task">
+                      <p className={isDone(task) ? "hall-dorm-completed" : undefined}>{task.title}{!isDone(task) && task.id === next?.id ? <span className="hall-dorm-featured"> · Featured</span> : null}</p>
+                      <p className="hall-date-meta">{[task.meta, !hasTiming(task) && !task.doneWhen ? task.hint : undefined].filter(Boolean).join(" · ")}</p>
+                      {!isDone(task) && hasTiming(task) ? <p className={isDueSoon(task) ? "hall-dorm-due" : "hall-date-meta"}>{milestoneCopy(task)}</p> : null}
+                    </div>
+                    {!isDone(task) && task.doneWhen ? <p className="hall-date-meta hall-dorm-done-when">Done when {task.doneWhen}</p> : null}
+                    {task.link ? <div className="hall-dorm-row-action">
+                      <Link href={task.link.href} className="hall-ledger-link">{task.link.label}</Link>
                     </div> : null}
                   </div>
                 </li>)}
@@ -144,8 +145,8 @@ export function HallChecklist({ data, tasks, onToggle }: {
         <p className="hall-caption">Your transfer</p>
         <p className="mt-2"><span className="hall-dorm-transfer-school">{data.header.fromInstitution}</span> → <strong>{data.header.toInstitution}</strong></p>
         <p className="mt-1 text-sm">{data.header.program} · {data.header.term}</p>
-        <section className="hall-dorm-progress" aria-label="Next moves">
-          <h3 className="hall-caption">Next moves</h3>
+        <section className="hall-dorm-progress" aria-label="After this">
+          <h3 className="hall-caption">After this</h3>
           <ol className="hall-dorm-moves">{[...logistics].filter((task) => task.id !== next?.id).sort(priority).slice(0, 3).map((task) => <li key={task.id}>
             <a href={`#task-${task.id}`} className="hall-ledger-link" onClick={() => setFilter("open")}>{task.title}</a>
           </li>)}</ol>

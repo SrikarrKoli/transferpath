@@ -132,7 +132,7 @@ export function buildChecklistWorkspaceData(input: {
         result.dueContext = "Check your dates in Clock Tower"
       }
       if (task.task_key === "submit_application") {
-        result.link = { label: "Open Deadlines", href: "/dashboard/deadlines" }
+        result.link = { label: "Review application requirements", href: "/dashboard/requirements" }
         result.hint = `Confirm application dates for ${term}`
       }
       if (task.task_key.startsWith("write_essay")) result.link = { label: "Open Essays", href: "/dashboard/essay" }
