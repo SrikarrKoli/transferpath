@@ -115,7 +115,7 @@ export function buildChecklistWorkspaceData(input: {
         const labels: Record<string, string> = {
           research_requirements: "Review requirements", pay_application_fee: "Open ApplyTexas",
           confirm_financial_aid: "Open FAFSA", review_financial_aid: "Open aid guide",
-          request_rec_letter_1: "See who to ask", request_rec_letter_2: "See who to ask",
+          request_rec_letter_1: "Open help", request_rec_letter_2: "Open help",
           attend_info_session: "Find sessions", connect_peer_mentor: "Review requirements",
           check_tsi: "Review TSI",
         }
@@ -132,7 +132,7 @@ export function buildChecklistWorkspaceData(input: {
         result.dueContext = "Check your dates in Clock Tower"
       }
       if (task.task_key === "submit_application") {
-        result.link = { label: "Review application requirements", href: "/dashboard/requirements" }
+        result.link = { label: "Open ApplyTexas", href: "https://www.goapplytexas.org" }
         result.hint = `Confirm application dates for ${term}`
       }
       if (task.task_key.startsWith("write_essay")) result.link = { label: "Open Essays", href: "/dashboard/essay" }

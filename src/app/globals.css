@@ -1133,7 +1133,7 @@ nextjs-portal,
 .hall-dorm .hall-hero-title {
   max-width: 27ch;
   margin: 0.35rem 0 0;
-  font-size: clamp(1.9rem, 3vw, 2.65rem);
+  font-size: clamp(1.7rem, 2.5vw, 2.2rem);
   line-height: 1.06;
   color: var(--hall-ink);
 }
@@ -5473,10 +5473,10 @@ nextjs-portal,
   color: var(--hall-paper);
   font-weight: 600;
 }
-/* Dorms: one next ask, then a full-width category inventory. */
+/* Dorms: urgent working set first, remaining inventory by subject. */
 .hall-dorm { row-gap: 1rem; }
-.hall-dorm-main { display: contents; }
-.hall-dorm-ledger { min-width: 0; grid-column: 1 / -1; }
+.hall-dorm-main { min-width: 0; }
+.hall-dorm-ledger { min-width: 0; margin-top: 0.85rem; }
 .hall-dorm > .hall-margin { align-self: start; }
 .hall-dorm-feature { margin-block: 0.3rem 0.5rem; }
 .hall-dorm .hall-dorm-context { margin-top: 0.5rem; font-size: 0.875rem; line-height: 1.4; }
@@ -5491,11 +5491,13 @@ nextjs-portal,
 .hall-dorm-row-copy { display: grid; align-items: baseline; gap: 0.2rem 1.5rem; }
 .hall-dorm-row-action { display: flex; align-items: baseline; gap: 0.75rem; }
 .hall-dorm-featured { color: var(--hall-stone); font-size: 0.8rem; white-space: nowrap; }
-.hall-dorm .hall-dorm-done-when { display: -webkit-box; -webkit-box-orient: vertical; -webkit-line-clamp: 2; overflow: hidden; }
 .hall-dorm .hall-ledger-link { font-size: 0.875rem; }
 .hall-dorm-finish { font-size: 0.95rem; color: var(--hall-ink); font-variant-numeric: tabular-nums; }
 .hall-dorm .hall-index:not(.hall-dorm-subjects) { margin-top: 0.35rem; }
-.hall-dorm .hall-dorm-subjects { font-size: 0.8rem; }
+.hall-dorm .hall-dorm-subjects { font-size: 0.8rem; color: color-mix(in srgb, var(--hall-ink) 78%, var(--hall-paper)); }
+.hall-dorm .hall-dorm-priority { margin-block: 0.85rem 1rem; border-top: 2px solid var(--hall-ink); padding-top: 0.5rem; }
+.hall-dorm .hall-dorm-priority h3 { font-size: 1rem; }
+.hall-dorm .hall-dorm-priority h3 span { font-size: 0.75rem; }
 .hall-dorm .hall-dorm-filter-note { margin-block: 0.3rem 0.5rem; font-size: 0.8rem; }
 .hall-dorm .hall-dorm-progress { margin-top: 0.65rem; padding-top: 0.55rem; }
 .hall-dorm .hall-dorm-moves { margin-top: 0.2rem; }
@@ -5504,9 +5506,9 @@ nextjs-portal,
 .hall-dorm .hall-dorm-done-summary .hall-hero-title { font-size: 1.9rem; }
 @media (min-width: 960px) {
   .hall-dorm > .hall-margin { grid-column: 2; grid-row: 1; }
-  .hall-dorm-row-copy { grid-template-columns: minmax(0, 1.3fr) minmax(0, 1fr) 12rem; }
-  .hall-dorm-row-action { grid-column: 3; justify-self: end; text-align: right; }
+  .hall-dorm-row-copy { grid-template-columns: minmax(0, 1fr) 10rem; }
+  .hall-dorm-row-action { grid-column: 2; justify-self: start; text-align: left; }
 }
 @media (max-width: 959px) {
-  .hall-dorm > .hall-margin { grid-row: 3; }
+  .hall-dorm > .hall-margin { grid-row: 2; }
 }

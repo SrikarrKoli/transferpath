@@ -263,7 +263,7 @@ export const previewChecklist: ChecklistWorkspaceData = {
           link: { label: "Open Essays", href: "/dashboard/essay" } },
         { id: "request_rec_letter_1", doneWhen: logisticsDoneWhen.request_rec_letter_1, title: "Request a faculty recommendation", meta: "Application materials",
           hint: "First confirm whether your program accepts or requires one",
-          link: { label: "See who to ask", href: "/dashboard/settings?tab=help#rec-letters" } },
+          link: { label: "Open help", href: "/dashboard/settings?tab=help#rec-letters" } },
       ],
     },
     {
@@ -273,7 +273,7 @@ export const previewChecklist: ChecklistWorkspaceData = {
           meta: "UT Austin · Fall 2027", link: { label: "Review requirements", href: "/dashboard/requirements" } },
         { id: "submit_application", doneWhen: logisticsDoneWhen.submit_application, title: "Review and submit your transfer application", meta: "UT Austin · ApplyTexas",
           dueLabel: "1 Nov 2026", dueContext: "Priority application", countdownLabel: "51 days",
-          hint: "Check materials and receipt status before submitting", link: { label: "Review application requirements", href: "/dashboard/requirements" } },
+          hint: "Check materials and receipt status before submitting", link: { label: "Open ApplyTexas", href: "https://www.goapplytexas.org" } },
       ],
     },
     {
