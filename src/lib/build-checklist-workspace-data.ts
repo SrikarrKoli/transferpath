@@ -3,8 +3,9 @@ import type { ChecklistProfileSummary } from "@/lib/checklist-task-definitions"
 import type { ChecklistWorkspaceData, ChecklistWorkspaceTask } from "@/types/checklist-workspace"
 
 const LOGISTICS = [
-  { id: "transcripts", label: "Transcripts", keys: ["request_transcript", "review_credit_equiv"] },
-  { id: "accounts", label: "Accounts", keys: ["create_applytexas", "pay_application_fee", "confirm_financial_aid", "review_financial_aid", "check_tsi"] },
+  { id: "transcripts", label: "Transcripts", keys: ["request_transcript"] },
+  { id: "credits", label: "Credits", keys: ["review_credit_equiv"] },
+  { id: "accounts", label: "Apply & aid", keys: ["create_applytexas", "pay_application_fee", "confirm_financial_aid", "review_financial_aid", "check_tsi"] },
   { id: "materials", label: "Materials", keys: ["write_essay_part1", "write_essay_part2", "request_rec_letter_1", "request_rec_letter_2"] },
   { id: "submit", label: "Submit prep", keys: ["research_requirements", "submit_application"] },
   { id: "arrival", label: "Housing & arrival", keys: ["research_housing", "attend_info_session", "connect_peer_mentor", "plan_first_semester"] },
@@ -89,6 +90,17 @@ export function buildChecklistWorkspaceData(input: {
       : category.keys.includes(task.task_key)
     ).map((task) => {
       const result = taskToWorkspaceTask(task)
+      if (result.link) {
+        const labels: Record<string, string> = {
+          research_requirements: "Review requirements", pay_application_fee: "Open ApplyTexas",
+          confirm_financial_aid: "Open FAFSA", review_financial_aid: "Open aid guide",
+          request_rec_letter_1: "See who to ask", request_rec_letter_2: "See who to ask",
+          attend_info_session: "Review requirements", connect_peer_mentor: "Review requirements",
+          check_tsi: "Review TSI",
+        }
+        result.link.label = labels[task.task_key] || result.link.label
+      }
+      if (task.task_key === "request_transcript") result.hint = "Order with time for delivery and receipt before your application deadline"
       result.meta = task.task_key === "request_transcript" ? cur : tgt
       if (["request_transcript", "write_essay_part1", "write_essay_part2", "submit_application", "confirm_financial_aid"].includes(task.task_key)) {
         result.countdownLabel = countdown
@@ -100,7 +112,7 @@ export function buildChecklistWorkspaceData(input: {
       }
       if (task.task_key.startsWith("write_essay")) result.link = { label: "Open Essays", href: "/dashboard/essay" }
       if (task.task_key.startsWith("request_rec_letter")) result.hint = "Check whether your program accepts or requires a recommendation"
-      if (task.task_key === "review_credit_equiv") result.link = { label: "Requirements", href: "/dashboard/requirements" }
+      if (task.task_key === "review_credit_equiv") result.link = { label: "Review requirements", href: "/dashboard/requirements" }
       if (task.task_key === "plan_first_semester") result.link = { label: "Open Plan", href: "/dashboard/plan" }
       return result
     }),
@@ -109,7 +121,7 @@ export function buildChecklistWorkspaceData(input: {
   return {
     header: {
       eyebrow: "Checklist",
-      title: "Transfer checklist ledger",
+      title: "Application logistics",
       fromInstitution: cur,
       toInstitution: tgt,
       program,

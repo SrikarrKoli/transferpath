@@ -218,6 +218,7 @@ export const previewRequirements: RequirementsWorkspaceData = {
 export const previewChecklist: ChecklistWorkspaceData = {
   header: {
     title: "Application logistics",
+    readinessMessage: "Focus on your transcript and application materials next.",
     fromInstitution: "Austin Community College",
     toInstitution: "The University of Texas at Austin",
     program: "Computer Science",
@@ -231,12 +232,17 @@ export const previewChecklist: ChecklistWorkspaceData = {
           dueLabel: "1 Nov 2026", dueContext: "Priority application", countdownLabel: "51 days",
           meta: "ACC · Student records", hint: "Allow time for delivery and receipt",
           link: { label: "How to request", href: "/dashboard/settings?tab=help#request-transcript" } },
-        { id: "review_credit_equiv", title: "Review transfer credit equivalencies", meta: "ACC → UT Austin",
-          hint: "Compare completed courses with your intended program", link: { label: "Requirements", href: "/dashboard/requirements" } },
       ],
     },
     {
-      id: "accounts", label: "Accounts",
+      id: "credits", label: "Credits",
+      tasks: [
+        { id: "review_credit_equiv", title: "Review transfer credit equivalencies", meta: "ACC → UT Austin",
+          hint: "Compare completed courses with your intended program", link: { label: "Review requirements", href: "/dashboard/requirements" } },
+      ],
+    },
+    {
+      id: "accounts", label: "Apply & aid",
       tasks: [
         { id: "create_applytexas", title: "Create ApplyTexas account", done: true, meta: "UT Austin · ApplyTexas",
           link: { label: "Open ApplyTexas", href: "https://www.goapplytexas.org" } },
@@ -256,14 +262,14 @@ export const previewChecklist: ChecklistWorkspaceData = {
           link: { label: "Open Essays", href: "/dashboard/essay" } },
         { id: "request_rec_letter_1", title: "Request a faculty recommendation", meta: "Application materials",
           hint: "First confirm whether your program accepts or requires one",
-          link: { label: "Who to ask", href: "/dashboard/settings?tab=help#rec-letters" } },
+          link: { label: "See who to ask", href: "/dashboard/settings?tab=help#rec-letters" } },
       ],
     },
     {
       id: "submit", label: "Submit prep",
       tasks: [
         { id: "research_requirements", title: "Review Computer Science transfer requirements", done: true,
-          meta: "UT Austin · Fall 2027", link: { label: "Requirements", href: "/dashboard/requirements" } },
+          meta: "UT Austin · Fall 2027", link: { label: "Review requirements", href: "/dashboard/requirements" } },
         { id: "submit_application", title: "Review and submit your transfer application", meta: "UT Austin · ApplyTexas",
           dueLabel: "1 Nov 2026", dueContext: "Priority application", countdownLabel: "51 days",
           hint: "Check materials and receipt status before submitting", link: { label: "Open Deadlines", href: "/dashboard/deadlines" } },
@@ -273,9 +279,9 @@ export const previewChecklist: ChecklistWorkspaceData = {
       id: "arrival", label: "Housing & arrival",
       tasks: [
         { id: "research_housing", title: "Research housing options", meta: "UT Austin · Arrival planning",
-          hint: "Compare on-campus and off-campus options", link: { label: "Housing", href: "https://housing.utexas.edu/" } },
+          hint: "Compare on-campus and off-campus options", link: { label: "Open Housing", href: "https://housing.utexas.edu/" } },
         { id: "attend_info_session", title: "Find a transfer information session", meta: "UT Austin · Admissions",
-          link: { label: "Requirements", href: "/dashboard/requirements" } },
+          link: { label: "Review requirements", href: "/dashboard/requirements" } },
         { id: "plan_first_semester", title: "Sketch your first-semester plan", meta: "Computer Science · Fall 2027",
           hint: "Build a tentative schedule to discuss with an advisor", link: { label: "Open Plan", href: "/dashboard/plan" } },
       ],
