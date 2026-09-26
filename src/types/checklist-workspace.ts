@@ -3,6 +3,10 @@ import type { ReactNode } from "react"
 export type ChecklistWorkspaceTask = {
   id: string
   title: string
+  dueLabel?: string
+  dueContext?: string
+  countdownLabel?: string
+  meta?: string
   hint?: string
   done?: boolean
   urgent?: boolean

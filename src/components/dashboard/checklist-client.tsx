@@ -119,11 +119,12 @@ export function ChecklistClient({
     () =>
       buildChecklistWorkspaceData({
         profile: checklistProfile,
+        nextDeadlineDaysUntil,
         sections,
         completionMap,
         lastUpdatedIso: lastChecklistCompletionIso,
       }),
-    [checklistProfile, sections, completionMap, lastChecklistCompletionIso]
+    [checklistProfile, sections, completionMap, lastChecklistCompletionIso, nextDeadlineDaysUntil]
   )
 
   async function handleToggleTask(task_key: string, newIsComplete: boolean) {

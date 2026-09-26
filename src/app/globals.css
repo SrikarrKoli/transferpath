@@ -1128,6 +1128,32 @@ nextjs-portal,
 }
 
 
+/* Dorms — application logistics ledger */
+.hall-dorm-date-context {
+  display: block;
+  margin: 0.4rem 0 0.7rem;
+  font-size: 0.22em;
+  font-weight: 400;
+  letter-spacing: normal;
+  color: var(--hall-stone);
+}
+.hall-dorm .hall-dorm-columns { margin-top: 1rem; }
+.hall-dorm-category { margin-top: 1.25rem; }
+.hall-dorm-category h3 { color: var(--hall-ink); }
+.hall-dorm-category h3 span { color: var(--hall-stone); }
+.hall-dorm-category .hall-checks { margin-top: 0.35rem; }
+.hall-dorm .hall-check-row { padding: 0.8rem 0; }
+.hall-dorm .hall-box { margin-top: 0.3rem; }
+.hall-dorm-due { margin-top: 0.2rem; font-size: 0.75rem; color: var(--hall-clay); }
+.hall-dorm .hall-index button[data-on="true"] { text-decoration: underline; text-underline-offset: 4px; }
+.hall-dorm button:focus-visible { outline: 2px solid var(--hall-ink); outline-offset: 4px; }
+@media (max-width: 600px) {
+  .hall-dorm .hall-check-row { grid-template-columns: 1.15rem minmax(0, 1fr); gap: 0.4rem 0.75rem; }
+  .hall-dorm .hall-check-row > .hall-ledger-link { grid-column: 2; justify-self: start; text-align: left; }
+  .hall-dorm .hall-dorm-columns { grid-template-columns: 1.15rem minmax(0, 1fr); }
+  .hall-dorm .hall-dorm-columns > span:last-child { display: none; }
+}
+
 /* Counselor — intake sheet */
 .hall-sheet {
   display: grid;
