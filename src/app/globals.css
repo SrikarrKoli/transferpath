@@ -5310,12 +5310,8 @@ nextjs-portal,
 .campus-root .campus-directory-list button { align-items: flex-start; padding: 7px 6px; }
 .campus-root .campus-directory-list button .campus-directory-job { display: block; margin-top: 4px; font-size: 11.5px; line-height: 1.35; font-weight: 400; color: #263b35a6; }
 .campus-roundel, .campus-legend-number { position: relative; }
-.campus-roundel::before, .campus-legend-number::before { content: ""; position: absolute; inset: 2px; border: 1px solid currentColor; opacity: .55; border-radius: 50%; pointer-events: none; }
-.campus-arrival-dock, .campus-dock-enter, .campus-root .campus-map-topbar a:not([href="/login"]) { --notch: 7px; clip-path: polygon(var(--notch) 0, calc(100% - var(--notch)) 0, 100% var(--notch), 100% calc(100% - var(--notch)), calc(100% - var(--notch)) 100%, var(--notch) 100%, 0 calc(100% - var(--notch)), 0 var(--notch)); border: 1px solid #263b35; }
-.campus-arrival-dock::before, .campus-dock-enter::before, .campus-root .campus-map-topbar a:not([href="/login"])::before { content: ""; position: absolute; inset: 4px; border: 1px solid #78634d; pointer-events: none; clip-path: polygon(4px 0, calc(100% - 4px) 0, 100% 4px, 100% calc(100% - 4px), calc(100% - 4px) 100%, 4px 100%, 0 calc(100% - 4px), 0 4px); }
 .campus-arrival-dock { width: 450px; min-height: 198px; padding: 22px; bottom: 3%; left: 2%; }
 .campus-dock-enter, .campus-root .campus-map-topbar a:not([href="/login"]) { position: relative; }
-.campus-dock-enter::before { border-color: #f7f0df66; }
 .campus-dock-enter { padding: 12px 15px; }
 .campus-directory-section, .campus-dock-copy small { font-size: 11.5px; letter-spacing: .14em; }
 .campus-interaction-hint { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; border: 0; padding: 0; color: #263b35; font-size: 13px; line-height: 1.35; }
@@ -5326,10 +5322,9 @@ nextjs-portal,
 .campus-map-marker[data-selected="true"] .campus-roundel { width: 32px; height: 32px; }
 .campus-map-marker[data-selected="true"]::after { left: 15px; top: calc(50% + 16px); }
 .campus-ground-label { display: flex; flex-direction: column; align-items: center; gap: 3px; opacity: 1; color: #263b35; text-align: center; text-shadow: -2px 0 2px #e0e3d2, 2px 0 2px #e0e3d2, 0 -2px 2px #e0e3d2, 0 2px 2px #e0e3d2; }
-.campus-ground-label strong { font: 600 11.5px/1.2 var(--font-inter), sans-serif; letter-spacing: .14em; color: #263b35ed; }
 .campus-ground-label em { font: italic 12.5px/1.2 var(--font-fraunces), Georgia, serif; letter-spacing: 0; text-transform: none; color: #263b35d9; }
 .campus-ground-label[data-muted="true"] { opacity: .55; }
-.campus-ground-label[data-selected="true"] strong, .campus-ground-label[data-selected="true"] em { color: #263b35; }
+.campus-ground-label[data-selected="true"] em { color: #263b35; }
 .campus-ground-label[data-selected="true"]::after { content: ""; width: 30px; height: 1px; background: #263b35; margin-top: 2px; }
 @media (max-width: 700px) { .campus-arrival-dock { width: 390px; min-height: 190px; } .campus-interaction-hint { font-size: 13px; } }
 
@@ -5337,3 +5332,25 @@ nextjs-portal,
 .campus-root .campus-directory-list button > .min-w-0 { line-height: 1.2; }
 .campus-root .campus-directory-section { margin-top: 13px; }
 .campus-root .campus-directory-list button { padding-top: 6px; padding-bottom: 6px; }
+
+/* Pass 18: purpose on the lawn, names in the directory, quiet paper controls. */
+.campus-arrival-dock { width: 390px; min-height: 168px; padding: 16px 18px; column-gap: 12px; row-gap: 12px; border: 1px solid #263b35; border-bottom: 2px solid #78634d; }
+.campus-dock-copy h2 { font-size: 24px; }
+.campus-dock-copy small { font-size: 10px; letter-spacing: .12em; }
+.campus-cartouche-seal { padding-top: 18px; }
+.campus-cartouche-seal .campus-brand-mark, .campus-cartouche-seal .campus-roundel { width: 28px; height: 28px; font-size: 13px; }
+.campus-dock-enter { grid-column: 2; justify-self: start; gap: 28px; padding: 8px 12px; font-size: 15px; border: 1px solid #263b35; }
+.campus-root .campus-map-topbar a:not([href="/login"]) { border: 1px solid #263b35; }
+.campus-interaction-hint { font-size: 12.5px; color: #46584b; gap: 8px; }
+.campus-interaction-hint > span { gap: 5px; }
+.campus-interaction-hint .campus-roundel { width: 18px; height: 18px; font-size: 16px; }
+.campus-interaction-hint .campus-action-mark { width: 18px; }
+.campus-map-marker .campus-roundel { box-shadow: none; }
+.campus-map-marker[data-selected="true"] { transform: translate(-17px, -50%); }
+.campus-map-marker[data-selected="true"] .campus-roundel { width: 34px; height: 34px; font-size: 15px; }
+.campus-map-marker[data-selected="true"]::after { left: 16px; top: calc(50% + 17px); }
+.campus-ground-label { opacity: 1; letter-spacing: 0; text-transform: none; color: #263b35; -webkit-text-stroke: 3px #e0e3d2; paint-order: stroke fill; text-shadow: 0 0 3px #e0e3d2, 0 0 3px #e0e3d2; }
+.campus-ground-label em { font: italic 500 16px/1.25 var(--font-fraunces), Georgia, serif; color: #263b35f0; }
+.campus-ground-label[data-selected="true"] em { font-size: 17px; color: #263b35; }
+.campus-map-marker[data-muted="true"], .campus-ground-label[data-muted="true"] { opacity: .7; }
+@media (max-width: 700px) { .campus-arrival-dock { width: 390px; min-height: 168px; } }

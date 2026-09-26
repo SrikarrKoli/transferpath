@@ -24,7 +24,7 @@ function tag(obj: THREE.Object3D, id: BuildingId) {
 
 export function buildCampusWorld(root: THREE.Group) {
   // Open the courts enough for a readable engraved apron in front of each hall.
-  const positions: Record<BuildingId, [number, number]> = { quad: [.7,-1.5], counselor: [4.8,-4], library: [-.8,4.2], classroom: [-5.2,-3.2], registrar: [7,1], dorm: [-7,-5], gym: [4.8,2.8], union: [-6.8,2.5] }
+  const positions: Record<BuildingId, [number, number]> = { quad: [.5,-2.3], counselor: [2.8,-6.7], library: [.3,4], classroom: [-9.5,-2.5], registrar: [8.1,-1.2], dorm: [-6.35,-3.8], gym: [5,3.2], union: [-4.9,5.6] }
   const buildings = CAMPUS_BUILDINGS.map(b => ({...b, x: positions[b.id][0], z: positions[b.id][1]}))
   const meshById = new Map<BuildingId, THREE.Group>()
   const city = new THREE.Group()
@@ -44,14 +44,14 @@ export function buildCampusWorld(root: THREE.Group) {
   rect(-2, .1, .24, 10.4, "#d2d0b7")
   rect(3, .8, .24, 11.8, "#d2d0b7")
   rect(.5, -6.1, 15.2, .24, "#d2d0b7")
-  rect(5.7, 6.9, 8.8, .24, "#d2d0b7")
+  rect(5.5, 1.8, 5, .24, "#d2d0b7")
   for (const b of buildings) {
     const edge = b.x < 0 ? -2 : 3
     rect((b.x + edge) / 2, b.z, Math.abs(b.x - edge), .24, "#d2d0b7")
   }
   // Clock court is a limestone oval, not a selection surface.
   ctx.fillStyle = "#d9d3b9"
-  ctx.beginPath(); ctx.ellipse(origin + .7 * scale, origin - 1.5 * scale, 1.35 * scale, 1.5 * scale, 0, 0, Math.PI * 2); ctx.fill()
+  ctx.beginPath(); ctx.ellipse(origin + .5 * scale, origin - 2.3 * scale, 1.35 * scale, 1.5 * scale, 0, 0, Math.PI * 2); ctx.fill()
   for (const b of buildings) rect(b.x, b.z + 0.4, b.id === "library" ? 4.5 : 2.8, 2.5, "#d9d3b9")
   let seed = 83
   for (let i = 0; i < 125000; i++) {
@@ -67,7 +67,7 @@ export function buildCampusWorld(root: THREE.Group) {
   root.add(ground)
   const beyond = mesh(new THREE.PlaneGeometry(180, 180), hold(0xb6c9ac), 0, -0.015, 0, false)
   beyond.rotation.x = -Math.PI / 2; root.add(beyond)
-  for (const [x, z, w] of [[-6, -5.7, 2.9], [4.5, -4.8, 2.4], [-7.8, 4.15, 1.7], [-2.9, 7.05, 2.1]]) {
+  for (const [x, z, w] of [[-5.35, -4.5, 2.9], [2.5, -7.5, 2.4], [-5.9, 7.25, 1.7], [-1.8, 6.85, 2.1]]) {
     // Limestone-edged beds echo the stepped building plinths.
     city.add(mesh(new THREE.BoxGeometry(w, 0.075, 0.48), lambert(C.creamDeep), x, 0.04, z, false))
     city.add(mesh(new THREE.BoxGeometry(w - 0.12, 0.035, 0.34), lambert(0x777a5b), x, 0.09, z, false))
@@ -109,7 +109,7 @@ export function buildCampusWorld(root: THREE.Group) {
     if (id === "classroom") g.userData.pin.set(-.65, 2.35, 0)
     if (id === "registrar") g.userData.pin.set(.1, 2.55, .1)
     g.userData.label = new THREE.Vector3(meta.x + center.x, .02, meta.z + box.max.z + .38)
-    const labelOffsets: Partial<Record<BuildingId, [number, number]>> = { quad: [1.65,-.85], counselor: [2.5,-.7], classroom: [2,-.1], library: [.4,.95], registrar: [.7,.65], union: [1.8,.6], dorm: [-1.2,1.1], gym: [.3,.5] }
+    const labelOffsets: Partial<Record<BuildingId, [number, number]>> = { quad: [.8,-.2], counselor: [1.2,.9], classroom: [1,.95], library: [1,1.1], registrar: [1.1,1], union: [1,1], dorm: [.9,.95], gym: [.6,.65] }
     const offset = labelOffsets[id]
     if (offset) { g.userData.label.x += offset[0]; g.userData.label.z += offset[1] }
     g.userData.bounds = box.clone()
@@ -134,17 +134,17 @@ export function buildCampusWorld(root: THREE.Group) {
   CAMPUS_BUILDINGS.forEach((b) => placeLandmark(b.id))
 
   // Cypress, live oak, and pecan silhouettes placed at irregular court edges.
-  ;[[-7.4, 4.4], [-7.8, 5.7], [5.25, -4.85], [-7.2, -5.1], [-2, -5.5], [8.8, 2.1], [3.1, -6.2]].forEach(([x, z], i) => {
+  ;[[-5.5, 7.5], [-5.9, 8.8], [3.25, -7.55], [-6.55, -3.9], [-4.8, -3.5], [9.9, -.1], [1.1, -8.9]].forEach(([x, z], i) => {
     city.add(toyTree(x, z, i))
   })
-  const gate = campusGate(); gate.position.set(6.8, 0, 2.8); gate.rotation.y = .45; city.add(gate)
-  const basin = reflectingBasin(); basin.position.set(1.35, 0, .95); city.add(basin)
-  ;[[-2.6, -3.8], [2.5, -2.8], [2.5, 1.5]].forEach(([x,z], i) => city.add(bannerLamp(x,z,i)))
-  for (const [x,z] of [[6.2, 3.8], [8.3, .7], [-6.5, 4.9]]) {
+  const gate = campusGate(); gate.position.set(8, 0, 1.8); gate.rotation.y = .45; city.add(gate)
+  const basin = reflectingBasin(); basin.position.set(2, 0, .2); city.add(basin)
+  ;[[-3.8, -1.7], [5.1, -4.1], [4, .9]].forEach(([x,z], i) => city.add(bannerLamp(x,z,i)))
+  for (const [x,z] of [[6.4, 4.2], [9.4, -1.5], [-4.6, 8]]) {
     city.add(mesh(new THREE.BoxGeometry(.75,.08,.36), hold(C.creamDeep),x,.04,z,false))
     for(let i=0;i<9;i++) city.add(mesh(new THREE.DodecahedronGeometry(.07,0),hold([0xb7796e,0xd4b8a0,0x9d655b][i%3]),x-.3+(i%5)*.14,.16+(i%2)*.04,z+(i>4?.1:-.08)))
   }
-  city.add(bench(lambert(C.creamDeep), -1.3, 1.45, 0))
-  city.add(bench(lambert(C.creamDeep), 1.3, 1.45, 0))
+  city.add(bench(lambert(C.creamDeep), 3, .4, 0))
+  city.add(bench(lambert(C.creamDeep), 2, 1.5, 0))
   return { meshById, obstacles: city.children.filter(child => !child.userData.buildingId), people: [] as THREE.Group[] }
 }

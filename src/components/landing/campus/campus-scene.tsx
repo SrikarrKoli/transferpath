@@ -60,10 +60,10 @@ export function CampusScene({ selected, hovered, focusToken, onHover, onSelect, 
     scene.environmentIntensity = 0.25
 
     const camera = new THREE.OrthographicCamera(-1, 1, 1, -1, 0.1, 240)
-    const orbit = { theta: Math.PI / 3.15, phi: 0.88, radius: 28.5 }
+    const orbit = { theta: Math.PI / 3.15, phi: 0.88, radius: 27 }
     const look = new THREE.Vector3(0.1, 0.55, 0.4)
     const lookGoal = look.clone()
-    const radiusGoal = { v: 28.5 }
+    const radiusGoal = { v: 27 }
 
     scene.add(new THREE.AmbientLight(0xfff4e6, 0.24))
     scene.add(new THREE.HemisphereLight(0xc9dded, 0x789178, 0.65))
@@ -256,7 +256,7 @@ export function CampusScene({ selected, hovered, focusToken, onHover, onSelect, 
       const t = (now - t0) / 1000
       if (focusTokenRef.current !== lastFocusToken) {
         lastFocusToken = focusTokenRef.current
-        lookGoal.set(0.1, 0.55, 0.4); radiusGoal.v = 28.5
+        lookGoal.set(0.1, 0.55, 0.4); radiusGoal.v = 27
       }
       look.lerp(lookGoal, ease)
       if (look.distanceToSquared(lookGoal) < 0.000004) look.copy(lookGoal)
@@ -316,7 +316,7 @@ export function CampusScene({ selected, hovered, focusToken, onHover, onSelect, 
       for (const marker of markers) {
         const el = mount.parentElement?.querySelector<HTMLElement>(`[data-marker="${marker.id}"]`)
         if (!el) continue
-        const width = marker.selected ? 32 : 26
+        const width = marker.selected ? 34 : 26
         const originalY = marker.y
         for (const other of placed) {
           if (marker.x - 15 < other.x + other.width - 11 && marker.x + width - 11 > other.x - 15 && Math.abs(marker.y - other.y) < 32) marker.y = other.y - 32
@@ -399,7 +399,7 @@ export function CampusScene({ selected, hovered, focusToken, onHover, onSelect, 
   return (
     <div className="absolute inset-0" data-campus-ready={!status}>
       <div ref={mountRef} className="absolute inset-0 touch-none" />
-      <div className="campus-ground-labels" aria-hidden="true">{CAMPUS_BUILDINGS.map((b, i) => <span key={b.id} className="campus-ground-label" data-ground-label={b.id} data-selected={selected === b.id} data-muted={!!selected && selected !== b.id}><strong>{String(i + 1).padStart(2, "0")} · {b.name}</strong><em>{b.short}</em></span>)}</div>
+      <div className="campus-ground-labels" aria-hidden="true">{CAMPUS_BUILDINGS.map((b) => <span key={b.id} className="campus-ground-label" data-ground-label={b.id} data-selected={selected === b.id} data-muted={!!selected && selected !== b.id}><em>{b.short}</em></span>)}</div>
       <div className="campus-map-markers">{CAMPUS_BUILDINGS.map((b, i) => <button key={b.id} data-marker={b.id} className="campus-map-marker" data-selected={selected === b.id} data-muted={!!selected && selected !== b.id} data-hovered={!selected && hovered === b.id} aria-label={b.name} aria-pressed={selected === b.id} onClick={() => onSelect(b.id)} onMouseEnter={() => onHover(b.id)} onMouseLeave={() => onHover(null)}><span className="campus-roundel">{String(i + 1).padStart(2, "0")}</span></button>)}</div>
       {status ? (
         <div className="pointer-events-none absolute inset-0 z-10 flex items-center justify-center bg-[#c8bea4]">
