@@ -5555,3 +5555,29 @@ nextjs-portal,
 .campus-entered[data-building="dorm"]:has(.hall-dorm[data-view="done"]) .hall-body {
   flex: none;
 }
+
+/* Dorms: the priority lead is the single next ask. */
+.hall-dorm-main > .hall-dorm-ledger:first-child { margin-top: 0; }
+.hall-dorm .hall-dorm-lead { padding-block: 0.85rem 1rem; }
+.hall-dorm-lead-title {
+  font-size: clamp(1.5rem, 2.2vw, 2rem);
+  line-height: 1.2;
+  font-weight: 600;
+  letter-spacing: -0.035em;
+}
+.hall-dorm-lead-title .hall-dorm-featured { font-weight: 400; letter-spacing: 0; }
+.hall-dorm .hall-dorm-lead .hall-box { margin-top: 0.45rem; }
+.hall-dorm .hall-dorm-lead .hall-dorm-context { margin-top: 0.35rem; }
+.hall-dorm .hall-dorm-lead .union-step-actions { margin-top: 0; }
+.hall-dorm .hall-dorm-lead .hall-dorm-why { margin-bottom: 0.4rem; }
+.hall-dorm .hall-dorm-category:not(.hall-dorm-priority) {
+  margin-top: 1rem;
+  border-top: 1px solid var(--hall-ink);
+  padding-top: 0.55rem;
+}
+.hall-dorm .hall-dorm-category:not(.hall-dorm-priority) h3 { font-weight: 650; }
+.hall-dorm[data-view="done"] .hall-dorm-done-when {
+  display: block;
+  overflow: visible;
+  -webkit-line-clamp: unset;
+}
