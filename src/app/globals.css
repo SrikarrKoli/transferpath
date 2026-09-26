@@ -5488,9 +5488,8 @@ nextjs-portal,
 .hall-dorm .hall-box { width: 1.1rem; height: 1.1rem; }
 .hall-dorm .hall-box[aria-pressed="true"] { background: var(--hall-ink); }
 .hall-dorm .hall-box[aria-pressed="true"]::after { content: "✓"; width: auto; height: auto; background: transparent; color: var(--hall-paper); font-size: 0.85rem; line-height: 1; }
-.hall-dorm-row-copy { display: grid; min-width: 0; max-width: 48rem; gap: 0.25rem; }
+.hall-dorm-row-copy { display: grid; min-width: 0; max-width: 56rem; gap: 0.25rem; }
 .hall-dorm-row-action { display: flex; align-items: baseline; gap: 0.75rem; }
-.hall-dorm-featured { color: var(--hall-stone); font-size: 0.8rem; white-space: nowrap; }
 .hall-dorm .hall-ledger-link { font-size: 0.875rem; }
 .hall-dorm-finish { font-size: 0.95rem; color: var(--hall-ink); font-variant-numeric: tabular-nums; }
 .hall-dorm .hall-index:not(.hall-dorm-subjects) { margin-top: 0.35rem; }
@@ -5520,7 +5519,7 @@ nextjs-portal,
 .hall-dorm .hall-dorm-done-when {
   display: -webkit-box;
   -webkit-box-orient: vertical;
-  -webkit-line-clamp: 2;
+  -webkit-line-clamp: 1;
   overflow: hidden;
   margin-top: 0.2rem;
   color: var(--hall-stone);
@@ -5558,24 +5557,24 @@ nextjs-portal,
 
 /* Dorms: the priority lead is the single next ask. */
 .hall-dorm-main > .hall-dorm-ledger:first-child { margin-top: 0; }
-.hall-dorm .hall-dorm-lead { padding-block: 0.85rem 1rem; }
-.hall-dorm-lead-title {
-  font-size: clamp(1.5rem, 2.2vw, 2rem);
+.hall-dorm .hall-dorm-lead { padding-block: 0.5rem 0.65rem; }
+.hall-dorm .hall-dorm-lead-title {
+  font-size: 1.1rem;
   line-height: 1.2;
   font-weight: 600;
   letter-spacing: -0.035em;
 }
-.hall-dorm-lead-title .hall-dorm-featured { font-weight: 400; letter-spacing: 0; }
-.hall-dorm .hall-dorm-lead .hall-box { margin-top: 0.45rem; }
+.hall-dorm .hall-dorm-lead .hall-box { margin-top: 0.2rem; }
 .hall-dorm .hall-dorm-lead .hall-dorm-context { margin-top: 0.35rem; }
 .hall-dorm .hall-dorm-lead .union-step-actions { margin-top: 0; }
-.hall-dorm .hall-dorm-lead .hall-dorm-why { margin-bottom: 0.4rem; }
+.hall-dorm .hall-dorm-lead .hall-dorm-why { margin-block: 0.3rem 0; }
+.hall-dorm .hall-dorm-lead .hall-dorm-row-copy { gap: 0.4rem; }
 .hall-dorm .hall-dorm-category:not(.hall-dorm-priority) {
   margin-top: 1rem;
   border-top: 1px solid var(--hall-ink);
   padding-top: 0.55rem;
 }
-.hall-dorm .hall-dorm-category:not(.hall-dorm-priority) h3 { font-weight: 650; }
+.hall-dorm .hall-dorm-category:not(.hall-dorm-priority) h3 { font-size: 0.95rem; color: var(--hall-ink); font-weight: 650; }
 .hall-dorm[data-view="done"] .hall-dorm-done-when {
   display: block;
   overflow: visible;
