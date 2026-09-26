@@ -115,7 +115,7 @@ export function buildChecklistWorkspaceData(input: {
         const labels: Record<string, string> = {
           research_requirements: "Review requirements", pay_application_fee: "Open ApplyTexas",
           confirm_financial_aid: "Open FAFSA", review_financial_aid: "Open aid guide",
-          request_rec_letter_1: "Open help", request_rec_letter_2: "Open help",
+          request_rec_letter_1: "Who to ask", request_rec_letter_2: "Who to ask",
           attend_info_session: "Find sessions", connect_peer_mentor: "Review requirements",
           check_tsi: "Review TSI",
         }

@@ -5488,7 +5488,7 @@ nextjs-portal,
 .hall-dorm .hall-box { width: 1.1rem; height: 1.1rem; }
 .hall-dorm .hall-box[aria-pressed="true"] { background: var(--hall-ink); }
 .hall-dorm .hall-box[aria-pressed="true"]::after { content: "✓"; width: auto; height: auto; background: transparent; color: var(--hall-paper); font-size: 0.85rem; line-height: 1; }
-.hall-dorm-row-copy { display: grid; align-items: baseline; gap: 0.2rem 1.5rem; }
+.hall-dorm-row-copy { display: grid; min-width: 0; max-width: 48rem; gap: 0.25rem; }
 .hall-dorm-row-action { display: flex; align-items: baseline; gap: 0.75rem; }
 .hall-dorm-featured { color: var(--hall-stone); font-size: 0.8rem; white-space: nowrap; }
 .hall-dorm .hall-ledger-link { font-size: 0.875rem; }
@@ -5506,9 +5506,52 @@ nextjs-portal,
 .hall-dorm .hall-dorm-done-summary .hall-hero-title { font-size: 1.9rem; }
 @media (min-width: 960px) {
   .hall-dorm > .hall-margin { grid-column: 2; grid-row: 1; }
-  .hall-dorm-row-copy { grid-template-columns: minmax(0, 1fr) 10rem; }
-  .hall-dorm-row-action { grid-column: 2; justify-self: start; text-align: left; }
 }
 @media (max-width: 959px) {
   .hall-dorm > .hall-margin { grid-row: 2; }
+}
+
+/* Dorms: keep the completion condition and action with each task. */
+.hall-dorm {
+  --hall-stone: #625f58;
+}
+.hall-dorm .hall-hero-title { font-size: clamp(1.65rem, 2.2vw, 2rem); }
+.hall-dorm .hall-dorm-done-summary .hall-hero-title { font-size: 1.65rem; }
+.hall-dorm .hall-dorm-done-when {
+  display: -webkit-box;
+  -webkit-box-orient: vertical;
+  -webkit-line-clamp: 2;
+  overflow: hidden;
+  margin-top: 0.2rem;
+  color: var(--hall-stone);
+  font-size: 0.85rem;
+  line-height: 1.4;
+}
+.hall-dorm-order {
+  display: inline-block;
+  min-width: 1.25rem;
+  margin-right: 0.25rem;
+  color: var(--hall-stone);
+  font-size: 0.85rem;
+  font-variant-numeric: tabular-nums;
+}
+.hall-dorm .hall-dorm-priority { margin-top: 0.55rem; }
+.hall-dorm .hall-dorm-priority h3 span { font-size: 0.85rem; }
+.hall-dorm[data-view="done"] .hall-dorm-ledger { margin-top: 0.5rem; }
+.hall-dorm[data-view="done"] .union-step-actions { margin-top: 0.4rem; }
+
+.campus-entered[data-building="dorm"]:has(.hall-dorm) .hall-name {
+  font-size: clamp(2rem, 3.3vw, 2.55rem);
+}
+.campus-entered[data-building="dorm"]:has(.hall-dorm) .hall-masthead {
+  margin-bottom: 1rem;
+  padding-bottom: 0.65rem;
+}
+.hall-dorm .union-next-block { padding-bottom: 0.65rem; }
+.hall-dorm .hall-dorm-ledger { margin-top: 0.65rem; }
+.campus-entered[data-building="dorm"]:has(.hall-dorm[data-view="done"]) {
+  min-height: 0;
+}
+.campus-entered[data-building="dorm"]:has(.hall-dorm[data-view="done"]) .hall-body {
+  flex: none;
 }

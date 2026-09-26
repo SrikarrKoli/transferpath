@@ -49,7 +49,7 @@ export function HallChecklist({ data, tasks, onToggle }: {
   const done = all.filter(isDone)
   const logistics = open.filter((t) => t.categoryId !== "academic")
   const next = [...logistics].sort(priority)[0] || [...open].sort(priority)[0]
-  const dueSoon = open.filter(isDueSoon).sort((a, b) => (timingOrder(a) - timingOrder(b) || 0))
+  const dueSoon = open.filter(isDueSoon).sort(priority)
   const sharedPriorityDate = dueSoon.length > 0 && dueSoon[0].dueLabel
     && dueSoon.every((task) => task.dueContext?.toLowerCase() === "priority application" && task.dueLabel === dueSoon[0].dueLabel)
     ? splitHallDate(dueSoon[0].dueLabel).primary : null
@@ -105,13 +105,13 @@ export function HallChecklist({ data, tasks, onToggle }: {
         </section>
 
         <div className="hall-dorm-ledger">
-          <p className="hall-dorm-finish" aria-live="polite">{done.length} of {all.length} finished{dueSoon.length > 0 ? ` · ${dueSoon.length} due soon` : ""}</p>
+          {filter !== "done" ? <p className="hall-dorm-finish" aria-live="polite">{done.length} of {all.length} finished{dueSoon.length > 0 ? ` · ${dueSoon.length} due soon` : ""}</p> : null}
           <nav className="hall-index" aria-label="Checklist status">
             {filters.map((item) => <button key={item.id} type="button" data-on={filter === item.id} aria-pressed={filter === item.id} onClick={() => setFilter(item.id)}>
               {item.label} <span className="tabular-nums">{item.count}</span>
             </button>)}
           </nav>
-          {filter !== "done" && filter !== "soon" ? <nav className="hall-index hall-dorm-subjects" aria-label="Checklist subjects">
+          {filter !== "done" && filter !== "soon" && !(filter === "open" && dueSoon.length > 0) ? <nav className="hall-index hall-dorm-subjects" aria-label="Checklist subjects">
             {subjects.map((item) => <button key={item.id} type="button" data-on={filter === item.id} aria-pressed={filter === item.id} onClick={() => setFilter(filter === item.id ? "open" : item.id)}>
               {item.label} <span className="tabular-nums">{item.count}</span>
             </button>)}
@@ -128,13 +128,14 @@ export function HallChecklist({ data, tasks, onToggle }: {
             return <section className={`hall-dorm-category${isPriorityBand ? " hall-dorm-priority" : ""}`} key={category.id} aria-labelledby={`checklist-${category.id}`}>
               <h3 id={`checklist-${category.id}`}>{category.label} <span>{filter === "done" ? `· ${completed} completed` : `· ${rows.length} ${filter === "soon" ? "due soon" : "open"}`}</span></h3>
               <ul className="hall-checks">
-                {rows.map((task) => <li key={task.id} id={`task-${task.id}`} className="hall-check-row">
+                {rows.map((task, index) => <li key={task.id} id={`task-${task.id}`} className="hall-check-row">
                   <button type="button" className="hall-box" aria-pressed={isDone(task)} aria-label={`Mark ${task.title} ${isDone(task) ? "open" : "done"}`} onClick={() => onToggle(task.id)} />
                   <div className="hall-dorm-row-copy">
                     <div className="hall-dorm-row-task">
-                      <p className={isDone(task) ? "hall-dorm-completed" : undefined}>{task.title}{!isDone(task) && task.id === next?.id ? <span className="hall-dorm-featured"> · Featured</span> : null}</p>
+                      <p className={isDone(task) ? "hall-dorm-completed" : undefined}>{isPriorityBand || filter === "soon" ? <span className="hall-dorm-order">{index + 1}<span className="sr-only">. </span></span> : null}{task.title}{!isDone(task) && task.id === next?.id ? <span className="hall-dorm-featured"> · Featured</span> : null}</p>
                       <p className="hall-date-meta">{[task.meta, !hasTiming(task) && !task.doneWhen ? task.hint : undefined].filter(Boolean).join(" · ")}</p>
                       {!isDone(task) && hasTiming(task) ? <p className={isDueSoon(task) ? "hall-dorm-due" : "hall-date-meta"}>{milestoneCopy(task)}</p> : null}
+                      {!isDone(task) && task.doneWhen ? <p className="hall-dorm-done-when">Done when {task.doneWhen}</p> : null}
                     </div>
                     {task.link ? <div className="hall-dorm-row-action">
                       <Link href={task.link.href} className="hall-ledger-link">{task.link.label}</Link>

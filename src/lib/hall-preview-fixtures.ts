@@ -263,7 +263,7 @@ export const previewChecklist: ChecklistWorkspaceData = {
           link: { label: "Open Essays", href: "/dashboard/essay" } },
         { id: "request_rec_letter_1", doneWhen: logisticsDoneWhen.request_rec_letter_1, title: "Request a faculty recommendation", meta: "Application materials",
           hint: "First confirm whether your program accepts or requires one",
-          link: { label: "Open help", href: "/dashboard/settings?tab=help#rec-letters" } },
+          link: { label: "Who to ask", href: "/dashboard/settings?tab=help#rec-letters" } },
       ],
     },
     {
