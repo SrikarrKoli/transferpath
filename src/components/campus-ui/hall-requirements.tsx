@@ -44,7 +44,6 @@ function pickNext(data: RequirementsWorkspaceData): NextAction {
       primary: { href: "/dashboard/settings?tab=transfer", label: "Set school & term" },
       secondaries: [
         { href: "/dashboard/plan", label: "Open Plan" },
-        { href: "/dashboard/deadlines", label: "Open Deadlines" },
       ],
     }
   }
@@ -56,7 +55,6 @@ function pickNext(data: RequirementsWorkspaceData): NextAction {
       primary: { href: "/dashboard/settings?tab=transfer", label: "Edit schools" },
       secondaries: [
         { href: "/dashboard/plan", label: "Open Plan" },
-        { href: "/dashboard/deadlines", label: "Open Deadlines" },
       ],
     }
   }
@@ -67,10 +65,9 @@ function pickNext(data: RequirementsWorkspaceData): NextAction {
       caption: "Do this next",
       title: requirement.title,
       requirement,
-      primary: { href: "/dashboard/plan", label: "Place on Plan" },
-      secondaries: [
-        { href: "/dashboard/deadlines", label: "Open Deadlines" },
-        { href: "/dashboard/checklist", label: "Open Checklist" },
+      primary: { href: "/dashboard/plan", label: requirement.status === "active" ? "Open Plan" : "Place on Plan" },
+      secondaries: requirement.status === "active" ? [] : [
+        { href: "/dashboard/plan", label: "Open Plan" },
       ],
     }
   }
@@ -80,16 +77,16 @@ function pickNext(data: RequirementsWorkspaceData): NextAction {
     title: "Requirements look covered",
     primary: { href: "/dashboard/deadlines", label: "Open Deadlines" },
     secondaries: [
-      { href: "/dashboard/checklist", label: "Open Checklist" },
       { href: "/dashboard/plan", label: "Review Plan" },
     ],
   }
 }
 
-function RequirementsNextBlock({ next, currentLabel, targetLabel }: {
+function RequirementsNextBlock({ next, currentLabel, targetLabel, term }: {
   next: NextAction
   currentLabel: string
   targetLabel: string
+  term: string
 }) {
   const item = next.requirement
   return (
@@ -115,10 +112,15 @@ function RequirementsNextBlock({ next, currentLabel, targetLabel }: {
           </h2>
           <p className="registrar-course-detail">
             <span>{item.title}</span>
-            <span>{item.credits} cr · {standing(item.status)}</span>
+            <span>{item.credits} cr</span>
+          </p>
+          <p className="registrar-rationale">
+            {item.status === "missing"
+              ? `Still open · place on your Plan${term ? ` for ${term}` : ""}`
+              : "In progress · confirm it stays on Plan"}
           </p>
           {item.provenanceBasis ? (
-            <p className="registrar-provenance">{item.provenanceBasis}</p>
+            <p className="registrar-provenance">Source · <strong>{item.provenanceBasis}</strong></p>
           ) : null}
         </>
       ) : <h2 className="hall-hero-title">{next.title}</h2>}
@@ -126,7 +128,7 @@ function RequirementsNextBlock({ next, currentLabel, targetLabel }: {
         <Link href={next.primary.href} className="union-primary-cta">
           {next.primary.label}
         </Link>
-        {next.secondaries.slice(0, 2).map((action) => (
+        {next.secondaries.slice(0, 1).map((action) => (
           <Link key={action.href + action.label} href={action.href} className="hall-ledger-link">
             {action.label}
           </Link>
@@ -139,6 +141,8 @@ function RequirementsNextBlock({ next, currentLabel, targetLabel }: {
 export function HallRequirements({ data }: { data: RequirementsWorkspaceData }) {
   const items = data.categories.flatMap((c) => c.items)
   const done = items.filter((i) => i.status === "done").length
+  const open = items.filter((i) => i.status === "missing").length
+  const active = items.filter((i) => i.status === "active").length
   const { currentLabel, targetLabel } = institutionColumnLabels(
     data.header.fromInstitution,
     data.header.toInstitution,
@@ -148,19 +152,22 @@ export function HallRequirements({ data }: { data: RequirementsWorkspaceData }) 
   return (
     <div className="hall-split hall-registrar">
       <div>
-        <RequirementsNextBlock next={next} currentLabel={currentLabel} targetLabel={targetLabel} />
+        <RequirementsNextBlock next={next} currentLabel={currentLabel} targetLabel={targetLabel} term={data.header.term} />
+      </div>
 
-        <p className="hall-caption mt-6">
-          Course equivalence · {done}/{items.length} on plan
+      <section className="registrar-ledger" aria-label="Course equivalence">
+        <p className="registrar-ledger-summary">
+          Course equivalence · {done} of {items.length} on plan · {open} open · {active} in progress
         </p>
 
         <div className="hall-matrix-wrap mt-4">
           <table className="hall-matrix">
             <colgroup>
-              <col style={{ width: "36%" }} />
-              <col style={{ width: "19%" }} />
-              <col style={{ width: "19%" }} />
-              <col style={{ width: "26%" }} />
+              <col style={{ width: "34%" }} />
+              <col style={{ width: "17%" }} />
+              <col style={{ width: "17%" }} />
+              <col style={{ width: "15%" }} />
+              <col style={{ width: "17%" }} />
             </colgroup>
             <thead>
               <tr>
@@ -168,12 +175,13 @@ export function HallRequirements({ data }: { data: RequirementsWorkspaceData }) 
                 <th scope="col">{currentLabel}</th>
                 <th scope="col">{targetLabel}</th>
                 <th scope="col">Standing</th>
+                <th scope="col">Action</th>
               </tr>
             </thead>
             <tbody>
               {items.length === 0 ? (
                 <tr>
-                  <td colSpan={4}>
+                  <td colSpan={5}>
                     <p className="hall-prompt">No requirement rows yet. Set schools or place a course on Plan.</p>
                   </td>
                 </tr>
@@ -185,22 +193,17 @@ export function HallRequirements({ data }: { data: RequirementsWorkspaceData }) 
                         {String(index + 1).padStart(2, "0")}
                       </span>
                       {item.title}
+                      <span className="registrar-row-credits">{item.credits} cr</span>
                     </td>
                     <td>{item.code || "—"}</td>
                     <td>{item.equiv || "—"}</td>
-                    <td className={item.status === "missing" ? "hall-urgent" : undefined}>
-                      {item.status === "done" ? (
-                        <>
-                          {standing(item.status)}
-                          {item.credits ? ` · ${item.credits} cr` : ""}
-                        </>
-                      ) : (
-                        <Link href="/dashboard/plan" className="hall-ledger-link">
-                          {standing(item.status)}
-                          {item.credits ? ` · ${item.credits} cr` : ""}
-                          {" · Place on Plan"}
-                        </Link>
-                      )}
+                    <td className="registrar-standing" data-status={item.status}>
+                      {standing(item.status)}
+                    </td>
+                    <td className="registrar-row-action">
+                      <Link href="/dashboard/plan" className="hall-ledger-link" aria-label={`${item.status === "missing" ? "Place on Plan" : "Open Plan"}: ${item.title}`}>
+                        {item.status === "missing" ? "Place on Plan" : "Open Plan"}
+                      </Link>
                     </td>
                   </tr>
                 ))
@@ -208,9 +211,10 @@ export function HallRequirements({ data }: { data: RequirementsWorkspaceData }) 
             </tbody>
           </table>
         </div>
-      </div>
+      </section>
 
       <aside className="hall-margin">
+        <p className="hall-caption registrar-transfer-label">Your transfer</p>
         <p>
           {data.header.fromInstitution} → {data.header.toInstitution}
         </p>
@@ -219,9 +223,6 @@ export function HallRequirements({ data }: { data: RequirementsWorkspaceData }) 
         </p>
 
         <div className="mt-3 flex flex-wrap gap-x-4 gap-y-2">
-          <Link href="/dashboard/plan" className="hall-ledger-link">
-            Open Plan
-          </Link>
           <Link href="/dashboard/deadlines" className="hall-ledger-link">
             Open Deadlines
           </Link>
