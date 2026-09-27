@@ -5,7 +5,7 @@ import type {
   RequirementWorkspaceItem,
 } from "@/types/requirements-workspace"
 
-function standing(status: string) {
+function planStatus(status: string) {
   if (status === "done") return "Complete"
   if (status === "active") return "On plan"
   return "Open"
@@ -108,6 +108,9 @@ function RequirementsNextBlock({ next, currentLabel, targetLabel, term }: {
               <span className="registrar-course-code">{item.equiv || "Not listed"}</span>
             </span>
           </h2>
+          <p className="registrar-course-name">
+            <strong>{item.title}</strong><span> · {item.credits} cr</span>
+          </p>
           <p className="registrar-rationale">
             {item.status === "missing"
               ? `Next open requirement · place on Plan${term ? ` for ${term}` : ""}`
@@ -169,7 +172,7 @@ export function HallRequirements({ data }: { data: RequirementsWorkspaceData }) 
                 <th scope="col">Requirement</th>
                 <th scope="col">{currentLabel}</th>
                 <th scope="col">{targetLabel}</th>
-                <th scope="col">Standing</th>
+                <th scope="col">Status</th>
                 <th scope="col">Action</th>
               </tr>
             </thead>
@@ -189,14 +192,11 @@ export function HallRequirements({ data }: { data: RequirementsWorkspaceData }) 
                       </span>
                       {item.title}
                       <span className="registrar-row-credits">{item.credits} cr</span>
-                      {item.provenanceBasis ? (
-                        <span className="registrar-row-source">Source · {item.provenanceBasis}</span>
-                      ) : null}
                     </td>
                     <td>{item.code || "—"}</td>
                     <td>{item.equiv || "—"}</td>
-                    <td className="registrar-standing" data-status={item.status}>
-                      {standing(item.status)}
+                    <td className="registrar-status" data-status={item.status}>
+                      {planStatus(item.status)}
                     </td>
                     <td className="registrar-row-action">
                       <Link href="/dashboard/plan" className="hall-ledger-link" aria-label={`${item.status === "missing" ? "Place on Plan" : "Open Plan"}: ${item.title}`}>
