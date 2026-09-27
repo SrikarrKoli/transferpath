@@ -6,8 +6,8 @@ import type {
 } from "@/types/requirements-workspace"
 
 function standing(status: string) {
-  if (status === "done") return "On plan"
-  if (status === "active") return "In progress"
+  if (status === "done") return "Complete"
+  if (status === "active") return "On plan"
   return "Open"
 }
 
@@ -66,9 +66,7 @@ function pickNext(data: RequirementsWorkspaceData): NextAction {
       title: requirement.title,
       requirement,
       primary: { href: "/dashboard/plan", label: requirement.status === "active" ? "Open Plan" : "Place on Plan" },
-      secondaries: requirement.status === "active" ? [] : [
-        { href: "/dashboard/plan", label: "Open Plan" },
-      ],
+      secondaries: [],
     }
   }
 
@@ -110,14 +108,10 @@ function RequirementsNextBlock({ next, currentLabel, targetLabel, term }: {
               <span className="registrar-course-code">{item.equiv || "Not listed"}</span>
             </span>
           </h2>
-          <p className="registrar-course-detail">
-            <span>{item.title}</span>
-            <span>{item.credits} cr</span>
-          </p>
           <p className="registrar-rationale">
             {item.status === "missing"
-              ? `Still open · place on your Plan${term ? ` for ${term}` : ""}`
-              : "In progress · confirm it stays on Plan"}
+              ? `Next open requirement · place on Plan${term ? ` for ${term}` : ""}`
+              : "On plan · review your course in Plan"}
           </p>
           {item.provenanceBasis ? (
             <p className="registrar-provenance">Source · <strong>{item.provenanceBasis}</strong></p>
@@ -157,17 +151,18 @@ export function HallRequirements({ data }: { data: RequirementsWorkspaceData }) 
 
       <section className="registrar-ledger" aria-label="Course equivalence">
         <p className="registrar-ledger-summary">
-          Course equivalence · {done} of {items.length} on plan · {open} open · {active} in progress
+          Course equivalence · <strong>{active + done} of {items.length} on plan</strong> · {open} open
+          {done > 0 ? ` · ${done} complete` : ""}
         </p>
 
         <div className="hall-matrix-wrap mt-4">
           <table className="hall-matrix">
             <colgroup>
-              <col style={{ width: "34%" }} />
-              <col style={{ width: "17%" }} />
-              <col style={{ width: "17%" }} />
-              <col style={{ width: "15%" }} />
-              <col style={{ width: "17%" }} />
+              <col style={{ width: "38%" }} />
+              <col style={{ width: "16%" }} />
+              <col style={{ width: "16%" }} />
+              <col style={{ width: "14%" }} />
+              <col style={{ width: "16%" }} />
             </colgroup>
             <thead>
               <tr>
@@ -194,6 +189,9 @@ export function HallRequirements({ data }: { data: RequirementsWorkspaceData }) 
                       </span>
                       {item.title}
                       <span className="registrar-row-credits">{item.credits} cr</span>
+                      {item.provenanceBasis ? (
+                        <span className="registrar-row-source">Source · {item.provenanceBasis}</span>
+                      ) : null}
                     </td>
                     <td>{item.code || "—"}</td>
                     <td>{item.equiv || "—"}</td>
