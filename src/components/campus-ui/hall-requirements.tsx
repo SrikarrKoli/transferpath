@@ -1,4 +1,5 @@
 import Link from "next/link"
+import { institutionColumnLabels } from "@/lib/institution-column-labels"
 import type {
   RequirementsWorkspaceData,
   RequirementWorkspaceItem,
@@ -25,7 +26,7 @@ function pathwayUnset(header: RequirementsWorkspaceData["header"]) {
 type NextAction = {
   caption: "Do this next" | "Start here"
   title: string
-  meta?: string
+  requirement?: RequirementWorkspaceItem
   primary: { href: string; label: string }
   secondaries: { href: string; label: string }[]
 }
@@ -60,27 +61,13 @@ function pickNext(data: RequirementsWorkspaceData): NextAction {
     }
   }
 
-  if (missing) {
+  const requirement = missing ?? active
+  if (requirement) {
     return {
       caption: "Do this next",
-      title: missing.title,
-      meta: [missing.code || null, missing.equiv ? `→ ${missing.equiv}` : null, "Still open"]
-        .filter(Boolean)
-        .join(" · "),
+      title: requirement.title,
+      requirement,
       primary: { href: "/dashboard/plan", label: "Place on Plan" },
-      secondaries: [
-        { href: "/dashboard/deadlines", label: "Open Deadlines" },
-        { href: "/dashboard/checklist", label: "Open Checklist" },
-      ],
-    }
-  }
-
-  if (active) {
-    return {
-      caption: "Do this next",
-      title: active.title,
-      meta: [active.code || null, "In progress"].filter(Boolean).join(" · "),
-      primary: { href: "/dashboard/plan", label: "Open Plan" },
       secondaries: [
         { href: "/dashboard/deadlines", label: "Open Deadlines" },
         { href: "/dashboard/checklist", label: "Open Checklist" },
@@ -99,16 +86,42 @@ function pickNext(data: RequirementsWorkspaceData): NextAction {
   }
 }
 
-function RequirementsNextBlock({ next }: { next: NextAction }) {
+function RequirementsNextBlock({ next, currentLabel, targetLabel }: {
+  next: NextAction
+  currentLabel: string
+  targetLabel: string
+}) {
+  const item = next.requirement
   return (
     <section className="union-next-block" aria-labelledby="requirements-next-heading">
       <p className="hall-caption" id="requirements-next-heading">
         {next.caption}
       </p>
-      <h2 className="hall-hero-title">{next.title}</h2>
-      {next.meta ? (
-        <p className="mt-3 text-sm text-[color:var(--hall-stone)]">{next.meta}</p>
-      ) : null}
+      {item ? (
+        <>
+          <h2 className="registrar-equivalence">
+            <span className="registrar-equivalence-side">
+              <span className="hall-caption">{currentLabel}</span>
+              <span className="registrar-course-code">{item.code || "Not listed"}</span>
+            </span>
+            <span className="registrar-equivalence-mark">
+              <span aria-hidden>↔</span>
+              <span className="sr-only">equivalent to</span>
+            </span>
+            <span className="registrar-equivalence-side">
+              <span className="hall-caption">{targetLabel}</span>
+              <span className="registrar-course-code">{item.equiv || "Not listed"}</span>
+            </span>
+          </h2>
+          <p className="registrar-course-detail">
+            <span>{item.title}</span>
+            <span>{item.credits} cr · {standing(item.status)}</span>
+          </p>
+          {item.provenanceBasis ? (
+            <p className="registrar-provenance">{item.provenanceBasis}</p>
+          ) : null}
+        </>
+      ) : <h2 className="hall-hero-title">{next.title}</h2>}
       <div className="union-step-actions mt-6">
         <Link href={next.primary.href} className="union-primary-cta">
           {next.primary.label}
@@ -126,43 +139,35 @@ function RequirementsNextBlock({ next }: { next: NextAction }) {
 export function HallRequirements({ data }: { data: RequirementsWorkspaceData }) {
   const items = data.categories.flatMap((c) => c.items)
   const done = items.filter((i) => i.status === "done").length
-  const missing = items.filter((i) => i.status === "missing").length
-  const active = items.filter((i) => i.status === "active").length
-  const total = items.length || 1
-  const headline =
-    missing === 0 && active === 0
-      ? "All logged"
-      : missing > 0
-        ? `${missing} still open`
-        : `${active} in progress`
-
-  const currentLabel = data.header.fromInstitution?.split(" ")[0] ?? "Current"
-  const targetLabel = data.header.toInstitution?.split(" ").slice(-1)[0] ?? "Target"
+  const { currentLabel, targetLabel } = institutionColumnLabels(
+    data.header.fromInstitution,
+    data.header.toInstitution,
+  )
   const next = pickNext(data)
 
   return (
-    <div className="hall-split">
+    <div className="hall-split hall-registrar">
       <div>
-        <RequirementsNextBlock next={next} />
+        <RequirementsNextBlock next={next} currentLabel={currentLabel} targetLabel={targetLabel} />
 
-        <p className="hall-caption mt-10">
-          {done}/{total} on plan
+        <p className="hall-caption mt-6">
+          Course equivalence · {done}/{items.length} on plan
         </p>
 
-        <div className="hall-matrix-wrap mt-8">
-          <div className="hall-matrix-columns" aria-hidden>
-            <span>Requirement</span>
-            <span>{currentLabel}</span>
-            <span>{targetLabel}</span>
-            <span>Standing</span>
-          </div>
+        <div className="hall-matrix-wrap mt-4">
           <table className="hall-matrix">
-            <thead className="sr-only">
+            <colgroup>
+              <col style={{ width: "36%" }} />
+              <col style={{ width: "19%" }} />
+              <col style={{ width: "19%" }} />
+              <col style={{ width: "26%" }} />
+            </colgroup>
+            <thead>
               <tr>
-                <th>Requirement</th>
-                <th>{currentLabel}</th>
-                <th>{targetLabel}</th>
-                <th>Standing</th>
+                <th scope="col">Requirement</th>
+                <th scope="col">{currentLabel}</th>
+                <th scope="col">{targetLabel}</th>
+                <th scope="col">Standing</th>
               </tr>
             </thead>
             <tbody>
@@ -212,7 +217,7 @@ export function HallRequirements({ data }: { data: RequirementsWorkspaceData }) 
         <p className="mt-1">
           {data.header.program} · {data.header.term}
         </p>
-        
+
         <div className="mt-3 flex flex-wrap gap-x-4 gap-y-2">
           <Link href="/dashboard/plan" className="hall-ledger-link">
             Open Plan

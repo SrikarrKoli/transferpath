@@ -5580,3 +5580,78 @@ nextjs-portal,
   overflow: visible;
   -webkit-line-clamp: unset;
 }
+
+/* Registrar — course equivalence and aligned mapping ledger. */
+.hall-registrar > div { min-width: 0; }
+
+.hall-registrar .registrar-equivalence {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto minmax(0, 1fr);
+  align-items: center;
+  gap: 1.5rem;
+  margin: 1rem 0 0;
+  padding: 1.1rem 0 1.35rem;
+  border-top: 1px solid var(--hall-ink);
+  border-bottom: 1px solid var(--hall-rule);
+}
+
+.hall-registrar .registrar-equivalence-side {
+  display: grid;
+  gap: 0.8rem;
+  min-width: 0;
+}
+
+.hall-registrar .registrar-course-code {
+  color: var(--hall-ink);
+  font-size: clamp(2rem, 4.1vw, 3.7rem);
+  font-weight: 500;
+  line-height: 1.08;
+  letter-spacing: -0.055em;
+  overflow-wrap: anywhere;
+}
+
+.hall-registrar .registrar-equivalence-mark {
+  padding-top: 1.5rem;
+  color: var(--hall-stone);
+  font-size: 2rem;
+  font-weight: 400;
+}
+
+.hall-registrar .registrar-course-detail {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  gap: 0.4rem 1.1rem;
+  margin-top: 1rem;
+  font-size: 1.25rem;
+}
+
+.hall-registrar .registrar-course-detail > span + span,
+.hall-registrar .registrar-provenance {
+  color: var(--hall-stone);
+  font-size: 0.85rem;
+}
+
+.hall-registrar .registrar-provenance { margin-top: 0.45rem; }
+.hall-registrar .hall-matrix-wrap { overflow-x: auto; }
+.hall-registrar .hall-matrix { min-width: 620px; }
+.hall-registrar .hall-matrix thead { display: table-header-group; }
+.hall-registrar .hall-matrix th {
+  font-family: var(--font-jetbrains-mono), ui-monospace, monospace;
+  font-size: 0.65rem;
+}
+.hall-registrar .hall-matrix th:last-child { text-align: right; }
+.hall-registrar .hall-matrix td:first-child { display: table-cell; }
+.hall-registrar .hall-matrix td:nth-child(n) { width: auto; }
+.hall-registrar .hall-row-num { display: inline-block; margin-right: 0.75rem; }
+.hall-registrar .hall-matrix td:nth-child(2),
+.hall-registrar .hall-matrix td:nth-child(3) {
+  color: var(--hall-ink);
+  font-size: 1rem;
+}
+
+@media (max-width: 640px) {
+  .hall-registrar .registrar-equivalence { gap: 0.65rem; }
+  .hall-registrar .registrar-course-code { font-size: clamp(1.4rem, 5.5vw, 2rem); }
+  .hall-registrar .registrar-equivalence-mark { font-size: 1.4rem; }
+}
