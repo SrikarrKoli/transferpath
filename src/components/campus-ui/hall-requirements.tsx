@@ -7,8 +7,8 @@ import type {
 
 function planStatus(status: string) {
   if (status === "done") return "Complete"
-  if (status === "active") return "On plan"
-  return "Open"
+  if (status === "active") return "Placed"
+  return "Not placed"
 }
 
 function pathwayUnset(header: RequirementsWorkspaceData["header"]) {
@@ -113,11 +113,14 @@ function RequirementsNextBlock({ next, currentLabel, targetLabel, term }: {
           </p>
           <p className="registrar-rationale">
             {item.status === "missing"
-              ? `Next open requirement · place on Plan${term ? ` for ${term}` : ""}`
-              : "On plan · review your course in Plan"}
+              ? `Next open requirement · place on your course Plan${term ? ` · entry ${term}` : ""}`
+              : "Placed on Plan · review your course in Plan"}
           </p>
           {item.provenanceBasis ? (
-            <p className="registrar-provenance">Source · <strong>{item.provenanceBasis}</strong></p>
+            <p className="registrar-provenance">
+              <span className="registrar-guide-caption">Guide</span>
+              <strong>{item.provenanceBasis}</strong>
+            </p>
           ) : null}
         </>
       ) : <h2 className="hall-hero-title">{next.title}</h2>}
@@ -138,7 +141,7 @@ function RequirementsNextBlock({ next, currentLabel, targetLabel, term }: {
 export function HallRequirements({ data }: { data: RequirementsWorkspaceData }) {
   const items = data.categories.flatMap((c) => c.items)
   const done = items.filter((i) => i.status === "done").length
-  const open = items.filter((i) => i.status === "missing").length
+  const notPlaced = items.filter((i) => i.status === "missing").length
   const active = items.filter((i) => i.status === "active").length
   const { currentLabel, targetLabel } = institutionColumnLabels(
     data.header.fromInstitution,
@@ -154,9 +157,10 @@ export function HallRequirements({ data }: { data: RequirementsWorkspaceData }) 
 
       <section className="registrar-ledger" aria-label="Course equivalence">
         <p className="registrar-ledger-summary">
-          Course equivalence · <strong>{active + done} of {items.length} on plan</strong> · {open} open
-          {done > 0 ? ` · ${done} complete` : ""}
+          Course equivalence · <strong>{active + done} of {items.length} on plan</strong> · {notPlaced} not placed
         </p>
+
+        <p className="registrar-plan-legend">Not placed · Placed on Plan · Complete</p>
 
         <div className="hall-matrix-wrap mt-4">
           <table className="hall-matrix">
@@ -217,7 +221,7 @@ export function HallRequirements({ data }: { data: RequirementsWorkspaceData }) 
           {data.header.fromInstitution} → {data.header.toInstitution}
         </p>
         <p className="mt-1">
-          {data.header.program} · {data.header.term}
+          {data.header.program}{data.header.term ? ` · entry ${data.header.term}` : ""}
         </p>
 
         <div className="mt-3 flex flex-wrap gap-x-4 gap-y-2">

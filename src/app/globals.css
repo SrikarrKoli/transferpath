@@ -5603,7 +5603,7 @@ nextjs-portal,
 
 .hall-registrar .registrar-course-code {
   color: var(--hall-ink);
-  font-size: clamp(2rem, 4.1vw, 3.2rem);
+  font-size: clamp(2rem, 3.8vw, 3rem);
   font-weight: 500;
   line-height: 1.08;
   letter-spacing: -0.055em;
@@ -5641,22 +5641,25 @@ nextjs-portal,
 }
 
 /* Registrar: a compact transfer brief above a full-width academic ledger. */
-.hall-registrar { --hall-stone: #656159; row-gap: 0.85rem; }
+.hall-registrar { --hall-stone: #656159; row-gap: 0.65rem; }
 .hall-registrar > .hall-margin { align-self: start; color: var(--hall-stone); font-size: 0.875rem; }
 .hall-registrar .registrar-transfer-label { margin-bottom: 0.65rem; color: var(--hall-ink); }
 .hall-registrar .registrar-ledger { grid-column: 1 / -1; min-width: 0; border-top: 1px solid var(--hall-ink); padding-top: 1rem; }
 .hall-registrar .union-next-block { padding-bottom: 0; border-bottom: 0; }
-.hall-registrar .registrar-equivalence { margin-top: 0.5rem; padding-block: 0.65rem 0.8rem; }
-.hall-registrar .registrar-equivalence-side { gap: 0.65rem; }
+.hall-registrar .registrar-equivalence { margin-top: 0.5rem; padding-block: 0.45rem 0.55rem; }
+.hall-registrar .registrar-equivalence-side { gap: 0.4rem; }
 .hall-registrar .registrar-equivalence-side .hall-caption { font-size: 0.8rem; color: var(--hall-ink); letter-spacing: 0.1em; font-weight: 500; }
 .hall-registrar .registrar-course-name { margin-top: 0.65rem; color: var(--hall-ink); font-size: 1.2rem; line-height: 1.35; }
 .hall-registrar .registrar-course-name strong { font-weight: 600; }
 .hall-registrar .registrar-course-name span { font-size: 0.9rem; font-weight: 400; }
 .hall-registrar .registrar-rationale { margin-top: 0.25rem; color: var(--hall-ink); font-size: 0.95rem; }
-.hall-registrar .registrar-provenance { color: var(--hall-stone); margin-top: 0.25rem; font-size: 0.85rem; line-height: 1.5; }
+.hall-registrar .registrar-provenance { display: flex; align-items: baseline; gap: 0.75rem; border-block: 1px solid var(--hall-rule); padding-block: 0.35rem; color: var(--hall-stone); margin-top: 0.45rem; font-size: 0.85rem; line-height: 1.4; }
+.hall-registrar .registrar-guide-caption { flex: none; font-family: var(--font-jetbrains-mono), ui-monospace, monospace; font-size: 0.65rem; letter-spacing: 0.1em; text-transform: uppercase; }
 .hall-registrar .registrar-provenance strong { color: var(--hall-ink); font-weight: 500; }
-.hall-registrar .union-step-actions { margin-top: 0.75rem; }
+.hall-registrar .union-step-actions { margin-top: 0.5rem; }
 .hall-registrar .registrar-ledger-summary { font-size: 0.875rem; color: var(--hall-stone); }
+.hall-registrar .registrar-plan-legend { margin-top: 0.2rem; font-size: 0.75rem; color: var(--hall-stone); }
+.hall-registrar .hall-matrix-wrap { margin-top: 0.5rem; }
 .hall-registrar .hall-matrix { min-width: 760px; }
 .hall-registrar .hall-matrix th { color: var(--hall-ink); font-size: 0.75rem; letter-spacing: 0.08em; }
 .hall-registrar .hall-matrix td { vertical-align: middle; padding-block: 0.9rem; }
@@ -5664,8 +5667,8 @@ nextjs-portal,
 .hall-registrar .hall-matrix td.registrar-status { text-align: left; color: var(--hall-stone); font-size: 0.95rem; }
 .hall-registrar .hall-matrix .registrar-status[data-status="missing"] { color: var(--hall-clay); font-weight: 500; }
 .hall-registrar .registrar-ledger-summary strong { color: var(--hall-ink); font-weight: 500; }
-.hall-registrar .hall-matrix th:nth-child(4),
-.hall-registrar .hall-matrix td.registrar-status:nth-child(4) { text-align: left; padding-left: 0; }
+.hall-registrar .hall-matrix-wrap .hall-matrix th:nth-child(4),
+.hall-registrar .hall-matrix-wrap .hall-matrix td.registrar-status:nth-child(4) { text-align: left; padding-inline: 0 0.85rem; }
 .hall-registrar .hall-matrix td.registrar-row-action,
 .hall-registrar .hall-matrix th:last-child { text-align: right; padding-right: 0; }
 .hall-registrar .hall-matrix td.registrar-status[data-status="active"],

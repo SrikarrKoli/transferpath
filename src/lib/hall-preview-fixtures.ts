@@ -199,6 +199,7 @@ export const previewRequirements: RequirementsWorkspaceData = {
           credits: 4,
           equiv: "PHY 303K",
           status: "missing",
+          provenanceBasis: "UT Austin COSC transfer guide",
         },
         {
           id: "cs1",
@@ -207,6 +208,7 @@ export const previewRequirements: RequirementsWorkspaceData = {
           credits: 4,
           equiv: "C S 312",
           status: "active",
+          provenanceBasis: "UT Austin COSC transfer guide",
         },
       ],
     },
