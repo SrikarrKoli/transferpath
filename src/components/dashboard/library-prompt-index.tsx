@@ -21,7 +21,9 @@ export function LibraryPromptIndex({ indexRef, activeType, essayMap, onSwitch }:
     <nav ref={indexRef} className="library-prompt-index" aria-label="Essay prompts">
       <div className="library-index-heading">
         <p className="library-index-label hall-caption">Manuscript index</p>
-        <p>Five prompts · choose your draft</p>
+        <button type="button" className="library-switch-prompt" onClick={(event) => {
+          event.currentTarget.closest("nav")?.querySelector<HTMLButtonElement>('[aria-current="page"]')?.focus()
+        }}>Switch prompt <span aria-hidden="true">↓</span></button>
       </div>
       <div className="library-prompt-tabs">
         {LIBRARY_PROMPTS.map((prompt, index) => {

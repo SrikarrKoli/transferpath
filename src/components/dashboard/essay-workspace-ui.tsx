@@ -41,6 +41,7 @@ export interface EssayWorkspaceUiProps {
   onSwitchPrompt?: () => void
   previewLabel?: string
   saveLabel?: string
+  dirty?: boolean
   saving?: boolean
   settingsSlot?: ReactNode
   previewIcon?: ReactNode
@@ -56,7 +57,6 @@ export function EssayWorkspaceUi({
   onChange,
   coachNotes = [],
   coachTitle = "Three notes on this draft",
-  coachCaption = "Coach notes · reflect your current draft as you write",
   coachPassages = [],
   strengthSignals = [],
   strengthsTitle = "What this draft currently does",
@@ -66,6 +66,7 @@ export function EssayWorkspaceUi({
   onSwitchPrompt,
   previewLabel = "Preview",
   saveLabel = "Save draft",
+  dirty = false,
   saving = false,
   settingsSlot,
   previewIcon,
@@ -89,35 +90,27 @@ export function EssayWorkspaceUi({
 
   if (hall) {
     const empty = wordCount === 0
-    const ready = !empty && !overLimit
+    const savePrimary = dirty && !empty && !overLimit && !!onSave
     const nextTitle = empty
       ? `Start drafting: ${essay.title}`
       : overLimit
         ? `Trim to ${essay.wordLimit}: ${essay.title}`
-        : `Save your progress: ${essay.title}`
-    const nextPrompt = empty
-      ? "Start with one concrete sentence."
-      : overLimit
-        ? `${wordCount} words — bring this draft down to ${essay.wordLimit}.`
-        : `${wordCount} of ${essay.wordLimit} · Save your progress, then keep writing.`
+        : dirty ? `Save your progress: ${essay.title}` : `Keep writing: ${essay.title}`
 
     return (
       <div className={className}>
         <section className="union-next-block" aria-labelledby="essay-next-heading">
           <h2 id="essay-next-heading" className="hall-hero-title">{nextTitle}</h2>
-          <p className="mt-3 text-sm text-[color:var(--hall-stone)]">
-            {nextPrompt}
-          </p>
           <div className="union-step-actions mt-6">
             <button
               type="button"
-              onClick={ready && onSave ? onSave : focusDraft}
-              disabled={ready && saving}
+              onClick={savePrimary ? onSave : focusDraft}
+              disabled={savePrimary && saving}
               className="union-primary-cta"
             >
-              {ready && saving ? "Saving…" : empty ? "Start drafting" : overLimit ? "Edit in the box" : saveLabel}
+              {savePrimary ? saving ? "Saving…" : saveLabel : empty ? "Start drafting" : overLimit ? "Edit in the box" : "Write in the box"}
             </button>
-            {overLimit && onSave ? (
+            {(overLimit || empty) && dirty && onSave ? (
               <button type="button" onClick={onSave} disabled={saving} className="hall-ledger-link">
                 {saving ? "Saving…" : saveLabel}
               </button>
@@ -139,10 +132,7 @@ export function EssayWorkspaceUi({
 
         <p className="hall-prompt mt-8">{essay.prompt}</p>
         {settingsSlot ? <div className="mt-4">{settingsSlot}</div> : null}
-        <p className="hall-caption library-writing-caption">
-          {coachCaption}
-        </p>
-        <div className="library-working-band">
+        <div className="library-working-band mt-5">
           <div className="library-writing-field">
             <label className="hall-caption" htmlFor="library-essay-draft">Your draft · write here</label>
             <textarea
@@ -166,12 +156,12 @@ export function EssayWorkspaceUi({
                   <ul>{coachNotes.map((note, index) => {
                     const passage = coachPassages[index]
                     const start = passage ? value.indexOf(passage) : -1
-                    return <li key={note} className={index === 0 ? "library-coach-lead" : undefined}>
+                    return <li key={note} className={index === 0 ? "library-coach-lead" : "library-coach-secondary"}>
                       {note}
                       {start >= 0 ? <button type="button" className="library-passage-link" onClick={() => {
                         focusDraft()
                         draftRef.current?.setSelectionRange(start, start + passage.length)
-                      }}>“{passage}” →</button> : null}
+                      }} aria-label={`Select passage: ${passage}`}>“{passage}”</button> : null}
                     </li>
                   })}</ul>
                 </section>

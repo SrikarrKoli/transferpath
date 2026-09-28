@@ -20,7 +20,6 @@ import {
   buildReferenceCard,
   buildStrengthSignals,
   essayDisplayTitle,
-  formatEssayAutosaveLabel,
   type EssayPromptId,
 } from "@/lib/build-essay-workspace-feedback"
 
@@ -100,9 +99,8 @@ export function EssayClient({ userId, initialEssayMap, profile }: EssayClientPro
   const [essayMap, setEssayMap] = useState(initialEssayMap)
   const [activeType, setActiveType] = useState<EssayPromptId>("why_transfer")
   const [saving, setSaving] = useState(false)
-  const [savedAt, setSavedAt] = useState<string | null>(
-    initialEssayMap.why_transfer?.updated_at ?? null
-  )
+  const [savedEssayMap, setSavedEssayMap] = useState(initialEssayMap)
+  const [justSaved, setJustSaved] = useState<Partial<Record<EssayPromptId, boolean>>>({})
   const [saveError, setSaveError] = useState("")
   const [previewOpen, setPreviewOpen] = useState(false)
 
@@ -111,6 +109,10 @@ export function EssayClient({ userId, initialEssayMap, profile }: EssayClientPro
   const content = currentEssay?.content ?? ""
   const customTitle = currentEssay?.title ?? ""
   const wordLimit = currentEssay?.word_limit ?? 650
+
+  const savedEssay = savedEssayMap[activeType]
+  const dirty = content !== (savedEssay?.content ?? "") ||
+    customTitle !== (savedEssay?.title ?? "") || wordLimit !== (savedEssay?.word_limit ?? 650)
 
   const displayPrompt =
     customTitle.trim() || buildDefaultPromptText(activeType, profile)
@@ -146,35 +148,43 @@ export function EssayClient({ userId, initialEssayMap, profile }: EssayClientPro
   async function handleSave() {
     setSaving(true)
     setSaveError("")
-    const supabase = createClient()
-    const now = new Date().toISOString()
-    const wc = countWords(content)
+    try {
+      const supabase = createClient()
+      const now = new Date().toISOString()
+      const wc = countWords(content)
 
-    const { error } = await supabase.from("user_essays").upsert(
-      {
-        user_id: userId,
-        prompt_type: activeType,
-        title: essayMap[activeType]?.title ?? null,
-        content: essayMap[activeType]?.content ?? null,
-        word_count: wc,
-        word_limit: essayMap[activeType]?.word_limit ?? 650,
-        updated_at: now,
-      },
-      { onConflict: "user_id,prompt_type" }
-    )
+      const { error } = await supabase.from("user_essays").upsert(
+        {
+          user_id: userId,
+          prompt_type: activeType,
+          title: essayMap[activeType]?.title ?? null,
+          content: essayMap[activeType]?.content ?? null,
+          word_count: wc,
+          word_limit: essayMap[activeType]?.word_limit ?? 650,
+          updated_at: now,
+        },
+        { onConflict: "user_id,prompt_type" }
+      )
 
-    setSaving(false)
-    if (error) {
-      setSaveError(error.message)
-      return
+      if (error) {
+        setSaveError(error.message)
+        return
+      }
+      // Preserve edits made while this request was in flight.
+      setSavedEssayMap((previous) => ({ ...previous, [activeType]: {
+        ...currentEssay, title: customTitle || null, content, word_limit: wordLimit,
+        updated_at: now, word_count: wc,
+      } }))
+      setJustSaved((previous) => ({ ...previous, [activeType]: true }))
+    } catch (error) {
+      setSaveError(error instanceof Error ? error.message : "Could not save your draft. Try again.")
+    } finally {
+      setSaving(false)
     }
-    setSavedAt(now)
-    updateField({ updated_at: now, word_count: wc })
   }
 
   function handleTypeSwitch(typeId: EssayPromptId) {
     setActiveType(typeId)
-    setSavedAt(essayMap[typeId]?.updated_at ?? null)
     setSaveError("")
   }
 
@@ -212,8 +222,9 @@ export function EssayClient({ userId, initialEssayMap, profile }: EssayClientPro
             prompt: displayPrompt,
             wordLimit,
             wordLimitIsDefault: currentEssay?.word_limit == null,
-            autosaveLabel: formatEssayAutosaveLabel(savedAt, saving),
+            autosaveLabel: saving ? "Saving…" : dirty ? "Unsaved" : justSaved[activeType] ? "Saved · just now" : content ? "Draft on file" : "No draft yet",
           }}
+          dirty={dirty}
           value={content}
           onChange={(v) => updateField({ content: v, word_count: countWords(v) })}
           coachNotes={coachNotes}
@@ -223,10 +234,6 @@ export function EssayClient({ userId, initialEssayMap, profile }: EssayClientPro
             onCtaClick: () => router.push("/dashboard/requirements"),
           }}
           onPreview={() => setPreviewOpen(true)}
-          onSwitchPrompt={() => {
-            promptIndexRef.current?.scrollIntoView({ block: "center" })
-            promptIndexRef.current?.querySelector<HTMLButtonElement>('[aria-current="page"]')?.focus({ preventScroll: true })
-          }}
           onSave={() => void handleSave()}
           saving={saving}
           previewIcon={<Eye className="h-4 w-4" strokeWidth={1.5} />}

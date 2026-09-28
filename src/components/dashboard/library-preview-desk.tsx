@@ -10,8 +10,10 @@ export function LibraryPreviewDesk() {
   const [activeType, setActiveType] = useState<EssayPromptId>("why_transfer")
   const [drafts, setDrafts] = useState(previewEssayMap)
   const [saved, setSaved] = useState<Partial<Record<EssayPromptId, boolean>>>({})
+  const [savedDrafts, setSavedDrafts] = useState(previewEssayMap)
   const indexRef = useRef<HTMLElement>(null)
   const draft = drafts[activeType]
+  const dirty = draft.content !== savedDrafts[activeType].content
   const original = activeType === "why_transfer" && draft.content === previewEssay.draft
   const title = LIBRARY_PROMPTS.find((prompt) => prompt.id === activeType)!.label
 
@@ -21,18 +23,17 @@ export function LibraryPreviewDesk() {
         <LibraryPromptIndex indexRef={indexRef} activeType={activeType} essayMap={drafts} onSwitch={setActiveType} />
         <EssayWorkspaceUi
           essay={{ title, prompt: draft.prompt, wordLimit: 650, wordLimitIsDefault: true,
-            autosaveLabel: saved[activeType] ? "Saved · this preview session" : "Unsaved · this preview session" }}
+            autosaveLabel: dirty ? "Unsaved" : saved[activeType] ? "Saved · just now" : draft.content ? "Draft on file" : "No draft yet" }}
+          dirty={dirty}
           value={draft.content}
           onChange={(content) => {
             setDrafts((previous) => ({ ...previous, [activeType]: { ...previous[activeType], content } }))
             setSaved((previous) => ({ ...previous, [activeType]: false }))
           }}
-          onSave={() => setSaved((previous) => ({ ...previous, [activeType]: true }))}
-          onSwitchPrompt={() => {
-            indexRef.current?.scrollIntoView({ block: "center" })
-            indexRef.current?.querySelector<HTMLButtonElement>('[aria-current="page"]')?.focus({ preventScroll: true })
+          onSave={() => {
+            setSavedDrafts((previous) => ({ ...previous, [activeType]: draft }))
+            setSaved((previous) => ({ ...previous, [activeType]: true }))
           }}
-          coachCaption={original ? "Coach notes · sample feedback for this draft" : "Coach notes · sample feedback available on the original draft"}
           coachPassages={original ? ["UT Austin’s Turing Scholars community", "next to a night shift"] : []}
           coachNotes={original ? previewEssay.coach : []}
           strengthSignals={original ? previewEssay.strengths : []}

@@ -6159,3 +6159,40 @@ nextjs-portal,
   text-decoration: underline;
   text-underline-offset: 0.2em;
 }
+
+/* Library pass 4: writing first, with saving reserved for changed drafts. */
+.campus-entered[data-building="library"] .library-index-heading {
+  align-items: center;
+  padding-bottom: 0.65rem;
+}
+.campus-entered[data-building="library"] .library-switch-prompt {
+  color: color-mix(in srgb, var(--hall-ink) 80%, var(--hall-paper));
+  font-size: 0.8rem;
+  cursor: pointer;
+  text-decoration: underline;
+  text-underline-offset: 3px;
+}
+.campus-entered[data-building="library"] .library-manuscript .library-prompt-tab {
+  cursor: pointer;
+  transition: background-color 120ms ease;
+}
+.campus-entered[data-building="library"] .library-manuscript .library-prompt-tab:hover {
+  background: color-mix(in srgb, var(--hall-ink) 9%, var(--hall-paper));
+}
+.campus-entered[data-building="library"] .union-primary-cta,
+.campus-entered[data-building="library"] .union-primary-cta:hover {
+  text-decoration: none;
+}
+.campus-entered[data-building="library"] .library-save-status {
+  color: color-mix(in srgb, var(--hall-ink) 72%, var(--hall-paper));
+  font-size: 0.85rem;
+}
+.campus-entered[data-building="library"] .library-coach .library-coach-secondary {
+  color: color-mix(in srgb, var(--hall-ink) 85%, var(--hall-paper));
+  border-top: 1px solid var(--hall-rule);
+  padding-top: 0.8rem;
+  margin-top: 0.9rem;
+}
+.campus-entered[data-building="library"] .library-word-count {
+  color: color-mix(in srgb, var(--hall-ink) 72%, var(--hall-paper));
+}
