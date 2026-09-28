@@ -5680,3 +5680,158 @@ nextjs-portal,
 @media (max-width: 959px) {
   .hall-registrar > .hall-margin { grid-row: 2; }
 }
+
+/* Rec Center: weakest recorded measure leads the shared instrument. */
+.readiness-next {
+  padding-bottom: 1.25rem;
+  border-bottom: 1px solid var(--hall-ink);
+}
+
+.readiness-next-title {
+  margin: 0.65rem 0 0.7rem;
+  color: var(--hall-ink);
+  font-size: clamp(2.25rem, 4.5vw, 4rem);
+  font-weight: 550;
+  line-height: 1.05;
+  letter-spacing: -0.045em;
+  text-wrap: balance;
+}
+
+.readiness-next-title span {
+  white-space: nowrap;
+}
+
+.readiness-next-prompt {
+  max-width: 48rem;
+  color: var(--hall-stone);
+  font-size: 0.95rem;
+  line-height: 1.5;
+}
+
+.readiness-next-actions {
+  margin-top: 1.25rem;
+}
+
+.campus-entered[data-building="gym"] .readiness-route-line {
+  grid-template-columns: auto minmax(0, 1fr) auto;
+  padding: 0.85rem 0;
+  border-color: var(--hall-rule);
+  font-size: 0.8rem;
+}
+
+.readiness-score-sheet .readiness-sheet-heading {
+  min-height: 0;
+  padding: 1rem 0;
+  gap: 1.5rem;
+  align-items: center;
+  border: 0;
+}
+
+.readiness-score-sheet .readiness-sheet-lead {
+  max-width: 38rem;
+  font-size: 1rem;
+  color: var(--hall-ink);
+}
+
+.readiness-score-sheet .readiness-total {
+  gap: 0.65rem;
+  padding-left: 1.5rem;
+  border-left: 1px solid var(--hall-rule);
+}
+
+.readiness-score-sheet .readiness-total strong {
+  font-size: 4rem;
+  line-height: 1;
+  font-weight: 550;
+}
+
+.readiness-score-sheet .readiness-total span {
+  color: var(--hall-stone);
+}
+
+.readiness-score-sheet .readiness-scale {
+  height: 0.45rem;
+  border: 0;
+  background-color: var(--hall-rule);
+}
+
+.readiness-score-sheet .readiness-scale span {
+  background: var(--hall-ink);
+  border: 0;
+}
+
+.campus-entered[data-building="gym"] .readiness-column-headings {
+  grid-template-columns: minmax(12rem, 1fr) 6rem 7rem 5rem;
+  padding: 0.65rem 0 0.65rem 3rem;
+  font-size: 0.65rem;
+  color: var(--hall-stone);
+  border-color: var(--hall-rule);
+}
+
+.campus-entered[data-building="gym"] .readiness-register li {
+  grid-template-columns: 2rem minmax(12rem, 1fr) 6rem 7rem 5rem;
+  min-height: 0;
+  padding: 0.55rem 0;
+  border-color: var(--hall-rule);
+}
+
+.readiness-score-sheet .readiness-register strong {
+  font-size: 0.95rem;
+  font-weight: 500;
+}
+
+.readiness-score-sheet .readiness-register a {
+  padding: 0;
+  border: 0;
+  text-align: left;
+  font-size: 0.8rem;
+}
+
+.readiness-score-sheet .readiness-row-value {
+  color: var(--hall-ink);
+}
+
+.readiness-score-sheet .readiness-sheet-note {
+  padding: 0.9rem 0 0;
+  gap: 1rem;
+}
+
+.readiness-score-sheet .readiness-sheet-note span {
+  color: var(--hall-stone);
+}
+
+.readiness-score-sheet .readiness-sheet-note p {
+  max-width: none;
+  color: var(--hall-stone);
+  line-height: 1.5;
+}
+
+@media (max-width: 900px) {
+  .campus-entered[data-building="gym"] .readiness-route-line {
+    grid-template-columns: 1fr;
+    gap: 0.3rem;
+  }
+
+  .readiness-score-sheet .readiness-sheet-heading {
+    grid-template-columns: minmax(0, 1fr) auto;
+  }
+
+  .readiness-score-sheet .readiness-total {
+    padding-left: 0.75rem;
+    gap: 0.3rem;
+  }
+
+  .readiness-score-sheet .readiness-total strong {
+    font-size: 3rem;
+  }
+
+  .campus-entered[data-building="gym"] .readiness-register li {
+    grid-template-columns: 1.5rem minmax(0, 1fr) auto;
+    gap: 0.5rem;
+  }
+
+  .readiness-score-sheet .readiness-sheet-note {
+    grid-template-columns: 1fr;
+    gap: 0.4rem;
+  }
+}

@@ -7,7 +7,6 @@ import { DeadlineOfficialLink } from "@/components/dashboard/deadline-official-l
 import { cn } from "@/lib/utils"
 import { useHall } from "@/components/campus-ui/hall-context"
 import { HallRequirements } from "@/components/campus-ui/hall-requirements"
-import { HallReadiness, readinessFromRequirements } from "@/components/campus-ui/hall-readiness"
 import type {
   RequirementWorkspaceItem,
   RequirementsPlanningNote,
@@ -199,9 +198,6 @@ export function RequirementsWorkspaceUi({
   const h = data.header
   const hall = useHall()
 
-  if (hall === "gym") {
-    return <HallReadiness data={readinessFromRequirements(data)} />
-  }
   if (hall) {
     return <HallRequirements data={data} />
   }

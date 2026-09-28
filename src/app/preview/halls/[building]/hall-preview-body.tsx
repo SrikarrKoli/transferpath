@@ -6,7 +6,7 @@ import { HallDeadlines } from "@/components/campus-ui/hall-deadlines"
 import { HallToday } from "@/components/campus-ui/hall-today"
 import { HallPlan } from "@/components/campus-ui/hall-plan"
 import { HallRequirements } from "@/components/campus-ui/hall-requirements"
-import { HallReadiness } from "@/components/campus-ui/hall-readiness"
+import { ReadinessScoreSheet } from "@/components/dashboard/readiness-score-sheet"
 import { HallChecklist } from "@/components/campus-ui/hall-checklist"
 import { HallCounselor } from "@/components/campus-ui/hall-counselor"
 import { EssayWorkspaceUi } from "@/components/dashboard/essay-workspace-ui"
@@ -70,7 +70,13 @@ export function HallPreviewBody({ buildingId }: { buildingId: BuildingId }) {
       ) : buildingId === "registrar" ? (
         <HallRequirements data={previewRequirements} />
       ) : buildingId === "gym" ? (
-        <HallReadiness data={previewReadiness} />
+        <ReadinessScoreSheet
+          readiness={previewReadiness}
+          currentSchoolName={previewRequirements.header.fromInstitution}
+          targetSchoolName={previewRequirements.header.toInstitution}
+          targetMajor={previewRequirements.header.program}
+          expectedTransferTerm={previewRequirements.header.term}
+        />
       ) : buildingId === "dorm" ? (
         <HallChecklist
           data={previewChecklist}

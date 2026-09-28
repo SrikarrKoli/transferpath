@@ -1,3 +1,4 @@
+import type { DashboardOverallReadinessResult } from "@/lib/dashboard-overall-readiness"
 import { logisticsDoneWhen } from "@/lib/build-checklist-workspace-data"
 import type { TasksDeadlinesData } from "@/types/tasks-deadlines"
 import type { OverviewData } from "@/types/overview"
@@ -321,14 +322,17 @@ export const previewPlan = [
   },
 ]
 
-export const previewReadiness = {
+export const previewReadiness: DashboardOverallReadinessResult = {
   score: 62,
-  line: "Courses and dates are on file; the Why transfer draft is still open.",
-  rows: [
-    { label: "Essay", value: "105 of 650 · still open", warn: true },
-    { label: "Priority date", value: "1 Nov 2026" },
-    { label: "Core logged", value: "0 of 3 complete · 1 in progress" },
-  ],
+  breakdown: {
+    credits0To100: 80,
+    prereq0To100: 40,
+    checklist0To100: 60,
+    gpa0To100: 100,
+    essay0To100: 0,
+    profile0To100: 100,
+    weightedSumPreRound: 62,
+  },
 }
 
 export const previewCounselor = {
