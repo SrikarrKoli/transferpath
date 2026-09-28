@@ -86,18 +86,21 @@ export function EssayWorkspaceUi({
 
   if (hall) {
     const empty = wordCount === 0
+    const ready = !empty && !overLimit && wordCount >= Math.min(150, essay.wordLimit)
     const nextTitle = empty
       ? `Start drafting: ${essay.title}`
       : overLimit
         ? `Trim to the word limit: ${essay.title}`
         : wordCount < Math.min(150, essay.wordLimit)
           ? `Keep drafting: ${essay.title}`
-          : `Save and tighten: ${essay.title}`
+          : `Save this draft: ${essay.title}`
     const nextPrompt = empty
       ? "Start with one concrete sentence."
       : overLimit
         ? `${wordCount} words — bring this draft down to ${essay.wordLimit}.`
-        : `${wordCount} of ${essay.wordLimit} words · Save your progress, then keep writing.`
+        : ready
+          ? `${wordCount} of ${essay.wordLimit} · Save your progress, then review your draft.`
+          : `${wordCount} of ${essay.wordLimit} · Keep writing in the box; save when you pause.`
 
     return (
       <div className={className}>
@@ -112,12 +115,17 @@ export function EssayWorkspaceUi({
           <div className="union-step-actions mt-6">
             <button
               type="button"
-              onClick={empty || overLimit || !onSave ? focusDraft : onSave}
-              disabled={saving}
+              onClick={ready && onSave ? onSave : focusDraft}
+              disabled={ready && saving}
               className="union-primary-cta"
             >
-              {saving ? "Saving…" : empty ? "Start drafting" : overLimit ? "Trim to the word limit" : onSave ? saveLabel : "Continue draft"}
+              {ready && saving ? "Saving…" : empty ? "Start drafting" : overLimit ? "Trim in the box" : ready && onSave ? saveLabel : "Continue draft"}
             </button>
+            {!empty && !ready && onSave ? (
+              <button type="button" onClick={onSave} disabled={saving} className="hall-ledger-link">
+                {saving ? "Saving…" : saveLabel}
+              </button>
+            ) : null}
             {onSwitchPrompt ? (
               <button type="button" onClick={onSwitchPrompt} className="hall-ledger-link">
                 Switch prompt
@@ -129,75 +137,52 @@ export function EssayWorkspaceUi({
                 {previewLabel}
               </button>
             ) : null}
-            <Link href="/dashboard/checklist" className="hall-ledger-link">
-              Open Checklist
-            </Link>
+            {empty ? (
+              <Link href="/dashboard/checklist" className="hall-ledger-link">Open Checklist</Link>
+            ) : ready ? (
+              <button type="button" onClick={focusDraft} className="hall-ledger-link">Continue writing</button>
+            ) : null}
           </div>
         </section>
 
         <p className="hall-prompt mt-8">{essay.prompt}</p>
         {settingsSlot ? <div className="mt-4">{settingsSlot}</div> : null}
-        <div className="hall-plan-toolbar mt-5">
-          <p className="hall-caption">
-            Save often. Coach notes update after you pause.
-          </p>
-          <div className="flex flex-wrap gap-x-4 gap-y-2">
-            {onPreview ? (
-              <button type="button" onClick={onPreview} className="hall-ledger-link">
-                {previewLabel}
-              </button>
-            ) : null}
-            {onSave ? (
-              <button
-                type="button"
-                onClick={onSave}
-                disabled={saving}
-                className="hall-save-ink"
-              >
-                {saving ? "Saving…" : saveLabel}
-              </button>
-            ) : null}
+        <p className="hall-caption library-writing-caption">
+          Save often. Coach notes update after you pause.
+        </p>
+        <div className="library-working-band">
+          <div className="library-writing-field">
+            <label className="hall-caption" htmlFor="library-essay-draft">Your draft · write here</label>
+            <textarea
+              id="library-essay-draft"
+              ref={draftRef}
+              value={value}
+              onChange={(e) => onChange(e.target.value)}
+              className="hall-draft"
+              placeholder="Start with one concrete sentence…"
+              aria-label="Essay draft"
+            />
+            <p className={cn("library-word-count", overLimit && "hall-urgent")}>
+              {wordCount} / {essay.wordLimit}
+            </p>
           </div>
+          {coachNotes.length > 0 || strengthSignals.length > 0 ? (
+            <aside className="hall-margin library-coach" aria-label="Draft coaching">
+              {coachNotes.length > 0 ? (
+                <section>
+                  <h3 className="hall-caption">Coach notes</h3>
+                  <ul>{coachNotes.map((note) => <li key={note}>{note}</li>)}</ul>
+                </section>
+              ) : null}
+              {strengthSignals.length > 0 ? (
+                <section>
+                  <h3 className="hall-caption">Strengths</h3>
+                  <ul>{strengthSignals.map((note) => <li key={note}>{note}</li>)}</ul>
+                </section>
+              ) : null}
+            </aside>
+          ) : null}
         </div>
-        <textarea
-          ref={draftRef}
-          value={value}
-          onChange={(e) => onChange(e.target.value)}
-          className="hall-draft"
-          placeholder="Draft here."
-          aria-label="Essay draft"
-        />
-        <div className="mt-5 flex flex-wrap items-end justify-between gap-4">
-          <p>
-            <span className={cn("hall-count", overLimit && "hall-urgent")}>{wordCount}</span>
-            <span className="ml-2 text-[color:var(--hall-stone)]">/ {essay.wordLimit}</span>
-          </p>
-          <div className="flex gap-4">
-            {onSave ? (
-              <button type="button" onClick={onSave} disabled={saving} className="hall-ledger-link">
-                {saving ? "Saving…" : saveLabel}
-              </button>
-            ) : null}
-          </div>
-        </div>
-        {coachNotes.length > 0 || strengthSignals.length > 0 ? (
-          <div className="mt-10 grid gap-10 sm:grid-cols-2">
-            {coachNotes.length > 0 ? (
-              <ul className="hall-margin space-y-2">
-                {coachNotes.map((note) => (
-                  <li key={note}>{note}</li>
-                ))}
-              </ul>
-            ) : null}
-            {strengthSignals.length > 0 ? (
-              <ul className="hall-margin space-y-2">
-                {strengthSignals.map((note) => (
-                  <li key={note}>{note}</li>
-                ))}
-              </ul>
-            ) : null}
-          </div>
-        ) : null}
       </div>
     )
   }

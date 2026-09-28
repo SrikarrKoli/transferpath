@@ -6025,3 +6025,90 @@ nextjs-portal,
   font-size: 0.8rem;
 }
 .library-save-status:empty { display: none; }
+
+/* Library pass 2: the index leads into one writing and coaching band. */
+.campus-entered[data-building="library"] .library-manuscript .library-prompt-index {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr);
+  gap: 0;
+  margin-bottom: 0.8rem;
+}
+.campus-entered[data-building="library"] .library-index-heading {
+  grid-column: 1 / -1;
+  padding: 0.45rem 0;
+}
+.campus-entered[data-building="library"] .library-manuscript .library-prompt-tabs {
+  grid-column: 1 / -1;
+  grid-template-columns: repeat(5, minmax(0, 1fr));
+}
+.campus-entered[data-building="library"] .library-manuscript .library-prompt-tab {
+  padding: 0.65rem 0.75rem;
+  color: color-mix(in srgb, var(--hall-ink) 72%, var(--hall-paper));
+  border-bottom: 4px solid transparent;
+}
+.campus-entered[data-building="library"] .library-manuscript .library-prompt-tab.is-active {
+  border-bottom: 4px solid var(--hall-ink);
+  background: color-mix(in srgb, var(--hall-ink) 5%, var(--hall-paper));
+  color: var(--hall-ink);
+}
+.campus-entered[data-building="library"] .library-manuscript .library-prompt-tab > span:last-child > span:first-child {
+  font-size: 1.1rem;
+  line-height: 1.3;
+}
+.campus-entered[data-building="library"] .library-folio-state {
+  text-transform: none;
+  letter-spacing: 0.025em;
+  font-size: 0.7rem;
+  margin-top: 0.25rem;
+}
+.campus-entered[data-building="library"] .union-next-block { padding-bottom: 0.85rem; }
+.campus-entered[data-building="library"] .union-next-block .hall-hero-title {
+  max-width: none;
+  font-size: clamp(1.6rem, 2.3vw, 2rem);
+  line-height: 1.2;
+}
+.campus-entered[data-building="library"] .union-next-block .mt-3 { margin-top: 0.45rem; }
+.campus-entered[data-building="library"] .union-step-actions { margin-top: 0.85rem; }
+.campus-entered[data-building="library"] .hall-prompt { margin-top: 1rem; max-width: 78ch; }
+.campus-entered[data-building="library"] .library-writing-caption { margin: 0.8rem 0; }
+.campus-entered[data-building="library"] .library-working-band {
+  display: grid;
+  grid-template-columns: minmax(0, 2.2fr) minmax(15rem, 1fr);
+  gap: 1.75rem;
+  align-items: start;
+}
+.campus-entered[data-building="library"] .library-writing-field { min-width: 0; }
+.campus-entered[data-building="library"] .hall-draft {
+  display: block;
+  width: 100%;
+  max-width: 72ch;
+  height: 21rem;
+  min-height: 16rem;
+  margin-top: 0.5rem;
+  padding: 1rem 1.2rem;
+  border: 1px solid var(--hall-rule);
+  background: color-mix(in srgb, var(--hall-paper) 85%, white);
+  font-family: Georgia, "Times New Roman", serif;
+  font-size: 1.1rem;
+  line-height: 1.65;
+  resize: vertical;
+}
+.campus-entered[data-building="library"] .hall-draft:focus-visible {
+  outline: 2px solid var(--hall-ink);
+  outline-offset: 2px;
+}
+.campus-entered[data-building="library"] .hall-draft::placeholder { color: var(--hall-stone); }
+.campus-entered[data-building="library"] .library-word-count {
+  margin-top: 0.45rem;
+  font-size: 0.8rem;
+  color: var(--hall-stone);
+}
+.campus-entered[data-building="library"] .library-coach { margin-top: 0; font-size: 0.9rem; line-height: 1.5; }
+.campus-entered[data-building="library"] .library-coach section + section { margin-top: 1.3rem; }
+.campus-entered[data-building="library"] .library-coach h3 { color: var(--hall-ink); margin-bottom: 0.6rem; }
+.campus-entered[data-building="library"] .library-coach li + li { margin-top: 0.65rem; }
+@media (max-width: 700px) {
+  .campus-entered[data-building="library"] .library-working-band { grid-template-columns: minmax(0, 1fr); }
+  .campus-entered[data-building="library"] .library-manuscript .library-prompt-tabs { grid-template-columns: repeat(5, minmax(9rem, 1fr)); overflow-x: auto; }
+  .campus-entered[data-building="library"] .library-index-heading { flex-wrap: wrap; gap: 0.2rem; }
+}
