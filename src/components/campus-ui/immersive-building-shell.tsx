@@ -22,7 +22,7 @@ export function ImmersiveBuildingShell({
     purpose === "onboarding"
       ? "Set your current school, targets, courses, and timeline here. That unlocks deadlines and requirements across campus."
       : purpose === "settings"
-        ? "Update your transfer details and reminders. Save your path to update Deadlines, Plan, and Requirements on your next view."
+        ? "Your transfer details, kept current."
         : null
 
   const isOnboarding = purpose === "onboarding"
@@ -31,7 +31,7 @@ export function ImmersiveBuildingShell({
 
   return (
     <HallProvider buildingId={buildingId}>
-      <article className="campus-entered campus-enter" data-building={buildingId}>
+      <article className="campus-entered campus-enter" data-building={buildingId} data-purpose={purpose}>
         <header className="hall-masthead">
           <div className="hall-masthead-meta">
             <div className="hall-back-row">
@@ -47,9 +47,9 @@ export function ImmersiveBuildingShell({
             {!isOnboarding ? <HallDirectory /> : null}
           </div>
           <h1 className="hall-name">{building.name}</h1>
-          <p className="hall-feature mt-1 text-sm font-medium tracking-wide text-[color:var(--campus-ink)]/55">
+          {purpose !== "settings" && <p className="hall-feature mt-1 text-sm font-medium tracking-wide text-[color:var(--campus-ink)]/55">
             {building.feature}
-          </p>
+          </p>}
           {purposeCopy ? (
             <p className="mt-2 max-w-xl text-sm leading-relaxed text-[color:var(--campus-ink)]/65">
               {purposeCopy}

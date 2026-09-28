@@ -3,7 +3,7 @@
 import { useEffect, useState } from "react"
 import Link from "next/link"
 import { useRouter } from "next/navigation"
-import { LockKeyhole, LogOut } from "lucide-react"
+import { ChevronDown, LockKeyhole, LogOut } from "lucide-react"
 import { SchoolSearch, type SchoolSearchProps } from "@/components/onboarding/school-search"
 import { Button } from "@/components/ui/button"
 import {
@@ -65,7 +65,7 @@ function SettingsSchoolSearch({ preview, ...props }: SchoolSearchProps & { previ
     { id: "preview-acc", name: "Austin Community College" },
     { id: "preview-ut", name: "The University of Texas at Austin" },
   ].filter((school) => !props.universityType || school.id === "preview-ut")
-  return <select aria-label={props.universityType ? "Target school" : "Current school"}
+  return <div className="settings-select"><select aria-label={props.universityType ? "Target school" : "Current school"}
     value={props.selectedId ?? ""}
     onChange={(event) => {
       const school = schools.find((item) => item.id === event.target.value)
@@ -74,7 +74,7 @@ function SettingsSchoolSearch({ preview, ...props }: SchoolSearchProps & { previ
     }}>
     <option value="">Choose a school</option>
     {schools.map((school) => <option key={school.id} value={school.id}>{school.name}</option>)}
-  </select>
+  </select><ChevronDown size={16} aria-hidden="true" /></div>
 }
 
 function SectionHeader({ title, subtitle }: { title: string; subtitle?: string }) {
@@ -167,8 +167,9 @@ export function SettingsClient({
   const [savedName, setSavedName] = useState(fullName)
   const pathDirty = pathSnapshot !== savedPath
   const nameDirty = fullName !== savedName
+  const hasEdits = pathDirty || nameDirty
   const saveStatus = saving ? "Saving path…"
-    : pathDirty || nameDirty ? "Unsaved path edits"
+    : hasEdits ? "Unsaved path edits"
     : "Path saved"
 
   /** DB NULL means opted in; only explicit false opts out (matches `coalesce` in SQL + cron recipients). */
@@ -350,7 +351,7 @@ export function SettingsClient({
   }
 
   const tabs: { id: SettingsTab; label: string }[] = [
-    { id: "transfer", label: "Your transfer path" },
+    { id: "transfer", label: "Path" },
     { id: "notifications", label: "Reminders" },
     { id: "security", label: "Account" },
     { id: "preferences", label: "Preferences" },
@@ -387,21 +388,16 @@ export function SettingsClient({
       {activeTab === "transfer" && (
         <section className="settings-next" aria-labelledby="settings-next-title">
           <div>
-            <p className="hall-caption">{gap ? "Do this next" : "Your path"}</p>
+            {gap && <p className="hall-caption">Do this next</p>}
             <h2 id="settings-next-title">{gap ?? `${shortSchool(currentSchoolName)} → ${shortSchool(targetSchoolName)}`}</h2>
             {!gap && <p className="settings-path-meta">{targetMajor} · {expectedTerm}</p>}
-            <p className="settings-prompt">Save your path to update Deadlines, Plan, and Requirements on your next view.</p>
-            <div className="settings-links">
-              <Link className="hall-ledger-link" href="/dashboard/plan">Open Plan</Link>
-              <Link className="hall-ledger-link" href="/dashboard/requirements">Open Requirements</Link>
-              <Link className="hall-ledger-link" href="/dashboard/deadlines">Open Deadlines</Link>
-            </div>
+            {hasEdits && <p className="settings-prompt">Saving updates Deadlines, Plan, and Requirements on your next view.</p>}
           </div>
           <div className="settings-save-ask">
-          <button type="button" className="union-primary-cta" disabled={saving || !profile} onClick={handleSave}>
-            {saving ? "Saving…" : "Save path"} <span aria-hidden="true">→</span>
-          </button>
             <p className="settings-save-status" role="status">{saveStatus}</p>
+            {hasEdits && <button type="button" className="union-primary-cta" disabled={saving || !profile} onClick={handleSave}>
+              {saving ? "Saving…" : "Save path"} <span aria-hidden="true">→</span>
+            </button>}
           </div>
         </section>
       )}
@@ -421,11 +417,6 @@ export function SettingsClient({
 
             {activeTab === "transfer" && (
               <div>
-                <SectionHeader
-                  title="Your transfer path"
-                  subtitle="Keep the details that drive your campus up to date."
-                />
-
                 <div className="settings-field-grid">
                   <div className="space-y-1.5">
                     <label className="block text-sm font-medium text-foreground">Current school</label>
@@ -501,6 +492,7 @@ export function SettingsClient({
                     </div>
                     <p className="settings-major-note">Apply for your major; your field guides requirement suggestions.</p>
                   </fieldset>
+                  <div className="settings-metrics">
                   <div className="settings-term-row">
                     <div className="space-y-1.5">
                     <label htmlFor={customTerm ? "term" : "term-select"} className="block text-sm font-medium text-foreground">
@@ -541,7 +533,7 @@ export function SettingsClient({
                   </div>
                   <div className="space-y-1.5">
                     <label htmlFor="gpa" className="block text-sm font-medium text-foreground">
-                      GPA
+                      GPA (0.00–4.00)
                     </label>
                     <input
                       id="gpa"
@@ -561,22 +553,22 @@ export function SettingsClient({
                     </label>
                     <input
                       id="credits"
+                      aria-describedby="credits-unit"
                       type="number"
                       min={0}
                       step={1}
                       value={creditsInput}
                       onChange={(e) => setCreditsInput(e.target.value)}
-                      placeholder="Total transferable credits"
+                      placeholder="Completed semester hours"
                       className="h-9 w-full rounded-none border border-[color:var(--hall-rule)] bg-[color:var(--hall-paper)] px-3 text-sm text-foreground transition-colors placeholder:text-muted-foreground focus:border-[color:var(--hall-ink)] focus:outline-none focus:ring-1 focus:ring-[color:var(--hall-ink)]/20"
                     />
+                    <p id="credits-unit">Semester hours on file</p>
+                  </div>
                   </div>
                 </div>
 
-                <section className="settings-you" aria-labelledby="settings-you-title">
-              <div className="settings-you-heading">
-                <h3 id="settings-you-title">You</h3>
-                <p>Your name is saved with your path.</p>
-              </div>
+                <fieldset className="settings-you">
+                  <legend>You</legend>
               <div className="settings-you-fields">
                   <div className="space-y-1.5">
                     <label htmlFor="full-name" className="block text-sm font-medium text-foreground">
@@ -610,15 +602,15 @@ export function SettingsClient({
                   </div>
 
               </div>
-            </section>
+            </fieldset>
 
                 <div className="settings-save-foot">
                   <div>
                     <p className="settings-save-status" role="status">{saveStatus}</p>
                   </div>
-                  <button type="button" className="union-primary-cta" disabled={saving || !profile} onClick={handleSave}>
+                  {hasEdits && <button type="button" className="union-primary-cta" disabled={saving || !profile} onClick={handleSave}>
                     {saving ? "Saving…" : "Save path"} <span aria-hidden="true">→</span>
-                  </button>
+                  </button>}
                 </div>
               </div>
             )}
