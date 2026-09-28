@@ -21,7 +21,7 @@ export function LibraryPreviewDesk() {
         <LibraryPromptIndex indexRef={indexRef} activeType={activeType} essayMap={drafts} onSwitch={setActiveType} />
         <EssayWorkspaceUi
           essay={{ title, prompt: draft.prompt, wordLimit: 650, wordLimitIsDefault: true,
-            autosaveLabel: saved[activeType] ? "Saved · this preview session" : undefined }}
+            autosaveLabel: saved[activeType] ? "Saved · this preview session" : "Unsaved · this preview session" }}
           value={draft.content}
           onChange={(content) => {
             setDrafts((previous) => ({ ...previous, [activeType]: { ...previous[activeType], content } }))
@@ -32,6 +32,8 @@ export function LibraryPreviewDesk() {
             indexRef.current?.scrollIntoView({ block: "center" })
             indexRef.current?.querySelector<HTMLButtonElement>('[aria-current="page"]')?.focus({ preventScroll: true })
           }}
+          coachCaption={original ? "Coach notes · sample feedback for this draft" : "Coach notes · sample feedback available on the original draft"}
+          coachPassages={original ? ["UT Austin’s Turing Scholars community", "next to a night shift"] : []}
           coachNotes={original ? previewEssay.coach : []}
           strengthSignals={original ? previewEssay.strengths : []}
         />

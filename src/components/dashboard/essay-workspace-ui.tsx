@@ -1,6 +1,5 @@
 "use client"
 
-import Link from "next/link"
 import { useMemo, useRef, type ReactNode } from "react"
 import { Meter } from "@/components/ui/progress"
 import { Provenance } from "@/components/ui/provenance"
@@ -31,6 +30,8 @@ export interface EssayWorkspaceUiProps {
   value: string
   onChange: (next: string) => void
   coachNotes?: string[]
+  coachCaption?: string
+  coachPassages?: string[]
   coachTitle?: string
   strengthSignals?: string[]
   strengthsTitle?: string
@@ -55,6 +56,8 @@ export function EssayWorkspaceUi({
   onChange,
   coachNotes = [],
   coachTitle = "Three notes on this draft",
+  coachCaption = "Coach notes · reflect your current draft as you write",
+  coachPassages = [],
   strengthSignals = [],
   strengthsTitle = "What this draft currently does",
   reference,
@@ -86,29 +89,22 @@ export function EssayWorkspaceUi({
 
   if (hall) {
     const empty = wordCount === 0
-    const ready = !empty && !overLimit && wordCount >= Math.min(150, essay.wordLimit)
+    const ready = !empty && !overLimit
     const nextTitle = empty
       ? `Start drafting: ${essay.title}`
       : overLimit
-        ? `Trim to the word limit: ${essay.title}`
-        : wordCount < Math.min(150, essay.wordLimit)
-          ? `Keep drafting: ${essay.title}`
-          : `Save this draft: ${essay.title}`
+        ? `Trim to ${essay.wordLimit}: ${essay.title}`
+        : `Save your progress: ${essay.title}`
     const nextPrompt = empty
       ? "Start with one concrete sentence."
       : overLimit
         ? `${wordCount} words — bring this draft down to ${essay.wordLimit}.`
-        : ready
-          ? `${wordCount} of ${essay.wordLimit} · Save your progress, then review your draft.`
-          : `${wordCount} of ${essay.wordLimit} · Keep writing in the box; save when you pause.`
+        : `${wordCount} of ${essay.wordLimit} · Save your progress, then keep writing.`
 
     return (
       <div className={className}>
         <section className="union-next-block" aria-labelledby="essay-next-heading">
-          <p className="hall-caption" id="essay-next-heading">
-            Do this next
-          </p>
-          <h2 className="hall-hero-title">{nextTitle}</h2>
+          <h2 id="essay-next-heading" className="hall-hero-title">{nextTitle}</h2>
           <p className="mt-3 text-sm text-[color:var(--hall-stone)]">
             {nextPrompt}
           </p>
@@ -119,9 +115,9 @@ export function EssayWorkspaceUi({
               disabled={ready && saving}
               className="union-primary-cta"
             >
-              {ready && saving ? "Saving…" : empty ? "Start drafting" : overLimit ? "Trim in the box" : ready && onSave ? saveLabel : "Continue draft"}
+              {ready && saving ? "Saving…" : empty ? "Start drafting" : overLimit ? "Edit in the box" : saveLabel}
             </button>
-            {!empty && !ready && onSave ? (
+            {overLimit && onSave ? (
               <button type="button" onClick={onSave} disabled={saving} className="hall-ledger-link">
                 {saving ? "Saving…" : saveLabel}
               </button>
@@ -137,18 +133,14 @@ export function EssayWorkspaceUi({
                 {previewLabel}
               </button>
             ) : null}
-            {empty ? (
-              <Link href="/dashboard/checklist" className="hall-ledger-link">Open Checklist</Link>
-            ) : ready ? (
-              <button type="button" onClick={focusDraft} className="hall-ledger-link">Continue writing</button>
-            ) : null}
+
           </div>
         </section>
 
         <p className="hall-prompt mt-8">{essay.prompt}</p>
         {settingsSlot ? <div className="mt-4">{settingsSlot}</div> : null}
         <p className="hall-caption library-writing-caption">
-          Save often. Coach notes update after you pause.
+          {coachCaption}
         </p>
         <div className="library-working-band">
           <div className="library-writing-field">
@@ -171,7 +163,17 @@ export function EssayWorkspaceUi({
               {coachNotes.length > 0 ? (
                 <section>
                   <h3 className="hall-caption">Coach notes</h3>
-                  <ul>{coachNotes.map((note) => <li key={note}>{note}</li>)}</ul>
+                  <ul>{coachNotes.map((note, index) => {
+                    const passage = coachPassages[index]
+                    const start = passage ? value.indexOf(passage) : -1
+                    return <li key={note} className={index === 0 ? "library-coach-lead" : undefined}>
+                      {note}
+                      {start >= 0 ? <button type="button" className="library-passage-link" onClick={() => {
+                        focusDraft()
+                        draftRef.current?.setSelectionRange(start, start + passage.length)
+                      }}>“{passage}” →</button> : null}
+                    </li>
+                  })}</ul>
                 </section>
               ) : null}
               {strengthSignals.length > 0 ? (

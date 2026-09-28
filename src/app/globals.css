@@ -6112,3 +6112,50 @@ nextjs-portal,
   .campus-entered[data-building="library"] .library-manuscript .library-prompt-tabs { grid-template-columns: repeat(5, minmax(9rem, 1fr)); overflow-x: auto; }
   .campus-entered[data-building="library"] .library-index-heading { flex-wrap: wrap; gap: 0.2rem; }
 }
+
+/* Library pass 3: concrete save action and a stronger manuscript surface. */
+.campus-entered[data-building="library"] .hall-caption {
+  color: color-mix(in srgb, var(--hall-ink) 76%, var(--hall-paper));
+  font-size: 0.7rem;
+  letter-spacing: 0.12em;
+}
+.campus-entered[data-building="library"] .library-manuscript .library-prompt-index { margin-bottom: 0.7rem; }
+.campus-entered[data-building="library"] .library-manuscript .library-prompt-tab {
+  color: color-mix(in srgb, var(--hall-ink) 82%, var(--hall-paper));
+}
+.campus-entered[data-building="library"] .library-manuscript .library-prompt-tab.is-active { color: var(--hall-ink); }
+.campus-entered[data-building="library"] .library-manuscript .library-prompt-tab > span:last-child > span:first-child { font-size: 1.2rem; }
+.campus-entered[data-building="library"] .union-next-block .hall-hero-title { margin-top: 0; }
+.campus-entered[data-building="library"] .union-step-actions .hall-ledger-link { font-size: 0.8rem; }
+.campus-entered[data-building="library"] .library-save-status { color: var(--hall-ink); }
+.campus-entered[data-building="library"] .library-writing-caption { margin: 0.65rem 0; text-transform: none; letter-spacing: 0.025em; font-size: 0.8rem; }
+.campus-entered[data-building="library"] .library-working-band { grid-template-columns: minmax(0, 1.9fr) minmax(0, 1fr); gap: 1.5rem; }
+.campus-entered[data-building="library"] .hall-draft {
+  max-width: none;
+  height: 22rem;
+  border-color: color-mix(in srgb, var(--hall-ink) 42%, var(--hall-paper));
+  resize: none;
+  overflow-y: auto;
+}
+.campus-entered[data-building="library"] .library-coach { padding-left: 1.25rem; }
+.campus-entered[data-building="library"] .library-coach-lead { color: var(--hall-ink); font-size: 1rem; }
+.campus-entered[data-building="library"] .library-passage-link {
+  display: block;
+  margin-top: 0.4rem;
+  font-family: Georgia, "Times New Roman", serif;
+  font-size: 0.85rem;
+  color: var(--hall-ink);
+  text-decoration: underline;
+  text-underline-offset: 3px;
+  text-align: left;
+  cursor: pointer;
+}
+@media (max-width: 700px) {
+  .campus-entered[data-building="library"] .library-working-band { grid-template-columns: minmax(0, 1fr); }
+}
+.campus-entered[data-building="library"] .union-primary-cta:hover {
+  background: var(--hall-ink);
+  color: var(--hall-paper);
+  text-decoration: underline;
+  text-underline-offset: 0.2em;
+}
