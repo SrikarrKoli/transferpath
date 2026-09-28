@@ -1,7 +1,7 @@
 "use client"
 
 import Link from "next/link"
-import { useMemo, type ReactNode } from "react"
+import { useMemo, useRef, type ReactNode } from "react"
 import { Meter } from "@/components/ui/progress"
 import { Provenance } from "@/components/ui/provenance"
 import { cn } from "@/lib/utils"
@@ -37,6 +37,7 @@ export interface EssayWorkspaceUiProps {
   reference?: ReferenceCard
   onPreview?: () => void
   onSave?: () => void
+  onSwitchPrompt?: () => void
   previewLabel?: string
   saveLabel?: string
   saving?: boolean
@@ -59,6 +60,7 @@ export function EssayWorkspaceUi({
   reference,
   onPreview,
   onSave,
+  onSwitchPrompt,
   previewLabel = "Preview",
   saveLabel = "Save draft",
   saving = false,
@@ -76,49 +78,52 @@ export function EssayWorkspaceUi({
   const pct = Math.min(100, Math.round((wordCount / Math.max(1, essay.wordLimit)) * 100))
   const overLimit = wordCount > essay.wordLimit
   const hall = useHall()
+  const draftRef = useRef<HTMLTextAreaElement>(null)
+  function focusDraft() {
+    draftRef.current?.scrollIntoView({ block: "center" })
+    draftRef.current?.focus({ preventScroll: true })
+  }
 
   if (hall) {
     const empty = wordCount === 0
-    const nextCaption = empty ? "Start here" : overLimit ? "Do this next" : "Do this next"
     const nextTitle = empty
-      ? "Write the first sentence"
+      ? `Start drafting: ${essay.title}`
       : overLimit
-        ? "Trim to the word limit"
+        ? `Trim to the word limit: ${essay.title}`
         : wordCount < Math.min(150, essay.wordLimit)
-          ? "Keep drafting this prompt"
-          : "Save and tighten this draft"
+          ? `Keep drafting: ${essay.title}`
+          : `Save and tighten: ${essay.title}`
     const nextPrompt = empty
-      ? "One concrete sentence beats a blank page. Coach notes show up after you pause."
+      ? "Start with one concrete sentence."
       : overLimit
-        ? `You are at ${wordCount} words — cut down to ${essay.wordLimit} before you polish.`
-        : "Save often. When this prompt feels solid, switch prompts from the strip above."
+        ? `${wordCount} words — bring this draft down to ${essay.wordLimit}.`
+        : `${wordCount} of ${essay.wordLimit} words · Save your progress, then keep writing.`
 
     return (
       <div className={className}>
         <section className="union-next-block" aria-labelledby="essay-next-heading">
           <p className="hall-caption" id="essay-next-heading">
-            {nextCaption}
+            Do this next
           </p>
           <h2 className="hall-hero-title">{nextTitle}</h2>
           <p className="mt-3 text-sm text-[color:var(--hall-stone)]">
-            {essay.title}
-            {essay.subtitle ? ` — ${essay.subtitle}` : ""}
+            {nextPrompt}
           </p>
           <div className="union-step-actions mt-6">
-            {onSave ? (
-              <button
-                type="button"
-                onClick={onSave}
-                disabled={saving || empty}
-                className="union-primary-cta"
-              >
-                {saving ? "Saving…" : empty ? "Start in the box below" : saveLabel}
+            <button
+              type="button"
+              onClick={empty || overLimit || !onSave ? focusDraft : onSave}
+              disabled={saving}
+              className="union-primary-cta"
+            >
+              {saving ? "Saving…" : empty ? "Start drafting" : overLimit ? "Trim to the word limit" : onSave ? saveLabel : "Continue draft"}
+            </button>
+            {onSwitchPrompt ? (
+              <button type="button" onClick={onSwitchPrompt} className="hall-ledger-link">
+                Switch prompt
               </button>
-            ) : (
-              <span className="union-primary-cta" aria-hidden>
-                Draft below
-              </span>
-            )}
+            ) : null}
+            <span role="status" className="library-save-status">{essay.autosaveLabel}</span>
             {onPreview ? (
               <button type="button" onClick={onPreview} className="hall-ledger-link">
                 {previewLabel}
@@ -155,6 +160,7 @@ export function EssayWorkspaceUi({
           </div>
         </div>
         <textarea
+          ref={draftRef}
           value={value}
           onChange={(e) => onChange(e.target.value)}
           className="hall-draft"

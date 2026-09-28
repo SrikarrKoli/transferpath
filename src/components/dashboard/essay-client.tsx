@@ -1,6 +1,6 @@
 "use client"
 
-import { useMemo, useState } from "react"
+import { useMemo, useRef, useState } from "react"
 import { useRouter } from "next/navigation"
 import { Eye, Save } from "lucide-react"
 import { createClient } from "@/lib/supabase/client"
@@ -12,7 +12,7 @@ import {
   DialogHeader,
   DialogTitle,
 } from "@/components/ui/dialog"
-import { cn } from "@/lib/utils"
+import { LibraryPromptIndex } from "@/components/dashboard/library-prompt-index"
 import type { ChecklistProfileSummary } from "@/lib/checklist-task-definitions"
 import {
   buildCoachNotes,
@@ -96,6 +96,7 @@ function countWords(text: string): number {
 
 export function EssayClient({ userId, initialEssayMap, profile }: EssayClientProps) {
   const router = useRouter()
+  const promptIndexRef = useRef<HTMLElement>(null)
   const [essayMap, setEssayMap] = useState(initialEssayMap)
   const [activeType, setActiveType] = useState<EssayPromptId>("why_transfer")
   const [saving, setSaving] = useState(false)
@@ -189,40 +190,12 @@ export function EssayClient({ userId, initialEssayMap, profile }: EssayClientPro
           <p><span>{from}</span><span aria-hidden> → </span><strong>{to}</strong></p>
           <p>{profile.targetMajor ?? profile.fieldOfStudy ?? "Program not set"} · {profile.expectedTransferTerm ?? "Term not set"}</p>
         </div>
-        <nav className="library-prompt-index" aria-label="Essay prompts">
-          <div className="library-index-heading">
-            <p className="library-index-label">Manuscript index</p>
-            <p>Five working drafts · select a leaf</p>
-          </div>
-          <div className="library-prompt-tabs">
-            {PROMPT_TYPES.map((prompt, index) => {
-              const essay = essayMap[prompt.id]
-              const wc = essay ? countWords(essay.content ?? "") : 0
-              const isActive = activeType === prompt.id
-              return (
-                <button
-                  key={prompt.id}
-                  type="button"
-                  onClick={() => handleTypeSwitch(prompt.id)}
-                  className={cn("library-prompt-tab", isActive ? "is-active" : undefined)}
-                  aria-current={isActive ? "page" : undefined}
-                >
-                  <span className="library-folio-number">{String(index + 1).padStart(2, "0")}</span>
-                  <span>
-                    <span className="block">{prompt.label}</span>
-                    <span className="library-folio-state">
-                      {wc === 0
-                        ? "Not started"
-                        : wc < 50
-                          ? "Draft started"
-                          : `${wc} words`}
-                    </span>
-                  </span>
-                </button>
-              )
-            })}
-          </div>
-        </nav>
+        <LibraryPromptIndex
+          indexRef={promptIndexRef}
+          activeType={activeType}
+          essayMap={essayMap}
+          onSwitch={handleTypeSwitch}
+        />
 
         {saveError ? (
           <p className="library-save-error text-sm text-destructive" role="alert">
@@ -250,6 +223,10 @@ export function EssayClient({ userId, initialEssayMap, profile }: EssayClientPro
             onCtaClick: () => router.push("/dashboard/requirements"),
           }}
           onPreview={() => setPreviewOpen(true)}
+          onSwitchPrompt={() => {
+            promptIndexRef.current?.scrollIntoView({ block: "center" })
+            promptIndexRef.current?.querySelector<HTMLButtonElement>('[aria-current="page"]')?.focus({ preventScroll: true })
+          }}
           onSave={() => void handleSave()}
           saving={saving}
           previewIcon={<Eye className="h-4 w-4" strokeWidth={1.5} />}

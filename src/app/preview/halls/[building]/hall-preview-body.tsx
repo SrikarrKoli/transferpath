@@ -9,12 +9,11 @@ import { HallRequirements } from "@/components/campus-ui/hall-requirements"
 import { ReadinessScoreSheet } from "@/components/dashboard/readiness-score-sheet"
 import { HallChecklist } from "@/components/campus-ui/hall-checklist"
 import { SettingsClient } from "@/components/dashboard/settings-client"
-import { EssayWorkspaceUi } from "@/components/dashboard/essay-workspace-ui"
+import { LibraryPreviewDesk } from "@/components/dashboard/library-preview-desk"
 import {
   previewChecklist,
   previewSettingsProfile,
   previewDeadlines,
-  previewEssay,
   previewPlan,
   previewReadiness,
   previewRequirements,
@@ -34,18 +33,7 @@ export function HallPreviewBody({ buildingId }: { buildingId: BuildingId }) {
       ) : buildingId === "union" ? (
         <HallToday data={previewToday} userId="preview" />
       ) : buildingId === "library" ? (
-        <EssayWorkspaceUi
-          essay={{
-            title: previewEssay.title,
-            prompt: previewEssay.prompt,
-            wordLimit: previewEssay.wordLimit,
-            wordLimitIsDefault: previewEssay.wordLimitIsDefault,
-          }}
-          value={previewEssay.draft}
-          onChange={() => undefined}
-          coachNotes={previewEssay.coach}
-          strengthSignals={previewEssay.strengths}
-        />
+        <LibraryPreviewDesk />
       ) : buildingId === "classroom" ? (
         <HallPlan
           blocks={previewPlan}

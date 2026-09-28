@@ -169,6 +169,14 @@ export const previewEssay = {
   strengths: ["A concrete course gap, not a vibe.", "A term and a campus already chosen."],
 }
 
+export const previewEssayMap = {
+  why_transfer: { content: previewEssay.draft, prompt: previewEssay.prompt },
+  leadership: { content: "", prompt: "No school leadership prompt added yet." },
+  diversity: { content: "", prompt: "No school diversity prompt added yet." },
+  extracurricular: { content: "", prompt: "No school extracurricular prompt added yet." },
+  other: { content: "", prompt: "No school supplemental prompt added yet." },
+}
+
 export const previewRequirements: RequirementsWorkspaceData = {
   header: {
     title: "Requirements",
