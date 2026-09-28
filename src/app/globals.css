@@ -5865,3 +5865,37 @@ nextjs-portal,
   font-size: 1rem;
   font-weight: 700;
 }
+
+/* Counselor member path sheet */
+.settings-hall { color: var(--hall-ink); }
+.settings-hall .settings-index { display: flex; flex-wrap: wrap; align-items: baseline; gap: 1.5rem; padding: 0 0 1rem; border-bottom: 1px solid var(--hall-rule); }
+.settings-index button { font-size: 0.82rem; color: var(--hall-stone); padding: 0.3rem 0; cursor: pointer; border-bottom: 1px solid transparent; }
+.settings-index button:first-child { margin-right: auto; font-weight: 600; color: var(--hall-ink); }
+.settings-index button span { font-size: 0.65rem; margin-right: 0.5rem; color: var(--hall-clay); }
+.settings-index button[aria-current] { color: var(--hall-ink); border-bottom-color: var(--hall-ink); }
+.settings-next { display: flex; align-items: center; justify-content: space-between; gap: 2rem; padding: 1.5rem 0; }
+.settings-next h2 { font-family: var(--font-fraunces), Georgia, serif; font-size: clamp(2rem, 3vw, 2.8rem); line-height: 1.12; margin: 0.45rem 0; font-weight: 400; }
+.settings-path-meta { font-size: 1.05rem; }
+.settings-prompt { color: var(--hall-stone); font-size: 0.85rem; margin-top: 0.55rem; }
+.settings-links { display: flex; flex-wrap: wrap; gap: 1.2rem; margin-top: 0.7rem; font-size: 0.8rem; }
+.settings-next .union-primary-cta { flex-shrink: 0; gap: 2rem; border-radius: 0; }
+.settings-hall button:disabled { opacity: 0.5; cursor: not-allowed; }
+.settings-sheet { border: 1px solid var(--hall-rule); padding: 1.3rem 1.5rem; }
+.settings-field-grid { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 1rem 2rem; }
+.settings-field-grid > div:nth-child(5) { grid-column: 1 / -1; display: grid; grid-template-columns: 1fr 1fr; gap: 0.4rem 2rem; }
+.settings-field-grid > div:nth-child(5) > label, .settings-field-grid > div:nth-child(5) > p { grid-column: 1 / -1; }
+.settings-field-grid label { font-size: 0.65rem; text-transform: uppercase; letter-spacing: 0.12em; color: var(--hall-stone); font-weight: 500; }
+.settings-field-grid input, .settings-field-grid select, .settings-field-grid [data-slot="select-trigger"] { height: 2.5rem; width: 100%; border-radius: 0; box-shadow: none; border: 1px solid var(--hall-rule); background: transparent; color: var(--hall-ink); font-size: 0.875rem; }
+.settings-field-grid select { padding: 0 0.75rem; }
+.settings-field-grid p { font-size: 0.72rem; color: var(--hall-stone); }
+.settings-course-note { border-top: 1px solid var(--hall-rule); padding-top: 0.8rem; margin-top: 1rem; font-size: 0.8rem; color: var(--hall-stone); }
+.settings-status { padding: 0.8rem 1rem; margin-top: 1rem; border: 1px solid var(--hall-rule); font-size: 0.875rem; }
+.settings-status[data-error="true"] { color: var(--hall-clay); }
+@media (max-width: 640px) {
+  .settings-hall .settings-index { gap: 0.6rem 1rem; }
+  .settings-index button:first-child { flex-basis: 100%; text-align: left; }
+  .settings-next { align-items: flex-start; flex-direction: column; gap: 1rem; }
+  .settings-sheet { padding: 1rem; }
+  .settings-field-grid { grid-template-columns: 1fr; }
+  .settings-field-grid > div:nth-child(5) { display: block; }
+}

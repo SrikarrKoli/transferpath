@@ -342,3 +342,22 @@ export const previewCounselor = {
   gpa: "3.71",
   term: "Fall 2027",
 }
+
+
+export const previewSettingsProfile: import("@/components/dashboard/settings-client").SettingsProfileRow = {
+  id: "preview-counselor",
+  email: "alex.rivera@example.com",
+  full_name: "Alex Rivera",
+  current_university_id: "preview-acc",
+  target_university_id: "preview-ut",
+  current_university: { id: "preview-acc", name: previewCounselor.school },
+  target_university: { id: "preview-ut", name: previewCounselor.target },
+  target_major: previewCounselor.major,
+  field_of_study: "stem_non_engineering",
+  expected_transfer_term: previewCounselor.term,
+  gpa: 3.71,
+  credits_completed: 42,
+  notify_deadline_reminders: true,
+  notify_product_updates: false,
+  prefer_compact_dashboard: false,
+}

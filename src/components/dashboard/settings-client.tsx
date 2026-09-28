@@ -3,8 +3,8 @@
 import { useEffect, useState } from "react"
 import Link from "next/link"
 import { useRouter } from "next/navigation"
-import { User, GraduationCap, Bell, Lock, Palette, HelpCircle, LogOut } from "lucide-react"
-import { SchoolSearch } from "@/components/onboarding/school-search"
+import { LogOut } from "lucide-react"
+import { SchoolSearch, type SchoolSearchProps } from "@/components/onboarding/school-search"
 import { Button } from "@/components/ui/button"
 import {
   Select,
@@ -55,7 +55,26 @@ interface SettingsClientProps {
   authEmail: string | null
   profile: SettingsProfileRow | null
   authInfo: SettingsAuthInfo
+  preview?: boolean
   initialTab?: SettingsTab
+}
+
+function SettingsSchoolSearch({ preview, ...props }: SchoolSearchProps & { preview: boolean }) {
+  if (!preview) return <SchoolSearch {...props} />
+  const schools = [
+    { id: "preview-acc", name: "Austin Community College" },
+    { id: "preview-ut", name: "The University of Texas at Austin" },
+  ].filter((school) => !props.universityType || school.id === "preview-ut")
+  return <select aria-label={props.universityType ? "Target school" : "Current school"}
+    value={props.selectedId ?? ""}
+    onChange={(event) => {
+      const school = schools.find((item) => item.id === event.target.value)
+      if (school) props.onSelect(school.id, school.name)
+      else props.onClear()
+    }}>
+    <option value="">Choose a school</option>
+    {schools.map((school) => <option key={school.id} value={school.id}>{school.name}</option>)}
+  </select>
 }
 
 function SectionHeader({ title, subtitle }: { title: string; subtitle?: string }) {
@@ -91,10 +110,11 @@ export function SettingsClient({
   authEmail,
   profile,
   authInfo,
-  initialTab = "profile",
+  initialTab = "transfer",
+  preview = false,
 }: SettingsClientProps) {
   const router = useRouter()
-  const [activeTab, setActiveTab] = useState<SettingsTab>(initialTab)
+  const [activeTab, setActiveTab] = useState<SettingsTab>(initialTab === "profile" ? "transfer" : initialTab)
 
   useEffect(() => {
     if (activeTab !== "help" || typeof window === "undefined") return
@@ -103,6 +123,12 @@ export function SettingsClient({
     const el = document.getElementById(id)
     if (el) el.scrollIntoView({ behavior: "smooth", block: "start" })
   }, [activeTab])
+  const [previousInitialTab, setPreviousInitialTab] = useState(initialTab)
+  if (previousInitialTab !== initialTab) {
+    setPreviousInitialTab(initialTab)
+    setActiveTab(initialTab === "profile" ? "transfer" : initialTab)
+  }
+
   const [saving, setSaving] = useState(false)
   const [savingNotifications, setSavingNotifications] = useState(false)
   const [savingPreferences, setSavingPreferences] = useState(false)
@@ -157,12 +183,20 @@ export function SettingsClient({
     undefined
 
   async function handleSignOut() {
+    if (preview) {
+      setMessage({ type: "success", text: "Preview changes saved locally for this visit." })
+      return
+    }
     const supabase = createClient()
     await supabase.auth.signOut()
     router.push("/login")
   }
 
   async function handleSave() {
+    if (preview) {
+      setMessage({ type: "success", text: "Preview changes saved locally for this visit." })
+      return
+    }
     if (!profile) {
       setMessage({
         type: "error",
@@ -200,6 +234,10 @@ export function SettingsClient({
   }
 
   async function handleSaveNotifications() {
+    if (preview) {
+      setMessage({ type: "success", text: "Preview changes saved locally for this visit." })
+      return
+    }
     if (!profile) {
       setMessage({
         type: "error",
@@ -231,6 +269,10 @@ export function SettingsClient({
   }
 
   async function handleSavePreferences() {
+    if (preview) {
+      setMessage({ type: "success", text: "Preview changes saved locally for this visit." })
+      return
+    }
     if (!profile) {
       setMessage({
         type: "error",
@@ -262,6 +304,7 @@ export function SettingsClient({
 
   async function handlePasswordChange(e: React.FormEvent) {
     e.preventDefault()
+    if (preview) return
     setPasswordMessage(null)
 
     if (newPassword.length < 8) {
@@ -293,14 +336,19 @@ export function SettingsClient({
     }
   }
 
-  const tabs: { id: SettingsTab; label: string; icon: React.ReactNode }[] = [
-    { id: "profile", label: "Profile", icon: <User className="h-4 w-4" /> },
-    { id: "transfer", label: "Transfer planning", icon: <GraduationCap className="h-4 w-4" /> },
-    { id: "notifications", label: "Notifications", icon: <Bell className="h-4 w-4" /> },
-    { id: "security", label: "Account & security", icon: <Lock className="h-4 w-4" /> },
-    { id: "preferences", label: "Preferences", icon: <Palette className="h-4 w-4" /> },
-    { id: "help", label: "Help & feedback", icon: <HelpCircle className="h-4 w-4" /> },
+  const tabs: { id: SettingsTab; label: string }[] = [
+    { id: "transfer", label: "Your transfer path" },
+    { id: "notifications", label: "Reminders" },
+    { id: "security", label: "Account" },
+    { id: "preferences", label: "Preferences" },
+    { id: "help", label: "Help" },
   ]
+  const gap = !currentSchoolId ? "Choose your current school"
+    : !targetSchoolId ? "Choose your target school"
+    : !targetMajor.trim() ? "Set your target major"
+    : !expectedTerm.trim() ? "Set your entry term" : null
+  const shortSchool = (name: string) => name === "Austin Community College" ? "ACC"
+    : name === "The University of Texas at Austin" ? "UT Austin" : name
 
   const oauthDescription =
     authInfo.oauthProviderIds.length > 0
@@ -308,47 +356,42 @@ export function SettingsClient({
       : null
 
   return (
-    <div className="bg-transparent">
-      <div className="pb-4">
-        <p className="text-xs font-semibold uppercase tracking-[0.14em] text-muted-foreground">
-          Edit your transfer info
-        </p>
-        <p className="mt-1 text-sm text-muted-foreground">
-          Profile, schools, major, term, and reminders — same fields as onboarding, editable anytime.
-        </p>
-      </div>
-
-      <div className="flex flex-col gap-6 pb-8 lg:flex-row lg:gap-8">
-        <nav className="w-full lg:w-[180px] lg:shrink-0">
-          <ul className="flex flex-row flex-wrap gap-1 lg:flex-col lg:flex-nowrap">
-            {tabs.map((tab) => {
-              const isActive = activeTab === tab.id
-              return (
-                <li key={tab.id}>
-                  <button
-                    type="button"
-                    onClick={() => {
-                      setActiveTab(tab.id)
-                      setMessage(null)
-                      router.replace(settingsPath(tab.id), { scroll: false })
-                    }}
-                    className={`flex w-full items-center gap-2.5 px-3 py-2 text-left text-sm transition-colors ${
-                      isActive
-                        ? "border-l-2 border-primary bg-primary/5 text-primary font-medium pl-[10px]"
-                        : "text-muted-foreground hover:bg-muted hover:text-foreground"
-                    }`}
-                  >
-                    {tab.icon}
-                    {tab.label}
-                  </button>
-                </li>
-              )
-            })}
-          </ul>
-        </nav>
-
-        <div className="flex-1 min-w-0">
-          <div className="border border-[color:var(--hall-rule)] bg-transparent p-5">
+    <div className="hall-counselor settings-hall">
+      <nav className="settings-index" aria-label="Counselor sections">
+        {tabs.map((tab, index) => (
+          <button key={tab.id} type="button"
+            aria-current={activeTab === tab.id ? "page" : undefined}
+            onClick={() => {
+              setActiveTab(tab.id)
+              setMessage(null)
+              if (!preview) router.replace(settingsPath(tab.id), { scroll: false })
+            }}>
+            <span>{String(index + 1).padStart(2, "0")}</span>{tab.label}
+          </button>
+        ))}
+      </nav>
+      {message && <p role="status" className="settings-status" data-error={message.type === "error"}>{message.text}</p>}
+      {activeTab === "transfer" && (
+        <section className="settings-next" aria-labelledby="settings-next-title">
+          <div>
+            <p className="hall-caption">{gap ? "Do this next" : "Your path"}</p>
+            <h2 id="settings-next-title">{gap ?? `${shortSchool(currentSchoolName)} → ${shortSchool(targetSchoolName)}`}</h2>
+            {!gap && <p className="settings-path-meta">{targetMajor} · {expectedTerm}</p>}
+            <p className="settings-prompt">Save your path to refresh Deadlines, Plan, and Requirements.</p>
+            <div className="settings-links">
+              <Link className="hall-ledger-link" href="/dashboard/plan">Open Plan</Link>
+              <Link className="hall-ledger-link" href="/dashboard/requirements">Open Requirements</Link>
+              <Link className="hall-ledger-link" href="/dashboard/deadlines">Open Deadlines</Link>
+            </div>
+          </div>
+          <button type="button" className="union-primary-cta" disabled={saving || !profile} onClick={handleSave}>
+            {saving ? "Saving…" : "Save path"} <span aria-hidden="true">→</span>
+          </button>
+        </section>
+      )}
+      <div className="settings-content">
+        <div className="min-w-0">
+          <div className="settings-sheet">
             {!profile && (
               <p className="text-sm text-destructive mb-4">
                 Profile missing — your account has no saved profile yet, so settings can&apos;t be
@@ -360,71 +403,18 @@ export function SettingsClient({
               </p>
             )}
 
-            {activeTab === "profile" && (
-              <div>
-                <SectionHeader
-                  title="Your profile"
-                  subtitle="This information personalizes your transfer roadmap."
-                />
-                <div className="space-y-4">
-                  <div className="space-y-1.5">
-                    <label htmlFor="full-name" className="block text-sm font-medium text-foreground">
-                      Full name
-                    </label>
-                    <input
-                      id="full-name"
-                      type="text"
-                      value={fullName}
-                      onChange={(e) => setFullName(e.target.value)}
-                      placeholder="Your name"
-                      className="h-9 w-full rounded-none border border-[color:var(--hall-rule)] bg-[color:var(--hall-paper)] px-3 text-sm text-foreground transition-colors placeholder:text-muted-foreground focus:border-[color:var(--hall-ink)] focus:outline-none focus:ring-1 focus:ring-[color:var(--hall-ink)]/20"
-                    />
-                  </div>
-                  <div className="space-y-1.5">
-                    <label htmlFor="email" className="block text-sm font-medium text-foreground">
-                      Email
-                    </label>
-                    <input
-                      id="email"
-                      type="email"
-                      value={auth}
-                      readOnly
-                      className="h-9 w-full cursor-not-allowed rounded-none border border-[color:var(--hall-rule)] bg-[color:var(--hall-ink)]/[0.04] px-3 text-sm text-muted-foreground"
-                    />
-                    <p className="text-xs text-muted-foreground">
-                      Sign-in email (read-only in v1).
-                      {profileEmail && profileEmail !== auth && (
-                        <span className="block mt-1">
-                          Profile also stores: {profileEmail}
-                        </span>
-                      )}
-                    </p>
-                  </div>
-                </div>
-                <div className="mt-6 flex justify-end">
-                  <Button
-                    type="button"
-                    onClick={handleSave}
-                    disabled={saving || !profile}
-                    className="rounded-none bg-[color:var(--hall-ink)] text-[color:var(--hall-paper)] hover:bg-[color:var(--hall-ink)]/90"
-                  >
-                    {saving ? "Saving…" : "Save changes"}
-                  </Button>
-                </div>
-              </div>
-            )}
-
             {activeTab === "transfer" && (
               <div>
                 <SectionHeader
-                  title="Transfer planning"
-                  subtitle="Schools and academics are saved to your profile."
+                  title="Your transfer path"
+                  subtitle="Keep the details that drive your campus up to date."
                 />
 
-                <div className="space-y-4">
+                <div className="settings-field-grid">
                   <div className="space-y-1.5">
                     <label className="block text-sm font-medium text-foreground">Current school</label>
-                    <SchoolSearch
+                    <SettingsSchoolSearch
+                      preview={preview}
                       value={currentSchoolName}
                       selectedId={currentSchoolId}
                       onSelect={(id, name) => {
@@ -440,7 +430,8 @@ export function SettingsClient({
                   </div>
                   <div className="space-y-1.5">
                     <label className="block text-sm font-medium text-foreground">Target school</label>
-                    <SchoolSearch
+                    <SettingsSchoolSearch
+                      preview={preview}
                       universityType="four_year"
                       value={targetSchoolName}
                       selectedId={targetSchoolId}
@@ -477,7 +468,7 @@ export function SettingsClient({
                       onValueChange={(v) => setFieldOfStudy(v as FieldOfStudy)}
                     >
                       <SelectTrigger id="field-of-study" className="h-9 w-full rounded-none border-[color:var(--hall-rule)] bg-[color:var(--hall-paper)]">
-                        <SelectValue placeholder="Select field" />
+                        <span>{FIELD_OF_STUDY_OPTIONS.find((option) => option.value === fieldOfStudy)?.label ?? "Select field"}</span>
                       </SelectTrigger>
                       <SelectContent>
                         {FIELD_OF_STUDY_OPTIONS.map((o) => (
@@ -519,9 +510,7 @@ export function SettingsClient({
                       className="h-9 w-full rounded-none border border-[color:var(--hall-rule)] bg-[color:var(--hall-paper)] px-3 text-sm text-foreground transition-colors placeholder:text-muted-foreground focus:border-[color:var(--hall-ink)] focus:outline-none focus:ring-1 focus:ring-[color:var(--hall-ink)]/20"
                     />
                     <p className="text-xs text-muted-foreground">
-                      Quick picks roll forward with the calendar. Use the text field for a label that
-                      doesn’t match the list. Deadlines use Season + Year only when the value parses
-                      (e.g. Fall 2026).
+                      Choose an intake or enter a custom term, e.g. Fall 2027.
                     </p>
                   </div>
                   <div className="space-y-1.5">
@@ -555,33 +544,42 @@ export function SettingsClient({
                       className="h-9 w-full rounded-none border border-[color:var(--hall-rule)] bg-[color:var(--hall-paper)] px-3 text-sm text-foreground transition-colors placeholder:text-muted-foreground focus:border-[color:var(--hall-ink)] focus:outline-none focus:ring-1 focus:ring-[color:var(--hall-ink)]/20"
                     />
                   </div>
+                  <div className="space-y-1.5">
+                    <label htmlFor="full-name" className="block text-sm font-medium text-foreground">
+                      Full name
+                    </label>
+                    <input
+                      id="full-name"
+                      type="text"
+                      value={fullName}
+                      onChange={(e) => setFullName(e.target.value)}
+                      placeholder="Your name"
+                      className="h-9 w-full rounded-none border border-[color:var(--hall-rule)] bg-[color:var(--hall-paper)] px-3 text-sm text-foreground transition-colors placeholder:text-muted-foreground focus:border-[color:var(--hall-ink)] focus:outline-none focus:ring-1 focus:ring-[color:var(--hall-ink)]/20"
+                    />
+                  </div>
+                  <div className="space-y-1.5">
+                    <label htmlFor="email" className="block text-sm font-medium text-foreground">
+                      Email
+                    </label>
+                    <input
+                      id="email"
+                      type="email"
+                      value={auth}
+                      readOnly
+                      className="h-9 w-full cursor-not-allowed rounded-none border border-[color:var(--hall-rule)] bg-[color:var(--hall-ink)]/[0.04] px-3 text-sm text-muted-foreground"
+                    />
+                    <p className="text-xs text-muted-foreground">
+                      Sign-in email · read-only.
+                      {profileEmail && profileEmail !== auth && (
+                        <span className="block mt-1">
+                          Profile also stores: {profileEmail}
+                        </span>
+                      )}
+                    </p>
+                  </div>
                 </div>
 
-                <Divider />
-
-                <div className="border border-[color:var(--hall-rule)] bg-[color:var(--hall-ink)]/[0.03] p-4">
-                  <p className="text-sm font-medium text-foreground mb-1">Courses</p>
-                  <p className="text-sm text-muted-foreground mb-3">
-                    Courses are managed from onboarding and your plan.
-                  </p>
-                  <Link
-                    href="/dashboard/plan"
-                    className="text-sm text-primary font-medium hover:underline"
-                  >
-                    Open plan →
-                  </Link>
-                </div>
-
-                <div className="mt-6 flex justify-end">
-                  <Button
-                    type="button"
-                    onClick={handleSave}
-                    disabled={saving || !profile}
-                    className="rounded-none bg-[color:var(--hall-ink)] text-[color:var(--hall-paper)] hover:bg-[color:var(--hall-ink)]/90"
-                  >
-                    {saving ? "Saving…" : "Save changes"}
-                  </Button>
-                </div>
+                <p className="settings-course-note">Planning your courses? <Link href="/dashboard/plan" className="hall-ledger-link">Open Plan →</Link></p>
               </div>
             )}
 
@@ -697,7 +695,7 @@ export function SettingsClient({
                       <div className="flex flex-wrap items-center gap-3">
                         <Button
                           type="submit"
-                          disabled={passwordSaving}
+                          disabled={passwordSaving || preview}
                           className="rounded-none bg-[color:var(--hall-ink)] text-[color:var(--hall-paper)] hover:bg-[color:var(--hall-ink)]/90"
                         >
                           {passwordSaving ? "Updating…" : "Update password"}
@@ -745,6 +743,7 @@ export function SettingsClient({
                   type="button"
                   variant="outline"
                   onClick={handleSignOut}
+                  disabled={preview}
                   className="gap-2 rounded-none border-[color:var(--hall-rule)]"
                 >
                   <LogOut className="h-4 w-4" />
@@ -897,13 +896,7 @@ export function SettingsClient({
               </div>
             )}
 
-            {message && (
-              <p
-                className={`mt-4 text-sm ${message.type === "success" ? "text-chart-2" : "text-destructive"}`}
-              >
-                {message.text}
-              </p>
-            )}
+
           </div>
         </div>
       </div>

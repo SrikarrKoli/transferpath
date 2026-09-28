@@ -8,11 +8,11 @@ import { HallPlan } from "@/components/campus-ui/hall-plan"
 import { HallRequirements } from "@/components/campus-ui/hall-requirements"
 import { ReadinessScoreSheet } from "@/components/dashboard/readiness-score-sheet"
 import { HallChecklist } from "@/components/campus-ui/hall-checklist"
-import { HallCounselor } from "@/components/campus-ui/hall-counselor"
+import { SettingsClient } from "@/components/dashboard/settings-client"
 import { EssayWorkspaceUi } from "@/components/dashboard/essay-workspace-ui"
 import {
   previewChecklist,
-  previewCounselor,
+  previewSettingsProfile,
   previewDeadlines,
   previewEssay,
   previewPlan,
@@ -23,7 +23,7 @@ import {
 
 export function HallPreviewBody({ buildingId }: { buildingId: BuildingId }) {
   return (
-    <ImmersiveBuildingShell buildingId={buildingId}>
+    <ImmersiveBuildingShell buildingId={buildingId} purpose={buildingId === "counselor" ? "settings" : undefined}>
       {buildingId === "quad" ? (
         <HallDeadlines
           data={previewDeadlines}
@@ -86,7 +86,7 @@ export function HallPreviewBody({ buildingId }: { buildingId: BuildingId }) {
           onToggle={() => undefined}
         />
       ) : (
-        <HallCounselor fields={previewCounselor} />
+        <SettingsClient preview profile={previewSettingsProfile} authEmail={previewSettingsProfile.email} authInfo={{ hasEmailPassword: true, oauthProviderIds: [] }} />
       )}
     </ImmersiveBuildingShell>
   )
