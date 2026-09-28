@@ -22,7 +22,7 @@ export function ImmersiveBuildingShell({
     purpose === "onboarding"
       ? "Set your current school, targets, courses, and timeline here. That unlocks deadlines and requirements across campus."
       : purpose === "settings"
-        ? "Update schools, major, term, and reminders. Changes show up in Deadlines, Plan, and Requirements right away."
+        ? "Update your transfer details and reminders. Save your path to update Deadlines, Plan, and Requirements on your next view."
         : null
 
   const isOnboarding = purpose === "onboarding"
