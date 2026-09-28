@@ -5683,14 +5683,14 @@ nextjs-portal,
 
 /* Rec Center: weakest recorded measure leads the shared instrument. */
 .readiness-next {
-  padding-bottom: 1.25rem;
+  padding-bottom: 1rem;
   border-bottom: 1px solid var(--hall-ink);
 }
 
 .readiness-next-title {
-  margin: 0.65rem 0 0.7rem;
+  margin: 0.5rem 0 0.6rem;
   color: var(--hall-ink);
-  font-size: clamp(2.25rem, 4.5vw, 4rem);
+  font-size: clamp(2.25rem, 4.2vw, 3.75rem);
   font-weight: 550;
   line-height: 1.05;
   letter-spacing: -0.045em;
@@ -5709,7 +5709,8 @@ nextjs-portal,
 }
 
 .readiness-next-actions {
-  margin-top: 1.25rem;
+  margin-top: 0.9rem;
+  align-items: center;
 }
 
 .campus-entered[data-building="gym"] .readiness-route-line {
@@ -5721,7 +5722,7 @@ nextjs-portal,
 
 .readiness-score-sheet .readiness-sheet-heading {
   min-height: 0;
-  padding: 1rem 0;
+  padding: 0.85rem 0;
   gap: 1.5rem;
   align-items: center;
   border: 0;
@@ -5761,7 +5762,7 @@ nextjs-portal,
 }
 
 .campus-entered[data-building="gym"] .readiness-column-headings {
-  grid-template-columns: minmax(12rem, 1fr) 6rem 7rem 5rem;
+  grid-template-columns: minmax(12rem, 1fr) 6rem 7rem 7rem;
   padding: 0.65rem 0 0.65rem 3rem;
   font-size: 0.65rem;
   color: var(--hall-stone);
@@ -5769,7 +5770,7 @@ nextjs-portal,
 }
 
 .campus-entered[data-building="gym"] .readiness-register li {
-  grid-template-columns: 2rem minmax(12rem, 1fr) 6rem 7rem 5rem;
+  grid-template-columns: 2rem minmax(12rem, 1fr) 6rem 7rem 7rem;
   min-height: 0;
   padding: 0.55rem 0;
   border-color: var(--hall-rule);
@@ -5834,4 +5835,33 @@ nextjs-portal,
     grid-template-columns: 1fr;
     gap: 0.4rem;
   }
+}
+
+/* Keep the selection rule and score interpretation beside the decisions they explain. */
+.readiness-next-rationale {
+  margin-top: 0.4rem;
+  color: var(--hall-stone);
+  font-size: 0.8rem;
+  line-height: 1.4;
+}
+
+.readiness-gap-note {
+  display: block;
+  margin-top: 0.2rem;
+  color: var(--hall-stone);
+  font-size: 0.7rem;
+  font-weight: 400;
+}
+
+.readiness-score-sheet .readiness-sheet-heading .readiness-trust-gloss {
+  margin-top: 0.35rem;
+  color: var(--hall-ink);
+  font-size: 0.8rem;
+  line-height: 1.4;
+}
+
+.readiness-score-sheet .readiness-register .readiness-row-weight {
+  color: var(--hall-ink);
+  font-size: 1rem;
+  font-weight: 700;
 }
