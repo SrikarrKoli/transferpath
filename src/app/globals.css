@@ -5870,7 +5870,7 @@ nextjs-portal,
 .settings-hall { color: var(--hall-ink); }
 .settings-hall .settings-index { display: flex; flex-wrap: wrap; align-items: baseline; gap: 1.5rem; padding: 0 0 0.45rem; border-bottom: 1px solid var(--hall-rule); }
 .settings-index button { font-size: 0.82rem; color: var(--hall-stone); padding: 0.3rem 0; cursor: pointer; border-bottom: 1px solid transparent; }
-.settings-index button:first-child { margin-right: auto; font-weight: 600; color: var(--hall-ink); }
+.settings-index button:first-child { font-weight: 600; color: var(--hall-ink); }
 .settings-index button[aria-current] { color: var(--hall-ink); border-bottom-color: var(--hall-ink); }
 .settings-next { display: flex; align-items: center; justify-content: space-between; gap: 2rem; padding: 0.85rem 0 1rem; }
 .settings-next h2 { font-family: var(--font-fraunces), Georgia, serif; font-size: clamp(2rem, 3vw, 2.8rem); line-height: 1.12; margin: 0.45rem 0; font-weight: 400; }
@@ -5892,7 +5892,6 @@ nextjs-portal,
 .settings-status[data-error="true"] { color: var(--hall-clay); }
 @media (max-width: 640px) {
   .settings-hall .settings-index { gap: 0.6rem 1rem; }
-  .settings-index button:first-child { flex-basis: 100%; text-align: left; }
   .settings-next { align-items: flex-start; flex-direction: column; gap: 1rem; }
   .settings-sheet { padding: 1rem; }
   .settings-field-grid { grid-template-columns: 1fr; }
@@ -5942,7 +5941,7 @@ nextjs-portal,
 /* Settings: a compact masthead and one consistent academic record. */
 .campus-entered[data-purpose="settings"] .hall-masthead { margin-bottom: 0.75rem; }
 .settings-hall .settings-field-grid { gap: 0.8rem 2rem; }
-.settings-hall .settings-program-fields { grid-template-columns: 1.15fr 1fr; }
+.settings-hall .settings-program-fields { grid-template-columns: repeat(2, minmax(0, 1fr)); }
 .settings-hall label[for="major"] { font-weight: 650; }
 .settings-hall label[for="field-of-study"] { color: var(--settings-secondary); font-weight: 400; }
 .settings-hall .settings-major-note { margin-top: 0.4rem; }
@@ -5959,9 +5958,19 @@ nextjs-portal,
   .settings-hall .settings-program-fields { grid-template-columns: 1fr; }
 }
 
-.settings-hall .settings-metrics { grid-column: 1 / -1; display: grid; grid-template-columns: 2fr 1fr 1fr; gap: 1rem 2rem; align-items: start; }
+.settings-hall .settings-metrics { grid-column: 1 / -1; display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 1rem 2rem; align-items: start; }
 .settings-hall .settings-metrics .settings-term-row { grid-column: auto; grid-template-columns: 1fr; gap: 0; }
 .settings-hall .settings-metrics .settings-term-toggle { padding: 0.35rem 0 0; }
 @media (max-width: 640px) {
   .settings-hall .settings-metrics { grid-template-columns: 1fr; }
 }
+
+/* Keep program guidance and correction in the shared column rhythm. */
+.settings-hall .settings-index button { color: var(--settings-secondary); }
+.settings-hall .settings-index button[aria-current] { color: var(--hall-ink); }
+.settings-hall .settings-program-warning { margin-top: 0.75rem; padding: 0.8rem 1rem; border-left: 3px solid var(--hall-clay); background: color-mix(in srgb, var(--hall-clay) 9%, var(--hall-paper)); }
+.settings-hall .settings-program-warning p { color: var(--hall-ink); font-size: 0.875rem; font-weight: 500; }
+.settings-hall .settings-program-warning button { height: auto; margin-top: 0.45rem; color: var(--hall-ink); font-size: 0.8rem; text-decoration: underline; text-underline-offset: 3px; cursor: pointer; }
+.settings-hall .settings-save-detail { font-size: 0.8rem; line-height: 1.5; margin: 0; }
+.settings-hall .settings-save-foot { gap: 1.5rem; }
+.settings-hall .settings-save-foot .union-primary-cta { flex-shrink: 0; }

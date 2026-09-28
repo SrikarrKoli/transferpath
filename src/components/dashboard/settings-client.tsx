@@ -151,6 +151,13 @@ export function SettingsClient({
   const [fieldOfStudy, setFieldOfStudy] = useState<FieldOfStudy>(
     fieldOfStudyOrDefault(profile?.field_of_study)
   )
+  const majorSoundsEngineering = /\bengineer/i.test(targetMajor)
+  const programMismatch = majorSoundsEngineering && fieldOfStudy === "stem_non_engineering"
+    ? "Major sounds like engineering — switch Field to Engineering, or edit the major."
+    : targetMajor.trim() && !majorSoundsEngineering && fieldOfStudy === "stem_engineering"
+      ? "Major doesn’t sound like engineering — check the Engineering field, or edit the major."
+      : null
+  const saveScope = "Save path includes schools, program, term, GPA, credits, and your name."
   const [customTerm, setCustomTerm] = useState(false)
   const [expectedTerm, setExpectedTerm] = useState(profile?.expected_transfer_term ?? "")
   const [gpaInput, setGpaInput] = useState(
@@ -391,7 +398,7 @@ export function SettingsClient({
             {gap && <p className="hall-caption">Do this next</p>}
             <h2 id="settings-next-title">{gap ?? `${shortSchool(currentSchoolName)} → ${shortSchool(targetSchoolName)}`}</h2>
             {!gap && <p className="settings-path-meta">{targetMajor} · {expectedTerm}</p>}
-            {hasEdits && <p className="settings-prompt">Saving updates Deadlines, Plan, and Requirements on your next view.</p>}
+            {hasEdits && <p className="settings-prompt">{saveScope}</p>}
           </div>
           <div className="settings-save-ask">
             <p className="settings-save-status" role="status">{saveStatus}</p>
@@ -462,6 +469,7 @@ export function SettingsClient({
                     </label>
                     <input
                       id="major"
+                      aria-describedby={programMismatch ? "program-note program-warning" : "program-note"}
                       type="text"
                       value={targetMajor}
                       onChange={(e) => setTargetMajor(e.target.value)}
@@ -477,7 +485,7 @@ export function SettingsClient({
                       value={fieldOfStudy}
                       onValueChange={(v) => setFieldOfStudy(v as FieldOfStudy)}
                     >
-                      <SelectTrigger id="field-of-study" className="h-9 w-full rounded-none border-[color:var(--hall-rule)] bg-[color:var(--hall-paper)]">
+                      <SelectTrigger aria-describedby={programMismatch ? "program-note program-warning" : "program-note"} id="field-of-study" className="h-9 w-full rounded-none border-[color:var(--hall-rule)] bg-[color:var(--hall-paper)]">
                         <span>{FIELD_OF_STUDY_OPTIONS.find((option) => option.value === fieldOfStudy)?.label ?? "Select field"}</span>
                       </SelectTrigger>
                       <SelectContent>
@@ -490,7 +498,13 @@ export function SettingsClient({
                     </Select>
                   </div>
                     </div>
-                    <p className="settings-major-note">Apply for your major; your field guides requirement suggestions.</p>
+                    <p id="program-note" className="settings-major-note">Apply for your major; your field guides requirement suggestions.</p>
+                    {programMismatch && (
+                      <div className="settings-program-warning" role="alert" id="program-warning">
+                        <p>{programMismatch}</p>
+                        {majorSoundsEngineering && <button type="button" onClick={() => setFieldOfStudy("stem_engineering")}>Use Engineering field →</button>}
+                      </div>
+                    )}
                   </fieldset>
                   <div className="settings-metrics">
                   <div className="settings-term-row">
@@ -606,7 +620,7 @@ export function SettingsClient({
 
                 <div className="settings-save-foot">
                   <div>
-                    <p className="settings-save-status" role="status">{saveStatus}</p>
+                    <p className="settings-save-detail">{saveScope}</p>
                   </div>
                   {hasEdits && <button type="button" className="union-primary-cta" disabled={saving || !profile} onClick={handleSave}>
                     {saving ? "Saving…" : "Save path"} <span aria-hidden="true">→</span>
