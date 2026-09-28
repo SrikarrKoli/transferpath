@@ -5882,13 +5882,13 @@ nextjs-portal,
 .settings-hall button:disabled { opacity: 0.5; cursor: not-allowed; }
 .settings-sheet { border: 1px solid var(--hall-rule); padding: 1.3rem 1.5rem; }
 .settings-field-grid { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 1rem 2rem; }
-.settings-field-grid > div:nth-child(5) { grid-column: 1 / -1; display: grid; grid-template-columns: 1fr 1fr; gap: 0.4rem 2rem; }
-.settings-field-grid > div:nth-child(5) > label, .settings-field-grid > div:nth-child(5) > p { grid-column: 1 / -1; }
+.settings-hall .settings-term-row { grid-column: 1 / -1; display: grid; grid-template-columns: 1fr 1fr; gap: 0.5rem 2rem; }
+.settings-hall .settings-term-row > p { grid-column: 1 / -1; }
 .settings-field-grid label { font-size: 0.65rem; text-transform: uppercase; letter-spacing: 0.12em; color: var(--hall-stone); font-weight: 500; }
 .settings-field-grid input, .settings-field-grid select, .settings-field-grid [data-slot="select-trigger"] { height: 2.5rem; width: 100%; border-radius: 0; box-shadow: none; border: 1px solid var(--hall-rule); background: transparent; color: var(--hall-ink); font-size: 0.875rem; }
 .settings-field-grid select { padding: 0 0.75rem; }
 .settings-field-grid p { font-size: 0.72rem; color: var(--hall-stone); }
-.settings-course-note { border-top: 1px solid var(--hall-rule); padding-top: 0.8rem; margin-top: 1rem; font-size: 0.8rem; color: var(--hall-stone); }
+
 .settings-status { padding: 0.8rem 1rem; margin-top: 1rem; border: 1px solid var(--hall-rule); font-size: 0.875rem; }
 .settings-status[data-error="true"] { color: var(--hall-clay); }
 @media (max-width: 640px) {
@@ -5897,5 +5897,32 @@ nextjs-portal,
   .settings-next { align-items: flex-start; flex-direction: column; gap: 1rem; }
   .settings-sheet { padding: 1rem; }
   .settings-field-grid { grid-template-columns: 1fr; }
-  .settings-field-grid > div:nth-child(5) { display: block; }
+  .settings-hall .settings-term-row { grid-template-columns: 1fr; }
+  .settings-hall .settings-you, .settings-hall .settings-you-fields { grid-template-columns: 1fr; }
+  .settings-hall .settings-save-foot { align-items: flex-start; gap: 1rem; flex-direction: column; }
+}
+
+/* Counselor edit completion and identity strip. */
+.settings-hall { --settings-secondary: color-mix(in srgb, var(--hall-ink) 72%, var(--hall-paper)); }
+.settings-hall .settings-field-grid label,
+.settings-hall .settings-field-grid p,
+.settings-hall .text-muted-foreground,
+.settings-hall .settings-prompt,
+.settings-hall .hall-caption { color: var(--settings-secondary); }
+.settings-hall .settings-major-note { grid-column: 1 / -1; border-top: 1px solid var(--hall-rule); padding-top: 0.7rem; font-size: 0.8rem; margin-top: -0.25rem; }
+.settings-hall .settings-save-ask { display: flex; flex-direction: column; align-items: flex-start; gap: 0.65rem; }
+.settings-hall .settings-save-status { font-size: 0.8rem; color: var(--settings-secondary); }
+.settings-hall .settings-save-foot { display: flex; justify-content: space-between; align-items: center; border-top: 1px solid var(--hall-rule); margin-top: 1.5rem; padding-top: 1.2rem; }
+.settings-hall .settings-save-foot .union-primary-cta { gap: 2rem; border-radius: 0; }
+.settings-hall .settings-save-detail { color: var(--settings-secondary); font-size: 0.75rem; margin-top: 0.25rem; }
+.settings-hall .settings-you { display: grid; grid-template-columns: 1fr 3fr; gap: 1.5rem; margin-top: 1.5rem; padding: 1.25rem 0; border-top: 1px solid var(--hall-rule); }
+.settings-hall .settings-you-heading h3 { font-family: var(--font-fraunces), Georgia, serif; font-size: 1.5rem; }
+.settings-hall .settings-you-heading p { color: var(--settings-secondary); font-size: 0.75rem; margin-top: 0.3rem; }
+.settings-hall .settings-you-fields { display: grid; grid-template-columns: 1fr 1fr; gap: 1rem 2rem; }
+.settings-hall .settings-you label { display: flex; align-items: center; gap: 0.4rem; color: var(--settings-secondary); font-size: 0.7rem; }
+.settings-hall .settings-you input { height: 2.5rem; }
+.settings-hall .settings-you input[readonly] { background: color-mix(in srgb, var(--hall-ink) 7%, var(--hall-paper)); border-style: dashed; color: var(--settings-secondary); }
+@media (max-width: 640px) {
+  .settings-hall .settings-you, .settings-hall .settings-you-fields { grid-template-columns: 1fr; }
+  .settings-hall .settings-save-foot { align-items: flex-start; gap: 1rem; flex-direction: column; }
 }

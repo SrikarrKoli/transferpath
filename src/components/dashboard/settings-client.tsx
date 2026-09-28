@@ -3,7 +3,7 @@
 import { useEffect, useState } from "react"
 import Link from "next/link"
 import { useRouter } from "next/navigation"
-import { LogOut } from "lucide-react"
+import { LockKeyhole, LogOut } from "lucide-react"
 import { SchoolSearch, type SchoolSearchProps } from "@/components/onboarding/school-search"
 import { Button } from "@/components/ui/button"
 import {
@@ -159,6 +159,20 @@ export function SettingsClient({
     profile?.credits_completed != null ? String(profile.credits_completed) : ""
   )
 
+  const pathSnapshot = JSON.stringify({
+    currentSchoolId, targetSchoolId, targetMajor, fieldOfStudy, expectedTerm, gpaInput, creditsInput,
+  })
+  const [savedPath, setSavedPath] = useState(pathSnapshot)
+  const [savedName, setSavedName] = useState(fullName)
+  const [hasSavedPath, setHasSavedPath] = useState(false)
+  const pathDirty = pathSnapshot !== savedPath
+  const nameDirty = fullName !== savedName
+  const saveStatus = saving ? "Saving path…"
+    : pathDirty ? "Unsaved path edits"
+    : nameDirty ? "Unsaved name edit"
+    : hasSavedPath ? "Path saved — halls will refresh."
+    : "All changes saved"
+
   /** DB NULL means opted in; only explicit false opts out (matches `coalesce` in SQL + cron recipients). */
   const [notifyDeadline, setNotifyDeadline] = useState(
     profile?.notify_deadline_reminders ?? true
@@ -193,8 +207,12 @@ export function SettingsClient({
   }
 
   async function handleSave() {
+    if (saving) return
     if (preview) {
-      setMessage({ type: "success", text: "Preview changes saved locally for this visit." })
+      setSavedPath(pathSnapshot)
+      setSavedName(fullName)
+      setHasSavedPath(true)
+      setMessage(null)
       return
     }
     if (!profile) {
@@ -226,10 +244,9 @@ export function SettingsClient({
       return
     }
 
-    setMessage({
-      type: "success",
-      text: "Saved. Your deadlines, plan, and requirements will refresh on the next view.",
-    })
+    setSavedPath(pathSnapshot)
+    setSavedName(fullName)
+    setHasSavedPath(true)
     router.refresh()
   }
 
@@ -384,9 +401,12 @@ export function SettingsClient({
               <Link className="hall-ledger-link" href="/dashboard/deadlines">Open Deadlines</Link>
             </div>
           </div>
+          <div className="settings-save-ask">
           <button type="button" className="union-primary-cta" disabled={saving || !profile} onClick={handleSave}>
             {saving ? "Saving…" : "Save path"} <span aria-hidden="true">→</span>
           </button>
+            <p className="settings-save-status" role="status">{saveStatus}</p>
+          </div>
         </section>
       )}
       <div className="settings-content">
@@ -482,8 +502,10 @@ export function SettingsClient({
                       {FIELD_OF_STUDY_OPTIONS.find((x) => x.value === fieldOfStudy)?.helper}
                     </p>
                   </div>
-                  <div className="space-y-1.5">
-                    <label htmlFor="term" className="block text-sm font-medium text-foreground">
+                  <p className="settings-major-note">Major is what you apply for · Field tunes requirement suggestions.</p>
+                  <div className="settings-term-row">
+                    <div className="space-y-1.5">
+                    <label htmlFor="term-select" className="block text-sm font-medium text-foreground">
                       Expected transfer term
                     </label>
                     <Select
@@ -501,16 +523,21 @@ export function SettingsClient({
                         ))}
                       </SelectContent>
                     </Select>
+                    </div>
+                    <div className="space-y-1.5">
+                    <label htmlFor="term" className="block text-sm font-medium text-foreground">Or type a custom term</label>
                     <input
                       id="term"
+                      aria-describedby="term-help"
                       type="text"
                       value={expectedTerm}
                       onChange={(e) => setExpectedTerm(e.target.value)}
                       placeholder="Custom term if yours isn’t listed (saved as typed)"
                       className="h-9 w-full rounded-none border border-[color:var(--hall-rule)] bg-[color:var(--hall-paper)] px-3 text-sm text-foreground transition-colors placeholder:text-muted-foreground focus:border-[color:var(--hall-ink)] focus:outline-none focus:ring-1 focus:ring-[color:var(--hall-ink)]/20"
                     />
-                    <p className="text-xs text-muted-foreground">
-                      Choose an intake or enter a custom term, e.g. Fall 2027.
+                    </div>
+                    <p id="term-help" className="text-xs text-muted-foreground">
+                      Picking an intake fills the custom field; typing there replaces the picked term.
                     </p>
                   </div>
                   <div className="space-y-1.5">
@@ -544,42 +571,17 @@ export function SettingsClient({
                       className="h-9 w-full rounded-none border border-[color:var(--hall-rule)] bg-[color:var(--hall-paper)] px-3 text-sm text-foreground transition-colors placeholder:text-muted-foreground focus:border-[color:var(--hall-ink)] focus:outline-none focus:ring-1 focus:ring-[color:var(--hall-ink)]/20"
                     />
                   </div>
-                  <div className="space-y-1.5">
-                    <label htmlFor="full-name" className="block text-sm font-medium text-foreground">
-                      Full name
-                    </label>
-                    <input
-                      id="full-name"
-                      type="text"
-                      value={fullName}
-                      onChange={(e) => setFullName(e.target.value)}
-                      placeholder="Your name"
-                      className="h-9 w-full rounded-none border border-[color:var(--hall-rule)] bg-[color:var(--hall-paper)] px-3 text-sm text-foreground transition-colors placeholder:text-muted-foreground focus:border-[color:var(--hall-ink)] focus:outline-none focus:ring-1 focus:ring-[color:var(--hall-ink)]/20"
-                    />
-                  </div>
-                  <div className="space-y-1.5">
-                    <label htmlFor="email" className="block text-sm font-medium text-foreground">
-                      Email
-                    </label>
-                    <input
-                      id="email"
-                      type="email"
-                      value={auth}
-                      readOnly
-                      className="h-9 w-full cursor-not-allowed rounded-none border border-[color:var(--hall-rule)] bg-[color:var(--hall-ink)]/[0.04] px-3 text-sm text-muted-foreground"
-                    />
-                    <p className="text-xs text-muted-foreground">
-                      Sign-in email · read-only.
-                      {profileEmail && profileEmail !== auth && (
-                        <span className="block mt-1">
-                          Profile also stores: {profileEmail}
-                        </span>
-                      )}
-                    </p>
-                  </div>
                 </div>
 
-                <p className="settings-course-note">Planning your courses? <Link href="/dashboard/plan" className="hall-ledger-link">Open Plan →</Link></p>
+                <div className="settings-save-foot">
+                  <div>
+                    <p className="settings-save-status" role="status">{saveStatus}</p>
+                    <p className="settings-save-detail">{preview ? "Preview saves last for this visit." : "Updates Deadlines, Plan, and Requirements."}</p>
+                  </div>
+                  <button type="button" className="union-primary-cta" disabled={saving || !profile} onClick={handleSave}>
+                    {saving ? "Saving…" : "Save path"} <span aria-hidden="true">→</span>
+                  </button>
+                </div>
               </div>
             )}
 
@@ -898,6 +900,50 @@ export function SettingsClient({
 
 
           </div>
+          {activeTab === "transfer" && (
+            <section className="settings-you" aria-labelledby="settings-you-title">
+              <div className="settings-you-heading">
+                <h3 id="settings-you-title">You</h3>
+                <p>Your name is saved with your path.</p>
+              </div>
+              <div className="settings-you-fields">
+                  <div className="space-y-1.5">
+                    <label htmlFor="full-name" className="block text-sm font-medium text-foreground">
+                      Full name
+                    </label>
+                    <input
+                      id="full-name"
+                      type="text"
+                      value={fullName}
+                      onChange={(e) => setFullName(e.target.value)}
+                      placeholder="Your name"
+                      className="h-9 w-full rounded-none border border-[color:var(--hall-rule)] bg-[color:var(--hall-paper)] px-3 text-sm text-foreground transition-colors placeholder:text-muted-foreground focus:border-[color:var(--hall-ink)] focus:outline-none focus:ring-1 focus:ring-[color:var(--hall-ink)]/20"
+                    />
+                  </div>
+                  <div className="space-y-1.5">
+                    <label htmlFor="email" className="block text-sm font-medium text-foreground">
+                      <LockKeyhole size={12} aria-hidden="true" /> Sign-in email · read-only
+                    </label>
+                    <input
+                      id="email"
+                      type="email"
+                      value={auth}
+                      readOnly
+                      className="h-9 w-full cursor-not-allowed rounded-none border border-[color:var(--hall-rule)] bg-[color:var(--hall-ink)]/[0.04] px-3 text-sm text-muted-foreground"
+                    />
+                    <p className="text-xs text-muted-foreground">
+                      Sign-in email · read-only.
+                      {profileEmail && profileEmail !== auth && (
+                        <span className="block mt-1">
+                          Profile also stores: {profileEmail}
+                        </span>
+                      )}
+                    </p>
+                  </div>
+
+              </div>
+            </section>
+          )}
         </div>
       </div>
     </div>
