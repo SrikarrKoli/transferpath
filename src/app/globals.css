@@ -6196,3 +6196,42 @@ nextjs-portal,
 .campus-entered[data-building="library"] .library-word-count {
   color: color-mix(in srgb, var(--hall-ink) 72%, var(--hall-paper));
 }
+
+/* Library: a concrete next prompt and closure beside the manuscript. */
+.campus-entered[data-building="library"] .library-manuscript .library-prompt-tab {
+  color: color-mix(in srgb, var(--hall-ink) 94%, var(--hall-paper));
+}
+.campus-entered[data-building="library"] .library-manuscript .library-prompt-tab.is-active {
+  background: color-mix(in srgb, var(--hall-ink) 8%, var(--hall-paper));
+}
+.campus-entered[data-building="library"] .library-folio-state { font-size: 0.75rem; }
+.campus-entered[data-building="library"] .union-next-block { padding-bottom: 0.65rem; }
+.campus-entered[data-building="library"] .union-step-actions { margin-top: 0.65rem; gap: 1.1rem; }
+.campus-entered[data-building="library"] .union-step-actions .hall-ledger-link { font-size: 0.85rem; }
+.campus-entered[data-building="library"] .library-save-status {
+  color: color-mix(in srgb, var(--hall-ink) 82%, var(--hall-paper));
+}
+.campus-entered[data-building="library"] .library-draft-closure {
+  display: flex;
+  justify-content: space-between;
+  align-items: baseline;
+  flex-wrap: wrap;
+  gap: 0.5rem 1rem;
+  padding-top: 0.65rem;
+}
+.campus-entered[data-building="library"] .library-draft-closure .library-word-count { margin: 0; }
+.campus-entered[data-building="library"] .library-draft-closure .hall-ledger-link { font-size: 0.85rem; }
+.campus-entered[data-building="library"] .library-coach-priority {
+  display: block;
+  margin-bottom: 0.3rem;
+  font-size: 0.75rem;
+  font-weight: 650;
+}
+.campus-entered[data-building="library"] .library-coach-lead { font-weight: 550; }
+.campus-entered[data-building="library"] .library-coach section + section li {
+  color: color-mix(in srgb, var(--hall-ink) 75%, var(--hall-paper));
+}
+.campus-entered[data-building="library"] .hall-draft::selection {
+  background: var(--hall-ink);
+  color: var(--hall-paper);
+}

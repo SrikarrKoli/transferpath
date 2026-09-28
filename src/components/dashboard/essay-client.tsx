@@ -104,6 +104,7 @@ export function EssayClient({ userId, initialEssayMap, profile }: EssayClientPro
   const [saveError, setSaveError] = useState("")
   const [previewOpen, setPreviewOpen] = useState(false)
 
+  const nextPrompt = PROMPT_TYPES.find((prompt) => prompt.id !== activeType && !essayMap[prompt.id]?.content?.trim())
   const currentDef = PROMPT_TYPES.find((p) => p.id === activeType)!
   const currentEssay = essayMap[activeType]
   const content = currentEssay?.content ?? ""
@@ -224,6 +225,7 @@ export function EssayClient({ userId, initialEssayMap, profile }: EssayClientPro
             wordLimitIsDefault: currentEssay?.word_limit == null,
             autosaveLabel: saving ? "Saving…" : dirty ? "Unsaved" : justSaved[activeType] ? "Saved · just now" : content ? "Draft on file" : "No draft yet",
           }}
+          nextPrompt={nextPrompt ? { label: nextPrompt.label, onOpen: () => handleTypeSwitch(nextPrompt.id) } : undefined}
           dirty={dirty}
           value={content}
           onChange={(v) => updateField({ content: v, word_count: countWords(v) })}

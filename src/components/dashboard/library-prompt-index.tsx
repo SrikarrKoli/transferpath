@@ -21,9 +21,7 @@ export function LibraryPromptIndex({ indexRef, activeType, essayMap, onSwitch }:
     <nav ref={indexRef} className="library-prompt-index" aria-label="Essay prompts">
       <div className="library-index-heading">
         <p className="library-index-label hall-caption">Manuscript index</p>
-        <button type="button" className="library-switch-prompt" onClick={(event) => {
-          event.currentTarget.closest("nav")?.querySelector<HTMLButtonElement>('[aria-current="page"]')?.focus()
-        }}>Switch prompt <span aria-hidden="true">↓</span></button>
+
       </div>
       <div className="library-prompt-tabs">
         {LIBRARY_PROMPTS.map((prompt, index) => {
@@ -35,7 +33,7 @@ export function LibraryPromptIndex({ indexRef, activeType, essayMap, onSwitch }:
               <span className="library-folio-number">{String(index + 1).padStart(2, "0")}</span>
               <span>
                 <span className="block">{prompt.label}</span>
-                <span className="library-folio-state">{words ? `${words} / ${essayMap[prompt.id]?.word_limit ?? 650}` : "Not started"}</span>
+                <span className="library-folio-state">{words ? `${words} / ${essayMap[prompt.id]?.word_limit ?? 650} words` : "Not started"}</span>
               </span>
             </button>
           )

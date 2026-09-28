@@ -1,6 +1,7 @@
 "use client"
 
 import { useMemo, useRef, type ReactNode } from "react"
+import Link from "next/link"
 import { Meter } from "@/components/ui/progress"
 import { Provenance } from "@/components/ui/provenance"
 import { cn } from "@/lib/utils"
@@ -38,7 +39,8 @@ export interface EssayWorkspaceUiProps {
   reference?: ReferenceCard
   onPreview?: () => void
   onSave?: () => void
-  onSwitchPrompt?: () => void
+  nextPrompt?: { label: string; onOpen: () => void }
+  checklistHref?: string
   previewLabel?: string
   saveLabel?: string
   dirty?: boolean
@@ -63,7 +65,8 @@ export function EssayWorkspaceUi({
   reference,
   onPreview,
   onSave,
-  onSwitchPrompt,
+  nextPrompt,
+  checklistHref = "/dashboard/checklist",
   previewLabel = "Preview",
   saveLabel = "Save draft",
   dirty = false,
@@ -90,12 +93,13 @@ export function EssayWorkspaceUi({
 
   if (hall) {
     const empty = wordCount === 0
-    const savePrimary = dirty && !empty && !overLimit && !!onSave
-    const nextTitle = empty
-      ? `Start drafting: ${essay.title}`
-      : overLimit
-        ? `Trim to ${essay.wordLimit}: ${essay.title}`
-        : dirty ? `Save your progress: ${essay.title}` : `Keep writing: ${essay.title}`
+    const savePrimary = dirty && !!onSave
+    const openNext = !dirty && !empty && nextPrompt
+    const nextTitle = dirty
+      ? `Save your progress: ${essay.title}`
+      : empty ? `Start drafting: ${essay.title}`
+      : openNext ? `Next prompt: ${openNext.label}`
+      : `Finish this draft: ${essay.title}`
 
     return (
       <div className={className}>
@@ -104,23 +108,15 @@ export function EssayWorkspaceUi({
           <div className="union-step-actions mt-6">
             <button
               type="button"
-              onClick={savePrimary ? onSave : focusDraft}
+              onClick={savePrimary ? onSave : openNext ? openNext.onOpen : focusDraft}
               disabled={savePrimary && saving}
               className="union-primary-cta"
             >
-              {savePrimary ? saving ? "Saving…" : saveLabel : empty ? "Start drafting" : overLimit ? "Edit in the box" : "Write in the box"}
+              {savePrimary ? saving ? "Saving…" : saveLabel : empty ? "Start drafting" : openNext ? `Open ${openNext.label}` : `Edit ${essay.title}`}
             </button>
-            {(overLimit || empty) && dirty && onSave ? (
-              <button type="button" onClick={onSave} disabled={saving} className="hall-ledger-link">
-                {saving ? "Saving…" : saveLabel}
-              </button>
-            ) : null}
-            {onSwitchPrompt ? (
-              <button type="button" onClick={onSwitchPrompt} className="hall-ledger-link">
-                Switch prompt
-              </button>
-            ) : null}
-            <span role="status" className="library-save-status">{essay.autosaveLabel}</span>
+            <span role="status" className="library-save-status">{saving ? "Saving…" : dirty ? "Unsaved" : empty ? "No draft yet" : `${essay.title} · ${wordCount} words on file`}</span>
+            {openNext ? <button type="button" onClick={focusDraft} className="hall-ledger-link">Edit {essay.title}</button> : null}
+            {!dirty && !empty && !nextPrompt ? <Link href={checklistHref} className="hall-ledger-link">Open Checklist</Link> : null}
             {onPreview ? (
               <button type="button" onClick={onPreview} className="hall-ledger-link">
                 {previewLabel}
@@ -144,9 +140,12 @@ export function EssayWorkspaceUi({
               placeholder="Start with one concrete sentence…"
               aria-label="Essay draft"
             />
-            <p className={cn("library-word-count", overLimit && "hall-urgent")}>
-              {wordCount} / {essay.wordLimit}
-            </p>
+            <div className="library-draft-closure">
+              <p className={cn("library-word-count", overLimit && "hall-urgent")}>
+                {wordCount} / {essay.wordLimit} words{overLimit ? " · Over limit" : ""}
+              </p>
+              <Link href={checklistHref} className="hall-ledger-link">Open Checklist</Link>
+            </div>
           </div>
           {coachNotes.length > 0 || strengthSignals.length > 0 ? (
             <aside className="hall-margin library-coach" aria-label="Draft coaching">
@@ -157,6 +156,7 @@ export function EssayWorkspaceUi({
                     const passage = coachPassages[index]
                     const start = passage ? value.indexOf(passage) : -1
                     return <li key={note} className={index === 0 ? "library-coach-lead" : "library-coach-secondary"}>
+                      {index === 0 ? <span className="library-coach-priority">Revise first</span> : null}
                       {note}
                       {start >= 0 ? <button type="button" className="library-passage-link" onClick={() => {
                         focusDraft()
