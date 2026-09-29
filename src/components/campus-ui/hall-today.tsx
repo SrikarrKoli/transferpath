@@ -7,46 +7,19 @@ import { MarkTaskDoneButton } from "@/components/dashboard/overview/mark-task-do
 import { UnionFirstRunCoach } from "@/components/dashboard/overview/union-first-run-coach"
 
 const APPLY_TEXAS_URL = "https://www.goapplytexas.org/"
-const COLLEGE_BOARD_URL = "https://www.commonapp.org/apply"
+const COMMON_APP_URL = "https://www.commonapp.org/apply"
 
 function ApplyPortals() {
   return (
     <section className="union-apply-portals" aria-labelledby="union-apply-heading">
-      <p id="union-apply-heading" className="hall-caption">
-        Ready to apply?
-      </p>
-      <p className="union-apply-lede">
-        Use the portal your target schools require. Most Texas publics use ApplyTexas; many
-        private and out-of-state schools use Common App (College Board).
-      </p>
-      <div className="union-apply-grid">
-        <a
-          href={APPLY_TEXAS_URL}
-          target="_blank"
-          rel="noopener noreferrer"
-          className="union-apply-card"
-        >
-          <span className="union-apply-card-label">ApplyTexas</span>
-          <span className="union-apply-card-hint">Texas public universities</span>
-          <span className="union-apply-card-cta">
-            Open ApplyTexas
-            <span className="sr-only"> (opens in a new tab)</span>
-          </span>
-        </a>
-        <a
-          href={COLLEGE_BOARD_URL}
-          target="_blank"
-          rel="noopener noreferrer"
-          className="union-apply-card"
-        >
-          <span className="union-apply-card-label">College Board · Common App</span>
-          <span className="union-apply-card-hint">Many private & out-of-state schools</span>
-          <span className="union-apply-card-cta">
-            Open Common App
-            <span className="sr-only"> (opens in a new tab)</span>
-          </span>
-        </a>
-      </div>
+      <p id="union-apply-heading" className="hall-caption">Portals</p>
+      <a href={APPLY_TEXAS_URL} target="_blank" rel="noopener noreferrer" className="hall-ledger-link">
+        ApplyTexas<span className="sr-only"> (opens in a new tab)</span>
+      </a>
+      <a href={COMMON_APP_URL} target="_blank" rel="noopener noreferrer" className="hall-ledger-link">
+        Common App<span className="sr-only"> (opens in a new tab)</span>
+      </a>
+      <span className="union-apply-note">Use the portal your target school requires.</span>
     </section>
   )
 }
@@ -176,9 +149,7 @@ export function HallToday({ data, userId }: { data: OverviewData; userId: string
           )}
         </section>
 
-        <UnionFirstRunCoach />
-
-        <ApplyPortals />
+        {!next ? <UnionFirstRunCoach /> : null}
 
         {data.comingUp.length > 0 ? (
           <section className="hall-strip" aria-labelledby="union-upcoming-heading">
@@ -203,6 +174,8 @@ export function HallToday({ data, userId }: { data: OverviewData; userId: string
             ))}
           </section>
         ) : null}
+
+        <ApplyPortals />
       </div>
 
       <aside className="hall-margin">
@@ -236,9 +209,6 @@ export function HallToday({ data, userId }: { data: OverviewData; userId: string
           </Link>
           <Link href="/dashboard/requirements" className="hall-ledger-link">
             Open Requirements
-          </Link>
-          <Link href="/dashboard/deadlines" className="hall-ledger-link">
-            Open Deadlines
           </Link>
         </div>
       </aside>

@@ -92,7 +92,9 @@ function deadlinePrimaryLabel(next: NonNullable<NextDeadline>): string {
     return "Open FAFSA"
   }
   if (next.category === "application" || /applytexas|application/.test(title)) {
-    return "Open application page"
+    return /applytexas/i.test(next.officialUrl ?? "")
+      ? "Start ApplyTexas application"
+      : "Start application"
   }
   if (next.category === "housing") return "Open housing page"
   if (next.category === "registration") return "Open registration page"
@@ -122,7 +124,7 @@ function buildNextFromDeadline(
     primaryLabel: officialUrl ? deadlinePrimaryLabel(next) : "View in Tasks & deadlines",
     primaryExternal: Boolean(officialUrl),
     secondaryHref: officialUrl ? "/dashboard/deadlines" : undefined,
-    secondaryLabel: officialUrl ? "Tasks & deadlines" : undefined,
+    secondaryLabel: officialUrl ? "All deadlines" : undefined,
     provenance: deadlineProvenance(next, sourceName),
   }
 }

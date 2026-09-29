@@ -5080,68 +5080,30 @@ nextjs-portal,
   color: var(--hall-ink);
 }
 
-.union-apply-portals {
+.campus-entered[data-building="union"] .union-today .hall-hero-title {
+  max-width: 26ch;
+  padding-bottom: 0;
+  border-bottom: 0;
+}
+
+.union-today .hall-strip {
   margin-top: 1.75rem;
-  padding: 1.15rem 0 0.25rem;
+  border-top: 0;
 }
 
-.union-apply-lede {
-  margin-top: 0.45rem;
-  max-width: 36rem;
-  font-size: 0.92rem;
-  line-height: 1.45;
-  color: color-mix(in oklab, var(--hall-ink) 68%, transparent);
-}
-
-.union-apply-grid {
-  margin-top: 0.9rem;
-  display: grid;
-  grid-template-columns: repeat(2, minmax(0, 1fr));
-  gap: 0.75rem;
-}
-
-@media (max-width: 640px) {
-  .union-apply-grid {
-    grid-template-columns: 1fr;
-  }
-}
-
-.union-apply-card {
+.union-today .union-apply-portals {
   display: flex;
-  flex-direction: column;
-  gap: 0.2rem;
-  border: 1px solid color-mix(in oklab, var(--hall-ink) 22%, transparent);
-  background: color-mix(in oklab, var(--hall-paper) 88%, var(--hall-ink));
-  padding: 0.9rem 1rem;
-  text-decoration: none;
-  color: inherit;
-  transition: border-color 120ms ease, background 120ms ease;
+  flex-wrap: wrap;
+  align-items: baseline;
+  gap: 0.65rem 1.25rem;
+  margin-top: 1.75rem;
+  padding-top: 1rem;
+  border-top: 1px solid var(--hall-rule);
 }
 
-.union-apply-card:hover {
-  border-color: var(--hall-ink);
-  background: var(--hall-paper);
-}
-
-.union-apply-card-label {
-  font-size: 0.98rem;
-  font-weight: 600;
-  color: var(--hall-ink);
-}
-
-.union-apply-card-hint {
+.union-apply-note {
   font-size: 0.8rem;
-  line-height: 1.35;
-  color: color-mix(in oklab, var(--hall-ink) 58%, transparent);
-}
-
-.union-apply-card-cta {
-  margin-top: 0.55rem;
-  font-size: 0.82rem;
-  font-weight: 600;
-  color: var(--hall-ink);
-  text-decoration: underline;
-  text-underline-offset: 3px;
+  color: var(--hall-stone);
 }
 
 /* hall-directory immersive nav */
