@@ -30,7 +30,10 @@ export function OnboardingStep1({ data, updateData, onNext }: Props) {
 
         <div className="space-y-4">
           <div className="space-y-2">
-            <Label>Current school</Label>
+            <div className="flex items-center justify-between">
+              <Label>Current school</Label>
+              <span className="text-sm font-medium leading-none text-[color:var(--hall-stone)]">Optional</span>
+            </div>
             <SchoolSearch
               value={exploring ? "" : data.currentSchool}
               selectedId={data.currentSchoolId || null}
@@ -49,20 +52,14 @@ export function OnboardingStep1({ data, updateData, onNext }: Props) {
           </div>
 
           <div className="space-y-2">
-            <Label>Are you a CAP student?</Label>
-            <p className="text-xs leading-relaxed text-muted-foreground">
-              CAP is UT Austin’s Coordinated Admission Program. Choose No if that is not you.
-            </p>
-            <div className="grid grid-cols-2 gap-2">
+            <div className="flex items-center gap-2">
+              <span className="text-sm font-medium">Are you a CAP student?</span>
               <button
                 type="button"
                 aria-pressed={data.isCapStudent}
                 onClick={() => updateData({ isCapStudent: true })}
-                className={`h-10 rounded-none border px-4 text-sm font-medium transition-colors ${
-                  data.isCapStudent
-                    ? "border-[color:var(--hall-ink)] bg-[color:var(--hall-ink)] text-[color:var(--hall-paper)]"
-                    : "border-[color:var(--hall-ink)] bg-[color:var(--hall-paper)] text-[color:var(--hall-ink)]"
-                }`}
+                className="rounded-none bg-transparent px-[0.7rem] py-[0.35rem] text-sm font-medium text-[color:var(--hall-ink)]"
+                style={{ boxShadow: data.isCapStudent ? "inset 0 -2px 0 var(--hall-ink)" : "none" }}
               >
                 Yes
               </button>
@@ -70,25 +67,19 @@ export function OnboardingStep1({ data, updateData, onNext }: Props) {
                 type="button"
                 aria-pressed={!data.isCapStudent}
                 onClick={() => updateData({ isCapStudent: false })}
-                className={`h-10 rounded-none border px-4 text-sm font-medium transition-colors ${
-                  !data.isCapStudent
-                    ? "border-[color:var(--hall-ink)] bg-[color:var(--hall-ink)] text-[color:var(--hall-paper)]"
-                    : "border-[color:var(--hall-ink)] bg-[color:var(--hall-paper)] text-[color:var(--hall-ink)]"
-                }`}
+                className="rounded-none bg-transparent px-[0.7rem] py-[0.35rem] text-sm font-medium text-[color:var(--hall-ink)]"
+                style={{ boxShadow: !data.isCapStudent ? "inset 0 -2px 0 var(--hall-ink)" : "none" }}
               >
                 No
               </button>
             </div>
-            <p className="text-xs text-muted-foreground">
-              {data.isCapStudent ? "Yes" : "No"} is selected. Choose Yes only if you are in UT Austin’s CAP.
+            <p className="text-xs leading-relaxed text-muted-foreground">
+              UT Austin’s Coordinated Admission Program. Most students leave this as No.
             </p>
           </div>
         </div>
 
         <div className="space-y-3 pt-4">
-          <p className="text-xs text-muted-foreground">
-            Timeline, the last step, is where you create a free account so this setup is saved.
-          </p>
           <button
             type="button"
             className="union-primary-cta w-full"
@@ -101,6 +92,9 @@ export function OnboardingStep1({ data, updateData, onNext }: Props) {
           >
             Next
           </button>
+          <p className="text-xs text-muted-foreground">
+            A free account on Timeline saves this.
+          </p>
         </div>
       </div>
     </div>

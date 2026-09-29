@@ -6425,10 +6425,10 @@ nextjs-portal,
 }
 
 .campus-entered[data-purpose="onboarding"] .hall-steps {
-  margin-bottom: 0.75rem;
+  margin-bottom: 0.85rem;
   font-size: 0.95rem;
   color: var(--hall-ink);
-  gap: 0.35rem 1rem;
+  gap: 0.4rem 1.35rem;
 }
 
 .campus-entered[data-purpose="onboarding"] .hall-step-index {

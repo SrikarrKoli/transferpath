@@ -150,7 +150,7 @@ function SchoolSearchInner({
             if (query.length >= 2 && results.length > 0 && !selectedId) setIsOpen(true)
           }}
           placeholder={placeholder}
-          className={`h-10 w-full rounded-none border ${tone === "ink" ? "border-[color:var(--hall-ink)]" : "border-[color:var(--hall-rule)]"} bg-[color:var(--hall-paper)] pl-9 pr-9 text-sm text-foreground transition-colors placeholder:text-muted-foreground focus:border-[color:var(--hall-ink)] focus:outline-none focus:ring-1 focus:ring-[color:var(--hall-ink)]/20`}
+          className={`w-full rounded-none border ${tone === "ink" ? "h-12 border-[color:var(--hall-ink)]" : "h-10 border-[color:var(--hall-rule)]"} bg-[color:var(--hall-paper)] pl-9 pr-9 text-sm text-foreground transition-colors placeholder:text-muted-foreground focus:border-[color:var(--hall-ink)] focus:outline-none focus:ring-1 focus:ring-[color:var(--hall-ink)]/20`}
         />
         {isLoading && (
           <Loader2 className="absolute right-3 top-1/2 -translate-y-1/2 h-4 w-4 animate-spin text-muted-foreground" />
