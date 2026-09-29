@@ -204,7 +204,8 @@ export function OnboardingClient({ existingSession, embedded = false }: Onboardi
 
   return (
     <div className={embedded ? "flex flex-col" : "flex min-h-screen flex-col bg-background"}>
-      <header className={embedded ? "px-1 pb-4 pt-1" : "px-6 py-6"}>
+      {!embedded && (
+      <header className="px-6 py-6">
         <div className="mx-auto max-w-3xl">
           {embedded ? null : (
             <div className="mb-8 flex items-center justify-center gap-2 text-lg font-medium text-primary">
@@ -272,8 +273,9 @@ export function OnboardingClient({ existingSession, embedded = false }: Onboardi
           )}
         </div>
       </header>
+      )}
 
-      <main className={`flex flex-1 items-start justify-center ${embedded ? "px-1 py-2" : "px-6 py-8"}`}>
+      <main className={`flex flex-1 ${embedded ? "items-start justify-start py-2" : "items-start justify-center px-6 py-8"}`}>
         <div className="w-full max-w-2xl">
           {embedded && (
             <>

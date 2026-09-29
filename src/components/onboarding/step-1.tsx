@@ -24,13 +24,14 @@ export function OnboardingStep1({ data, updateData, onNext }: Props) {
           </p>
           <h1 className="mb-2 text-2xl font-medium text-foreground">Where are you transferring from?</h1>
           <p className="text-muted-foreground">
-            Search your current college, or leave it blank if you are still deciding.
+            Search your current college, or leave it blank if you are still deciding.{" "}
+            Nothing is saved until you create a free account on Timeline, the last step.
           </p>
         </div>
 
         <div className="space-y-4">
           <div className="space-y-2">
-            <div className="flex items-center justify-between">
+            <div className="flex items-center gap-2">
               <Label>Current school</Label>
               <span className="text-sm font-medium leading-none text-[color:var(--hall-stone)]">Optional</span>
             </div>
@@ -52,29 +53,28 @@ export function OnboardingStep1({ data, updateData, onNext }: Props) {
           </div>
 
           <div className="space-y-2">
-            <div className="flex items-center gap-2">
-              <span className="text-sm font-medium">Are you a CAP student?</span>
-              <button
-                type="button"
-                aria-pressed={data.isCapStudent}
-                onClick={() => updateData({ isCapStudent: true })}
-                className="rounded-none bg-transparent px-[0.7rem] py-[0.35rem] text-sm font-medium text-[color:var(--hall-ink)]"
-                style={{ boxShadow: data.isCapStudent ? "inset 0 -2px 0 var(--hall-ink)" : "none" }}
-              >
-                Yes
-              </button>
-              <button
-                type="button"
-                aria-pressed={!data.isCapStudent}
-                onClick={() => updateData({ isCapStudent: false })}
-                className="rounded-none bg-transparent px-[0.7rem] py-[0.35rem] text-sm font-medium text-[color:var(--hall-ink)]"
-                style={{ boxShadow: !data.isCapStudent ? "inset 0 -2px 0 var(--hall-ink)" : "none" }}
-              >
-                No
-              </button>
-            </div>
-            <p className="text-xs leading-relaxed text-muted-foreground">
-              UT Austin’s Coordinated Admission Program. Most students leave this as No.
+            <label className="inline-flex cursor-pointer items-center gap-2 text-sm font-medium text-[color:var(--hall-ink)]">
+              <span className="relative inline-flex h-[18px] w-[18px] shrink-0">
+                <input
+                  type="checkbox"
+                  checked={data.isCapStudent}
+                  onChange={(event) => updateData({ isCapStudent: event.target.checked })}
+                  aria-describedby="cap-description"
+                  className="peer h-[18px] w-[18px] cursor-pointer appearance-none rounded-none border border-[color:var(--hall-ink)] bg-[color:var(--hall-paper)] checked:bg-[color:var(--hall-ink)] focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[color:var(--hall-ink)]"
+                />
+                <svg
+                  aria-hidden="true"
+                  className="pointer-events-none absolute inset-0 hidden h-[18px] w-[18px] text-[color:var(--hall-paper)] peer-checked:block"
+                  viewBox="0 0 18 18"
+                  fill="none"
+                >
+                  <path d="m4 9 3 3 7-7" stroke="currentColor" strokeWidth="1.5" />
+                </svg>
+              </span>
+              I am a CAP student
+            </label>
+            <p id="cap-description" className="text-xs leading-relaxed text-muted-foreground">
+              UT Austin’s Coordinated Admission Program. Leave this unchecked if you are not.
             </p>
           </div>
         </div>
@@ -92,9 +92,6 @@ export function OnboardingStep1({ data, updateData, onNext }: Props) {
           >
             Next
           </button>
-          <p className="text-xs text-muted-foreground">
-            A free account on Timeline saves this.
-          </p>
         </div>
       </div>
     </div>
