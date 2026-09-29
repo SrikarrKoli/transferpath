@@ -1,7 +1,6 @@
 "use client"
 
-import { Fragment, useEffect, useMemo, useRef, useState, type ReactNode } from "react"
-import Link from "next/link"
+import { useEffect, useMemo, useRef, useState, type ReactNode } from "react"
 import { Meter } from "@/components/ui/progress"
 import { Provenance } from "@/components/ui/provenance"
 import { cn } from "@/lib/utils"
@@ -64,7 +63,6 @@ export function EssayWorkspaceUi({
   reference,
   onPreview,
   onSave,
-  checklistHref = "/dashboard/checklist",
   previewLabel = "Preview",
   saveLabel = "Save draft",
   dirty = false,
@@ -84,7 +82,7 @@ export function EssayWorkspaceUi({
   const overLimit = wordCount > essay.wordLimit
   const hall = useHall()
   const draftRefs = useRef<(HTMLDivElement | null)[]>([])
-  // Keep chunk boundaries and the revision bar stable while a passage is being rewritten.
+  // Keep chunk boundaries and the revision margin stable while a passage is being rewritten.
   const [draft, setDraft] = useState(() => ({ value, chunks: value.split(/\n\s*\n/), revisionIndex: 0 }))
   const chunks = draft.value === value ? draft.chunks : value.split(/\n\s*\n/)
   const passageIndex = chunks.findIndex((chunk) => coachPassages[0] && chunk.includes(coachPassages[0]))
@@ -140,26 +138,10 @@ export function EssayWorkspaceUi({
         {settingsSlot ? <div className="mt-4">{settingsSlot}</div> : null}
         <div className="library-working-band">
           <div id="library-essay-draft" className="library-writing-field library-editor">
-            {chunks.map((chunk, index) => <Fragment key={index}>
-              {index === revisionIndex ? <div className="library-revision-bar" contentEditable={false}>
-                <button
-                  type="button"
-                  onClick={savePrimary ? onSave : () => focusDraft(markedPassage)}
-                  disabled={savePrimary && saving}
-                  className="union-primary-cta"
-                  aria-controls={`library-essay-paragraph-${revisionIndex}`}
-                >
-                  {savePrimary ? saving ? "Saving…" : "Save draft" : empty ? "Start drafting" : markedPassage ? "Edit this line" : `Edit ${essay.title}`}
-                </button>
-                <span role="status" className={cn("library-save-status", overLimit && "hall-urgent")}>
-                  {saving ? "Saving…" : dirty ? "Unsaved" : empty ? "No draft yet" : `Saved · ${wordStatus}`}
-                  {overLimit ? " · Over limit" : ""}
-                </span>
-                {onPreview ? (
-                  <button type="button" onClick={onPreview} className="hall-ledger-link">{previewLabel}</button>
-                ) : null}
-              </div> : null}
+            {chunks.map((chunk, index) => (
               <div
+                key={index}
+                style={{ gridRow: index + 1 }}
                 id={`library-essay-paragraph-${index}`}
                 ref={(surface) => { draftRefs.current[index] = surface }}
                 contentEditable="plaintext-only"
@@ -178,18 +160,39 @@ export function EssayWorkspaceUi({
                 aria-label={`Essay draft, paragraph ${index + 1}`}
                 spellCheck
               />
-            </Fragment>)}
+            ))}
           </div>
-          {coachNotes.length > 0 || strengthSignals.length > 0 ? (
-            <aside className="hall-margin library-coach" aria-label="Draft coaching">
+          <aside className="hall-margin library-coach" style={{ gridRow: `${revisionIndex + 1} / span ${chunks.length - revisionIndex}` }} aria-label="Draft revision and coaching">
+<div className="library-revision-bar">
+                <span className="hall-caption">Revise first</span>
+                <button
+                  type="button"
+                  onClick={savePrimary ? onSave : () => focusDraft(markedPassage)}
+                  disabled={savePrimary && saving}
+                  className="union-primary-cta"
+                  aria-controls={`library-essay-paragraph-${revisionIndex}`}
+                >
+                  {savePrimary ? saving ? "Saving…" : "Save draft" : empty ? "Start drafting" : markedPassage ? "Edit the underlined line" : `Edit ${essay.title}`}
+                </button>
+                <span role="status" className={cn("library-save-status", overLimit && "hall-urgent")}>
+                  {saving ? "Saving…" : dirty ? "Unsaved" : empty ? "No draft yet" : `Saved · ${wordStatus}`}
+                  {overLimit ? " · Over limit" : ""}
+                </span>
+                {!dirty && !empty && essay.title !== "Leadership" ? (
+                  <button type="button" className="hall-ledger-link" onClick={(event) => {
+                    const index = event.currentTarget.closest(".library-manuscript")?.querySelector(".library-prompt-index")
+                    const leadership = Array.from(index?.querySelectorAll<HTMLButtonElement>("button") ?? [])
+                      .find((button) => button.querySelector("span.block")?.textContent === "Leadership")
+                    leadership?.click()
+                  }}>Leadership after this draft</button>
+                ) : null}
+              </div>
               {coachNotes.length > 0 ? (
                 <section>
-                  <h3 className="hall-caption">Coach notes</h3>
                   <ul>{coachNotes.map((note, index) => {
                     const passage = coachPassages[index]
                     const start = passage ? value.indexOf(passage) : -1
                     return <li key={note} className={index === 0 ? "library-coach-lead" : "library-coach-secondary"}>
-                      {index === 0 ? <span className="library-coach-priority">Revise first</span> : null}
                       {note}
                       {start >= 0 ? index === 0 ? <button type="button" className="library-passage-link" onClick={() => {
                         focusDraft(passage)
@@ -205,11 +208,7 @@ export function EssayWorkspaceUi({
                 </section>
               ) : null}
             </aside>
-          ) : null}
         </div>
-        <footer className="library-desk-footer">
-          <Link href={checklistHref} className="hall-ledger-link">Open Checklist</Link>
-        </footer>
       </div>
     )
   }
