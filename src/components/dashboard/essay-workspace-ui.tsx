@@ -1,6 +1,6 @@
 "use client"
 
-import { useMemo, useRef, type ReactNode } from "react"
+import { useEffect, useMemo, useRef, type ReactNode } from "react"
 import Link from "next/link"
 import { Meter } from "@/components/ui/progress"
 import { Provenance } from "@/components/ui/provenance"
@@ -83,22 +83,48 @@ export function EssayWorkspaceUi({
   const pct = Math.min(100, Math.round((wordCount / Math.max(1, essay.wordLimit)) * 100))
   const overLimit = wordCount > essay.wordLimit
   const hall = useHall()
-  const draftRef = useRef<HTMLTextAreaElement>(null)
-  function focusDraft() {
-    draftRef.current?.scrollIntoView({ block: "center" })
-    draftRef.current?.focus({ preventScroll: true })
+  const draftRef = useRef<HTMLDivElement>(null)
+  const markedPassage = coachPassages.find((passage) => passage && value.includes(passage))
+
+  useEffect(() => {
+    if (hall && draftRef.current) renderDraft(draftRef.current, value, markedPassage)
+  }, [hall, value, markedPassage])
+
+  function focusDraft(passage?: string) {
+    const draft = draftRef.current
+    if (!draft) return
+    draft.scrollIntoView({ block: "nearest" })
+    draft.focus({ preventScroll: true })
+    if (!passage) return
+    // Walk the single rendered text copy, including text inside the mark.
+    const start = draft.textContent?.indexOf(passage) ?? -1
+    if (start < 0) return
+    const walker = document.createTreeWalker(draft, NodeFilter.SHOW_TEXT)
+    const range = document.createRange()
+    let offset = 0
+    let started = false
+    while (walker.nextNode()) {
+      const node = walker.currentNode
+      const end = offset + (node.textContent?.length ?? 0)
+      if (!started && start < end) {
+        range.setStart(node, start - offset)
+        started = true
+      }
+      if (started && start + passage.length <= end) {
+        range.setEnd(node, start + passage.length - offset)
+        const selection = window.getSelection()
+        selection?.removeAllRanges()
+        selection?.addRange(range)
+        break
+      }
+      offset = end
+    }
   }
 
   if (hall) {
     const empty = wordCount === 0
-    const savePrimary = dirty && !!onSave
+    const savePrimary = dirty
     const wordStatus = `${wordCount} / ${essay.wordLimit} words`
-    function reviseDraft() {
-      focusDraft()
-      const passage = coachPassages[0]
-      const start = passage ? value.indexOf(passage) : -1
-      if (start >= 0) draftRef.current?.setSelectionRange(start, start + passage.length)
-    }
 
     return (
       <div className={className}>
@@ -109,29 +135,34 @@ export function EssayWorkspaceUi({
             <div className="library-editor-toolbar">
               <button
                 type="button"
-                onClick={savePrimary ? onSave : empty ? focusDraft : reviseDraft}
+                onClick={savePrimary ? onSave : () => focusDraft(markedPassage)}
                 disabled={savePrimary && saving}
                 className="union-primary-cta"
                 aria-controls="library-essay-draft"
               >
-                {savePrimary ? saving ? "Saving…" : "Save draft" : empty ? "Start drafting" : !dirty && coachNotes[0]?.includes("Name a lab or faculty") ? "Name a lab or faculty" : `Edit ${essay.title}`}
+                {savePrimary ? saving ? "Saving…" : "Save draft" : empty ? "Start drafting" : markedPassage ? "Edit this line" : `Edit ${essay.title}`}
               </button>
               <span role="status" className={cn("library-save-status", overLimit && "hall-urgent")}>
-                {saving ? "Saving…" : dirty ? "Unsaved" : empty ? "No draft yet" : `On file · ${wordStatus}`}
+                {saving ? "Saving…" : dirty ? "Unsaved" : empty ? "No draft yet" : `Saved · ${wordStatus}`}
                 {overLimit ? " · Over limit" : ""}
               </span>
               {onPreview ? (
                 <button type="button" onClick={onPreview} className="hall-ledger-link">{previewLabel}</button>
               ) : null}
             </div>
-            <textarea
+            <div
               id="library-essay-draft"
               ref={draftRef}
-              value={value}
-              onChange={(e) => onChange(e.target.value)}
+              contentEditable="plaintext-only"
+              suppressContentEditableWarning
+              onInput={(e) => onChange(e.currentTarget.innerText)}
+              onBlur={(e) => renderDraft(e.currentTarget, value, markedPassage)}
               className="hall-draft"
-              placeholder="Start with one concrete sentence…"
+              data-placeholder="Start with one concrete sentence…"
+              role="textbox"
+              aria-multiline="true"
               aria-label="Essay draft"
+              spellCheck
             />
 
           </div>
@@ -147,8 +178,7 @@ export function EssayWorkspaceUi({
                       {index === 0 ? <span className="library-coach-priority">Revise first</span> : null}
                       {note}
                       {start >= 0 ? <button type="button" className="library-passage-link" onClick={() => {
-                        focusDraft()
-                        draftRef.current?.setSelectionRange(start, start + passage.length)
+                        focusDraft(passage)
                       }} aria-label={`Select passage: ${passage}`}>“{passage}”</button> : null}
                     </li>
                   })}</ul>
@@ -342,5 +372,23 @@ function CoachPanel({
         ))}
       </ul>
     </div>
+  )
+}
+
+/** Refresh annotations only outside an editing session; never replace a live caret. */
+function renderDraft(surface: HTMLDivElement, value: string, passage?: string) {
+  if (surface === document.activeElement) return
+  const start = passage ? value.indexOf(passage) : -1
+  if (start < 0 || !passage) {
+    surface.replaceChildren(document.createTextNode(value))
+    return
+  }
+  const mark = document.createElement("mark")
+  mark.className = "library-mark"
+  mark.textContent = passage
+  surface.replaceChildren(
+    document.createTextNode(value.slice(0, start)),
+    mark,
+    document.createTextNode(value.slice(start + passage.length)),
   )
 }

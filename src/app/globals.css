@@ -6305,6 +6305,29 @@ nextjs-portal,
   height: 22rem;
   resize: vertical;
 }
+.campus-entered[data-building="library"] .library-editor [contenteditable] {
+  white-space: pre-wrap;
+  overflow-wrap: break-word;
+  overflow-y: auto;
+  caret-color: var(--hall-ink);
+  cursor: text;
+}
+.campus-entered[data-building="library"] .library-editor [contenteditable]:empty::before {
+  content: attr(data-placeholder);
+  color: var(--hall-stone);
+  pointer-events: none;
+}
+.campus-entered[data-building="library"] .library-mark {
+  color: inherit;
+  background: color-mix(in srgb, var(--hall-ink) 9%, var(--hall-paper));
+  text-decoration: underline;
+  text-decoration-thickness: 1px;
+  text-underline-offset: 0.22em;
+}
+.campus-entered[data-building="library"] .hall-draft *::selection {
+  color: var(--hall-paper);
+  background: var(--hall-ink);
+}
 .campus-entered[data-building="library"] .library-editor .hall-draft:focus-visible {
   outline-offset: -3px;
 }
