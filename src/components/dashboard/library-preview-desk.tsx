@@ -21,11 +21,10 @@ export function LibraryPreviewDesk() {
   return (
     <div className="library-workspace">
       <section className="library-manuscript" aria-label="Transfer essay manuscript desk">
-        <LibraryPromptIndex indexRef={indexRef} activeType={activeType} essayMap={drafts} onSwitch={setActiveType} />
+        <LibraryPromptIndex indexRef={indexRef} activeType={activeType} essayMap={drafts} upNextId={nextPrompt?.id} onSwitch={setActiveType} />
         <EssayWorkspaceUi
           essay={{ title, prompt: draft.prompt, wordLimit: 650, wordLimitIsDefault: true,
             autosaveLabel: dirty ? "Unsaved" : draft.content ? "Draft on file" : "No draft yet" }}
-          nextPrompt={nextPrompt ? { label: nextPrompt.label, onOpen: () => setActiveType(nextPrompt.id) } : undefined}
           checklistHref="/preview/halls/dorm"
           dirty={dirty}
           value={draft.content}

@@ -6219,12 +6219,13 @@ nextjs-portal,
   color: color-mix(in srgb, var(--hall-ink) 72%, var(--hall-paper));
 }
 
-/* Library: a concrete next prompt and closure beside the manuscript. */
+/* Library: the selected manuscript owns the revision action. */
 .campus-entered[data-building="library"] .library-manuscript .library-prompt-tab {
   color: color-mix(in srgb, var(--hall-ink) 94%, var(--hall-paper));
 }
 .campus-entered[data-building="library"] .library-manuscript .library-prompt-tab.is-active {
-  background: color-mix(in srgb, var(--hall-ink) 8%, var(--hall-paper));
+  background: color-mix(in srgb, var(--hall-ink) 14%, var(--hall-paper));
+  border-bottom: 6px solid var(--hall-ink);
 }
 .campus-entered[data-building="library"] .library-folio-state { font-size: 0.75rem; }
 .campus-entered[data-building="library"] .union-next-block { padding-bottom: 0.65rem; }
@@ -6257,3 +6258,25 @@ nextjs-portal,
   background: var(--hall-ink);
   color: var(--hall-paper);
 }
+
+.campus-entered[data-building="library"] .library-hero-deck {
+  display: flex;
+  align-items: baseline;
+  flex-wrap: wrap;
+  gap: 0.25rem 0.75rem;
+  margin-top: 0.55rem;
+  color: var(--hall-ink);
+}
+.campus-entered[data-building="library"] .library-hero-deck p {
+  font-size: 1.1rem;
+  line-height: 1.4;
+}
+.campus-entered[data-building="library"] .library-manuscript .library-prompt-tab.is-active > span:last-child > span:first-child {
+  font-weight: 750;
+}
+.campus-entered[data-building="library"] .library-manuscript .library-prompt-tab:hover > span:last-child > span:first-child {
+  text-decoration: underline;
+  text-underline-offset: 0.2em;
+}
+.campus-entered[data-building="library"] .library-working-band { margin-top: 1rem; }
+.campus-entered[data-building="library"] .hall-draft { height: 18rem; background: var(--hall-paper); }

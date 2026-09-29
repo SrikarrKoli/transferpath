@@ -11,9 +11,10 @@ export const LIBRARY_PROMPTS: { id: EssayPromptId; label: string }[] = [
   { id: "other", label: "Other" },
 ]
 
-export function LibraryPromptIndex({ indexRef, activeType, essayMap, onSwitch }: {
+export function LibraryPromptIndex({ indexRef, activeType, essayMap, upNextId, onSwitch }: {
   indexRef: Ref<HTMLElement>
   activeType: EssayPromptId
+  upNextId?: EssayPromptId
   essayMap: Record<string, { content: string | null; word_limit?: number | null }>
   onSwitch: (id: EssayPromptId) => void
 }) {
@@ -33,7 +34,7 @@ export function LibraryPromptIndex({ indexRef, activeType, essayMap, onSwitch }:
               <span className="library-folio-number">{String(index + 1).padStart(2, "0")}</span>
               <span>
                 <span className="block">{prompt.label}</span>
-                <span className="library-folio-state">{words ? `${words} / ${essayMap[prompt.id]?.word_limit ?? 650} words` : "Not started"}</span>
+                <span className="library-folio-state">{upNextId === prompt.id && activeType !== prompt.id ? "Up next · " : ""}{words ? `${words} / ${essayMap[prompt.id]?.word_limit ?? 650} words` : "Not started"}</span>
               </span>
             </button>
           )
