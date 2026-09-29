@@ -5080,29 +5080,85 @@ nextjs-portal,
   color: var(--hall-ink);
 }
 
-.campus-entered[data-building="union"] .union-today .hall-hero-title {
-  max-width: 26ch;
-  padding-bottom: 0;
+.union-today {
+  --hall-stone: color-mix(in oklab, var(--hall-ink) 72%, var(--hall-paper));
+}
+
+.union-today .hall-caption {
+  color: var(--hall-stone);
+  font-weight: 600;
+}
+
+.union-today .union-next-block {
+  padding: 0 0 2rem;
   border-bottom: 0;
 }
 
-.union-today .hall-strip {
-  margin-top: 1.75rem;
-  border-top: 0;
+.union-today .union-next-block .hall-hero-title {
+  max-width: none;
+  margin-top: 1rem;
+  padding-bottom: 0;
+  border-bottom: 0;
+  font-size: clamp(2rem, 3.2vw, 2.875rem);
+  line-height: 1.12;
+  text-wrap: balance;
 }
 
-.union-today .union-apply-portals {
+.union-today .union-next-urgency {
   display: flex;
   flex-wrap: wrap;
   align-items: baseline;
-  gap: 0.65rem 1.25rem;
+  gap: 0.75rem 1.5rem;
   margin-top: 1.75rem;
-  padding-top: 1rem;
-  border-top: 1px solid var(--hall-rule);
 }
 
-.union-apply-note {
-  font-size: 0.8rem;
+.union-today .union-next-date {
+  display: flex;
+  align-items: baseline;
+  gap: 0.6rem;
+  font-size: 1.875rem;
+  line-height: 1.2;
+  letter-spacing: -0.025em;
+}
+
+.union-today .union-due-label,
+.union-today .union-next-year {
+  font-size: 0.95rem;
+  letter-spacing: 0;
+  color: var(--hall-stone);
+}
+
+.union-today .union-next-scope { margin-top: 0.75rem; color: var(--hall-stone); }
+
+.union-today .union-next-preparation {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem 1rem;
+  margin-top: 1.25rem;
+  font-size: 0.8125rem;
+  color: var(--hall-stone);
+}
+
+.union-today .hall-strip {
+  margin-top: 0;
+  padding-top: 1rem;
+  border-top: 1px solid var(--hall-ink);
+}
+
+.union-today .union-apply-portals {
+  display: grid;
+  gap: 0.65rem;
+  margin-top: 2rem;
+}
+
+.union-today .union-portal-links {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.75rem 1.5rem;
+}
+
+.union-today .union-apply-note {
+  font-size: 0.8125rem;
   color: var(--hall-stone);
 }
 

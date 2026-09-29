@@ -13,13 +13,15 @@ function ApplyPortals() {
   return (
     <section className="union-apply-portals" aria-labelledby="union-apply-heading">
       <p id="union-apply-heading" className="hall-caption">Portals</p>
-      <a href={APPLY_TEXAS_URL} target="_blank" rel="noopener noreferrer" className="hall-ledger-link">
-        ApplyTexas<span className="sr-only"> (opens in a new tab)</span>
-      </a>
-      <a href={COMMON_APP_URL} target="_blank" rel="noopener noreferrer" className="hall-ledger-link">
-        Common App<span className="sr-only"> (opens in a new tab)</span>
-      </a>
-      <span className="union-apply-note">Use the portal your target school requires.</span>
+      <div className="union-portal-links">
+        <a href={APPLY_TEXAS_URL} target="_blank" rel="noopener noreferrer" className="hall-ledger-link">
+          ApplyTexas<span className="sr-only"> (opens in a new tab)</span>
+        </a>
+        <a href={COMMON_APP_URL} target="_blank" rel="noopener noreferrer" className="hall-ledger-link">
+          Common App<span className="sr-only"> (opens in a new tab)</span>
+        </a>
+      </div>
+      <p className="union-apply-note">Use the portal your target school requires.</p>
     </section>
   )
 }
@@ -78,6 +80,8 @@ export function HallToday({ data, userId }: { data: OverviewData; userId: string
 
   const next = data.nextAction
   const dateParts = next?.dateLabel ? splitHallDate(next.dateLabel) : null
+  const essayFocus = /essay|draft/i.test(data.readiness?.focusSentence ?? "")
+  const scopeChips = next?.scopeChips.filter((chip) => !next.title.toLowerCase().includes(chip.toLowerCase())) ?? []
 
   return (
     <div className="hall-split union-today">
@@ -89,24 +93,19 @@ export function HallToday({ data, userId }: { data: OverviewData; userId: string
 
           {next ? (
             <>
-              {dateParts ? (
-                <p className="hall-hero-date">
-                  {dateParts.primary}
-                  {dateParts.year ? (
-                    <span className="mt-2 block text-[0.28em] font-normal tracking-normal text-[color:var(--hall-stone)]">
-                      {dateParts.year}
-                    </span>
-                  ) : null}
-                </p>
-              ) : null}
               <h2 className="hall-hero-title">{next.title}</h2>
-              {next.dueDetail ? (
-                <p className="hall-urgent mt-3 text-[0.95rem]">{next.dueDetail}</p>
-              ) : null}
-              {next.scopeChips.length > 0 ? (
-                <p className="mt-3 text-sm text-[color:var(--hall-stone)]">
-                  {next.scopeChips.join(" · ")}
-                </p>
+              <div className="union-next-urgency">
+                {dateParts ? (
+                  <p className="union-next-date">
+                    <span className="union-due-label">Due</span>
+                    {dateParts.primary}
+                    {dateParts.year ? <span className="union-next-year">{dateParts.year}</span> : null}
+                  </p>
+                ) : null}
+                {next.dueDetail ? <p className="hall-urgent">{next.dueDetail}</p> : null}
+              </div>
+              {scopeChips.length > 0 ? (
+                <p className="union-next-scope">{scopeChips.join(" · ")}</p>
               ) : null}
               <div className="union-step-actions mt-6">
                 <PrimaryAction
@@ -123,6 +122,12 @@ export function HallToday({ data, userId }: { data: OverviewData; userId: string
                   </Link>
                 ) : null}
               </div>
+              {essayFocus && next.primaryHref !== "/dashboard/essay" ? (
+                <p className="union-next-preparation">
+                  <span>Application preparation</span>
+                  <Link href="/dashboard/essay" className="hall-ledger-link">Open Essays <span aria-hidden>→</span></Link>
+                </p>
+              ) : null}
             </>
           ) : (
             <>
