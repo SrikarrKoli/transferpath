@@ -837,35 +837,34 @@ nextjs-portal,
   white-space: nowrap;
 }
 
+.hall-plan .hall-caption,
+.hall-plan .hall-course-code,
+.hall-plan .hall-course-status {
+  color: color-mix(in oklab, var(--hall-ink) 72%, var(--hall-cream));
+}
+
 .hall-plan-columns {
   display: grid;
-  grid-template-columns: 11rem minmax(0, 1fr) 7.5rem;
+  grid-template-columns: 9rem minmax(0, 1fr) 7rem 4rem;
   gap: 1rem;
-  padding: 0.55rem 0;
+  padding: 0.65rem 0;
   border-bottom: 1px solid var(--hall-ink);
-  color: var(--hall-stone);
-  font-family: var(--font-jetbrains-mono), ui-monospace, monospace;
-  font-size: 0.6rem;
-  letter-spacing: 0.1em;
+  color: var(--hall-ink);
+  font-size: 0.65rem;
+  letter-spacing: 0.12em;
   text-transform: uppercase;
 }
 
-.hall-terms {
-  display: flex;
-  flex-direction: column;
-  gap: 0;
-}
-
 .hall-term-band {
+  display: grid;
+  grid-template-columns: 9rem minmax(0, 1fr);
+  column-gap: 1rem;
   border-bottom: 1px solid var(--hall-rule);
 }
 
 .hall-term-band-head {
-  display: grid;
-  grid-template-columns: 11rem minmax(0, 1fr) 7.5rem;
-  gap: 1rem;
-  align-items: end;
-  padding: 1.15rem 0 0.55rem;
+  grid-column: 1;
+  padding-top: 1.15rem;
 }
 
 .hall-term-name {
@@ -873,37 +872,42 @@ nextjs-portal,
   padding: 0;
   border: 0;
   font-size: clamp(1.15rem, 1.8vw, 1.45rem);
-  line-height: 1.05;
+  line-height: 1.2;
 }
 
 .hall-term-band-head .hall-caption {
-  grid-column: 2 / -1;
-  margin: 0;
+  margin-top: 0.5rem;
 }
 
 .hall-course {
+  grid-column: 2;
   display: grid;
-  grid-template-columns: 11rem minmax(0, 1fr) 7.5rem;
+  grid-template-columns: minmax(0, 1fr) 7rem 4rem;
   gap: 1rem;
-  align-items: baseline;
+  align-items: center;
   padding: 0.85rem 0;
-  border-top: 1px solid color-mix(in oklab, var(--hall-ink) 18%, transparent);
+  border-top: 1px solid var(--hall-rule);
+}
+
+.hall-term-band-head + .hall-course {
+  border-top: 0;
 }
 
 .hall-course-main {
-  grid-column: 2;
   min-width: 0;
 }
 
 .hall-course-status {
-  grid-column: 3;
   margin: 0;
-  text-align: right;
+  text-align: left;
 }
 
-.hall-course-empty .hall-course-main,
+.hall-course-update {
+  justify-self: start;
+}
+
 .hall-course-empty .hall-course-title {
-  grid-column: 2 / -1;
+  grid-column: 1 / -1;
 }
 
 .hall-course-code {
@@ -923,21 +927,21 @@ nextjs-portal,
     display: none;
   }
 
-  .hall-term-band-head,
+  .hall-term-band {
+    display: block;
+  }
+
+  .hall-term-band-head {
+    padding-bottom: 0.75rem;
+  }
+
   .hall-course {
     grid-template-columns: minmax(0, 1fr) auto;
+    gap: 0.35rem 1rem;
   }
 
-  .hall-course-main {
-    grid-column: 1;
-  }
-
-  .hall-course-status {
+  .hall-course-update {
     grid-column: 2;
-  }
-
-  .hall-term-band-head .hall-caption {
-    grid-column: 1 / -1;
   }
 }
 

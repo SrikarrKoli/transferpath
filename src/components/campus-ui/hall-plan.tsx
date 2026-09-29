@@ -3,6 +3,8 @@
 import Link from "next/link"
 
 export type HallPlanCourse = {
+  id?: string
+  isNote?: boolean
   code?: string
   title: string
   status: string
@@ -78,6 +80,7 @@ function PlanNextBlock({ next }: { next: HallPlanNext }) {
       {next.meta ? (
         <p className="mt-3 text-sm text-[color:var(--hall-stone)]">{next.meta}</p>
       ) : null}
+      {next.prompt ? <p className="hall-prompt mt-3">{next.prompt}</p> : null}
       <div className="union-step-actions mt-6">
         <PrimaryCta action={next.primary} />
         {(next.secondaries ?? []).slice(0, 2).map((action) => (
@@ -88,7 +91,7 @@ function PlanNextBlock({ next }: { next: HallPlanNext }) {
   )
 }
 
-function PlanRegister({ blocks }: { blocks: HallPlanBlock[] }) {
+function PlanRegister({ blocks, onUpdateCourse }: { blocks: HallPlanBlock[]; onUpdateCourse?: (course: HallPlanCourse) => void }) {
   if (blocks.length === 0) {
     return (
       <p className="hall-prompt mt-6">No courses on your plan yet. Add one to start tracking terms.</p>
@@ -101,11 +104,12 @@ function PlanRegister({ blocks }: { blocks: HallPlanBlock[] }) {
         <span>Term</span>
         <span>Course</span>
         <span>Status</span>
+        <span>Action</span>
       </div>
       <div className="hall-terms">
         {blocks.map((block) => (
           <section key={block.term} className="hall-term-band">
-            <header className="hall-term-band-head">
+            <header className="hall-term-band-head" style={{ gridRow: `1 / span ${Math.max(1, block.courses.length)}` }}>
               <h2 className="hall-term-name">{block.term}</h2>
               {block.range ? <p className="hall-caption">{block.range}</p> : null}
             </header>
@@ -128,6 +132,9 @@ function PlanRegister({ blocks }: { blocks: HallPlanBlock[] }) {
                   ) : (
                     <span className="hall-course-status" />
                   )}
+                  {!course.isNote && onUpdateCourse ? (
+                    <button type="button" className="hall-ledger-link hall-course-update" aria-label={`Update ${course.code ?? course.title}`} onClick={() => onUpdateCourse(course)}>Update</button>
+                  ) : null}
                 </div>
               ))
             )}
@@ -144,19 +151,21 @@ export function HallPlan({
   next,
   margin,
   onAddCourse,
+  onUpdateCourse,
 }: {
   blocks: HallPlanBlock[]
   note?: string
   next?: HallPlanNext
   margin?: HallPlanMargin
   onAddCourse?: () => void
+  onUpdateCourse?: (course: HallPlanCourse) => void
 }) {
   const showSplit = Boolean(next || margin)
 
   const register = (
     <>
       {next ? <PlanNextBlock next={next} /> : null}
-      {onAddCourse ? (
+      {onAddCourse && !next ? (
         <div className="hall-plan-toolbar">
           <p className="hall-caption">
             Place courses on terms for your transfer entry. Course requirements stay under Requirements.
@@ -166,9 +175,9 @@ export function HallPlan({
           </button>
         </div>
       ) : null}
-      <PlanRegister blocks={blocks} />
+      <PlanRegister blocks={blocks} onUpdateCourse={onUpdateCourse} />
       {note ? <p className="hall-margin mt-8 max-w-xl">{note}</p> : null}
-      {onAddCourse ? (
+      {onAddCourse && !next ? (
         <div className="hall-plan-foot">
           <button type="button" className="hall-ledger-link" onClick={onAddCourse}>
             Add another course
@@ -183,7 +192,7 @@ export function HallPlan({
   }
 
   return (
-    <div className="hall-split">
+    <div className="hall-split hall-plan">
       <div>{register}</div>
       <aside className="hall-margin">
         {margin ? (

@@ -3,15 +3,14 @@ import type { PlanCourseStatus } from "@/types/plan-terms"
 
 /**
  * Maps stored course status to Plan UI vocabulary.
- * Planned coursework with a calendar term displays as in_progress (display only).
+ * Calendar placement does not change a course’s recorded progress.
  */
 export function courseStatusToPlanDisplayStatus(
   status: PlanCourseStatus,
-  options: { hasCalendarTerm: boolean }
+  _options: { hasCalendarTerm: boolean }
 ): PlanStatus {
   if (status === "completed") return "done"
   if (status === "in_progress") return "in_progress"
-  if (options.hasCalendarTerm) return "in_progress"
   return "not_started"
 }
 

@@ -86,6 +86,9 @@ export function PlanClient({
     return new Set(firstPopulatedTerm ? [firstPopulatedTerm.termLabel] : [])
   })
 
+  const [editingId, setEditingId] = useState<string | null>(null)
+  const editingCourse = rows.find((row) => row.id === editingId)
+
   const [addOpen, setAddOpen] = useState(false)
   const [addName, setAddName] = useState("")
   const [addStatus, setAddStatus] = useState<"planned" | "in_progress" | "completed">("planned")
@@ -122,17 +125,13 @@ export function PlanClient({
 
   const patchCourse = useCallback(
     async (rowId: string, updates: { semester_taken?: string | null; status?: string }) => {
-      let prev: PlanCourseRow | undefined
+      const prev = rows.find((row) => row.id === rowId)
+      if (!prev) return
       setSavingId(rowId)
       setListError("")
       setRows((r) => {
-        prev = r.find((x) => x.id === rowId)
         return r.map((x) => (x.id === rowId ? ({ ...x, ...updates } as PlanCourseRow) : x))
       })
-      if (!prev) {
-        setSavingId(null)
-        return
-      }
 
       const supabase = createClient()
       const payload: Record<string, unknown> = {}
@@ -155,7 +154,7 @@ export function PlanClient({
         setListError(error.message)
       }
     },
-    [userId]
+    [userId, rows]
   )
 
   const deleteCourse = useCallback(
@@ -280,10 +279,13 @@ export function PlanClient({
                 ? `Entry — ${section.targetSchoolName}`
                 : "Entry term",
               status: "",
+              isNote: true,
             },
           ]
         : section.courses.map((c) => ({
-            title: c.course_name,
+            id: c.id,
+            code: c.course_name.match(/\b[A-Z]{2,5}\s?\d{4}\b/)?.[0],
+            title: c.course_name.replace(/^[A-Z]{2,5}\s?\d{4}\s*[·:—-]?\s*/, "") || c.course_name,
             status: planDisplayStatusLabel(c.status),
           })),
   }))
@@ -300,7 +302,9 @@ export function PlanClient({
     const nextTerm = calendarSections.find((s) => s.temporalState === "planned") ?? null
     const currentEmpty = !currentTerm || currentTerm.courses.length === 0
     const nextEmpty = !nextTerm || nextTerm.courses.length === 0
-    const firstPlanned = rows.find((r) => r.status === "planned")
+    const orderedCourses = planTerms.sections.flatMap((section) => section.courses)
+    const nextCourse = orderedCourses.find((r) => r.status === "planned")
+      ?? orderedCourses.find((r) => r.status === "in_progress")
 
     if (rows.length === 0) {
       return {
@@ -315,7 +319,7 @@ export function PlanClient({
       }
     }
 
-    if (currentEmpty && nextEmpty && (currentTerm || nextTerm)) {
+    if (!nextCourse && currentEmpty && nextEmpty && (currentTerm || nextTerm)) {
       const focus = currentTerm && currentTerm.courses.length === 0 ? currentTerm : nextTerm!
       return {
         caption: "Do this next" as const,
@@ -333,19 +337,21 @@ export function PlanClient({
       }
     }
 
-    if (firstPlanned) {
+    if (nextCourse) {
       return {
         caption: "Do this next" as const,
-        title: firstPlanned.course_name,
-        prompt: "Mark it in progress when you start the class — or keep placing courses on terms.",
-        meta: firstPlanned.semester_taken
-          ? `Planned · ${firstPlanned.semester_taken}`
-          : "Planned · no term yet",
+        title: nextCourse.course_name,
+        prompt: nextCourse.status === "planned"
+          ? "Starting this course? Update its status when class begins."
+          : "Finished this course? Mark it completed to keep your roadmap current.",
+        meta: nextCourse.semester_taken
+          ? `${planDisplayStatusLabel(nextCourse.status)} · ${nextCourse.semester_taken}`
+          : `${planDisplayStatusLabel(nextCourse.status)} · no term yet`,
         primary: {
           kind: "button" as const,
-          label: "Mark in progress",
+          label: nextCourse.status === "planned" ? "Mark in progress" : "Mark completed",
           onClick: () => {
-            void patchCourse(firstPlanned.id, { status: "in_progress" })
+            void patchCourse(nextCourse.id, { status: nextCourse.status === "planned" ? "in_progress" : "completed" })
           },
         },
         secondaries: [
@@ -379,6 +385,7 @@ export function PlanClient({
             blocks={hallBlocks}
             next={hallNext}
             onAddCourse={openAddBlank}
+            onUpdateCourse={(course) => setEditingId(course.id ?? null)}
             margin={{
               fromInstitution: checklistProfile.currentUniversityName,
               toInstitution: checklistProfile.targetUniversityName,
@@ -486,6 +493,25 @@ export function PlanClient({
         </>
       )}
 
+      <Dialog open={Boolean(editingCourse)} onOpenChange={(open) => { if (!open) setEditingId(null) }}>
+        <DialogContent className="rounded-none border border-[color:var(--hall-rule)] bg-[color:var(--hall-cream)] sm:max-w-xl">
+          <DialogHeader>
+            <DialogTitle>Update course</DialogTitle>
+            <DialogDescription>Change the status or term. Changes save automatically.</DialogDescription>
+          </DialogHeader>
+          {editingCourse ? (
+            <PlanCourseEditorRow
+              course={editingCourse}
+              savingId={savingId}
+              deletingId={deletingId}
+              termOptions={termOptions}
+              onPatch={patchCourse}
+              onDelete={deleteCourse}
+            />
+          ) : null}
+          {listError ? <p role="alert" className="text-sm text-[color:var(--hall-clay)]">{listError}</p> : null}
+        </DialogContent>
+      </Dialog>
       <Dialog open={addOpen} onOpenChange={setAddOpen}>
         <DialogContent className="rounded-none border border-[color:var(--hall-rule)] bg-[color:var(--hall-paper)] sm:max-w-md">
           <DialogHeader>

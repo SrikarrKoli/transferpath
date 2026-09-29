@@ -309,26 +309,26 @@ export const previewPlan = [
     term: "Fall 2026",
     range: "Aug – Dec",
     courses: [
-      { code: "COSC 1436", title: "Programming I", status: "in progress" },
-      { code: "MATH 2413", title: "Calculus I", status: "in progress" },
-      { code: "ENGL 1301", title: "Composition I", status: "logged" },
+      { code: "COSC 1436", title: "Programming I", status: "In progress" },
+      { code: "MATH 2413", title: "Calculus I", status: "In progress" },
+      { code: "ENGL 1301", title: "Composition I", status: "Completed" },
     ],
   },
   {
     term: "Spring 2027",
     range: "Jan – May",
     courses: [
-      { code: "COSC 1437", title: "Programming II", status: "planned" },
-      { code: "MATH 2414", title: "Calculus II", status: "planned" },
-      { code: "PHYS 2425", title: "Physics I", status: "planned" },
+      { code: "COSC 1437", title: "Programming II", status: "Planned" },
+      { code: "MATH 2414", title: "Calculus II", status: "Planned" },
+      { code: "PHYS 2425", title: "Physics I", status: "Planned" },
     ],
   },
   {
     term: "Fall 2027",
     range: "entry",
     courses: [
-      { title: "Entry — UT Austin", status: "" },
-      { title: "Data structures after COSC 1437", status: "expected" },
+      { title: "Entry — UT Austin", status: "", isNote: true },
+      { title: "Data structures after COSC 1437", status: "", isNote: true },
     ],
   },
 ]

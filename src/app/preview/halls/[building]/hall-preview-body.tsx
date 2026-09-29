@@ -37,11 +37,12 @@ export function HallPreviewBody({ buildingId }: { buildingId: BuildingId }) {
       ) : buildingId === "classroom" ? (
         <HallPlan
           blocks={previewPlan}
+          onUpdateCourse={() => undefined}
           next={{
             caption: "Do this next",
-            title: "COSC 1436",
-            prompt: "Mark it in progress when you start the class — or keep placing courses on terms.",
-            meta: "Planned · Fall 2026",
+            title: "COSC 1437 · Programming II",
+            prompt: "Starting Programming II? Update its status when class begins.",
+            meta: "Planned · Spring 2027",
             primary: { kind: "button", label: "Mark in progress", onClick: () => undefined },
             secondaries: [
               { kind: "link", label: "+ Add a course", href: "/dashboard/plan" },
