@@ -1,6 +1,6 @@
 "use client"
 
-import { useEffect, useMemo, useRef, type ReactNode } from "react"
+import { Fragment, useEffect, useMemo, useRef, useState, type ReactNode } from "react"
 import Link from "next/link"
 import { Meter } from "@/components/ui/progress"
 import { Provenance } from "@/components/ui/provenance"
@@ -83,15 +83,23 @@ export function EssayWorkspaceUi({
   const pct = Math.min(100, Math.round((wordCount / Math.max(1, essay.wordLimit)) * 100))
   const overLimit = wordCount > essay.wordLimit
   const hall = useHall()
-  const draftRef = useRef<HTMLDivElement>(null)
-  const markedPassage = coachPassages.find((passage) => passage && value.includes(passage))
+  const draftRefs = useRef<(HTMLDivElement | null)[]>([])
+  // Keep chunk boundaries and the revision bar stable while a passage is being rewritten.
+  const [draft, setDraft] = useState(() => ({ value, chunks: value.split(/\n\s*\n/), revisionIndex: 0 }))
+  const chunks = draft.value === value ? draft.chunks : value.split(/\n\s*\n/)
+  const passageIndex = chunks.findIndex((chunk) => coachPassages[0] && chunk.includes(coachPassages[0]))
+  const revisionIndex = wordCount === 0 ? 0 : passageIndex >= 0 ? passageIndex : dirty ? Math.min(draft.revisionIndex, chunks.length - 1) : 0
+  if (draft.value !== value) setDraft({ value, chunks, revisionIndex })
+  const markedPassage = coachPassages[0] && value.includes(coachPassages[0]) ? coachPassages[0] : undefined
 
   useEffect(() => {
-    if (hall && draftRef.current) renderDraft(draftRef.current, value, markedPassage)
-  }, [hall, value, markedPassage])
+    if (hall) draftRefs.current.forEach((surface, index) => {
+      if (surface) renderDraft(surface, chunks[index] ?? "", markedPassage)
+    })
+  }, [hall, chunks, markedPassage])
 
   function focusDraft(passage?: string) {
-    const draft = draftRef.current
+    const draft = draftRefs.current[passage ? chunks.findIndex((chunk) => chunk.includes(passage)) : revisionIndex]
     if (!draft) return
     draft.scrollIntoView({ block: "nearest" })
     draft.focus({ preventScroll: true })
@@ -131,40 +139,46 @@ export function EssayWorkspaceUi({
         <h2 className="library-assignment">{essay.prompt}</h2>
         {settingsSlot ? <div className="mt-4">{settingsSlot}</div> : null}
         <div className="library-working-band">
-          <div className="library-writing-field library-editor">
-            <div className="library-editor-toolbar">
-              <button
-                type="button"
-                onClick={savePrimary ? onSave : () => focusDraft(markedPassage)}
-                disabled={savePrimary && saving}
-                className="union-primary-cta"
-                aria-controls="library-essay-draft"
-              >
-                {savePrimary ? saving ? "Saving…" : "Save draft" : empty ? "Start drafting" : markedPassage ? "Edit this line" : `Edit ${essay.title}`}
-              </button>
-              <span role="status" className={cn("library-save-status", overLimit && "hall-urgent")}>
-                {saving ? "Saving…" : dirty ? "Unsaved" : empty ? "No draft yet" : `Saved · ${wordStatus}`}
-                {overLimit ? " · Over limit" : ""}
-              </span>
-              {onPreview ? (
-                <button type="button" onClick={onPreview} className="hall-ledger-link">{previewLabel}</button>
-              ) : null}
-            </div>
-            <div
-              id="library-essay-draft"
-              ref={draftRef}
-              contentEditable="plaintext-only"
-              suppressContentEditableWarning
-              onInput={(e) => onChange(e.currentTarget.innerText)}
-              onBlur={(e) => renderDraft(e.currentTarget, value, markedPassage)}
-              className="hall-draft"
-              data-placeholder="Start with one concrete sentence…"
-              role="textbox"
-              aria-multiline="true"
-              aria-label="Essay draft"
-              spellCheck
-            />
-
+          <div id="library-essay-draft" className="library-writing-field library-editor">
+            {chunks.map((chunk, index) => <Fragment key={index}>
+              {index === revisionIndex ? <div className="library-revision-bar" contentEditable={false}>
+                <button
+                  type="button"
+                  onClick={savePrimary ? onSave : () => focusDraft(markedPassage)}
+                  disabled={savePrimary && saving}
+                  className="union-primary-cta"
+                  aria-controls={`library-essay-paragraph-${revisionIndex}`}
+                >
+                  {savePrimary ? saving ? "Saving…" : "Save draft" : empty ? "Start drafting" : markedPassage ? "Edit this line" : `Edit ${essay.title}`}
+                </button>
+                <span role="status" className={cn("library-save-status", overLimit && "hall-urgent")}>
+                  {saving ? "Saving…" : dirty ? "Unsaved" : empty ? "No draft yet" : `Saved · ${wordStatus}`}
+                  {overLimit ? " · Over limit" : ""}
+                </span>
+                {onPreview ? (
+                  <button type="button" onClick={onPreview} className="hall-ledger-link">{previewLabel}</button>
+                ) : null}
+              </div> : null}
+              <div
+                id={`library-essay-paragraph-${index}`}
+                ref={(surface) => { draftRefs.current[index] = surface }}
+                contentEditable="plaintext-only"
+                suppressContentEditableWarning
+                onInput={(e) => {
+                  const nextChunks = chunks.map((text, i) => i === index ? e.currentTarget.innerText : text)
+                  const next = nextChunks.join("\n\n")
+                  setDraft({ value: next, chunks: nextChunks, revisionIndex })
+                  onChange(next)
+                }}
+                onBlur={(e) => renderDraft(e.currentTarget, chunk, markedPassage)}
+                className="hall-draft"
+                data-placeholder="Start with one concrete sentence…"
+                role="textbox"
+                aria-multiline="true"
+                aria-label={`Essay draft, paragraph ${index + 1}`}
+                spellCheck
+              />
+            </Fragment>)}
           </div>
           {coachNotes.length > 0 || strengthSignals.length > 0 ? (
             <aside className="hall-margin library-coach" aria-label="Draft coaching">
@@ -177,9 +191,9 @@ export function EssayWorkspaceUi({
                     return <li key={note} className={index === 0 ? "library-coach-lead" : "library-coach-secondary"}>
                       {index === 0 ? <span className="library-coach-priority">Revise first</span> : null}
                       {note}
-                      {start >= 0 ? <button type="button" className="library-passage-link" onClick={() => {
+                      {start >= 0 ? index === 0 ? <button type="button" className="library-passage-link" onClick={() => {
                         focusDraft(passage)
-                      }} aria-label={`Select passage: ${passage}`}>“{passage}”</button> : null}
+                      }} aria-label={`Select passage: ${passage}`}>“{passage}”</button> : <em className="library-passage-quote">“{passage}”</em> : null}
                     </li>
                   })}</ul>
                 </section>

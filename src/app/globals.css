@@ -6272,16 +6272,16 @@ nextjs-portal,
 /* Library: assignment first, with actions and persistence on the paper. */
 .campus-entered[data-building="library"] .library-assignment {
   max-width: 68ch;
-  margin: 1.5rem 0;
+  margin: 1rem 0;
   color: var(--hall-ink);
-  font-size: 1.4rem;
+  font-size: 1.15rem;
   font-weight: 500;
   line-height: 1.5;
 }
 .campus-entered[data-building="library"] .library-manuscript .library-prompt-tabs { gap: 0.5rem; }
 .campus-entered[data-building="library"] .library-manuscript .library-prompt-tab {
   border: 1px solid var(--hall-ink);
-  border-bottom-width: 6px;
+  border-bottom-width: 2px;
   border-bottom-color: var(--hall-rule);
   color: var(--hall-ink);
 }
@@ -6290,20 +6290,23 @@ nextjs-portal,
 }
 .campus-entered[data-building="library"] .library-editor {
   border: 1px solid var(--hall-ink);
+  padding: 1.2rem;
+  align-self: start;
 }
-.campus-entered[data-building="library"] .library-editor-toolbar {
+.campus-entered[data-building="library"] .library-revision-bar {
   display: flex;
   align-items: center;
   flex-wrap: wrap;
   gap: 0.75rem 1rem;
-  padding: 0.85rem;
-  border-bottom: 1px solid var(--hall-rule);
+  margin: 1.2rem 0 0.45rem;
 }
 .campus-entered[data-building="library"] .library-editor .hall-draft {
   margin: 0;
   border: 0;
-  height: 22rem;
-  resize: vertical;
+  padding: 0;
+  height: auto;
+  min-height: 1.8em;
+  resize: none;
 }
 .campus-entered[data-building="library"] .library-editor [contenteditable] {
   white-space: pre-wrap;
@@ -6329,7 +6332,7 @@ nextjs-portal,
   background: var(--hall-ink);
 }
 .campus-entered[data-building="library"] .library-editor .hall-draft:focus-visible {
-  outline-offset: -3px;
+  outline-offset: 5px;
 }
 .campus-entered[data-building="library"] .library-desk-footer {
   margin-top: 1.5rem;
@@ -6337,3 +6340,14 @@ nextjs-portal,
   border-top: 1px solid var(--hall-rule);
   font-size: 0.85rem;
 }
+
+.campus-entered[data-building="library"] .library-revision-bar:first-child { margin-top: 0; }
+.campus-entered[data-building="library"] .library-editor .hall-draft + .hall-draft { margin-top: 1.2rem; }
+.campus-entered[data-building="library"] .library-passage-quote {
+  display: block;
+  margin-top: 0.35rem;
+  font-family: Georgia, serif;
+  font-size: 0.85rem;
+}
+.campus-entered[data-building="library"] .library-folio-number { color: var(--hall-ink); }
+.campus-entered[data-building="library"] .library-manuscript .library-prompt-tab > span:last-child > span:first-child { font-size: 1rem; }
