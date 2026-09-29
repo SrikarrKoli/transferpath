@@ -34,7 +34,7 @@ export function LibraryPromptIndex({ indexRef, activeType, essayMap, upNextId, o
               <span className="library-folio-number">{String(index + 1).padStart(2, "0")}</span>
               <span>
                 <span className="block">{prompt.label}</span>
-                <span className="library-folio-state">{upNextId === prompt.id && activeType !== prompt.id ? "Up next · " : ""}{words ? `${words} / ${essayMap[prompt.id]?.word_limit ?? 650} words` : "Not started"}</span>
+                <span className="library-folio-state">{activeType !== prompt.id ? "Open · " : ""}{words ? `${words} / ${essayMap[prompt.id]?.word_limit ?? 650} words` : upNextId === prompt.id && activeType !== prompt.id ? "Up next" : "Not started"}</span>
               </span>
             </button>
           )

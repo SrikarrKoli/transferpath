@@ -166,7 +166,7 @@ export const previewEssay = {
   draft:
     "I started at Austin Community College because I needed a schedule that could sit next to a night shift. Two years later the work is no longer enough: COSC 1436 made it clear I want systems, not just syntax, and ACC does not offer the architecture sequence I need.\n\nUT Austin’s Turing Scholars community and the undergraduate research track in the Department of Computer Science are the reason I am applying for Fall 2027. I want to finish the lower-division core cleanly this year — Calculus II, Physics I, and the second programming course — so I arrive ready for data structures, not catching up.",
   coach: [
-    "Name the lab or faculty, not the rank of the school.",
+    "Name a lab or faculty in place of “UT Austin’s Turing Scholars community.”",
     "The night-shift line is specific; keep it and cut the rest of the biography.",
   ],
   strengths: ["A concrete course gap, not a vibe.", "A term and a campus already chosen."],

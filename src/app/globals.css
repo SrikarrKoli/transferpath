@@ -6259,18 +6259,6 @@ nextjs-portal,
   color: var(--hall-paper);
 }
 
-.campus-entered[data-building="library"] .library-hero-deck {
-  display: flex;
-  align-items: baseline;
-  flex-wrap: wrap;
-  gap: 0.25rem 0.75rem;
-  margin-top: 0.55rem;
-  color: var(--hall-ink);
-}
-.campus-entered[data-building="library"] .library-hero-deck p {
-  font-size: 1.1rem;
-  line-height: 1.4;
-}
 .campus-entered[data-building="library"] .library-manuscript .library-prompt-tab.is-active > span:last-child > span:first-child {
   font-weight: 750;
 }
@@ -6280,3 +6268,49 @@ nextjs-portal,
 }
 .campus-entered[data-building="library"] .library-working-band { margin-top: 1rem; }
 .campus-entered[data-building="library"] .hall-draft { height: 18rem; background: var(--hall-paper); }
+
+/* Library: assignment first, with actions and persistence on the paper. */
+.campus-entered[data-building="library"] .library-assignment {
+  max-width: 68ch;
+  margin: 1.5rem 0;
+  color: var(--hall-ink);
+  font-size: 1.4rem;
+  font-weight: 500;
+  line-height: 1.5;
+}
+.campus-entered[data-building="library"] .library-manuscript .library-prompt-tabs { gap: 0.5rem; }
+.campus-entered[data-building="library"] .library-manuscript .library-prompt-tab {
+  border: 1px solid var(--hall-ink);
+  border-bottom-width: 6px;
+  border-bottom-color: var(--hall-rule);
+  color: var(--hall-ink);
+}
+.campus-entered[data-building="library"] .library-manuscript .library-prompt-tab.is-active {
+  border-bottom-color: var(--hall-ink);
+}
+.campus-entered[data-building="library"] .library-editor {
+  border: 1px solid var(--hall-ink);
+}
+.campus-entered[data-building="library"] .library-editor-toolbar {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 0.75rem 1rem;
+  padding: 0.85rem;
+  border-bottom: 1px solid var(--hall-rule);
+}
+.campus-entered[data-building="library"] .library-editor .hall-draft {
+  margin: 0;
+  border: 0;
+  height: 22rem;
+  resize: vertical;
+}
+.campus-entered[data-building="library"] .library-editor .hall-draft:focus-visible {
+  outline-offset: -3px;
+}
+.campus-entered[data-building="library"] .library-desk-footer {
+  margin-top: 1.5rem;
+  padding-top: 0.8rem;
+  border-top: 1px solid var(--hall-rule);
+  font-size: 0.85rem;
+}

@@ -102,38 +102,28 @@ export function EssayWorkspaceUi({
 
     return (
       <div className={className}>
-        <section className="union-next-block" aria-labelledby="essay-next-heading">
-          <h2 id="essay-next-heading" className="hall-hero-title">{essay.title}</h2>
-          {!empty && coachNotes.length > 0 ? (
-            <div className="library-hero-deck">
-              <span className="library-coach-priority">Revise first</span>
-              <p>{coachNotes[0]}</p>
-            </div>
-          ) : null}
-          <div className="union-step-actions mt-6">
-            <button
-              type="button"
-              onClick={savePrimary ? onSave : empty ? focusDraft : reviseDraft}
-              disabled={savePrimary && saving}
-              className="union-primary-cta"
-            >
-              {savePrimary ? saving ? "Saving…" : saveLabel : empty ? "Start drafting" : `Revise ${essay.title}`}
-            </button>
-            <span role="status" className="library-save-status">{saving ? "Saving…" : dirty ? "Unsaved" : wordStatus}</span>
-            {onPreview ? (
-              <button type="button" onClick={onPreview} className="hall-ledger-link">
-                {previewLabel}
-              </button>
-            ) : null}
-
-          </div>
-        </section>
-
-        <p className="hall-prompt mt-8">{essay.prompt}</p>
+        <h2 className="library-assignment">{essay.prompt}</h2>
         {settingsSlot ? <div className="mt-4">{settingsSlot}</div> : null}
-        <div className="library-working-band mt-5">
-          <div className="library-writing-field">
-            <label className="hall-caption" htmlFor="library-essay-draft">Your draft · write here</label>
+        <div className="library-working-band">
+          <div className="library-writing-field library-editor">
+            <div className="library-editor-toolbar">
+              <button
+                type="button"
+                onClick={savePrimary ? onSave : empty ? focusDraft : reviseDraft}
+                disabled={savePrimary && saving}
+                className="union-primary-cta"
+                aria-controls="library-essay-draft"
+              >
+                {savePrimary ? saving ? "Saving…" : "Save draft" : empty ? "Start drafting" : !dirty && coachNotes[0]?.includes("Name a lab or faculty") ? "Name a lab or faculty" : `Edit ${essay.title}`}
+              </button>
+              <span role="status" className={cn("library-save-status", overLimit && "hall-urgent")}>
+                {saving ? "Saving…" : dirty ? "Unsaved" : empty ? "No draft yet" : `On file · ${wordStatus}`}
+                {overLimit ? " · Over limit" : ""}
+              </span>
+              {onPreview ? (
+                <button type="button" onClick={onPreview} className="hall-ledger-link">{previewLabel}</button>
+              ) : null}
+            </div>
             <textarea
               id="library-essay-draft"
               ref={draftRef}
@@ -143,12 +133,7 @@ export function EssayWorkspaceUi({
               placeholder="Start with one concrete sentence…"
               aria-label="Essay draft"
             />
-            <div className="library-draft-closure">
-              <p className={cn("library-word-count", overLimit && "hall-urgent")}>
-                {wordStatus}{overLimit ? " · Over limit" : ""}
-              </p>
-              <Link href={checklistHref} className="hall-ledger-link">Open Checklist</Link>
-            </div>
+
           </div>
           {coachNotes.length > 0 || strengthSignals.length > 0 ? (
             <aside className="hall-margin library-coach" aria-label="Draft coaching">
@@ -178,6 +163,9 @@ export function EssayWorkspaceUi({
             </aside>
           ) : null}
         </div>
+        <footer className="library-desk-footer">
+          <Link href={checklistHref} className="hall-ledger-link">Open Checklist</Link>
+        </footer>
       </div>
     )
   }
