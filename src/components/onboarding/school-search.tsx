@@ -20,7 +20,7 @@ export interface SchoolSearchProps {
   placeholder?: string
   /** When set, limits results to this institution type. */
   universityType?: "community_college" | "four_year"
-  /** Shown when search returns no matches — lets guests leave step 1 without a listed school. */
+  /** Retained for caller compatibility; the no-results panel is informational. */
   onContinueWithoutSchool?: () => void
 }
 
@@ -32,7 +32,6 @@ function SchoolSearchInner({
   onClear,
   placeholder = "Search for a school...",
   universityType,
-  onContinueWithoutSchool,
 }: SchoolSearchProps) {
   const [query, setQuery] = useState(value)
   const [results, setResults] = useState<SchoolResult[]>([])
@@ -183,18 +182,9 @@ function SchoolSearchInner({
           <p className="text-sm text-muted-foreground">
             No schools found — yours may not be listed yet.
           </p>
-          {onContinueWithoutSchool ? (
-            <button
-              type="button"
-              onClick={() => {
-                setIsOpen(false)
-                onContinueWithoutSchool()
-              }}
-              className="text-sm font-medium text-primary underline-offset-4 hover:underline"
-            >
-              Continue without a listed school
-            </button>
-          ) : null}
+          <p className="text-xs text-muted-foreground">
+            Not listed yet. Leave the field blank and press Next.
+          </p>
         </div>
       )}
     </div>

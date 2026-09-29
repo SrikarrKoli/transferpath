@@ -224,27 +224,7 @@ export function OnboardingClient({ existingSession, embedded = false }: Onboardi
             </div>
           )}
 
-          {embedded ? (
-            <div className="hall-steps" aria-label="Onboarding steps">
-      {intentHall ? (
-        <div className="mb-4 border border-[color:var(--hall-rule)] bg-transparent px-3 py-2.5 text-sm leading-relaxed text-[color:var(--hall-ink)]/75">
-          You asked for <span className="font-semibold text-[color:var(--hall-ink)]">{intentHall}</span>.
-          Finish this Counselor setup (about 2 min) and that hall unlocks with your schools and term.
-        </div>
-      ) : null}
-
-              {steps.map((step) => (
-                <span
-                  key={step.id}
-                  data-on={step.id === currentStep ? "true" : "false"}
-                  data-done={step.id < currentStep ? "true" : "false"}
-                >
-                  <span className="hall-step-index">{String(step.id).padStart(2, "0")}</span>
-                  {step.label}
-                </span>
-              ))}
-            </div>
-          ) : (
+          {embedded ? null : (
           <div className="flex items-center justify-center">
             {steps.map((step, index) => (
               <div key={step.id} className="flex items-center">
@@ -295,6 +275,28 @@ export function OnboardingClient({ existingSession, embedded = false }: Onboardi
 
       <main className={`flex flex-1 items-start justify-center ${embedded ? "px-1 py-2" : "px-6 py-8"}`}>
         <div className="w-full max-w-lg">
+          {embedded && (
+            <>
+              {intentHall ? (
+                <div className="mb-4 border border-[color:var(--hall-rule)] bg-transparent px-3 py-2.5 text-sm leading-relaxed text-[color:var(--hall-ink)]/75">
+                  You asked for <span className="font-semibold text-[color:var(--hall-ink)]">{intentHall}</span>.
+                  Finish this Counselor setup (about 2 min) and that hall unlocks with your schools and term.
+                </div>
+              ) : null}
+              <div className="hall-steps" aria-label="Onboarding steps">
+                {steps.map((step) => (
+                  <span
+                    key={step.id}
+                    data-on={step.id === currentStep ? "true" : "false"}
+                    data-done={step.id < currentStep ? "true" : "false"}
+                  >
+                    <span className="hall-step-index">{String(step.id).padStart(2, "0")}</span>
+                    {step.label}
+                  </span>
+                ))}
+              </div>
+            </>
+          )}
           {currentStep === 1 && (
             <OnboardingStep1 data={data} updateData={updateData} onNext={handleNext} />
           )}

@@ -1,6 +1,5 @@
 "use client"
 
-import { Button } from "@/components/ui/button"
 import { Label } from "@/components/ui/label"
 import { SchoolSearch } from "@/components/onboarding/school-search"
 import type { OnboardingData } from "@/types/onboarding"
@@ -15,7 +14,6 @@ const EXPLORING_LABEL = "Still deciding"
 
 export function OnboardingStep1({ data, updateData, onNext }: Props) {
   const exploring = data.currentSchool === EXPLORING_LABEL && !data.currentSchoolId
-  const canProceed = data.currentSchoolId !== "" || exploring
 
   return (
     <div className="border border-[color:var(--hall-rule)] bg-transparent p-6 sm:p-8">
@@ -26,11 +24,7 @@ export function OnboardingStep1({ data, updateData, onNext }: Props) {
           </p>
           <h1 className="mb-2 text-2xl font-medium text-foreground">Where are you transferring from?</h1>
           <p className="text-muted-foreground">
-            TransferPath maps deadlines, courses, requirements, and essays for your move to a four-year.
-            Start with your current college when you know it — or keep going while you explore.
-          </p>
-          <p className="mt-2 text-xs text-muted-foreground">
-            You&apos;ll create a free account at the last step so this setup is saved.
+            Search your current college, or leave it blank if you are still deciding.
           </p>
         </div>
 
@@ -43,51 +37,42 @@ export function OnboardingStep1({ data, updateData, onNext }: Props) {
               onSelect={(id, name) => updateData({ currentSchoolId: id, currentSchool: name })}
               onClear={() => updateData({ currentSchoolId: "", currentSchool: "" })}
               placeholder="Search for your school..."
-              onContinueWithoutSchool={() =>
-                updateData({ currentSchoolId: "", currentSchool: EXPLORING_LABEL })
-              }
             />
-            {exploring ? (
-              <p className="text-xs text-muted-foreground">
-                Continuing as <span className="font-medium text-foreground">still deciding</span>. You can
-                set a school later in Counselor · Settings.
-              </p>
-            ) : (
-              <button
-                type="button"
-                onClick={() => updateData({ currentSchoolId: "", currentSchool: EXPLORING_LABEL })}
-                className="text-left text-xs font-medium text-primary underline-offset-4 hover:underline"
-              >
-                Still deciding, or school isn&apos;t listed — continue anyway
-              </button>
-            )}
+            <p className="text-xs text-muted-foreground">
+              {data.currentSchoolId
+                ? `Continuing from ${data.currentSchool}.`
+                : exploring
+                  ? "Still deciding. You can set a school later in Counselor · Settings."
+                  : "No school yet is fine. Next keeps going as still deciding."}
+            </p>
           </div>
 
-          <div className="space-y-3">
+          <div className="space-y-2">
             <Label>Are you a CAP student?</Label>
             <p className="text-xs leading-relaxed text-muted-foreground">
-              CAP is UT Austin&apos;s Coordinated Admission Program. Some students start at a partner
-              campus with a path toward UT Austin for eligible majors. If that isn&apos;t you, choose No.
+              CAP is UT Austin’s Coordinated Admission Program. Choose No if that is not you.
             </p>
-            <div className="flex rounded-none border border-[color:var(--hall-rule)] bg-[color:var(--hall-ink)]/[0.03] p-1">
+            <div className="flex gap-2">
               <button
                 type="button"
+                aria-pressed={data.isCapStudent}
                 onClick={() => updateData({ isCapStudent: true })}
-                className={`flex-1 rounded-md px-4 py-2 text-sm font-medium transition-colors ${
+                className={`rounded-none border px-4 py-1.5 text-sm font-medium transition-colors ${
                   data.isCapStudent
-                    ? "bg-[color:var(--hall-paper)] text-foreground"
-                    : "text-muted-foreground hover:text-foreground"
+                    ? "border-[color:var(--hall-ink)] bg-[color:var(--hall-ink)] text-[color:var(--hall-paper)]"
+                    : "border-[color:var(--hall-rule)] bg-transparent text-[color:var(--hall-stone)] hover:text-foreground"
                 }`}
               >
                 Yes
               </button>
               <button
                 type="button"
+                aria-pressed={!data.isCapStudent}
                 onClick={() => updateData({ isCapStudent: false })}
-                className={`flex-1 rounded-md px-4 py-2 text-sm font-medium transition-colors ${
+                className={`rounded-none border px-4 py-1.5 text-sm font-medium transition-colors ${
                   !data.isCapStudent
-                    ? "bg-[color:var(--hall-paper)] text-foreground"
-                    : "text-muted-foreground hover:text-foreground"
+                    ? "border-[color:var(--hall-ink)] bg-[color:var(--hall-ink)] text-[color:var(--hall-paper)]"
+                    : "border-[color:var(--hall-rule)] bg-transparent text-[color:var(--hall-stone)] hover:text-foreground"
                 }`}
               >
                 No
@@ -96,14 +81,22 @@ export function OnboardingStep1({ data, updateData, onNext }: Props) {
           </div>
         </div>
 
-        <div className="pt-4">
-          <Button
-            onClick={onNext}
-            disabled={!canProceed}
-            className="w-full bg-primary text-primary-foreground hover:bg-primary/90"
+        <div className="space-y-3 pt-4">
+          <p className="text-xs text-muted-foreground">
+            You&apos;ll create a free account at the last step so this setup is saved.
+          </p>
+          <button
+            type="button"
+            className="union-primary-cta w-full"
+            onClick={() => {
+              if (!data.currentSchoolId) {
+                updateData({ currentSchoolId: "", currentSchool: EXPLORING_LABEL })
+              }
+              onNext()
+            }}
           >
             Next
-          </Button>
+          </button>
         </div>
       </div>
     </div>
