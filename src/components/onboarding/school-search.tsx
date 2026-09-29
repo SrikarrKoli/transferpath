@@ -18,6 +18,7 @@ export interface SchoolSearchProps {
   onSelect: (id: string, name: string) => void
   onClear: () => void
   placeholder?: string
+  tone?: "ink"
   /** When set, limits results to this institution type. */
   universityType?: "community_college" | "four_year"
   /** Retained for caller compatibility; the no-results panel is informational. */
@@ -32,6 +33,7 @@ function SchoolSearchInner({
   onClear,
   placeholder = "Search for a school...",
   universityType,
+  tone,
 }: SchoolSearchProps) {
   const [query, setQuery] = useState(value)
   const [results, setResults] = useState<SchoolResult[]>([])
@@ -148,7 +150,7 @@ function SchoolSearchInner({
             if (query.length >= 2 && results.length > 0 && !selectedId) setIsOpen(true)
           }}
           placeholder={placeholder}
-          className="h-10 w-full rounded-none border border-[color:var(--hall-rule)] bg-[color:var(--hall-paper)] pl-9 pr-9 text-sm text-foreground transition-colors placeholder:text-muted-foreground focus:border-[color:var(--hall-ink)] focus:outline-none focus:ring-1 focus:ring-[color:var(--hall-ink)]/20"
+          className={`h-10 w-full rounded-none border ${tone === "ink" ? "border-[color:var(--hall-ink)]" : "border-[color:var(--hall-rule)]"} bg-[color:var(--hall-paper)] pl-9 pr-9 text-sm text-foreground transition-colors placeholder:text-muted-foreground focus:border-[color:var(--hall-ink)] focus:outline-none focus:ring-1 focus:ring-[color:var(--hall-ink)]/20`}
         />
         {isLoading && (
           <Loader2 className="absolute right-3 top-1/2 -translate-y-1/2 h-4 w-4 animate-spin text-muted-foreground" />
