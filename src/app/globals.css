@@ -716,6 +716,18 @@ nextjs-portal,
   color: var(--hall-clay);
 }
 
+.campus-entered[data-building="quad"] [data-countdown-band="near"] {
+  color: var(--hall-clay);
+}
+
+.campus-entered[data-building="quad"] [data-countdown-band="mid"] {
+  color: var(--hall-ink);
+}
+
+.campus-entered[data-building="quad"] [data-countdown-band="far"] {
+  color: var(--hall-stone);
+}
+
 .hall-date-title {
   margin: 0;
   font-size: 1.35rem;

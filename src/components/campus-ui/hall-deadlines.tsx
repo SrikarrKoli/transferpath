@@ -17,6 +17,29 @@ const FILTERS: { id: TasksDeadlinesFilterId; label: string }[] = [
   { id: "missing_dates", label: "Missing" },
 ]
 
+function deadlineTaskLabel(row: { title: string; categoryMeta: string }): string {
+  const text = `${row.title} ${row.categoryMeta}`
+  const verb = /fafsa|tasfa|financial aid|\baid\b/i.test(text)
+    ? "File"
+    : /application|apply/i.test(text)
+      ? "Submit"
+      : "Complete"
+  const label = `${verb} ${row.title}`
+  if (label.length <= 52) return label
+  return verb === "File"
+    ? "File this aid form"
+    : verb === "Submit"
+      ? "Submit this application"
+      : "Complete this deadline"
+}
+
+function countdownBand(label: string): string {
+  const days = Number.parseInt(label, 10)
+  if (days < 60) return "near"
+  if (days < 150) return "mid"
+  return "far"
+}
+
 function PrimaryAction({
   href,
   label,
@@ -66,7 +89,9 @@ function DeadlinesNextBlock({
   if (soonest) {
     const dateParts = splitHallDate(soonest.dateLabel)
     const primaryHref = soonest.officialUrl ?? "/dashboard/requirements"
-    const primaryLabel = soonest.officialUrl ? "Open official page" : "Open requirements"
+    const taskLabel = deadlineTaskLabel(soonest)
+    const verb = taskLabel.split(" ")[0]
+    const primaryLabel = soonest.officialUrl ? taskLabel : "Open requirements"
     return (
       <section className="union-next-block" aria-labelledby="deadlines-next-heading">
         <p className="hall-caption" id="deadlines-next-heading">
@@ -82,18 +107,26 @@ function DeadlinesNextBlock({
         </p>
         <h2 className="hall-hero-title">{soonest.title}</h2>
         <p className="mt-3 text-sm text-[color:var(--hall-stone)]">
-          {[soonest.scopeChip, soonest.categoryMeta, soonest.countdownLabel]
-            .filter(Boolean)
-            .join(" · ")}
+          {[soonest.scopeChip, soonest.categoryMeta].filter(Boolean).join(" · ")}
+          {soonest.countdownLabel ? (
+            <>
+              {soonest.scopeChip || soonest.categoryMeta ? " · " : ""}
+              <span data-countdown-band={countdownBand(soonest.countdownLabel)}>
+                {soonest.countdownLabel}
+              </span>
+            </>
+          ) : null}
+        </p>
+        <p className="mt-2 text-sm text-[color:var(--hall-stone)]">
+          {verb === "Submit"
+            ? `Submit the ${soonest.title} on ${soonest.categoryMeta} before this date.`
+            : `${verb} ${soonest.title} before this date.`}
         </p>
         <div className="union-step-actions mt-6">
           <PrimaryAction href={primaryHref} label={primaryLabel} external={Boolean(soonest.officialUrl)} />
           <Link href="/dashboard/checklist" className="hall-ledger-link">
             Open checklist
           </Link>
-          <button type="button" className="hall-ledger-link" onClick={() => onFilter("deadlines")}>
-            See all dates
-          </button>
         </div>
       </section>
     )
@@ -114,18 +147,14 @@ function DeadlinesNextBlock({
         <h2 className="hall-hero-title">{missing.headline}</h2>
         <p className="hall-prompt mt-4">{missing.provenanceWhat}</p>
         <div className="union-step-actions mt-6">
-          {missing.officialUrl ? (
-            <PrimaryAction href={missing.officialUrl} label="Open official page" external />
-          ) : (
-            <PrimaryAction href={missing.recordHref || "/dashboard/requirements"} label="Confirm this date" />
-          )}
+          <PrimaryAction href={missing.recordHref || "/dashboard/requirements"} label="Confirm this date" />
           <Link href="/sources" className="hall-ledger-link">
             Why this is missing
           </Link>
           {missing.officialUrl ? (
-            <Link href={missing.recordHref || "/dashboard/requirements"} className="hall-ledger-link">
-              Open requirements
-            </Link>
+            <a href={missing.officialUrl} className="hall-ledger-link" target="_blank" rel="noopener noreferrer">
+              Official page
+            </a>
           ) : (
             <button type="button" className="hall-ledger-link" onClick={() => onFilter("missing_dates")}>
               See missing
@@ -228,7 +257,7 @@ export function HallDeadlines({
 
         <div className="hall-index mt-6" role="tablist" aria-label="Deadline views">
           {FILTERS.map((item) => {
-            const count = data.filterCounts[item.id]
+            const count = item.id === "upcoming" ? data.upcomingDeadlines.length : data.filterCounts[item.id]
             return (
               <button
                 key={item.id}
@@ -246,6 +275,13 @@ export function HallDeadlines({
             )
           })}
         </div>
+
+        {filter === "upcoming" ? (
+          <p className="hall-date-meta">
+            {data.upcomingDeadlines.length} institution dates on this list
+            {data.openTasks.length > 0 ? ` · ${data.openTasks.length} open under Your work` : ""}
+          </p>
+        ) : null}
 
         {showDeadlines ? (
           <ol className="hall-dates">
@@ -351,6 +387,20 @@ export function HallDeadlines({
         <p className="mt-1 text-[0.9rem] text-[color:var(--hall-stone)]">
           {data.header.program} · {data.header.term}
         </p>
+        {data.openTasks[0] ? (
+          <div className="mt-6">
+            <p className="hall-caption">Still open</p>
+            {data.openTasks[0].action?.href ? (
+              <Link href={data.openTasks[0].action.href} className="hall-ledger-link">
+                {data.openTasks[0].title}
+              </Link>
+            ) : (
+              <button type="button" className="hall-ledger-link text-left" onClick={() => onFilter("tasks")}>
+                {data.openTasks[0].title}
+              </button>
+            )}
+          </div>
+        ) : null}
         <div className="mt-6 flex flex-col items-start gap-2">
           <Link href="/dashboard/requirements" className="hall-ledger-link">
             Open Requirements
@@ -374,7 +424,11 @@ function DeadlineLine({ row }: { row: TasksDeadlinesDeadlineRow }) {
       <div>
         <span className="hall-date-big">{primary}</span>
         {year ? <span className="hall-date-year">{year}</span> : null}
-        {row.countdownLabel ? <span className="hall-date-count">{row.countdownLabel}</span> : null}
+        {row.countdownLabel ? (
+          <span className="hall-date-count" data-countdown-band={countdownBand(row.countdownLabel)}>
+            {row.countdownLabel}
+          </span>
+        ) : null}
       </div>
       <div>
         <p className="hall-date-title">{row.title}</p>
@@ -384,8 +438,9 @@ function DeadlineLine({ row }: { row: TasksDeadlinesDeadlineRow }) {
         </p>
       </div>
       {row.officialUrl ? (
-        <a href={row.officialUrl} className="hall-source" target="_blank" rel="noreferrer">
-          Official
+        <a href={row.officialUrl} className="hall-ledger-link" target="_blank" rel="noreferrer">
+          {deadlineTaskLabel(row).split(" ")[0]}
+          <span className="block text-xs text-[color:var(--hall-stone)]">Official</span>
         </a>
       ) : (
         <Link href="/dashboard/requirements" className="hall-ledger-link">

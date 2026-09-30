@@ -15,7 +15,7 @@ export const previewDeadlines: TasksDeadlinesData = {
     term: "Fall 2027",
   },
   filterCounts: {
-    upcoming: 6,
+    upcoming: 3,
     tasks: 3,
     deadlines: 3,
     completed: 2,
