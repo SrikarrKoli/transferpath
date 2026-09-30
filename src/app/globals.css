@@ -725,7 +725,7 @@ nextjs-portal,
 }
 
 .campus-entered[data-building="quad"] [data-countdown-band="far"] {
-  color: var(--hall-stone);
+  color: color-mix(in oklab, var(--hall-ink) 68%, var(--hall-stone));
 }
 
 .hall-date-title {
@@ -4978,12 +4978,18 @@ nextjs-portal,
 
 
 /* Iter12e clock tower + masthead rhythm */
+.campus-entered[data-building="quad"] .hall-hero-title {
+  margin-top: 0.4rem;
+}
+
 .campus-entered[data-building="quad"] .hall-index {
+  margin-top: 0.85rem;
+  align-items: center;
   gap: 0.35rem 1.35rem;
   padding-bottom: 0.85rem;
   margin-bottom: 0.35rem;
   border-bottom: 1px solid var(--hall-rule);
-  font-family: var(--font-jetbrains-mono), ui-monospace, monospace;
+  font-family: inherit;
   font-size: 0.875rem;
   letter-spacing: 0.01em;
   text-transform: none;
@@ -4992,7 +4998,16 @@ nextjs-portal,
 
 .campus-entered[data-building="quad"] .hall-index button[data-on="true"] {
   color: var(--hall-ink);
-  box-shadow: inset 0 -1px 0 var(--hall-ink);
+  font-weight: 650;
+  text-decoration: none;
+  box-shadow: none;
+}
+
+.campus-entered[data-building="quad"] .hall-index-break {
+  width: 1px;
+  height: 1rem;
+  flex-shrink: 0;
+  background: var(--hall-rule);
 }
 
 .campus-entered[data-building="quad"] .hall-date-year {

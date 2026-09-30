@@ -1,6 +1,7 @@
 "use client"
 
 import Link from "next/link"
+import { Fragment } from "react"
 import { splitHallDate } from "@/lib/hall-date"
 import type {
   TasksDeadlinesData,
@@ -34,7 +35,9 @@ function deadlineTaskLabel(row: { title: string; categoryMeta: string }): string
 }
 
 function deadlineLinkLabel(row: { title: string; categoryMeta: string }): string {
-  const verb = deadlineTaskLabel(row).split(" ")[0]
+  const taskLabel = deadlineTaskLabel(row)
+  if (taskLabel.length <= 42) return taskLabel
+  const verb = taskLabel.split(" ")[0]
   const category = row.categoryMeta.trim()
   if (/applytexas/i.test(category)) return `${verb} on ApplyTexas`
   if (/fafsa|tasfa|financial aid|\baid\b/i.test(`${row.title} ${category}`)) {
@@ -289,19 +292,21 @@ export function HallDeadlines({
                 ? institutionDeadlines.length
                 : data.filterCounts[item.id]
             return (
-              <button
-                key={item.id}
-                type="button"
-                role="tab"
-                data-on={filter === item.id ? "true" : "false"}
-                aria-selected={filter === item.id}
-                onClick={() => onFilter(item.id)}
-              >
-                {item.label}
-                {typeof count === "number" ? (
-                  <span className="ml-1 text-[0.9em] tabular-nums text-[color:var(--hall-ink)]">{count}</span>
-                ) : null}
-              </button>
+              <Fragment key={item.id}>
+                {item.id === "tasks" ? <span className="hall-index-break" aria-hidden="true" /> : null}
+                <button
+                  type="button"
+                  role="tab"
+                  data-on={filter === item.id ? "true" : "false"}
+                  aria-selected={filter === item.id}
+                  onClick={() => onFilter(item.id)}
+                >
+                  {item.label}
+                  {typeof count === "number" ? (
+                    <span className="text-[0.9em] tabular-nums">{` · ${count}`}</span>
+                  ) : null}
+                </button>
+              </Fragment>
             )
           })}
         </div>
