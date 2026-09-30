@@ -35,19 +35,13 @@ function deadlineTaskLabel(row: { title: string; categoryMeta: string }): string
 }
 
 function deadlineLinkLabel(row: { title: string; categoryMeta: string }): string {
-  const taskLabel = deadlineTaskLabel(row)
-  if (taskLabel.length <= 42) return taskLabel
-  const verb = taskLabel.split(" ")[0]
   const category = row.categoryMeta.trim()
-  if (/applytexas/i.test(category)) return `${verb} on ApplyTexas`
+  if (/applytexas/i.test(category)) return "ApplyTexas"
   if (/fafsa|tasfa|financial aid|\baid\b/i.test(`${row.title} ${category}`)) {
-    return row.title.length <= 28 ? `${verb} ${row.title}` : `${verb} this aid form`
+    return "Student Aid"
   }
-  if (category && !/^(application|deadline|other)$/i.test(category)) {
-    return `${verb} on ${category}`
-  }
-  const label = `${verb} ${row.title}`
-  return label.length <= 36 ? label : `${verb} · official page`
+  if (category && !/^(application|deadline|other)$/i.test(category)) return category
+  return "Official page"
 }
 
 function countdownBand(label: string): string {
@@ -58,10 +52,8 @@ function countdownBand(label: string): string {
 }
 
 function countdownText(label: string): string {
-  const band = countdownBand(label)
-  const name = band === "near" ? "Soon" : band === "mid" ? "Later" : "Far"
   const days = Number.parseInt(label, 10)
-  return `${days} ${days === 1 ? "day" : "days"} · ${name}`
+  return `${days} ${days === 1 ? "day" : "days"}`
 }
 
 function PrimaryAction({
@@ -114,7 +106,6 @@ function DeadlinesNextBlock({
     const dateParts = splitHallDate(soonest.dateLabel)
     const primaryHref = soonest.officialUrl ?? "/dashboard/requirements"
     const taskLabel = deadlineTaskLabel(soonest)
-    const verb = taskLabel.split(" ")[0]
     const primaryLabel = soonest.officialUrl ? taskLabel : "Open requirements"
     return (
       <section className="union-next-block" aria-labelledby="deadlines-next-heading">
@@ -140,11 +131,6 @@ function DeadlinesNextBlock({
               </span>
             </>
           ) : null}
-        </p>
-        <p className="mt-2 text-sm text-[color:var(--hall-stone)]">
-          {verb === "Submit"
-            ? `Submit the ${soonest.title} on ${soonest.categoryMeta} before this date.`
-            : `${verb} ${soonest.title} before this date.`}
         </p>
         <div className="union-step-actions mt-6">
           <PrimaryAction href={primaryHref} label={primaryLabel} external={Boolean(soonest.officialUrl)} />
@@ -406,24 +392,26 @@ export function HallDeadlines({
       </div>
 
       <aside className="hall-margin">
-        <p className="hall-caption">Your transfer</p>
-        <p className="mt-2">
-          <span className="text-[color:var(--hall-stone)]">{data.header.fromInstitution}</span>
-          <span aria-hidden> → </span>
-          <strong>{data.header.toInstitution}</strong>
-        </p>
-        <p className="mt-1 text-[0.9rem] text-[color:var(--hall-stone)]">
-          {data.header.program} · {data.header.term}
-        </p>
-        <div className="mt-6 flex flex-col items-start gap-2">
+        <div>
+          <p className="hall-caption">Your transfer</p>
+          <p className="mt-2">
+            <span className="text-[color:var(--hall-stone)]">{data.header.fromInstitution}</span>
+            <span aria-hidden> → </span>
+            <strong>{data.header.toInstitution}</strong>
+          </p>
+          <p className="mt-1 text-[0.9rem] text-[color:var(--hall-stone)]">
+            {data.header.program} · {data.header.term}
+          </p>
+        </div>
+        <div className="flex flex-wrap gap-4">
           <Link href="/dashboard/requirements" className="hall-ledger-link">
-            Open Requirements
+            Open requirements
           </Link>
           <Link href="/dashboard/checklist" className="hall-ledger-link">
-            Open Checklist
+            Open checklist
           </Link>
           <Link href="/dashboard/plan" className="hall-ledger-link">
-            Open Plan
+            Open plan
           </Link>
         </div>
       </aside>

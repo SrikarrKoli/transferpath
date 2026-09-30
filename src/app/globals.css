@@ -725,7 +725,7 @@ nextjs-portal,
 }
 
 .campus-entered[data-building="quad"] [data-countdown-band="far"] {
-  color: color-mix(in oklab, var(--hall-ink) 68%, var(--hall-stone));
+  color: color-mix(in oklab, var(--hall-ink) 42%, var(--hall-stone));
 }
 
 .hall-date-title {
@@ -749,7 +749,7 @@ nextjs-portal,
 }
 
 .campus-entered[data-building="quad"] .hall-date-row {
-  padding: 0.85rem 0;
+  padding: 0.7rem 0;
 }
 
 .campus-entered[data-building="quad"] .hall-hero-date {
@@ -4996,9 +4996,14 @@ nextjs-portal,
   color: color-mix(in oklab, var(--hall-ink) 78%, var(--hall-stone));
 }
 
+.campus-entered[data-building="quad"] .hall-index button {
+  padding: 0.2rem 0.45rem;
+}
+
 .campus-entered[data-building="quad"] .hall-index button[data-on="true"] {
   color: var(--hall-ink);
-  font-weight: 650;
+  font-weight: 600;
+  background: color-mix(in oklab, var(--hall-ink) 8%, var(--hall-paper));
   text-decoration: none;
   box-shadow: none;
 }
@@ -5015,9 +5020,29 @@ nextjs-portal,
   color: color-mix(in oklab, var(--hall-ink) 72%, var(--hall-stone));
 }
 
+@media (min-width: 960px) {
+  .campus-entered[data-building="quad"] .hall-split {
+    grid-template-columns: 1fr;
+  }
+}
+
 .campus-entered[data-building="quad"] .hall-margin {
   color: color-mix(in oklab, var(--hall-ink) 78%, var(--hall-stone));
-  align-self: start;
+  grid-row: 1;
+  align-self: stretch;
+  border-left: 0;
+  border-bottom: 1px solid var(--hall-rule);
+  padding: 0 0 0.85rem;
+  margin-bottom: 1.15rem;
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: space-between;
+  align-items: baseline;
+  gap: 0.75rem 1.5rem;
+}
+
+.campus-entered[data-building="quad"] .hall-split > div:not(.hall-margin) {
+  grid-row: 2;
 }
 
 .hall-masthead {
