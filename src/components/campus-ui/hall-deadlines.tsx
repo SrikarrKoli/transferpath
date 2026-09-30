@@ -10,11 +10,11 @@ import type {
 } from "@/types/tasks-deadlines"
 
 const FILTERS: { id: TasksDeadlinesFilterId; label: string }[] = [
-  { id: "upcoming", label: "Dates" },
-  { id: "deadlines", label: "Institution" },
-  { id: "tasks", label: "Your work" },
+  { id: "upcoming", label: "All dates" },
+  { id: "deadlines", label: "Target school" },
+  { id: "tasks", label: "Open work" },
   { id: "completed", label: "Done" },
-  { id: "missing_dates", label: "Missing" },
+  { id: "missing_dates", label: "Needs a date" },
 ]
 
 function deadlineTaskLabel(row: { title: string; categoryMeta: string }): string {
@@ -33,6 +33,20 @@ function deadlineTaskLabel(row: { title: string; categoryMeta: string }): string
       : "Complete this deadline"
 }
 
+function deadlineLinkLabel(row: { title: string; categoryMeta: string }): string {
+  const verb = deadlineTaskLabel(row).split(" ")[0]
+  const category = row.categoryMeta.trim()
+  if (/applytexas/i.test(category)) return `${verb} on ApplyTexas`
+  if (/fafsa|tasfa|financial aid|\baid\b/i.test(`${row.title} ${category}`)) {
+    return row.title.length <= 28 ? `${verb} ${row.title}` : `${verb} this aid form`
+  }
+  if (category && !/^(application|deadline|other)$/i.test(category)) {
+    return `${verb} on ${category}`
+  }
+  const label = `${verb} ${row.title}`
+  return label.length <= 36 ? label : `${verb} · official page`
+}
+
 function countdownBand(label: string): string {
   const days = Number.parseInt(label, 10)
   if (days < 60) return "near"
@@ -43,7 +57,8 @@ function countdownBand(label: string): string {
 function countdownText(label: string): string {
   const band = countdownBand(label)
   const name = band === "near" ? "Soon" : band === "mid" ? "Later" : "Far"
-  return `${Number.parseInt(label, 10)} days · ${name}`
+  const days = Number.parseInt(label, 10)
+  return `${days} ${days === 1 ? "day" : "days"} · ${name}`
 }
 
 function PrimaryAction({
@@ -291,20 +306,6 @@ export function HallDeadlines({
           })}
         </div>
 
-        {filter === "upcoming" ? (
-          <p className="hall-date-meta">
-            Soonest first. Statewide aid is included; Institution is only the target school.
-          </p>
-        ) : null}
-
-        {filter === "deadlines" ? (
-          <p className="hall-date-meta">
-            {institutionDeadlines.length === 0
-              ? "No target-school date on file."
-              : `Only ${data.header.toInstitution}. Statewide aid stays on Dates.`}
-          </p>
-        ) : null}
-
         {showDeadlines && (filter !== "deadlines" || visibleDeadlines.length > 0) ? (
           <ol className="hall-dates">
             {data.upcomingDeadlines.length === 0 ? (
@@ -447,7 +448,7 @@ function DeadlineLine({ row }: { row: TasksDeadlinesDeadlineRow }) {
       </div>
       {row.officialUrl ? (
         <a href={row.officialUrl} className="hall-ledger-link whitespace-nowrap" target="_blank" rel="noreferrer">
-          {deadlineTaskLabel(row).split(" ")[0]} · official page
+          {deadlineLinkLabel(row)}
         </a>
       ) : (
         <Link href="/dashboard/requirements" className="hall-ledger-link">

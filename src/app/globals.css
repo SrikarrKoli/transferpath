@@ -4984,13 +4984,25 @@ nextjs-portal,
   margin-bottom: 0.35rem;
   border-bottom: 1px solid var(--hall-rule);
   font-family: var(--font-jetbrains-mono), ui-monospace, monospace;
-  font-size: 0.68rem;
-  letter-spacing: 0.08em;
-  text-transform: uppercase;
+  font-size: 0.875rem;
+  letter-spacing: 0.01em;
+  text-transform: none;
+  color: color-mix(in oklab, var(--hall-ink) 78%, var(--hall-stone));
 }
 
 .campus-entered[data-building="quad"] .hall-index button[data-on="true"] {
+  color: var(--hall-ink);
   box-shadow: inset 0 -1px 0 var(--hall-ink);
+}
+
+.campus-entered[data-building="quad"] .hall-date-year {
+  font-size: 0.95rem;
+  color: color-mix(in oklab, var(--hall-ink) 72%, var(--hall-stone));
+}
+
+.campus-entered[data-building="quad"] .hall-margin {
+  color: color-mix(in oklab, var(--hall-ink) 78%, var(--hall-stone));
+  align-self: start;
 }
 
 .hall-masthead {
