@@ -276,7 +276,7 @@ export function OnboardingClient({ existingSession, embedded = false }: Onboardi
       )}
 
       <main className={`flex flex-1 ${embedded ? "items-start justify-start py-2" : "items-start justify-center px-6 py-8"}`}>
-        <div className="w-full max-w-2xl">
+        <div className={embedded ? "w-full max-w-none" : "w-full max-w-2xl"}>
           {embedded && (
             <>
               {intentHall ? (

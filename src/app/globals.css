@@ -6420,11 +6420,17 @@ nextjs-portal,
 .campus-entered[data-building="library"] .library-coach li + li { margin-top: 0.45rem; }
 
 /* Counselor onboarding: keep the task close and the five steps readable. */
+.campus-entered[data-purpose="onboarding"] {
+  min-height: 0;
+}
+
 .campus-entered[data-purpose="onboarding"] .hall-masthead {
   margin-bottom: 0.5rem;
 }
 
 .campus-entered[data-purpose="onboarding"] .hall-steps {
+  width: 100%;
+  justify-content: space-between;
   margin-bottom: 0.85rem;
   font-size: 0.95rem;
   color: var(--hall-ink);

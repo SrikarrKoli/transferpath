@@ -24,8 +24,7 @@ export function OnboardingStep1({ data, updateData, onNext }: Props) {
           </p>
           <h1 className="mb-2 text-2xl font-medium text-foreground">Where are you transferring from?</h1>
           <p className="text-muted-foreground">
-            Search your current college, or leave it blank if you are still deciding.{" "}
-            Nothing is saved until you create a free account on Timeline, the last step.
+            Search your current college, or leave it blank if you are still deciding.
           </p>
         </div>
 
@@ -33,7 +32,7 @@ export function OnboardingStep1({ data, updateData, onNext }: Props) {
           <div className="space-y-2">
             <div className="flex items-center gap-2">
               <Label>Current school</Label>
-              <span className="text-sm font-medium leading-none text-[color:var(--hall-stone)]">Optional</span>
+              <span className="text-sm font-medium leading-none text-[color:var(--hall-ink)]/70">Optional</span>
             </div>
             <SchoolSearch
               value={exploring ? "" : data.currentSchool}
@@ -92,6 +91,9 @@ export function OnboardingStep1({ data, updateData, onNext }: Props) {
           >
             Next
           </button>
+          <p className="text-xs text-muted-foreground">
+            A free account on Timeline, the last step, keeps this.
+          </p>
         </div>
       </div>
     </div>
