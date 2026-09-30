@@ -40,6 +40,12 @@ function countdownBand(label: string): string {
   return "far"
 }
 
+function countdownText(label: string): string {
+  const band = countdownBand(label)
+  const name = band === "near" ? "Soon" : band === "mid" ? "Later" : "Far"
+  return `${Number.parseInt(label, 10)} days · ${name}`
+}
+
 function PrimaryAction({
   href,
   label,
@@ -112,7 +118,7 @@ function DeadlinesNextBlock({
             <>
               {soonest.scopeChip || soonest.categoryMeta ? " · " : ""}
               <span data-countdown-band={countdownBand(soonest.countdownLabel)}>
-                {soonest.countdownLabel}
+                {countdownText(soonest.countdownLabel)}
               </span>
             </>
           ) : null}
@@ -243,6 +249,11 @@ export function HallDeadlines({
   onFilter: (id: TasksDeadlinesFilterId) => void
   onToggleTask: (id: string, done: boolean) => void
 }) {
+  const upcomingDeadlines = [...data.upcomingDeadlines].sort(
+    (a, b) => a.dueDateIso.localeCompare(b.dueDateIso)
+  )
+  const institutionDeadlines = upcomingDeadlines.filter((row) => row.scopeChip !== "Statewide")
+  const visibleDeadlines = filter === "deadlines" ? institutionDeadlines : upcomingDeadlines
   const showDeadlines = filter === "upcoming" || filter === "deadlines"
   const showOpenTasks = filter === "tasks"
   const showCompleted = filter === "completed"
@@ -253,11 +264,15 @@ export function HallDeadlines({
   return (
     <div className="hall-split">
       <div>
-        <DeadlinesNextBlock data={data} onFilter={onFilter} onToggleTask={onToggleTask} />
+        <DeadlinesNextBlock data={{ ...data, upcomingDeadlines }} onFilter={onFilter} onToggleTask={onToggleTask} />
 
         <div className="hall-index mt-6" role="tablist" aria-label="Deadline views">
           {FILTERS.map((item) => {
-            const count = item.id === "upcoming" ? data.upcomingDeadlines.length : data.filterCounts[item.id]
+            const count = item.id === "upcoming"
+              ? upcomingDeadlines.length
+              : item.id === "deadlines"
+                ? institutionDeadlines.length
+                : data.filterCounts[item.id]
             return (
               <button
                 key={item.id}
@@ -269,7 +284,7 @@ export function HallDeadlines({
               >
                 {item.label}
                 {typeof count === "number" ? (
-                  <span className="ml-1 tabular-nums opacity-50">{count}</span>
+                  <span className="ml-1 text-[0.9em] tabular-nums text-[color:var(--hall-ink)]">{count}</span>
                 ) : null}
               </button>
             )
@@ -278,12 +293,19 @@ export function HallDeadlines({
 
         {filter === "upcoming" ? (
           <p className="hall-date-meta">
-            {data.upcomingDeadlines.length} institution dates on this list
-            {data.openTasks.length > 0 ? ` · ${data.openTasks.length} open under Your work` : ""}
+            Soonest first. Statewide aid is included; Institution is only the target school.
           </p>
         ) : null}
 
-        {showDeadlines ? (
+        {filter === "deadlines" ? (
+          <p className="hall-date-meta">
+            {institutionDeadlines.length === 0
+              ? "No target-school date on file."
+              : `Only ${data.header.toInstitution}. Statewide aid stays on Dates.`}
+          </p>
+        ) : null}
+
+        {showDeadlines && (filter !== "deadlines" || visibleDeadlines.length > 0) ? (
           <ol className="hall-dates">
             {data.upcomingDeadlines.length === 0 ? (
               <li className="hall-date-row hall-date-empty">
@@ -310,7 +332,7 @@ export function HallDeadlines({
                 <span className="hall-urgent text-[0.8rem]">No date</span>
               </li>
             ) : (
-              data.upcomingDeadlines.map((row) => <DeadlineLine key={row.id} row={row} />)
+              visibleDeadlines.map((row) => <DeadlineLine key={row.id} row={row} />)
             )}
           </ol>
         ) : null}
@@ -387,20 +409,6 @@ export function HallDeadlines({
         <p className="mt-1 text-[0.9rem] text-[color:var(--hall-stone)]">
           {data.header.program} · {data.header.term}
         </p>
-        {data.openTasks[0] ? (
-          <div className="mt-6">
-            <p className="hall-caption">Still open</p>
-            {data.openTasks[0].action?.href ? (
-              <Link href={data.openTasks[0].action.href} className="hall-ledger-link">
-                {data.openTasks[0].title}
-              </Link>
-            ) : (
-              <button type="button" className="hall-ledger-link text-left" onClick={() => onFilter("tasks")}>
-                {data.openTasks[0].title}
-              </button>
-            )}
-          </div>
-        ) : null}
         <div className="mt-6 flex flex-col items-start gap-2">
           <Link href="/dashboard/requirements" className="hall-ledger-link">
             Open Requirements
@@ -426,7 +434,7 @@ function DeadlineLine({ row }: { row: TasksDeadlinesDeadlineRow }) {
         {year ? <span className="hall-date-year">{year}</span> : null}
         {row.countdownLabel ? (
           <span className="hall-date-count" data-countdown-band={countdownBand(row.countdownLabel)}>
-            {row.countdownLabel}
+            {countdownText(row.countdownLabel)}
           </span>
         ) : null}
       </div>
@@ -438,9 +446,8 @@ function DeadlineLine({ row }: { row: TasksDeadlinesDeadlineRow }) {
         </p>
       </div>
       {row.officialUrl ? (
-        <a href={row.officialUrl} className="hall-ledger-link" target="_blank" rel="noreferrer">
-          {deadlineTaskLabel(row).split(" ")[0]}
-          <span className="block text-xs text-[color:var(--hall-stone)]">Official</span>
+        <a href={row.officialUrl} className="hall-ledger-link whitespace-nowrap" target="_blank" rel="noreferrer">
+          {deadlineTaskLabel(row).split(" ")[0]} · official page
         </a>
       ) : (
         <Link href="/dashboard/requirements" className="hall-ledger-link">

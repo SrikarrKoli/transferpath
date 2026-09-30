@@ -748,6 +748,18 @@ nextjs-portal,
   line-height: 0.82;
 }
 
+.campus-entered[data-building="quad"] .hall-date-row {
+  padding: 0.85rem 0;
+}
+
+.campus-entered[data-building="quad"] .hall-hero-date {
+  font-size: clamp(2.7rem, 6vw, 4.4rem);
+}
+
+.campus-entered[data-building="quad"] .hall-date-meta {
+  color: color-mix(in oklab, var(--hall-ink) 78%, var(--hall-stone));
+}
+
 .hall-hero-title {
   margin: 0.85rem 0 0;
   max-width: 18ch;
