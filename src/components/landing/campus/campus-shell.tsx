@@ -196,7 +196,7 @@ export function CampusShell() {
 
         <div className="campus-mobile-nav absolute inset-x-0 top-4 z-20 px-3 lg:hidden">
           <div className="mb-2 flex items-center justify-between">
-            <Link href="/" className="inline-flex items-center gap-2 bg-[#f4efe6]/92 px-3 py-1.5">
+            <Link href="/" aria-label="TransferPath home" className="inline-flex items-center gap-2 bg-[#f4efe6]/92 px-3 py-1.5">
               <CampusSeal />
               <span className="campus-wordmark max-[389px]:hidden">Transfer<span>Path</span></span>
             </Link>
