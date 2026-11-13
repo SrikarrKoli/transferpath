@@ -126,6 +126,9 @@ export function OnboardingStep5({
             <span className="text-sm text-foreground">Send me deadline reminders</span>
             <button
               type="button"
+              role="switch"
+              aria-checked={data.sendReminders}
+              aria-label="Send me deadline reminders"
               onClick={() => updateData({ sendReminders: !data.sendReminders })}
               className={`relative h-6 w-11 rounded-full transition-colors ${
                 data.sendReminders ? "bg-primary" : "bg-muted"
