@@ -196,16 +196,23 @@ export function CampusShell() {
 
         <div className="campus-mobile-nav absolute inset-x-0 top-4 z-20 px-3 lg:hidden">
           <div className="mb-2 flex items-center justify-between">
-            <Link href="/" className="inline-flex items-center gap-2 bg-[#f4efe6]/92 px-3 py-1.5">
+            <Link href="/" aria-label="TransferPath home" className="inline-flex items-center gap-2 bg-[#f4efe6]/92 px-3 py-1.5">
               <CampusSeal />
-              <span className="campus-wordmark">Transfer<span>Path</span></span>
+              <span className="campus-wordmark max-[389px]:hidden">Transfer<span>Path</span></span>
             </Link>
-            <Link
-              href={sessionState === "member" ? "/dashboard" : "/onboarding"}
-              className="bg-[#1a2332] px-3 py-1.5 text-xs font-medium text-[#f4efe6]"
-            >
-              <CampusWaymark /> {sessionState === "member" ? "Open campus" : CTA_GET_STARTED}
-            </Link>
+            <div className="flex shrink-0 items-center gap-1.5">
+              {sessionState === "member" ? null : (
+                <Link href="/login" className="whitespace-nowrap px-2.5 py-1.5 text-xs font-medium">
+                  Log in
+                </Link>
+              )}
+              <Link
+                href={sessionState === "member" ? "/dashboard" : "/onboarding"}
+                className="whitespace-nowrap bg-[#1a2332] px-3 py-1.5 text-xs font-medium text-[#f4efe6]"
+              >
+                <CampusWaymark /> {sessionState === "member" ? "Open campus" : CTA_GET_STARTED}
+              </Link>
+            </div>
           </div>
           <div className="flex gap-1.5 overflow-x-auto pb-1">
             {CAMPUS_BUILDINGS.map((b) => {

@@ -27,8 +27,10 @@ export function safeCampusReturnPath(raw: string | null | undefined): string | n
   if (!raw) return null
   const path = raw.trim()
   if (!path.startsWith("/")) return null
-  if (path.startsWith("//") || path.includes("://")) return null
+  if (path.startsWith("//") || path.includes("://") || path.includes("\\")) return null
   const bare = path.split("?")[0]?.split("#")[0] ?? ""
+  const dotSegment = (seg: string) => /^(\.|%2e){1,2}$/i.test(seg)
+  if (bare.split("/").some(dotSegment)) return null
   if (bare === "/onboarding" || bare.startsWith("/onboarding/")) return bare
   if (bare === "/dashboard" || bare.startsWith("/dashboard/")) {
     // Keep a simple ?tab= deep link (e.g. password recovery → Account & security).
@@ -48,7 +50,7 @@ export function campusEnterHref(
   building: { id: BuildingId; href: string },
   session: "guest" | "member" | "loading"
 ): string {
-  if (session === "member") return building.href
+  if (session === "member") return building.id === "counselor" ? "/dashboard/settings" : building.href
   if (building.href.startsWith("/onboarding")) return building.href
   if (building.href.startsWith("/dashboard")) {
     const params = new URLSearchParams()

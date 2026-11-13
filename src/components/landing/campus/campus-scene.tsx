@@ -6,6 +6,20 @@ import { RoomEnvironment } from "three/addons/environments/RoomEnvironment.js"
 import { CAMPUS_BUILDINGS, type BuildingId } from "./campus-data"
 import { buildCampusWorld } from "./campus-world"
 
+const CAMPUS_LOADING = "Building campus…"
+const CAMPUS_UNAVAILABLE = "The 3D campus can’t load on this device"
+
+function canCreateWebGL() {
+  try {
+    const canvas = document.createElement("canvas")
+    const gl = canvas.getContext("webgl2") ?? canvas.getContext("webgl")
+    gl?.getExtension("WEBGL_lose_context")?.loseContext()
+    return !!gl
+  } catch {
+    return false
+  }
+}
+
 type Props = {
   selected: BuildingId | null
   hovered: BuildingId | null
@@ -31,18 +45,26 @@ export function CampusScene({ selected, hovered, focusToken, onHover, onSelect, 
     onSelectRef.current = onSelect
     onEnterRef.current = onEnter
   }, [selected, hovered, focusToken, onHover, onSelect, onEnter])
-  const [status, setStatus] = useState("Building campus…")
+  const [webglMissing] = useState(() => !canCreateWebGL())
+  const [status, setStatus] = useState(webglMissing ? CAMPUS_UNAVAILABLE : CAMPUS_LOADING)
 
   useEffect(() => {
     const mount = mountRef.current
-    if (!mount) return
+    if (!mount || webglMissing) return
     const reduced = window.matchMedia("(prefers-reduced-motion: reduce)").matches
     let cancelled = false
     let raf = 0
 
     const w0 = mount.clientWidth || 960
     const h0 = mount.clientHeight || 640
-    const renderer = new THREE.WebGLRenderer({ antialias: true, alpha: false, powerPreference: "high-performance" })
+    let renderer: THREE.WebGLRenderer
+    try {
+      renderer = new THREE.WebGLRenderer({ antialias: true, alpha: false, powerPreference: "high-performance" })
+    } catch (err) {
+      console.error(err)
+      queueMicrotask(() => { if (!cancelled) setStatus(CAMPUS_UNAVAILABLE) })
+      return () => { cancelled = true }
+    }
     renderer.setPixelRatio(Math.min(window.devicePixelRatio || 1, 1.5))
     renderer.setSize(w0, h0)
     renderer.setClearColor(0xc5d4c0, 1)
@@ -362,16 +384,21 @@ export function CampusScene({ selected, hovered, focusToken, onHover, onSelect, 
       renderer?.dispose()
       mount.replaceChildren()
     }
-  }, [])
+  }, [webglMissing])
 
   return (
     <div className="absolute inset-0" data-campus-ready={!status}>
       <div ref={mountRef} className="absolute inset-0 touch-none" />
-      <div className="campus-ground-labels" aria-hidden="true">{CAMPUS_BUILDINGS.map((b) => <span key={b.id} className="campus-ground-label" data-ground-label={b.id} data-selected={selected === b.id} data-muted={!!selected && selected !== b.id}><em>{b.short}</em><span className="campus-ground-name">{b.name}</span></span>)}</div>
-      <div className="campus-map-markers">{CAMPUS_BUILDINGS.map((b, i) => <button key={b.id} data-marker={b.id} className="campus-map-marker" data-selected={selected === b.id} data-muted={!!selected && selected !== b.id} data-hovered={!selected && hovered === b.id} aria-label={b.name} aria-pressed={selected === b.id} onClick={() => onSelect(b.id)} onMouseEnter={() => onHover(b.id)} onMouseLeave={() => onHover(null)}><span className="campus-roundel">{String(i + 1).padStart(2, "0")}</span></button>)}</div>
+      <div className="campus-ground-labels" aria-hidden="true" hidden={!!status}>{CAMPUS_BUILDINGS.map((b) => <span key={b.id} className="campus-ground-label" data-ground-label={b.id} data-selected={selected === b.id} data-muted={!!selected && selected !== b.id}><em>{b.short}</em><span className="campus-ground-name">{b.name}</span></span>)}</div>
+      <div className="campus-map-markers" hidden={!!status}>{CAMPUS_BUILDINGS.map((b, i) => <button key={b.id} data-marker={b.id} className="campus-map-marker" data-selected={selected === b.id} data-muted={!!selected && selected !== b.id} data-hovered={!selected && hovered === b.id} aria-label={b.name} aria-pressed={selected === b.id} onClick={() => onSelect(b.id)} onMouseEnter={() => onHover(b.id)} onMouseLeave={() => onHover(null)}><span className="campus-roundel">{String(i + 1).padStart(2, "0")}</span></button>)}</div>
       {status ? (
         <div className="pointer-events-none absolute inset-0 z-10 flex items-center justify-center bg-[#c8bea4]">
-          <p className="font-heading text-lg font-semibold text-[#1a2332]">{status}</p>
+          <div className="max-w-xs px-6 text-center">
+            <p className="font-heading text-lg font-semibold text-[#1a2332]">{status}</p>
+            {status !== CAMPUS_LOADING ? (
+              <p className="mt-2 text-sm text-[#1a2332]/75">Choose a building from the list to open it.</p>
+            ) : null}
+          </div>
         </div>
       ) : null}
     </div>
