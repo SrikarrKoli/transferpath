@@ -1,6 +1,7 @@
 "use client"
 
 import { useState } from "react"
+import Link from "next/link"
 import { useRouter, useSearchParams } from "next/navigation"
 import { OnboardingStep1 } from "@/components/onboarding/step-1"
 import { OnboardingStep2 } from "@/components/onboarding/step-2"
@@ -135,7 +136,7 @@ export function OnboardingClient({ existingSession, embedded = false }: Onboardi
       email,
       password: data.password,
       options: {
-        emailRedirectTo: `${origin}/auth/callback`,
+        emailRedirectTo: `${origin}/auth/callback${returnNext ? `?next=${encodeURIComponent(returnNext)}` : ""}`,
       },
     })
 
@@ -299,6 +300,17 @@ export function OnboardingClient({ existingSession, embedded = false }: Onboardi
               </div>
             </>
           )}
+          {!hasExistingAuth && currentStep === 1 ? (
+            <p className="mb-4 text-sm text-[color:var(--hall-ink)]/75">
+              Already have an account?{" "}
+              <Link
+                href={returnNext ? `/login?next=${encodeURIComponent(returnNext)}` : "/login"}
+                className="font-semibold text-[color:var(--hall-ink)] underline underline-offset-4"
+              >
+                Log in
+              </Link>
+            </p>
+          ) : null}
           {currentStep === 1 && (
             <OnboardingStep1 data={data} updateData={updateData} onNext={handleNext} />
           )}

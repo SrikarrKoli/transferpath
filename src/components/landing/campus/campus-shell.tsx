@@ -200,12 +200,19 @@ export function CampusShell() {
               <CampusSeal />
               <span className="campus-wordmark">Transfer<span>Path</span></span>
             </Link>
-            <Link
-              href={sessionState === "member" ? "/dashboard" : "/onboarding"}
-              className="bg-[#1a2332] px-3 py-1.5 text-xs font-medium text-[#f4efe6]"
-            >
-              <CampusWaymark /> {sessionState === "member" ? "Open campus" : CTA_GET_STARTED}
-            </Link>
+            <div className="flex items-center gap-1.5">
+              {sessionState === "member" ? null : (
+                <Link href="/login" className="whitespace-nowrap px-2.5 py-1.5 text-xs font-medium">
+                  Log in
+                </Link>
+              )}
+              <Link
+                href={sessionState === "member" ? "/dashboard" : "/onboarding"}
+                className="whitespace-nowrap bg-[#1a2332] px-3 py-1.5 text-xs font-medium text-[#f4efe6]"
+              >
+                <CampusWaymark /> {sessionState === "member" ? "Open campus" : CTA_GET_STARTED}
+              </Link>
+            </div>
           </div>
           <div className="flex gap-1.5 overflow-x-auto pb-1">
             {CAMPUS_BUILDINGS.map((b) => {
