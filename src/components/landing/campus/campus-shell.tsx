@@ -198,9 +198,9 @@ export function CampusShell() {
           <div className="mb-2 flex items-center justify-between">
             <Link href="/" className="inline-flex items-center gap-2 bg-[#f4efe6]/92 px-3 py-1.5">
               <CampusSeal />
-              <span className="campus-wordmark">Transfer<span>Path</span></span>
+              <span className="campus-wordmark max-[389px]:hidden">Transfer<span>Path</span></span>
             </Link>
-            <div className="flex items-center gap-1.5">
+            <div className="flex shrink-0 items-center gap-1.5">
               {sessionState === "member" ? null : (
                 <Link href="/login" className="whitespace-nowrap px-2.5 py-1.5 text-xs font-medium">
                   Log in
