@@ -28,23 +28,30 @@ export async function persistOnboardingForUser(
   }
 
   if (data.completedCourses.length > 0) {
-    const { data: canonicalMatches } = await supabase
+    const { data: canonicalMatches, error: canonicalError } = await supabase
       .from("canonical_courses")
       .select("id, course_name")
       .in("course_name", data.completedCourses)
 
-    if (canonicalMatches && canonicalMatches.length > 0) {
-      const { error: coursesError } = await supabase.from("user_courses").insert(
-        canonicalMatches.map((c) => ({
-          user_id: userId,
-          canonical_course_id: c.id,
-          course_name: c.course_name,
-          status: "completed" as const,
-        }))
-      )
-      if (coursesError) {
-        return { error: coursesError.message }
-      }
+    if (canonicalError) {
+      return { error: canonicalError.message }
+    }
+
+    const canonicalIdByName = new Map<string, string>()
+    for (const c of canonicalMatches ?? []) {
+      if (!canonicalIdByName.has(c.course_name)) canonicalIdByName.set(c.course_name, c.id)
+    }
+
+    const { error: coursesError } = await supabase.from("user_courses").insert(
+      data.completedCourses.map((name) => ({
+        user_id: userId,
+        canonical_course_id: canonicalIdByName.get(name) ?? null,
+        course_name: name,
+        status: "completed" as const,
+      }))
+    )
+    if (coursesError) {
+      return { error: coursesError.message }
     }
   }
 
